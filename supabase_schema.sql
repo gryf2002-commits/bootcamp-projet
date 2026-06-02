@@ -134,6 +134,49 @@ create policy "Je reponds aux demandes recues"
   on matches_connections for update to authenticated
   using (auth.uid() = user_b) with check (auth.uid() = user_b);
 
+-- 5b) MESSAGES (chat entre Mates connectés) -------------------
+create table if not exists messages (
+  id           bigint generated always as identity primary key,
+  sender_id    uuid references auth.users(id) on delete cascade,
+  recipient_id uuid references auth.users(id) on delete cascade,
+  content      text not null,
+  created_at   timestamptz default now()
+);
+alter table messages enable row level security;
+
+-- Je vois les messages que j'ai envoyés OU reçus
+drop policy if exists "Je vois mes messages" on messages;
+create policy "Je vois mes messages"
+  on messages for select to authenticated
+  using (auth.uid() = sender_id or auth.uid() = recipient_id);
+
+-- Je n'envoie qu'en mon nom ET seulement à une connexion ACCEPTÉE (mon cercle)
+drop policy if exists "J envoie a mes connexions" on messages;
+create policy "J envoie a mes connexions"
+  on messages for insert to authenticated
+  with check (
+    auth.uid() = sender_id
+    and exists (
+      select 1 from matches_connections m
+      where m.status = 'accepted'
+        and (
+          (m.user_a = auth.uid() and m.user_b = recipient_id)
+          or (m.user_b = auth.uid() and m.user_a = recipient_id)
+        )
+    )
+  );
+
+-- Temps réel pour le chat
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'messages'
+  ) then
+    alter publication supabase_realtime add table messages;
+  end if;
+end $$;
+
 -- 6) DONNÉES DE DÉMO : quelques lieux sûrs --------------------
 insert into partner_cafes (name, category, city, is_eco, safety_note)
 select * from (values

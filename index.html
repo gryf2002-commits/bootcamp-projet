@@ -616,6 +616,7 @@
     // --- Petits raccourcis ---
     const $ = (id) => document.getElementById(id);
     const show = (el, on) => el.classList.toggle("hidden", !on);
+    let myUserId = null; // id de l'utilisateur connecté (défini à la connexion)
 
     // ====================== AUTHENTIFICATION ======================
     let authMode = "login"; // "login" ou "signup"
@@ -660,12 +661,16 @@
       show($("appView"), loggedIn);
       show($("userBox"), loggedIn);
       if (loggedIn) {
+        myUserId = session.user.id;
         $("userEmail").textContent = session.user.email;
         await ensureProfile(session.user);
         await Promise.all([loadProfile(), loadCafes(), loadCheckins(), loadConnections(), loadCircleLocations()]);
         subscribeToCircle();
+        subscribeMessages();
       } else {
+        myUserId = null;
         unsubscribeCircle();
+        unsubscribeMessages();
       }
     }
 
@@ -919,7 +924,20 @@
           }).join("")
         : '<p class="muted">Aucune connexion pour l\'instant.</p>';
       $("myConnectionsList").querySelectorAll("[data-chat]").forEach((el) =>
-        el.addEventListener("click", () => openChat(nameOf(el.dataset.chat), initOf(el.dataset.chat))));
+        el.addEventListener("click", () => openChat(el.dataset.chat)));
+
+      // Liste « Mes conversations » = mes connexions acceptées (clic → chat réel)
+      $("convList").innerHTML = accepted.length
+        ? accepted.map((c) => {
+            const other = c.user_a === myId ? c.user_b : c.user_a;
+            return `<div class="person conv-open" data-chat="${other}" style="cursor:pointer">
+              <div class="avatar">${initOf(other)}</div>
+              <div class="info"><div class="name">${escapeHtml(nameOf(other))}</div><div class="meta">Toucher pour discuter 💬</div></div>
+              <div class="qarrow">›</div></div>`;
+          }).join("")
+        : '<p class="muted">Pas encore de conversation. Connecte-toi avec un voyageur ci-dessous 👇</p>';
+      $("convList").querySelectorAll("[data-chat]").forEach((el) =>
+        el.addEventListener("click", () => openChat(el.dataset.chat)));
 
       // Voyageurs à rencontrer (autres profils, hors connexions/demandes déjà existantes)
       const related = new Set();
@@ -1072,77 +1090,92 @@
       const m = $("detailMsg"); m.style.color = "var(--ok)"; m.textContent = "Défi rejoint ! (démo visuelle) 🎉";
     });
 
-    // ====================== MESSAGERIE (visuel) ======================
-    let travelerMap = {};       // profils chargés depuis Supabase (pour la fiche)
-    let currentTravelerId = null;
-
-    // Conversations d'exemple (pas encore branchées à Supabase)
-    const CONVERSATIONS = [
-      { name: "Maria Cruz", init: "M", last: "Parfait. On s'y retrouve dans une heure ?",
-        thread: [
-          { them: true,  text: "Hey ! Tu viens d'arriver à Bogota toi aussi ?" },
-          { them: false, text: "Oui, hier soir 😄 Et toi ?" },
-          { them: true,  text: "Pareil ! Je t'avoue que la ville est cool mais intense toute seule quand même" },
-          { them: true,  text: "Surtout la circulation 😅 Tu loges où ?" },
-          { them: false, text: "Vers Chapinero, et toi ?" },
-          { them: true,  text: "Pas loin, vers Zona G. Je pensais aller bosser dans un café cet aprèm, mais pas trop envie d'y aller seule" },
-          { them: false, text: "Oui carrément. Tu connais un endroit sympa ?" },
-          { them: true,  text: "J'ai entendu parler d'un café vers Chapinero, tranquille en journée." },
-          { them: false, text: "Parfait. On s'y retrouve dans une heure ?" },
-        ] },
-      { name: "Lucas Smith", init: "L", last: "Hâte de visiter le quartier avec toi !",
-        thread: [
-          { them: true,  text: "Salut ! On se fait la visite du centre demain ?" },
-          { them: false, text: "Avec plaisir 🙌" },
-          { them: true,  text: "Hâte de visiter le quartier avec toi !" },
-        ] },
-    ];
-
-    function renderConversations() {
-      $("convList").innerHTML = CONVERSATIONS.map((c, i) => `
-        <div class="person conv-open" data-conv="${i}" style="cursor:pointer">
-          <div class="avatar">${c.init}</div>
-          <div class="info"><div class="name">${escapeHtml(c.name)}</div><div class="meta">${escapeHtml(c.last)}</div></div>
-          <div class="qarrow">›</div>
-        </div>`).join("");
-      $("convList").querySelectorAll("[data-conv]").forEach((el) =>
-        el.addEventListener("click", () => {
-          const c = CONVERSATIONS[Number(el.dataset.conv)];
-          openChat(c.name, c.init, c.thread);
-        }));
-    }
+    // ====================== MESSAGERIE (chat réel via Supabase) ======================
+    let travelerMap = {};         // profils chargés depuis Supabase (pour la fiche)
+    let currentTravelerId = null; // profil voyageur affiché dans la fiche détaillée
+    let currentChatUserId = null; // interlocuteur de la conversation ouverte
+    let messageChannel = null;    // abonnement temps réel aux messages
 
     function showMatesView(id) {
       ["matesHome", "matesProfile", "matesChat"].forEach((v) => show($(v), v === id));
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Fil de discussion générique (quand on ouvre un chat depuis une connexion)
-    const GENERIC_THREAD = [
-      { them: true,  text: "Salut ! Ravi·e d'être connecté·e sur SunMates 🌞" },
-      { them: false, text: "Salut ! Pareil 🙌 Tu voyages où en ce moment ?" },
-    ];
-
-    function openChat(name, init, thread) {
-      $("chatName").textContent = name;
-      $("chatAvatar").textContent = (init || name[0] || "?").toUpperCase();
-      const msgs = thread || GENERIC_THREAD;
-      $("chatBody").innerHTML = msgs.map((m) => `<div class="bubble ${m.them ? "them" : "me"}">${escapeHtml(m.text)}</div>`).join("");
-      showMatesView("matesChat");
-      setTimeout(() => { const b = $("chatBody"); b.scrollIntoView({ block: "end" }); }, 50);
+    function scrollChatBottom() {
+      const b = $("chatBody");
+      setTimeout(() => { b.scrollTop = b.scrollHeight; }, 30);
     }
 
-    function sendChatMessage() {
+    function bubbleHtml(m) {
+      return `<div class="bubble ${m.sender_id === myUserId ? "me" : "them"}" data-mid="${m.id}">${escapeHtml(m.content)}</div>`;
+    }
+
+    // Ouvre la conversation avec un Mate (identifié par son id utilisateur)
+    async function openChat(otherUserId) {
+      currentChatUserId = otherUserId;
+      const p = travelerMap[otherUserId] || {};
+      const name = p.username || "Voyageur";
+      $("chatName").textContent = name;
+      $("chatAvatar").textContent = (name[0] || "?").toUpperCase();
+      $("chatStatus").textContent = "Mate connecté";
+      $("chatBody").innerHTML = '<p class="muted" style="text-align:center">Chargement…</p>';
+      showMatesView("matesChat");
+      // Historique : messages échangés entre moi et cet interlocuteur (RLS = uniquement les miens)
+      const { data, error } = await db.from("messages").select("*")
+        .or(`and(sender_id.eq.${myUserId},recipient_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},recipient_id.eq.${myUserId})`)
+        .order("created_at", { ascending: true });
+      const body = $("chatBody");
+      if (error) { body.innerHTML = '<p class="muted">Erreur de chargement.</p>'; return; }
+      body.innerHTML = data.length
+        ? data.map(bubbleHtml).join("")
+        : '<p class="muted" style="text-align:center">Démarrez la conversation 👋</p>';
+      scrollChatBottom();
+    }
+
+    async function sendChatMessage() {
       const input = $("chatInput");
       const text = input.value.trim();
-      if (!text) return;
-      $("chatBody").insertAdjacentHTML("beforeend", `<div class="bubble me">${escapeHtml(text)}</div>`);
+      if (!text || !currentChatUserId) return;
       input.value = "";
-      const last = $("chatBody").lastElementChild;
-      if (last) last.scrollIntoView({ block: "end", behavior: "smooth" });
+      const { error } = await db.from("messages")
+        .insert({ sender_id: myUserId, recipient_id: currentChatUserId, content: text });
+      if (error) {
+        $("chatBody").insertAdjacentHTML("beforeend",
+          `<div class="bubble them" style="background:#fde2e2;color:#b91c1c">Échec de l'envoi : ${escapeHtml(error.message)}</div>`);
+        scrollChatBottom();
+      }
+      // Le message (le mien comme celui de l'autre) s'affiche via le temps réel ci-dessous.
     }
     $("chatSend").addEventListener("click", sendChatMessage);
     $("chatInput").addEventListener("keydown", (e) => { if (e.key === "Enter") sendChatMessage(); });
+
+    // Temps réel : nouveaux messages. La RLS garantit qu'on ne reçoit QUE
+    // les messages dont on est l'expéditeur ou le destinataire.
+    function subscribeMessages() {
+      if (messageChannel) return;
+      messageChannel = db.channel("messages-rt")
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
+          const m = payload.new;
+          const inOpenChat = currentChatUserId && (
+            (m.sender_id === myUserId && m.recipient_id === currentChatUserId) ||
+            (m.sender_id === currentChatUserId && m.recipient_id === myUserId)
+          );
+          if (inOpenChat) {
+            if (document.querySelector(`[data-mid="${m.id}"]`)) return; // déjà affiché
+            const ph = $("chatBody").querySelector("p.muted");
+            if (ph) $("chatBody").innerHTML = "";
+            $("chatBody").insertAdjacentHTML("beforeend", bubbleHtml(m));
+            scrollChatBottom();
+          } else if (m.recipient_id === myUserId && m.sender_id !== myUserId) {
+            loadConnections(); // message reçu hors conversation ouverte → rafraîchit la liste
+          }
+        })
+        .subscribe();
+    }
+
+    function unsubscribeMessages() {
+      if (messageChannel) { db.removeChannel(messageChannel); messageChannel = null; }
+    }
 
     // ====================== PROFIL VOYAGEUR DÉTAILLÉ ======================
     function openTravelerProfile(p) {
@@ -1163,7 +1196,7 @@
       $("tpMsg").textContent = "";
       showMatesView("matesProfile");
     }
-    $("tpMsgBtn").addEventListener("click", () => openChat($("tpName").textContent, null));
+    $("tpMsgBtn").addEventListener("click", () => { if (currentTravelerId) openChat(currentTravelerId); });
     $("tpChallengeBtn").addEventListener("click", () => {
       const m = $("tpMsg"); m.style.color = "var(--ok)"; m.textContent = "Défi proposé ! (démo visuelle) 🎯";
     });
@@ -1209,8 +1242,8 @@
         else { m.textContent = "Action bientôt disponible 🙂"; }
       }));
 
-    renderJeux();          // rendu immédiat (données d'exemple)
-    renderConversations(); // conversations d'exemple
+    renderJeux();          // Jeux/Quêtes : rendu immédiat (données d'exemple, visuel)
+    // Les conversations réelles sont remplies par loadConnections() après connexion.
 
     // Au chargement : vérifie s'il y a déjà une session
     db.auth.getSession().then(({ data }) => render(data.session));
