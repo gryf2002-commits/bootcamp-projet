@@ -3,61 +3,332 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mon projet bootcamp</title>
+  <title>SunMates — voyager solo, en sécurité</title>
   <style>
+    :root {
+      --bg: #0f172a; --card: #1e293b; --accent: #fbbf24; --accent2: #38bdf8;
+      --ok: #4ade80; --danger: #f87171; --text: #f8fafc; --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; }
     body {
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      background: #0f172a;
-      color: #f8fafc;
-      text-align: center;
+      margin: 0; background: var(--bg); color: var(--text); min-height: 100vh;
     }
-    h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    p { font-size: 1.25rem; color: #38bdf8; }
-    .status { margin-top: 1.5rem; font-size: 1rem; color: #94a3b8; }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem; border-bottom: 1px solid #334155;
+    }
+    .logo { font-size: 1.4rem; font-weight: 800; }
+    .logo .sun { color: var(--accent); }
+    main { max-width: 720px; margin: 0 auto; padding: 1.5rem; }
+    .card {
+      background: var(--card); border-radius: 14px; padding: 1.25rem;
+      margin-bottom: 1rem; border: 1px solid #334155;
+    }
+    h2 { margin: 0 0 0.75rem; font-size: 1.15rem; }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin: 0.6rem 0 0.2rem; }
+    input, textarea {
+      width: 100%; padding: 0.6rem 0.7rem; border-radius: 8px; border: 1px solid #475569;
+      background: #0f172a; color: var(--text); font-size: 0.95rem;
+    }
+    button {
+      border: 0; border-radius: 8px; padding: 0.65rem 1.1rem; font-size: 0.95rem;
+      cursor: pointer; font-weight: 600; margin-top: 0.6rem;
+    }
+    .btn-primary { background: var(--accent2); color: #0f172a; }
+    .btn-accent  { background: var(--accent); color: #0f172a; }
+    .btn-ghost   { background: transparent; color: var(--muted); border: 1px solid #475569; }
+    .btn-danger  { background: var(--danger); color: #450a0a; width: 100%; font-size: 1.1rem; padding: 1rem; }
+    .row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .tabs { display: flex; gap: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .tabs button { background: #334155; color: var(--text); margin: 0; }
+    .tabs button.active { background: var(--accent2); color: #0f172a; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; }
+    .badge.ok { background: rgba(74,222,128,.15); color: var(--ok); }
+    .badge.no { background: rgba(148,163,184,.15); color: var(--muted); }
+    .place { border-bottom: 1px solid #334155; padding: 0.8rem 0; }
+    .place:last-child { border-bottom: 0; }
+    .place .meta { color: var(--muted); font-size: 0.85rem; }
+    .eco { color: var(--ok); font-size: 0.8rem; }
+    .msg { margin-top: 0.6rem; font-size: 0.9rem; min-height: 1.2rem; }
+    .muted { color: var(--muted); }
+    .hidden { display: none; }
+    .stat { font-size: 2rem; font-weight: 800; color: var(--accent); }
   </style>
 </head>
 <body>
-  <h1>Mon projet bootcamp</h1>
-  <p>ça marche ✅</p>
-  <button id="testBtn" style="margin-top:1.5rem;padding:0.7rem 1.4rem;font-size:1rem;border:0;border-radius:8px;background:#38bdf8;color:#0f172a;cursor:pointer;">
-    Tester l'écriture Supabase
-  </button>
-  <div class="status" id="status">Supabase : prêt</div>
+  <header>
+    <div class="logo"><span class="sun">☀️ Sun</span>Mates</div>
+    <div id="userBox" class="hidden">
+      <span id="userEmail" class="muted"></span>
+      <button class="btn-ghost" id="logoutBtn">Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ ÉCRAN CONNEXION / INSCRIPTION ============ -->
+    <section id="authView">
+      <div class="card">
+        <h2>Voyager solo, en toute sécurité 🌍</h2>
+        <p class="muted">Connecte-toi ou crée un compte pour rejoindre la communauté SunMates.</p>
+        <div class="tabs">
+          <button id="tabLogin" class="active">Connexion</button>
+          <button id="tabSignup">Inscription</button>
+        </div>
+        <label>Email</label>
+        <input id="authEmail" type="email" placeholder="chloe@exemple.com" />
+        <label>Mot de passe</label>
+        <input id="authPassword" type="password" placeholder="••••••••" />
+        <div class="row">
+          <button class="btn-primary" id="authSubmit">Se connecter</button>
+        </div>
+        <div class="msg" id="authMsg"></div>
+      </div>
+    </section>
+
+    <!-- ============ APPLICATION (après connexion) ============ -->
+    <section id="appView" class="hidden">
+      <div class="tabs">
+        <button data-tab="profil" class="active">👤 Profil</button>
+        <button data-tab="lieux">🛟 Lieux sûrs</button>
+        <button data-tab="checkins">🎯 Check-ins</button>
+        <button data-tab="securite">🚨 Sécurité</button>
+      </div>
+
+      <!-- Onglet Profil -->
+      <div class="card tab-panel" data-panel="profil">
+        <h2>Mon profil</h2>
+        <div>Statut : <span id="verifBadge" class="badge no">Non vérifié</span></div>
+        <div style="margin-top:.5rem">Score de confiance : <span class="stat" id="trustScore">0</span></div>
+        <label>Pseudo</label>
+        <input id="pUsername" placeholder="Chloé" />
+        <label>Ville actuelle</label>
+        <input id="pCity" placeholder="Lisbonne" />
+        <label>Bio</label>
+        <textarea id="pBio" rows="3" placeholder="Exploratrice solo, fan de cafés calmes ☕"></textarea>
+        <div class="row">
+          <button class="btn-primary" id="saveProfileBtn">Enregistrer mon profil</button>
+          <button class="btn-accent" id="verifyBtn">Demander la vérification</button>
+        </div>
+        <div class="msg" id="profileMsg"></div>
+      </div>
+
+      <!-- Onglet Lieux sûrs -->
+      <div class="card tab-panel hidden" data-panel="lieux">
+        <h2>Lieux sûrs partenaires</h2>
+        <p class="muted">Des espaces validés pour des rencontres en sécurité. Fais un check-in pour gagner des points de confiance.</p>
+        <div id="cafesList"><p class="muted">Chargement…</p></div>
+        <div class="msg" id="cafesMsg"></div>
+      </div>
+
+      <!-- Onglet Check-ins -->
+      <div class="card tab-panel hidden" data-panel="checkins">
+        <h2>Mes check-ins</h2>
+        <p>Total de check-ins : <span class="stat" id="checkinCount">0</span></p>
+        <div id="checkinList"><p class="muted">Chargement…</p></div>
+      </div>
+
+      <!-- Onglet Sécurité -->
+      <div class="card tab-panel hidden" data-panel="securite">
+        <h2>Partage & sécurité</h2>
+        <p class="muted">Partage ta position avec ton cercle de confiance, ou déclenche une alerte en cas d'urgence.</p>
+        <button class="btn-primary" id="shareLocBtn">📍 Partager ma position</button>
+        <div class="msg" id="locMsg"></div>
+        <hr style="border-color:#334155; margin:1.2rem 0" />
+        <button class="btn-danger" id="emergencyBtn">🚨 Déclencher l'alerte d'urgence</button>
+        <div class="msg" id="emergencyMsg"></div>
+      </div>
+    </section>
+  </main>
 
   <!-- ====================================================== -->
-  <!-- SUPABASE : client chargé via CDN                       -->
+  <!-- SUPABASE (client chargé via CDN — pas de serveur Node) -->
   <!-- ====================================================== -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // La clé "anon" est PUBLIQUE par conception : elle peut figurer ici.
-    // (Ne JAMAIS mettre la clé "service_role" secrète dans ce fichier.)
+    // La clé "anon / publishable" est PUBLIQUE par conception : la sécurité repose
+    // sur les règles RLS côté Supabase. Ne JAMAIS mettre la clé "service_role" ici.
     const SUPABASE_URL = "https://ihiwuharxkmkzaxixhae.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_-Q0evGrgq76Fp-YWLNA1Qg_jsOXEIcn";
-
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const statusEl = document.getElementById("status");
 
-    document.getElementById("testBtn").addEventListener("click", async () => {
-      statusEl.textContent = "Envoi en cours...";
+    // --- Petits raccourcis ---
+    const $ = (id) => document.getElementById(id);
+    const show = (el, on) => el.classList.toggle("hidden", !on);
+
+    // ====================== AUTHENTIFICATION ======================
+    let authMode = "login"; // "login" ou "signup"
+
+    $("tabLogin").addEventListener("click", () => setAuthMode("login"));
+    $("tabSignup").addEventListener("click", () => setAuthMode("signup"));
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      $("tabLogin").classList.toggle("active", mode === "login");
+      $("tabSignup").classList.toggle("active", mode === "signup");
+      $("authSubmit").textContent = mode === "login" ? "Se connecter" : "Créer mon compte";
+      $("authMsg").textContent = "";
+    }
+
+    $("authSubmit").addEventListener("click", async () => {
+      const email = $("authEmail").value.trim();
+      const password = $("authPassword").value;
+      const msg = $("authMsg");
+      if (!email || !password) { msg.style.color = "var(--danger)"; msg.textContent = "Remplis l'email et le mot de passe."; return; }
+      msg.style.color = "var(--muted)"; msg.textContent = "Un instant…";
+
+      const fn = authMode === "login"
+        ? db.auth.signInWithPassword({ email, password })
+        : db.auth.signUp({ email, password });
+      const { error } = await fn;
+
+      if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; }
+      else if (authMode === "signup") { msg.style.color = "var(--ok)"; msg.textContent = "Compte créé ! Tu peux te connecter."; }
+    });
+
+    $("logoutBtn").addEventListener("click", () => db.auth.signOut());
+
+    // Réagit aux changements d'état (connexion/déconnexion)
+    db.auth.onAuthStateChange((_event, session) => render(session));
+
+    async function render(session) {
+      const loggedIn = !!session;
+      show($("authView"), !loggedIn);
+      show($("appView"), loggedIn);
+      show($("userBox"), loggedIn);
+      if (loggedIn) {
+        $("userEmail").textContent = session.user.email;
+        await ensureProfile(session.user);
+        await Promise.all([loadProfile(), loadCafes(), loadCheckins()]);
+      }
+    }
+
+    // Crée la ligne de profil au premier login si elle n'existe pas
+    async function ensureProfile(user) {
+      const { data } = await db.from("profiles").select("id").eq("id", user.id).maybeSingle();
+      if (!data) {
+        await db.from("profiles").insert({ id: user.id, username: user.email.split("@")[0] });
+      }
+    }
+
+    // ====================== ONGLETS ======================
+    document.querySelectorAll('[data-tab]').forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll('[data-tab]').forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const target = btn.dataset.tab;
+        document.querySelectorAll(".tab-panel").forEach((p) => show(p, p.dataset.panel === target));
+      });
+    });
+
+    // ====================== PROFIL ======================
+    async function loadProfile() {
+      const { data, error } = await db.from("profiles").select("*").maybeSingle();
+      if (error || !data) return;
+      $("pUsername").value = data.username || "";
+      $("pCity").value = data.city || "";
+      $("pBio").value = data.bio || "";
+      $("trustScore").textContent = data.trust_score ?? 0;
+      const badge = $("verifBadge");
+      badge.textContent = data.is_verified ? "✅ Vérifié" : "Non vérifié";
+      badge.className = "badge " + (data.is_verified ? "ok" : "no");
+    }
+
+    $("saveProfileBtn").addEventListener("click", async () => {
+      const { data: { user } } = await db.auth.getUser();
+      const msg = $("profileMsg");
+      const { error } = await db.from("profiles").update({
+        username: $("pUsername").value.trim(),
+        city: $("pCity").value.trim(),
+        bio: $("pBio").value.trim(),
+      }).eq("id", user.id);
+      msg.style.color = error ? "var(--danger)" : "var(--ok)";
+      msg.textContent = error ? "Erreur : " + error.message : "Profil enregistré ✅";
+    });
+
+    $("verifyBtn").addEventListener("click", async () => {
+      const { data: { user } } = await db.auth.getUser();
+      const msg = $("profileMsg");
+      // MVP : la "vérification" est simulée — elle passe le badge à vérifié (+30 points).
+      const { error } = await db.from("profiles")
+        .update({ is_verified: true, trust_score: 30 }).eq("id", user.id);
+      if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; }
+      else { msg.style.color = "var(--ok)"; msg.textContent = "Profil vérifié ✅ (+30 points)"; await loadProfile(); }
+    });
+
+    // ====================== LIEUX SÛRS ======================
+    async function loadCafes() {
+      const { data, error } = await db.from("partner_cafes").select("*").order("name");
+      const list = $("cafesList");
+      if (error) { list.innerHTML = '<p class="muted">Erreur de chargement.</p>'; return; }
+      if (!data.length) { list.innerHTML = '<p class="muted">Aucun lieu pour l\'instant.</p>'; return; }
+      list.innerHTML = data.map((c) => `
+        <div class="place">
+          <strong>${escapeHtml(c.name)}</strong>
+          ${c.is_eco ? '<span class="eco">🌱 éco</span>' : ''}
+          <div class="meta">${escapeHtml(c.category || '')} · ${escapeHtml(c.city || '')}</div>
+          <div class="meta">${escapeHtml(c.safety_note || '')}</div>
+          <button class="btn-accent" data-checkin="${c.id}">Check-in ici (+10)</button>
+        </div>`).join("");
+      list.querySelectorAll("[data-checkin]").forEach((b) =>
+        b.addEventListener("click", () => checkIn(Number(b.dataset.checkin))));
+    }
+
+    async function checkIn(cafeId) {
+      const msg = $("cafesMsg");
+      const { data: { user } } = await db.auth.getUser();
+      const { error } = await db.from("checkpoints").insert({ user_id: user.id, cafe_id: cafeId });
+      if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; return; }
+      // +10 points de confiance par check-in
+      const { data: prof } = await db.from("profiles").select("trust_score").eq("id", user.id).maybeSingle();
+      await db.from("profiles").update({ trust_score: (prof?.trust_score || 0) + 10 }).eq("id", user.id);
+      msg.style.color = "var(--ok)"; msg.textContent = "Check-in enregistré ✅ (+10 points)";
+      await Promise.all([loadProfile(), loadCheckins()]);
+    }
+
+    // ====================== CHECK-INS ======================
+    async function loadCheckins() {
       const { data, error } = await db
-        .from("events")
-        .insert({ type: "test" })
-        .select();
+        .from("checkpoints")
+        .select("created_at, partner_cafes(name, city)")
+        .order("created_at", { ascending: false });
+      if (error) return;
+      $("checkinCount").textContent = data.length;
+      $("checkinList").innerHTML = data.length
+        ? data.map((c) => `<div class="place"><strong>${escapeHtml(c.partner_cafes?.name || 'Lieu')}</strong>
+            <div class="meta">${new Date(c.created_at).toLocaleString("fr-FR")}</div></div>`).join("")
+        : '<p class="muted">Aucun check-in pour l\'instant — va dans « Lieux sûrs ».</p>';
+    }
 
-      if (error) {
-        statusEl.style.color = "#f87171";
-        statusEl.textContent = "Erreur : " + error.message;
-      } else {
-        statusEl.style.color = "#4ade80";
-        statusEl.textContent = "✅ Écriture réussie ! id = " + data[0].id;
+    // ====================== SÉCURITÉ ======================
+    $("shareLocBtn").addEventListener("click", () => sendLocation(false, $("locMsg"), "Position partagée avec ton cercle ✅"));
+    $("emergencyBtn").addEventListener("click", () => {
+      if (confirm("Déclencher une alerte d'urgence ? Ta position sera diffusée à ton cercle de confiance.")) {
+        sendLocation(true, $("emergencyMsg"), "🚨 ALERTE diffusée à ton cercle de confiance !");
       }
     });
+
+    function sendLocation(isEmergency, msg, okText) {
+      msg.style.color = "var(--muted)"; msg.textContent = "Localisation en cours…";
+      if (!navigator.geolocation) { msg.style.color = "var(--danger)"; msg.textContent = "Géolocalisation non disponible sur cet appareil."; return; }
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { data: { user } } = await db.auth.getUser();
+        const { error } = await db.from("locations_realtime").insert({
+          user_id: user.id, lat: pos.coords.latitude, lng: pos.coords.longitude, is_emergency: isEmergency,
+        });
+        msg.style.color = error ? "var(--danger)" : (isEmergency ? "var(--danger)" : "var(--ok)");
+        msg.textContent = error ? "Erreur : " + error.message : okText;
+      }, () => { msg.style.color = "var(--danger)"; msg.textContent = "Autorise la géolocalisation dans ton navigateur pour partager ta position."; });
+    }
+
+    // ====================== UTILITAIRE ======================
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    // Au chargement : vérifie s'il y a déjà une session
+    db.auth.getSession().then(({ data }) => render(data.session));
   </script>
 </body>
 </html>
