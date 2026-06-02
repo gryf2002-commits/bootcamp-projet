@@ -2,182 +2,605 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>SunMates — voyager solo, en sécurité</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
+    /* ===================================================================
+       SUNMATES — Système de design (thème clair / corail)
+       Inspiré des maquettes UX/UI : fond clair, couleur corail, cartes
+       blanches arrondies, barre de navigation en bas.
+       =================================================================== */
     :root {
-      --bg: #0f172a; --card: #1e293b; --accent: #fbbf24; --accent2: #38bdf8;
-      --ok: #4ade80; --danger: #f87171; --text: #f8fafc; --muted: #94a3b8;
+      /* Couleurs */
+      --bg:        #fdf3f1;   /* fond de page rose très clair */
+      --card:      #ffffff;   /* cartes */
+      --accent:    #f4655e;   /* corail principal */
+      --accent-2:  #ff8a7d;   /* corail clair (dégradés) */
+      --accent-grad: linear-gradient(135deg, #ff9286 0%, #f4655e 100%);
+      --accent-soft: #fdeceb; /* fond corail très pâle (chips, icônes) */
+      --ink:       #20242e;   /* titres */
+      --text:      #3a3f4b;   /* texte */
+      --muted:     #9aa0ac;   /* texte secondaire */
+      --ok:        #22c55e;
+      --danger:    #ef4444;
+      --line:      #f1e7e6;   /* séparateurs */
+      /* Formes */
+      --radius:    20px;
+      --radius-sm: 14px;
+      --shadow:    0 10px 30px rgba(244,101,94,.10), 0 2px 8px rgba(20,20,40,.04);
+      --shadow-sm: 0 4px 14px rgba(20,20,40,.06);
     }
-    * { box-sizing: border-box; }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
     body {
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-      margin: 0; background: var(--bg); color: var(--text); min-height: 100vh;
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+      margin: 0; background: var(--bg); color: var(--text);
+      -webkit-font-smoothing: antialiased;
     }
-    header {
+
+    /* Conteneur façon téléphone, centré */
+    .app-shell {
+      max-width: 460px; margin: 0 auto; min-height: 100vh;
+      background: var(--bg); position: relative;
+      display: flex; flex-direction: column;
+    }
+
+    /* ----------------------------- Header --------------------------- */
+    .topbar {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 1.5rem; border-bottom: 1px solid #334155;
+      padding: 1rem 1.25rem .75rem; position: sticky; top: 0; z-index: 50;
+      background: linear-gradient(var(--bg) 70%, rgba(253,243,241,0));
     }
-    .logo { font-size: 1.4rem; font-weight: 800; }
-    .logo .sun { color: var(--accent); }
-    main { max-width: 720px; margin: 0 auto; padding: 1.5rem; }
-    .card {
-      background: var(--card); border-radius: 14px; padding: 1.25rem;
-      margin-bottom: 1rem; border: 1px solid #334155;
+    .brand { display: flex; align-items: center; gap: .5rem; font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: .5px; }
+    .brand .mark {
+      width: 30px; height: 30px; border-radius: 9px; background: var(--accent-grad);
+      display: grid; place-items: center; font-size: 16px; box-shadow: var(--shadow-sm);
     }
-    h2 { margin: 0 0 0.75rem; font-size: 1.15rem; }
-    label { display: block; font-size: 0.85rem; color: var(--muted); margin: 0.6rem 0 0.2rem; }
-    input, textarea {
-      width: 100%; padding: 0.6rem 0.7rem; border-radius: 8px; border: 1px solid #475569;
-      background: #0f172a; color: var(--text); font-size: 0.95rem;
-    }
-    button {
-      border: 0; border-radius: 8px; padding: 0.65rem 1.1rem; font-size: 0.95rem;
-      cursor: pointer; font-weight: 600; margin-top: 0.6rem;
-    }
-    .btn-primary { background: var(--accent2); color: #0f172a; }
-    .btn-accent  { background: var(--accent); color: #0f172a; }
-    .btn-ghost   { background: transparent; color: var(--muted); border: 1px solid #475569; }
-    .btn-danger  { background: var(--danger); color: #450a0a; width: 100%; font-size: 1.1rem; padding: 1rem; }
-    .row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .tabs { display: flex; gap: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    .tabs button { background: #334155; color: var(--text); margin: 0; }
-    .tabs button.active { background: var(--accent2); color: #0f172a; }
-    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; }
-    .badge.ok { background: rgba(74,222,128,.15); color: var(--ok); }
-    .badge.no { background: rgba(148,163,184,.15); color: var(--muted); }
-    .place { border-bottom: 1px solid #334155; padding: 0.8rem 0; }
-    .place:last-child { border-bottom: 0; }
-    .place .meta { color: var(--muted); font-size: 0.85rem; }
-    .eco { color: var(--ok); font-size: 0.8rem; }
-    .msg { margin-top: 0.6rem; font-size: 0.9rem; min-height: 1.2rem; }
+    .brand b { font-weight: 800; }
+    .brand b .sun { color: var(--accent); }
+
+    /* ----------------------------- Texte ---------------------------- */
+    h1 { font-size: 1.5rem; margin: 0 0 .25rem; color: var(--ink); font-weight: 800; }
+    h2 { margin: 0 0 .9rem; font-size: 1.2rem; color: var(--ink); font-weight: 700; }
+    h3 { font-size: 1rem; color: var(--ink); font-weight: 700; margin: 1.2rem 0 .5rem; }
     .muted { color: var(--muted); }
-    .hidden { display: none; }
-    .stat { font-size: 2rem; font-weight: 800; color: var(--accent); }
+    .section-head { display: flex; align-items: center; justify-content: space-between; }
+    .section-head a { color: var(--accent); font-size: .8rem; font-weight: 600; text-decoration: none; }
+
+    /* ----------------------------- Cartes --------------------------- */
+    main { flex: 1; padding: 0 1.25rem 6.5rem; }
+    .card {
+      background: var(--card); border-radius: var(--radius); padding: 1.25rem;
+      margin-bottom: 1rem; box-shadow: var(--shadow); border: 1px solid #fff;
+    }
+
+    /* ----------------------------- Champs --------------------------- */
+    label { display: block; font-size: .82rem; color: var(--muted); margin: .8rem 0 .3rem; font-weight: 500; }
+    input, textarea {
+      width: 100%; padding: .8rem .9rem; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--line); background: #fff; color: var(--text);
+      font-size: .95rem; font-family: inherit; transition: border-color .15s, box-shadow .15s;
+    }
+    input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+
+    /* ----------------------------- Boutons -------------------------- */
+    button { border: 0; border-radius: var(--radius-sm); padding: .8rem 1.2rem; font-size: .95rem;
+      cursor: pointer; font-weight: 600; font-family: inherit; transition: transform .08s, filter .15s; }
+    button:active { transform: scale(.97); }
+    .btn-primary { background: var(--accent-grad); color: #fff; box-shadow: 0 6px 16px rgba(244,101,94,.35); }
+    .btn-primary:hover { filter: brightness(1.04); }
+    .btn-accent  { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+    .btn-ghost   { background: #fff; color: var(--text); border: 1.5px solid var(--line); }
+    .btn-danger  { background: var(--accent-grad); color: #fff; width: 100%; font-size: 1.05rem; padding: 1rem; box-shadow: 0 6px 18px rgba(244,101,94,.4); }
+    .btn-block   { width: 100%; }
+    .row { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .4rem; }
+    .row > button { flex: 1; }
+
+    /* ----------------------------- Badges --------------------------- */
+    .badge { display: inline-flex; align-items: center; gap: .25rem; padding: .25rem .65rem; border-radius: 999px; font-size: .78rem; font-weight: 700; }
+    .badge.ok { background: rgba(34,197,94,.12); color: var(--ok); }
+    .badge.no { background: #f1f2f5; color: var(--muted); }
+    .badge.warn { background: var(--accent-soft); color: var(--accent); }
+
+    /* --------------------------- Recherche -------------------------- */
+    .search { position: relative; margin-bottom: .9rem; }
+    .search input { padding-left: 2.6rem; background: #fff; box-shadow: var(--shadow-sm); border-color: #fff; }
+    .search .ico { position: absolute; left: .95rem; top: 50%; transform: translateY(-50%); color: var(--muted); }
+
+    /* ----------------------------- Chips ---------------------------- */
+    .chips { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .3rem; margin-bottom: 1rem; scrollbar-width: none; }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip { white-space: nowrap; padding: .5rem .9rem; border-radius: 999px; background: #fff; color: var(--text);
+      font-size: .82rem; font-weight: 600; cursor: pointer; box-shadow: var(--shadow-sm); border: 0; }
+    .chip.active { background: var(--accent-grad); color: #fff; box-shadow: 0 6px 14px rgba(244,101,94,.3); }
+
+    /* ------------------------- Liste de lieux ----------------------- */
+    .place { display: flex; flex-direction: column; gap: .15rem; padding: .9rem 0; border-bottom: 1px solid var(--line); }
+    .place:last-child { border-bottom: 0; padding-bottom: 0; }
+    .place .name { font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .4rem; }
+    .place .meta { color: var(--muted); font-size: .85rem; }
+    .place .eco { color: var(--ok); font-size: .78rem; font-weight: 600; }
+    .place button { align-self: flex-start; margin-top: .5rem; padding: .55rem 1rem; font-size: .85rem; }
+
+    /* --------------------- Grille cartes accueil -------------------- */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+    .tile {
+      background: var(--card); border-radius: var(--radius-sm); padding: .9rem;
+      box-shadow: var(--shadow-sm); cursor: pointer; transition: transform .1s;
+    }
+    .tile:active { transform: scale(.98); }
+    .tile .thumb {
+      height: 84px; border-radius: 12px; margin-bottom: .55rem;
+      background: var(--accent-grad); display: grid; place-items: center; font-size: 28px;
+    }
+    .tile .thumb.green { background: linear-gradient(135deg,#8fe6a6,#34c77b); }
+    .tile .thumb.blue  { background: linear-gradient(135deg,#8ed0ff,#3aa0f0); }
+    .tile .thumb.purp  { background: linear-gradient(135deg,#b9a6ff,#7c5cff); }
+    .tile .t-name { font-weight: 700; color: var(--ink); font-size: .92rem; }
+    .tile .t-meta { color: var(--muted); font-size: .78rem; }
+
+    /* ----------------------- Carte « featured » --------------------- */
+    .feature {
+      border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 1.2rem;
+      position: relative; min-height: 190px; background: var(--accent-grad); display: flex; align-items: flex-end;
+    }
+    .feature .body { padding: 1.1rem; color: #fff; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,.35)); }
+    .feature .body .name { font-size: 1.3rem; font-weight: 800; }
+    .feature .body .sub { font-size: .85rem; opacity: .95; }
+    .feature .tags { display: flex; gap: .4rem; margin-top: .5rem; }
+    .feature .tags span { background: rgba(255,255,255,.25); backdrop-filter: blur(4px); padding: .2rem .6rem; border-radius: 999px; font-size: .72rem; font-weight: 600; }
+    .feature .rating { position: absolute; top: .9rem; right: .9rem; background: #fff; color: var(--accent); padding: .25rem .6rem; border-radius: 999px; font-weight: 800; font-size: .8rem; }
+
+    /* ----------------------------- Stats ---------------------------- */
+    .stat { font-size: 2.2rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .stat-row { display: flex; gap: 1rem; }
+    .stat-box { flex: 1; background: var(--accent-soft); border-radius: var(--radius-sm); padding: .9rem; text-align: center; }
+    .stat-box .stat { font-size: 1.8rem; }
+    .stat-box .lbl { color: var(--muted); font-size: .78rem; margin-top: .2rem; }
+
+    /* ----------------------------- Avatars -------------------------- */
+    .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--accent-grad); display: grid; place-items: center; color: #fff; font-weight: 700; flex-shrink: 0; }
+    .person { display: flex; align-items: center; gap: .75rem; padding: .8rem 0; border-bottom: 1px solid var(--line); }
+    .person:last-child { border-bottom: 0; }
+    .person .info { flex: 1; min-width: 0; }
+    .person .info .name { font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .4rem; }
+    .person .info .meta { color: var(--muted); font-size: .82rem; }
+    .person button { padding: .5rem .9rem; font-size: .82rem; }
+
+    .msg { margin-top: .7rem; font-size: .88rem; min-height: 1.1rem; font-weight: 500; }
+    .hidden { display: none !important; }
+    hr { border: 0; border-top: 1px solid var(--line); margin: 1.2rem 0; }
+
+    /* ------------------------- Écran connexion ---------------------- */
+    .auth-wrap { min-height: 100vh; display: flex; flex-direction: column; }
+    .auth-hero {
+      background: var(--accent-grad); border-radius: 0 0 36px 36px; padding: 3rem 1.5rem 2.5rem;
+      text-align: center; color: #fff; box-shadow: 0 14px 30px rgba(244,101,94,.3);
+    }
+    .auth-hero .logo-badge {
+      width: 96px; height: 96px; margin: 0 auto 1rem; border-radius: 28px; background: rgba(255,255,255,.18);
+      display: grid; place-items: center; font-size: 46px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.25);
+    }
+    .auth-hero .logo-text { font-size: 1.8rem; font-weight: 800; letter-spacing: 3px; }
+    .auth-hero .logo-tag { font-size: .85rem; opacity: .92; letter-spacing: 1px; }
+    .auth-body { flex: 1; padding: 2rem 1.5rem; max-width: 460px; margin: 0 auto; width: 100%; }
+    .auth-title { text-align: center; }
+    .auth-title h1 { margin-bottom: .2rem; }
+    .seg { display: flex; background: #fff; border-radius: 999px; padding: .25rem; margin: 1.4rem 0; box-shadow: var(--shadow-sm); }
+    .seg button { flex: 1; background: transparent; color: var(--muted); border-radius: 999px; padding: .6rem; margin: 0; }
+    .seg button.active { background: var(--accent-grad); color: #fff; }
+    .auth-play { display: grid; place-items: center; margin-top: 1.6rem; }
+    .auth-play button { width: 64px; height: 64px; border-radius: 50%; background: var(--accent-grad); color: #fff; font-size: 24px; box-shadow: 0 8px 20px rgba(244,101,94,.45); padding: 0; }
+
+    /* ----------------------- Barre de nav (bas) --------------------- */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 460px; background: #fff; display: flex; justify-content: space-around;
+      padding: .6rem .5rem calc(.6rem + env(safe-area-inset-bottom)); box-shadow: 0 -6px 24px rgba(20,20,40,.08);
+      border-radius: 24px 24px 0 0; z-index: 60;
+    }
+    .bottom-nav button {
+      background: transparent; border: 0; padding: .4rem .6rem; margin: 0; display: flex; flex-direction: column;
+      align-items: center; gap: .15rem; color: var(--muted); font-size: .62rem; font-weight: 600; flex: 1;
+    }
+    .bottom-nav button .ni { font-size: 20px; line-height: 1; filter: grayscale(1) opacity(.6); transition: filter .15s; }
+    .bottom-nav button.active { color: var(--accent); }
+    .bottom-nav button.active .ni { filter: none; }
+    .bottom-nav button.active::before {
+      content: ""; position: absolute; top: 0; width: 28px; height: 3px; border-radius: 0 0 4px 4px; background: var(--accent);
+    }
+    .bottom-nav button { position: relative; }
+
+    /* --------------------------- JEUX ------------------------------- */
+    /* Cartes de jeux */
+    .gcard { background: var(--card); border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--shadow-sm); cursor: pointer; transition: transform .1s; }
+    .gcard:active { transform: scale(.98); }
+    .gcard .ghead { height: 92px; background: var(--accent-grad); display: grid; place-items: center; font-size: 32px; position: relative; }
+    .gcard .ghead.green { background: linear-gradient(135deg,#8fe6a6,#34c77b); }
+    .gcard .ghead.blue  { background: linear-gradient(135deg,#8ed0ff,#3aa0f0); }
+    .gcard .ghead.purp  { background: linear-gradient(135deg,#b9a6ff,#7c5cff); }
+    .gcard .grate { position: absolute; top: .5rem; right: .5rem; background: #fff; color: var(--accent); font-size: .7rem; font-weight: 800; padding: .15rem .45rem; border-radius: 999px; }
+    .gcard .gbody { padding: .7rem .8rem; }
+    .gcard .gname { font-weight: 700; color: var(--ink); font-size: .9rem; line-height: 1.2; }
+    .gcard .gcity { color: var(--muted); font-size: .76rem; margin-top: .15rem; }
+
+    /* Lignes de quêtes */
+    .qrow { display: flex; align-items: center; gap: .8rem; padding: .85rem 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+    .qrow:last-child { border-bottom: 0; padding-bottom: 0; }
+    .qico { width: 42px; height: 42px; border-radius: 12px; background: var(--accent-soft); display: grid; place-items: center; font-size: 20px; flex-shrink: 0; }
+    .qrow .qname { font-weight: 600; color: var(--ink); flex: 1; }
+    .qrow .qarrow { color: var(--accent); font-weight: 800; }
+
+    /* Badges hexagonaux */
+    .bgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem .6rem; }
+    .bitem { text-align: center; }
+    .hex { width: 62px; height: 62px; margin: 0 auto .4rem; background: var(--accent-grad);
+      clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+      display: grid; place-items: center; font-size: 26px; color: #fff; box-shadow: var(--shadow-sm); }
+    .bitem.locked .hex { background: #e9e4e4; color: #bdb6b6; box-shadow: none; }
+    .bname { font-size: .72rem; font-weight: 700; color: var(--ink); line-height: 1.15; }
+    .bprog { font-size: .68rem; color: var(--muted); }
+    .bitem.locked .bname { color: var(--muted); }
+
+    /* Coupons */
+    .coupon { display: flex; align-items: center; gap: .85rem; padding: .85rem .9rem; border: 1.5px dashed var(--accent);
+      border-radius: var(--radius-sm); margin-bottom: .7rem; background: var(--accent-soft); }
+    .coupon .cico { width: 42px; height: 42px; border-radius: 10px; background: #fff; display: grid; place-items: center; font-size: 20px; flex-shrink: 0; }
+    .coupon .cname { font-weight: 700; color: var(--ink); }
+    .coupon .cdesc { font-size: .83rem; color: var(--text); }
+
+    /* Écran détail */
+    .backbtn { background: #fff; color: var(--ink); border: 1.5px solid var(--line); padding: .45rem .95rem; font-size: .85rem; border-radius: 999px; margin-bottom: 1rem; }
+    .detail-hero { height: 200px; border-radius: var(--radius); background: var(--accent-grad); display: flex; align-items: flex-end; position: relative; overflow: hidden; margin-bottom: 1rem; box-shadow: var(--shadow); }
+    .detail-hero .dh-emoji { position: absolute; top: 42%; left: 50%; transform: translate(-50%,-50%); font-size: 72px; opacity: .85; }
+    .detail-hero .dh-body { padding: 1rem; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.45)); width: 100%; position: relative; }
+    .detail-hero .dh-name { font-size: 1.45rem; font-weight: 800; }
+    .detail-hero .dh-city { font-size: .85rem; opacity: .95; }
+    .dstats { display: flex; gap: .6rem; margin-bottom: 1rem; }
+    .dstat { flex: 1; background: var(--card); border-radius: var(--radius-sm); padding: .7rem .4rem; text-align: center; box-shadow: var(--shadow-sm); }
+    .dstat b { display: block; color: var(--ink); font-size: 1rem; }
+    .dstat span { color: var(--muted); font-size: .72rem; }
+
+    /* --------------------------- CHAT ------------------------------- */
+    .chat-header { display: flex; align-items: center; gap: .7rem; padding: .2rem 0 1rem; border-bottom: 1px solid var(--line); margin-bottom: 1rem; }
+    .chat-header .backbtn { margin-bottom: 0; padding: .4rem .7rem; }
+    .chat-body { display: flex; flex-direction: column; gap: .45rem; min-height: 48vh; padding-bottom: .5rem; }
+    .bubble { max-width: 80%; padding: .6rem .85rem; border-radius: 16px; font-size: .9rem; line-height: 1.35; word-wrap: break-word; }
+    .bubble.them { background: #ffe7e1; color: var(--text); border-bottom-left-radius: 5px; align-self: flex-start; }
+    .bubble.me { background: var(--accent-grad); color: #fff; border-bottom-right-radius: 5px; align-self: flex-end; }
+    .chat-input { display: flex; gap: .5rem; align-items: center; position: sticky; bottom: 0; background: var(--bg); padding: .7rem 0 .3rem; }
+    .chat-input input { flex: 1; box-shadow: var(--shadow-sm); border-color: #fff; }
+    .chat-input button { padding: .75rem 1rem; flex-shrink: 0; }
+
+    /* --------------------- PROFIL VOYAGEUR -------------------------- */
+    .gallery { display: flex; gap: .5rem; margin-bottom: 1rem; }
+    .gallery .g { flex: 1; height: 56px; border-radius: 12px; background: var(--accent-soft); display: grid; place-items: center; font-size: 22px; }
+    .hashtags { margin-top: .6rem; }
+    .hashtags span { color: var(--accent); font-weight: 600; font-size: .85rem; margin-right: .5rem; }
+
+    /* ------------------------ Bannière d'alerte --------------------- */
     #alertBanner {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      background: #dc2626; color: #fff; padding: 0.9rem 1.2rem; text-align: center;
-      font-weight: 600; box-shadow: 0 2px 12px rgba(0,0,0,.5);
-      animation: pulse 1s ease-in-out infinite alternate;
+      position: fixed; top: 0; left: 50%; transform: translateX(-50%); max-width: 460px; width: 100%; z-index: 1000;
+      background: var(--danger); color: #fff; padding: .9rem 1.2rem; text-align: center;
+      font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.3); animation: pulse 1s ease-in-out infinite alternate;
     }
     #alertBanner a { color: #fff; text-decoration: underline; }
-    #alertBanner button { background: #fff; color: #7f1d1d; padding: .25rem .7rem; margin-left: 1rem; }
-    @keyframes pulse { from { background: #dc2626; } to { background: #b91c1c; } }
+    #alertBanner button { background: #fff; color: #b91c1c; padding: .25rem .8rem; margin-left: .8rem; font-size: .85rem; }
+    @keyframes pulse { from { background: #ef4444; } to { background: #dc2626; } }
   </style>
 </head>
 <body>
   <!-- Bannière d'alerte temps réel (cachée par défaut) -->
   <div id="alertBanner" class="hidden"></div>
 
-  <header>
-    <div class="logo"><span class="sun">☀️ Sun</span>Mates</div>
-    <div id="userBox" class="hidden">
-      <span id="userEmail" class="muted"></span>
-      <button class="btn-ghost" id="logoutBtn">Déconnexion</button>
+  <!-- ============ ÉCRAN CONNEXION / INSCRIPTION ============ -->
+  <section id="authView" class="auth-wrap">
+    <div class="auth-hero">
+      <div class="logo-badge">🌅</div>
+      <div class="logo-text">SUNMATES</div>
+      <div class="logo-tag">Level up your journey</div>
     </div>
-  </header>
+    <div class="auth-body">
+      <div class="auth-title">
+        <h1>Bienvenue 👋</h1>
+        <p class="muted">Voyager solo, en toute sécurité 🌍</p>
+      </div>
+      <div class="seg">
+        <button id="tabLogin" class="active">Connexion</button>
+        <button id="tabSignup">Inscription</button>
+      </div>
+      <label>Email</label>
+      <input id="authEmail" type="email" placeholder="chloe@exemple.com" />
+      <label>Mot de passe</label>
+      <input id="authPassword" type="password" placeholder="••••••••" />
+      <button class="btn-primary btn-block" id="authSubmit" style="margin-top:1.2rem">Se connecter</button>
+      <div class="auth-play"><button id="authPlay" title="Valider">▶</button></div>
+      <div class="msg" id="authMsg" style="text-align:center"></div>
+    </div>
+  </section>
 
-  <main>
-    <!-- ============ ÉCRAN CONNEXION / INSCRIPTION ============ -->
-    <section id="authView">
-      <div class="card">
-        <h2>Voyager solo, en toute sécurité 🌍</h2>
-        <p class="muted">Connecte-toi ou crée un compte pour rejoindre la communauté SunMates.</p>
-        <div class="tabs">
-          <button id="tabLogin" class="active">Connexion</button>
-          <button id="tabSignup">Inscription</button>
+  <!-- ============ APPLICATION (après connexion) ============ -->
+  <section id="appView" class="app-shell hidden">
+    <header class="topbar">
+      <div class="brand"><span class="mark">🌅</span><b><span class="sun">Sun</span>Mates</b></div>
+      <div id="userBox" class="hidden">
+        <button class="btn-ghost" id="logoutBtn" style="padding:.5rem .8rem;font-size:.82rem">Déconnexion</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- ---------------- Onglet ACCUEIL ---------------- -->
+      <div class="tab-panel" data-panel="accueil">
+        <h1 id="homeHello">Salut 🌞</h1>
+        <p class="muted" style="margin-top:0">Prêt·e pour ta prochaine aventure ?</p>
+
+        <div class="search">
+          <span class="ico">🔍</span>
+          <input id="homeSearch" type="text" placeholder="Rechercher un lieu, une ville…" />
         </div>
-        <label>Email</label>
-        <input id="authEmail" type="email" placeholder="chloe@exemple.com" />
-        <label>Mot de passe</label>
-        <input id="authPassword" type="password" placeholder="••••••••" />
-        <div class="row">
-          <button class="btn-primary" id="authSubmit">Se connecter</button>
+
+        <div class="chips" id="homeChips">
+          <button class="chip active">Suggérés</button>
+          <button class="chip">Villes</button>
+          <button class="chip">Montagnes</button>
+          <button class="chip">Plages</button>
+          <button class="chip">Éco 🌱</button>
         </div>
-        <div class="msg" id="authMsg"></div>
-      </div>
-    </section>
 
-    <!-- ============ APPLICATION (après connexion) ============ -->
-    <section id="appView" class="hidden">
-      <div class="tabs">
-        <button data-tab="profil" class="active">👤 Profil</button>
-        <button data-tab="lieux">🛟 Lieux sûrs</button>
-        <button data-tab="checkins">🎯 Check-ins</button>
-        <button data-tab="connexions">🤝 Connexions</button>
-        <button data-tab="securite">🚨 Sécurité</button>
-      </div>
+        <div class="section-head"><h3 style="margin-top:.2rem">Lieux sûrs à proximité</h3><a data-goto="lieux">Voir tout</a></div>
+        <div id="homeCafes"><p class="muted">Chargement…</p></div>
 
-      <!-- Onglet Profil -->
-      <div class="card tab-panel" data-panel="profil">
-        <h2>Mon profil</h2>
-        <div>Statut : <span id="verifBadge" class="badge no">Non vérifié</span></div>
-        <div style="margin-top:.5rem">Score de confiance : <span class="stat" id="trustScore">0</span></div>
-        <label>Pseudo</label>
-        <input id="pUsername" placeholder="Chloé" />
-        <label>Ville actuelle</label>
-        <input id="pCity" placeholder="Lisbonne" />
-        <label>Bio</label>
-        <textarea id="pBio" rows="3" placeholder="Exploratrice solo, fan de cafés calmes ☕"></textarea>
-        <div class="row">
-          <button class="btn-primary" id="saveProfileBtn">Enregistrer mon profil</button>
-          <button class="btn-accent" id="verifyBtn">Demander la vérification</button>
+        <div class="section-head"><h3>Accès rapide</h3></div>
+        <div class="grid2">
+          <div class="tile" data-goto="connexions"><div class="thumb purp">🤝</div><div class="t-name">Mes Mates</div><div class="t-meta">Connexions sûres</div></div>
+          <div class="tile" data-goto="securite"><div class="thumb">🚨</div><div class="t-name">Sécurité</div><div class="t-meta">Position & alerte</div></div>
+          <div class="tile" data-goto="lieux"><div class="thumb green">🛟</div><div class="t-name">Lieux sûrs</div><div class="t-meta">Check-ins</div></div>
+          <div class="tile" data-goto="profil"><div class="thumb blue">👤</div><div class="t-name">Mon profil</div><div class="t-meta">Score de confiance</div></div>
+          <div class="tile" data-goto="jeux"><div class="thumb">🎮</div><div class="t-name">Jeux & Quêtes</div><div class="t-meta">Gagne des badges</div></div>
         </div>
-        <div class="msg" id="profileMsg"></div>
       </div>
 
-      <!-- Onglet Lieux sûrs -->
-      <div class="card tab-panel hidden" data-panel="lieux">
-        <h2>Lieux sûrs partenaires</h2>
-        <p class="muted">Des espaces validés pour des rencontres en sécurité. Fais un check-in pour gagner des points de confiance.</p>
-        <div id="cafesList"><p class="muted">Chargement…</p></div>
-        <div class="msg" id="cafesMsg"></div>
-      </div>
-
-      <!-- Onglet Check-ins -->
-      <div class="card tab-panel hidden" data-panel="checkins">
-        <h2>Mes check-ins</h2>
-        <p>Total de check-ins : <span class="stat" id="checkinCount">0</span></p>
-        <div id="checkinList"><p class="muted">Chargement…</p></div>
-      </div>
-
-      <!-- Onglet Connexions -->
-      <div class="card tab-panel hidden" data-panel="connexions">
-        <h2>Connexions entre voyageurs</h2>
-        <p class="muted">Envoie une demande de connexion sûre, et accepte celles que tu reçois.</p>
-
-        <h3 style="font-size:1rem;margin:.9rem 0 .3rem">📨 Demandes reçues</h3>
-        <div id="requestsList"><p class="muted">—</p></div>
-
-        <h3 style="font-size:1rem;margin:1.1rem 0 .3rem">✅ Mes connexions</h3>
-        <div id="myConnectionsList"><p class="muted">—</p></div>
-
-        <h3 style="font-size:1rem;margin:1.1rem 0 .3rem">🌍 Voyageurs à rencontrer</h3>
-        <div id="travelersList"><p class="muted">Chargement…</p></div>
-
-        <div class="msg" id="connMsg"></div>
-      </div>
-
-      <!-- Onglet Sécurité -->
-      <div class="card tab-panel hidden" data-panel="securite">
-        <h2>Partage & sécurité</h2>
-        <p class="muted">Partage ta position avec ton cercle de confiance, ou déclenche une alerte en cas d'urgence.</p>
-        <button class="btn-primary" id="shareLocBtn">📍 Partager ma position</button>
-        <div class="msg" id="locMsg"></div>
-        <hr style="border-color:#334155; margin:1.2rem 0" />
-        <button class="btn-danger" id="emergencyBtn">🚨 Déclencher l'alerte d'urgence</button>
-        <div class="msg" id="emergencyMsg"></div>
-
-        <hr style="border-color:#334155; margin:1.2rem 0" />
-        <div class="row" style="align-items:center; justify-content:space-between">
-          <h3 style="font-size:1rem; margin:0">🛟 Positions de mon cercle de confiance</h3>
-          <button class="btn-ghost" id="refreshCircleBtn">↻ Rafraîchir</button>
+      <!-- ---------------- Onglet LIEUX SÛRS ---------------- -->
+      <div class="tab-panel hidden" data-panel="lieux">
+        <h1>Lieux sûrs 🛟</h1>
+        <p class="muted" style="margin-top:0">Des espaces validés pour des rencontres en sécurité. Fais un check-in pour gagner des points de confiance.</p>
+        <div class="card">
+          <div id="cafesList"><p class="muted">Chargement…</p></div>
+          <div class="msg" id="cafesMsg"></div>
         </div>
-        <p class="muted" style="font-size:.85rem">Seules les positions de tes <strong>connexions acceptées</strong> apparaissent ici.</p>
-        <div id="circleLocList"><p class="muted">—</p></div>
       </div>
-    </section>
-  </main>
+
+      <!-- ---------------- Onglet MATES (connexions + messagerie) ---------------- -->
+      <div class="tab-panel hidden" data-panel="connexions">
+
+        <!-- Vue principale -->
+        <div id="matesHome" class="mates-view">
+          <h1>Mes Mates 🤝</h1>
+          <p class="muted" style="margin-top:0">Discute avec tes Mates, accepte les demandes et rencontre de nouveaux voyageurs.</p>
+
+          <div class="section-head"><h3 style="margin-top:.4rem">💬 Mes conversations</h3></div>
+          <div class="card" id="convList"></div>
+
+          <div class="card">
+            <h3 style="margin-top:0">📨 Demandes reçues</h3>
+            <div id="requestsList"><p class="muted">—</p></div>
+          </div>
+          <div class="card">
+            <h3 style="margin-top:0">✅ Mes connexions</h3>
+            <div id="myConnectionsList"><p class="muted">—</p></div>
+          </div>
+          <div class="card">
+            <h3 style="margin-top:0">🌍 Voyageurs à rencontrer</h3>
+            <div id="travelersList"><p class="muted">Chargement…</p></div>
+            <div class="msg" id="connMsg"></div>
+          </div>
+        </div>
+
+        <!-- Vue profil voyageur détaillé -->
+        <div id="matesProfile" class="mates-view hidden">
+          <button class="backbtn" data-mback>‹ Retour</button>
+          <div class="detail-hero">
+            <div class="dh-emoji" id="tpEmoji">🧑‍🦰</div>
+            <div class="dh-body"><div class="dh-name" id="tpName">—</div><div class="dh-city" id="tpCity">📍 —</div></div>
+            <span class="grate" style="position:absolute;top:.9rem;right:.9rem" id="tpRate">★ 9.5</span>
+          </div>
+          <div class="gallery">
+            <div class="g">🏖️</div><div class="g">🌆</div><div class="g">🥾</div><div class="g">☕</div>
+          </div>
+          <div class="card">
+            <div class="section-head" style="margin-bottom:.4rem"><h3 style="margin:0">Détails</h3><span class="badge no" id="tpVerif">Non vérifié</span></div>
+            <p class="muted" id="tpBio" style="line-height:1.5">—</p>
+            <div class="hashtags" id="tpTags"></div>
+          </div>
+          <div class="row">
+            <button class="btn-primary" id="tpMsgBtn">Envoyer un message</button>
+            <button class="btn-accent" id="tpConnectBtn">Connexion</button>
+          </div>
+          <button class="btn-ghost btn-block" id="tpChallengeBtn" style="margin-top:.6rem">🎯 Proposer un défi</button>
+          <div class="msg" id="tpMsg" style="text-align:center"></div>
+        </div>
+
+        <!-- Vue chat -->
+        <div id="matesChat" class="mates-view hidden">
+          <div class="chat-header">
+            <button class="backbtn" data-mback style="margin:0">‹</button>
+            <div class="avatar" id="chatAvatar">M</div>
+            <div><div class="name" style="font-weight:700;color:var(--ink)" id="chatName">—</div><div class="meta muted" style="font-size:.78rem" id="chatStatus">en ligne</div></div>
+          </div>
+          <div class="chat-body" id="chatBody"></div>
+          <div class="chat-input">
+            <input id="chatInput" type="text" placeholder="Envoyer un message…" />
+            <button class="btn-primary" id="chatSend">➤</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ---------------- Onglet SÉCURITÉ ---------------- -->
+      <div class="tab-panel hidden" data-panel="securite">
+
+        <!-- Vue principale -->
+        <div id="secuHome" class="secu-view">
+          <h1>Sécurité 🚨</h1>
+          <p class="muted" style="margin-top:0">Partage ta position avec ton cercle de confiance, ou déclenche une alerte en cas d'urgence.</p>
+          <div class="card">
+            <button class="btn-primary btn-block" id="shareLocBtn">📍 Partager ma position</button>
+            <div class="msg" id="locMsg"></div>
+            <hr />
+            <button class="btn-danger" id="emergencyBtn">🚨 Déclencher l'alerte d'urgence</button>
+            <div class="msg" id="emergencyMsg"></div>
+          </div>
+          <div class="card">
+            <div class="section-head">
+              <h3 style="margin:0">🛟 Cercle de confiance</h3>
+              <button class="btn-ghost" id="refreshCircleBtn" style="padding:.4rem .8rem;font-size:.8rem">↻ Rafraîchir</button>
+            </div>
+            <p class="muted" style="font-size:.82rem">Seules les positions de tes <strong>connexions acceptées</strong> apparaissent ici.</p>
+            <div id="circleLocList"><p class="muted">—</p></div>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-top:0">Sécurité &amp; confidentialité</h3>
+            <div class="qrow" data-secu="signaler"><div class="qico">🚩</div><div class="qname">Signaler un voyageur</div><div class="qarrow">›</div></div>
+            <div class="qrow" data-secu="historique"><div class="qico">🗂️</div><div class="qname">Historique de rencontres</div><div class="qarrow">›</div></div>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-top:0">Préférences</h3>
+            <div class="qrow" data-secu="contact"><div class="qico">📢</div><div class="qname">Qui peut me contacter</div><div class="qarrow">›</div></div>
+            <div class="qrow" data-secu="assistance"><div class="qico">🔁</div><div class="qname">Assistance</div><div class="qarrow">›</div></div>
+          </div>
+
+          <button class="btn-danger" id="needHelpBtn">🆘 J'ai besoin d'aide</button>
+          <div class="msg" id="secuMsg" style="text-align:center"></div>
+        </div>
+
+        <!-- Vue Besoin d'aide -->
+        <div id="secuHelp" class="secu-view hidden">
+          <button class="backbtn" data-sback>‹ Retour</button>
+          <h1>Besoin d'aide 🆘</h1>
+          <a class="btn-danger" href="tel:112" style="display:block;text-align:center;text-decoration:none;margin-bottom:1rem">☎️ Contacter les autorités locales (112)</a>
+          <div class="grid2">
+            <div class="tile" data-help="position"><div class="thumb">📍</div><div class="t-name">Partager ma position</div><div class="t-meta">À mon cercle</div></div>
+            <div class="tile" data-help="police"><div class="thumb blue">🚓</div><div class="t-name">Trouver un commissariat</div><div class="t-meta">À proximité</div></div>
+            <div class="tile" data-help="hopital"><div class="thumb green">🏥</div><div class="t-name">Trouver un hôpital</div><div class="t-meta">À proximité</div></div>
+            <div class="tile" data-help="lieux"><div class="thumb purp">🛟</div><div class="t-name">Lieux publics sûrs</div><div class="t-meta">Validés</div></div>
+            <div class="tile" data-help="support"><div class="thumb">💬</div><div class="t-name">Support SunMates</div><div class="t-meta">Nous écrire</div></div>
+            <div class="tile" data-help="mate"><div class="thumb blue">🤝</div><div class="t-name">Trouver un Mate sûr·e</div><div class="t-meta">Cercle de confiance</div></div>
+          </div>
+          <div class="msg" id="helpMsg" style="text-align:center"></div>
+        </div>
+
+      </div>
+
+      <!-- ---------------- Onglet PROFIL ---------------- -->
+      <div class="tab-panel hidden" data-panel="profil">
+        <h1>Mon profil 👤</h1>
+        <div class="card">
+          <div class="person" style="border:0;padding:0">
+            <div class="avatar" id="profileAvatar">😎</div>
+            <div class="info">
+              <div class="name"><span id="profileName">Voyageur</span> <span id="verifBadge" class="badge no">Non vérifié</span></div>
+              <div class="meta" id="userEmail"></div>
+            </div>
+          </div>
+          <div class="stat-row" style="margin-top:1rem">
+            <div class="stat-box"><div class="stat" id="trustScore">0</div><div class="lbl">Score de confiance</div></div>
+            <div class="stat-box"><div class="stat" id="checkinCount">0</div><div class="lbl">Check-ins</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Modifier mon profil</h3>
+          <label>Pseudo</label>
+          <input id="pUsername" placeholder="Chloé" />
+          <label>Ville actuelle</label>
+          <input id="pCity" placeholder="Lisbonne" />
+          <label>Bio</label>
+          <textarea id="pBio" rows="3" placeholder="Exploratrice solo, fan de cafés calmes ☕"></textarea>
+          <div class="row">
+            <button class="btn-primary" id="saveProfileBtn">Enregistrer</button>
+            <button class="btn-accent" id="verifyBtn">Demander la vérification</button>
+          </div>
+          <div class="msg" id="profileMsg"></div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">🎯 Mes check-ins</h3>
+          <div id="checkinList"><p class="muted">Chargement…</p></div>
+        </div>
+      </div>
+
+      <!-- ---------------- Onglet JEUX (gamification — visuel) ---------------- -->
+      <div class="tab-panel hidden" data-panel="jeux">
+
+        <!-- Vue principale : Jeux & Quêtes -->
+        <div id="jeuxHome" class="jeux-view">
+          <h1>Jeux &amp; Quêtes 🔥</h1>
+          <p class="muted" style="margin-top:0">Relève des défis, gagne des badges et débloque des coupons.</p>
+
+          <div class="section-head"><h3 style="margin-top:.4rem">Jeux populaires</h3></div>
+          <div class="grid2" id="gamesGrid"></div>
+
+          <div class="section-head"><h3>Quêtes du jour</h3></div>
+          <div class="card" id="questsList"></div>
+
+          <div class="grid2" style="margin-top:.2rem">
+            <div class="tile" id="openBadges"><div class="thumb">🏅</div><div class="t-name">Mes badges</div><div class="t-meta">36/44 débloqués</div></div>
+            <div class="tile" id="openCoupons"><div class="thumb green">🎟️</div><div class="t-name">Mes coupons</div><div class="t-meta">4 disponibles</div></div>
+          </div>
+        </div>
+
+        <!-- Vue détail d'une quête / d'un jeu -->
+        <div id="jeuxDetail" class="jeux-view hidden">
+          <button class="backbtn" data-back>‹ Retour</button>
+          <div class="detail-hero" id="detailHero">
+            <div class="dh-emoji" id="detailEmoji">🎮</div>
+            <div class="dh-body"><div class="dh-name" id="detailName">—</div><div class="dh-city" id="detailCity">—</div></div>
+          </div>
+          <div class="dstats" id="detailStats"></div>
+          <div class="card"><h3 style="margin-top:0">Description</h3><p class="muted" id="detailDesc" style="line-height:1.5">—</p></div>
+          <div class="coupon"><div class="cico" id="detailCouponIco">🎟️</div><div><div class="cname" id="detailCouponName">Coupon</div><div class="cdesc" id="detailCouponDesc">—</div></div></div>
+          <button class="btn-primary btn-block" id="detailCta" style="margin-top:.4rem">C'est parti ! 🚀</button>
+          <div class="msg" id="detailMsg" style="text-align:center"></div>
+        </div>
+
+        <!-- Vue Badges -->
+        <div id="jeuxBadges" class="jeux-view hidden">
+          <button class="backbtn" data-back>‹ Retour</button>
+          <h1>Badges 🏅</h1>
+          <div class="card">
+            <div class="person" style="border:0;padding:.2rem 0"><div class="qico">🏅</div><div class="info"><div class="name">Collection actuelle</div></div><span class="badge warn">36 / 44</span></div>
+            <div class="person" style="border:0;padding:.2rem 0"><div class="qico">🎟️</div><div class="info"><div class="name">Coupons de réduction</div></div><span class="badge ok">1 / 1</span></div>
+          </div>
+          <div class="card"><div class="bgrid" id="badgeGrid"></div></div>
+        </div>
+
+        <!-- Vue Coupons -->
+        <div id="jeuxCoupons" class="jeux-view hidden">
+          <button class="backbtn" data-back>‹ Retour</button>
+          <h1>Coupons 🎟️</h1>
+          <p class="muted" style="margin-top:0">Coupons de juin 2026</p>
+          <div id="couponList"></div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ---------------- Barre de navigation (bas) ---------------- -->
+    <nav class="bottom-nav">
+      <button data-tab="accueil" class="active"><span class="ni">🏠</span>Accueil</button>
+      <button data-tab="lieux"><span class="ni">🛟</span>Lieux</button>
+      <button data-tab="jeux"><span class="ni">🎮</span>Jeux</button>
+      <button data-tab="connexions"><span class="ni">🤝</span>Mates</button>
+      <button data-tab="securite"><span class="ni">🚨</span>Sécurité</button>
+      <button data-tab="profil"><span class="ni">👤</span>Profil</button>
+    </nav>
+  </section>
 
   <!-- ====================================================== -->
   <!-- SUPABASE (client chargé via CDN — pas de serveur Node) -->
@@ -208,7 +631,7 @@
       $("authMsg").textContent = "";
     }
 
-    $("authSubmit").addEventListener("click", async () => {
+    async function submitAuth() {
       const email = $("authEmail").value.trim();
       const password = $("authPassword").value;
       const msg = $("authMsg");
@@ -222,7 +645,9 @@
 
       if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; }
       else if (authMode === "signup") { msg.style.color = "var(--ok)"; msg.textContent = "Compte créé ! Tu peux te connecter."; }
-    });
+    }
+    $("authSubmit").addEventListener("click", submitAuth);
+    $("authPlay").addEventListener("click", submitAuth);
 
     $("logoutBtn").addEventListener("click", () => db.auth.signOut());
 
@@ -291,15 +716,41 @@
       }
     }
 
-    // ====================== ONGLETS ======================
+    // ====================== NAVIGATION (barre du bas) ======================
     document.querySelectorAll('[data-tab]').forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll('[data-tab]').forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        const target = btn.dataset.tab;
-        document.querySelectorAll(".tab-panel").forEach((p) => show(p, p.dataset.panel === target));
-      });
+      btn.addEventListener("click", () => goToTab(btn.dataset.tab));
     });
+    // Liens "Voir tout" / tuiles d'accès rapide de l'accueil
+    document.querySelectorAll('[data-goto]').forEach((el) => {
+      el.addEventListener("click", () => goToTab(el.dataset.goto));
+    });
+
+    function goToTab(target) {
+      document.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle("active", b.dataset.tab === target));
+      document.querySelectorAll(".tab-panel").forEach((p) => show(p, p.dataset.panel === target));
+      if (target === "jeux" && typeof showJeuxView === "function") showJeuxView("jeuxHome");
+      if (target === "connexions" && typeof showMatesView === "function") showMatesView("matesHome");
+      if (target === "securite" && typeof showSecuView === "function") showSecuView("secuHome");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // ====================== ACCUEIL ======================
+    // Met en avant quelques lieux sûrs sur la page d'accueil.
+    async function loadHome() {
+      const { data } = await db.from("partner_cafes").select("*").order("name").limit(4);
+      const wrap = $("homeCafes");
+      if (!data || !data.length) { wrap.innerHTML = '<p class="muted">Aucun lieu pour l\'instant.</p>'; return; }
+      const icons = ["☕", "🏠", "🌿", "📍"];
+      wrap.innerHTML = '<div class="grid2">' + data.map((c, i) => `
+        <div class="tile" data-goto="lieux">
+          <div class="thumb ${["","green","blue","purp"][i % 4]}">${icons[i % 4]}</div>
+          <div class="t-name">${escapeHtml(c.name)}</div>
+          <div class="t-meta">${escapeHtml(c.city || "")} ${c.is_eco ? "· 🌱" : ""}</div>
+        </div>`).join("") + '</div>';
+      // re-brancher la navigation sur les nouvelles tuiles
+      wrap.querySelectorAll('[data-goto]').forEach((el) =>
+        el.addEventListener("click", () => goToTab(el.dataset.goto)));
+    }
 
     // ====================== PROFIL ======================
     async function loadProfile() {
@@ -309,6 +760,10 @@
       $("pCity").value = data.city || "";
       $("pBio").value = data.bio || "";
       $("trustScore").textContent = data.trust_score ?? 0;
+      const uname = data.username || "Voyageur";
+      $("profileName").textContent = uname;
+      $("profileAvatar").textContent = (uname[0] || "😎").toUpperCase();
+      $("homeHello").textContent = "Salut " + uname + " 🌞";
       const badge = $("verifBadge");
       badge.textContent = data.is_verified ? "✅ Vérifié" : "Non vérifié";
       badge.className = "badge " + (data.is_verified ? "ok" : "no");
@@ -324,6 +779,7 @@
       }).eq("id", user.id);
       msg.style.color = error ? "var(--danger)" : "var(--ok)";
       msg.textContent = error ? "Erreur : " + error.message : "Profil enregistré ✅";
+      if (!error) await loadProfile();
     });
 
     $("verifyBtn").addEventListener("click", async () => {
@@ -344,14 +800,14 @@
       if (!data.length) { list.innerHTML = '<p class="muted">Aucun lieu pour l\'instant.</p>'; return; }
       list.innerHTML = data.map((c) => `
         <div class="place">
-          <strong>${escapeHtml(c.name)}</strong>
-          ${c.is_eco ? '<span class="eco">🌱 éco</span>' : ''}
+          <div class="name">${escapeHtml(c.name)} ${c.is_eco ? '<span class="eco">🌱 éco</span>' : ''}</div>
           <div class="meta">${escapeHtml(c.category || '')} · ${escapeHtml(c.city || '')}</div>
           <div class="meta">${escapeHtml(c.safety_note || '')}</div>
           <button class="btn-accent" data-checkin="${c.id}">Check-in ici (+10)</button>
         </div>`).join("");
       list.querySelectorAll("[data-checkin]").forEach((b) =>
         b.addEventListener("click", () => checkIn(Number(b.dataset.checkin))));
+      loadHome(); // garde l'accueil synchronisé
     }
 
     async function checkIn(cafeId) {
@@ -375,7 +831,7 @@
       if (error) return;
       $("checkinCount").textContent = data.length;
       $("checkinList").innerHTML = data.length
-        ? data.map((c) => `<div class="place"><strong>${escapeHtml(c.partner_cafes?.name || 'Lieu')}</strong>
+        ? data.map((c) => `<div class="place"><div class="name">${escapeHtml(c.partner_cafes?.name || 'Lieu')}</div>
             <div class="meta">${new Date(c.created_at).toLocaleString("fr-FR")}</div></div>`).join("")
         : '<p class="muted">Aucun check-in pour l\'instant — va dans « Lieux sûrs ».</p>';
     }
@@ -414,10 +870,10 @@
       const circle = (locs || []).filter((l) => l.user_id !== user.id);
       $("circleLocList").innerHTML = circle.length
         ? circle.map((l) => `<div class="place">
-            <strong>${escapeHtml(nameOf(l.user_id))}</strong>
-            ${l.is_emergency ? '<span class="badge" style="background:rgba(248,113,113,.2);color:var(--danger)">🚨 URGENCE</span>' : ''}
+            <div class="name">${escapeHtml(nameOf(l.user_id))}
+            ${l.is_emergency ? '<span class="badge warn">🚨 URGENCE</span>' : ''}</div>
             <div class="meta">${new Date(l.created_at).toLocaleString("fr-FR")}</div>
-            <a href="https://www.google.com/maps?q=${l.lat},${l.lng}" target="_blank" rel="noopener" style="color:var(--accent2)">Voir sur la carte 📍</a>
+            <a href="https://www.google.com/maps?q=${l.lat},${l.lng}" target="_blank" rel="noopener" style="color:var(--accent);font-size:.85rem;font-weight:600">Voir sur la carte 📍</a>
           </div>`).join("")
         : '<p class="muted">Personne de ton cercle n\'a partagé de position pour l\'instant.</p>';
     }
@@ -429,18 +885,24 @@
       const { data: { user } } = await db.auth.getUser();
       const myId = user.id;
       const [{ data: profiles }, { data: conns }] = await Promise.all([
-        db.from("profiles").select("id, username, city, is_verified, trust_score"),
+        db.from("profiles").select("id, username, city, is_verified, trust_score, bio"),
         db.from("matches_connections").select("*"),
       ]);
       const all = profiles || [];
       const list = conns || [];
       const nameOf = (id) => (all.find((p) => p.id === id)?.username) || "Voyageur";
+      const initOf = (id) => (nameOf(id)[0] || "?").toUpperCase();
+      // mémorise les profils pour la fiche détaillée
+      travelerMap = {};
+      all.forEach((p) => { travelerMap[p.id] = p; });
 
       // Demandes reçues (je suis user_b, statut en attente)
       const received = list.filter((c) => c.user_b === myId && c.status === "pending");
       $("requestsList").innerHTML = received.length
-        ? received.map((c) => `<div class="place"><strong>${escapeHtml(nameOf(c.user_a))}</strong> souhaite se connecter
-            <div><button class="btn-primary" data-accept="${c.id}">Accepter</button></div></div>`).join("")
+        ? received.map((c) => `<div class="person">
+            <div class="avatar">${initOf(c.user_a)}</div>
+            <div class="info"><div class="name">${escapeHtml(nameOf(c.user_a))}</div><div class="meta">souhaite se connecter</div></div>
+            <button class="btn-primary" data-accept="${c.id}">Accepter</button></div>`).join("")
         : '<p class="muted">Aucune demande reçue.</p>';
       $("requestsList").querySelectorAll("[data-accept]").forEach((b) =>
         b.addEventListener("click", () => acceptConnection(Number(b.dataset.accept))));
@@ -450,9 +912,14 @@
       $("myConnectionsList").innerHTML = accepted.length
         ? accepted.map((c) => {
             const other = c.user_a === myId ? c.user_b : c.user_a;
-            return `<div class="place"><strong>${escapeHtml(nameOf(other))}</strong> <span class="badge ok">connecté ✅</span></div>`;
+            return `<div class="person conn-chat" data-chat="${other}" style="cursor:pointer">
+              <div class="avatar">${initOf(other)}</div>
+              <div class="info"><div class="name">${escapeHtml(nameOf(other))}</div><div class="meta">Toucher pour discuter 💬</div></div>
+              <div class="qarrow">›</div></div>`;
           }).join("")
         : '<p class="muted">Aucune connexion pour l\'instant.</p>';
+      $("myConnectionsList").querySelectorAll("[data-chat]").forEach((el) =>
+        el.addEventListener("click", () => openChat(nameOf(el.dataset.chat), initOf(el.dataset.chat))));
 
       // Voyageurs à rencontrer (autres profils, hors connexions/demandes déjà existantes)
       const related = new Set();
@@ -462,14 +929,16 @@
       });
       const others = all.filter((p) => p.id !== myId && !related.has(p.id));
       $("travelersList").innerHTML = others.length
-        ? others.map((p) => `<div class="place">
-            <strong>${escapeHtml(p.username || 'Voyageur')}</strong>
-            ${p.is_verified ? '<span class="badge ok">vérifié</span>' : ''}
-            <div class="meta">${escapeHtml(p.city || '')} · score ${p.trust_score ?? 0}</div>
-            <button class="btn-accent" data-connect="${p.id}">Demander une connexion</button></div>`).join("")
+        ? others.map((p) => `<div class="person trav-open" data-profile="${p.id}" style="cursor:pointer">
+            <div class="avatar">${(p.username?.[0] || "?").toUpperCase()}</div>
+            <div class="info">
+              <div class="name">${escapeHtml(p.username || 'Voyageur')} ${p.is_verified ? '<span class="badge ok">vérifié</span>' : ''}</div>
+              <div class="meta">${escapeHtml(p.city || '')} · score ${p.trust_score ?? 0}</div>
+            </div>
+            <div class="qarrow">›</div></div>`).join("")
         : '<p class="muted">Aucun autre voyageur pour l\'instant. Crée un 2e compte pour tester !</p>';
-      $("travelersList").querySelectorAll("[data-connect]").forEach((b) =>
-        b.addEventListener("click", () => sendConnection(b.dataset.connect)));
+      $("travelersList").querySelectorAll("[data-profile]").forEach((el) =>
+        el.addEventListener("click", () => openTravelerProfile(travelerMap[el.dataset.profile])));
     }
 
     async function sendConnection(otherId) {
@@ -496,6 +965,252 @@
       return String(s).replace(/[&<>"']/g, (c) =>
         ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     }
+
+    // ====================== JEUX / QUÊTES / BADGES / COUPONS ======================
+    // Étape VISUELLE : données d'exemple (pas encore branchées à Supabase).
+    // Plus tard, ces tableaux seront remplacés par des appels db.from(...).
+    const GAMES = [
+      { name: "Chasse au Trésor Urbaine", city: "Lisbonne, Portugal", emoji: "🗺️", color: "",     participants: "428",   rating: "9.5", coupon: ["🍸", "Cocktail Bar", "-20% sur ton premier verre"], desc: "Réalise cette chasse au trésor en collaboration avec tes Mates ! Trouvez ensemble les quatre checkpoints cachés dans la ville. Chaque étape validée débloque un badge et des avantages exclusifs chez nos commerçants partenaires." },
+      { name: "Quiz de Culture Locale",   city: "Barcelone, Espagne", emoji: "🧠", color: "blue",  participants: "1 240", rating: "9.2", coupon: ["🎟️", "Musée Picasso", "Entrée à -50%"], desc: "Teste tes connaissances sur l'histoire et les traditions locales. Réponds en équipe avec tes Mates pour décrocher le meilleur score et gagner des récompenses." },
+      { name: "Safari Photo Urbain",       city: "Berlin, Allemagne",  emoji: "📸", color: "purp",  participants: "980",   rating: "9.4", coupon: ["☕", "Green Bean Hub", "1 café offert"], desc: "Capture les plus beaux spots street-art de la ville. Poste tes clichés, fais voter la communauté et débloque le badge Photographe Urbain." },
+      { name: "Défi Culinaire",            city: "Rome, Italie",       emoji: "🍝", color: "green", participants: "756",   rating: "9.6", coupon: ["🍕", "Trattoria Roma", "Dessert offert"], desc: "Pars à la découverte des meilleures adresses locales avec tes Mates et relève des défis gourmands à chaque table." },
+    ];
+
+    const QUESTS = [
+      { name: "Photo Panoramique",          emoji: "📷", city: "Stockholm, Suède", participants: "2 428", rating: "9.5", coupon: ["📷", "Fotografiska Museum", "Entrée gratuite"], desc: "Atteins les trois belvédères indiqués sur ta carte, prends une photo avec tes Mates et poste tes clichés pour confirmer votre exploit. En immortalisant ce panorama, tu débloques le badge Photographe Urbain ainsi que des avantages exclusifs chez nos partenaires locaux." },
+      { name: "Pause Café Secrète",         emoji: "☕", city: "Lisbonne, Portugal", participants: "1 102", rating: "9.3", coupon: ["☕", "Le Comptoir Solaire", "Boisson offerte"], desc: "Trouve le café partenaire caché du quartier, fais-y un check-in avec un Mate et savoure une pause bien méritée. Ce moment partagé te rapporte des points de confiance." },
+      { name: "Rencontre d'Artisan",        emoji: "🧑‍🎨", city: "Barcelone, Espagne", participants: "640", rating: "9.1", coupon: ["🛍️", "Boutique Locale", "-15% de réduction"], desc: "Va à la rencontre d'un artisan local recommandé par la communauté, découvre son savoir-faire et soutiens l'économie locale." },
+      { name: "Cocktail Bar (signature)",   emoji: "🍸", city: "Berlin, Allemagne", participants: "880", rating: "9.0", coupon: ["🍸", "Cocktail Bar", "-20% sur ton premier verre"], desc: "Goûte le cocktail signature d'un bar partenaire en bonne compagnie. Une sortie conviviale et sécurisée entre Mates." },
+      { name: "Sensations Fortes",          emoji: "🪂", city: "Interlaken, Suisse", participants: "412", rating: "9.7", coupon: ["🎟️", "Adventure Park", "Activité à -10%"], desc: "Relève un défi à sensations avec tes Mates : tyrolienne, parapente ou via ferrata. L'aventure, c'est mieux à plusieurs !" },
+      { name: "Valider ton premier trajet", emoji: "🧭", city: "Partout", participants: "5 600", rating: "9.8", coupon: ["🚗", "Bolt", "-10% sur ton prochain trajet"], desc: "Effectue ton tout premier trajet vérifié avec un Mate de confiance et débloque ton badge de bienvenue." },
+    ];
+
+    const BADGES = [
+      { name: "Randonnée Épique",  emoji: "⛰️", prog: "3/3",   done: true },
+      { name: "Explorateur Urbain", emoji: "🏙️", prog: "5/5",  done: true },
+      { name: "Social Champion",   emoji: "🤝", prog: "10/20", done: false },
+      { name: "Foodie Tour",       emoji: "🍔", prog: "3/5",   done: false },
+      { name: "Beach Clean-up",    emoji: "🏖️", prog: "5/5",   done: true },
+      { name: "Night Ride",        emoji: "🌙", prog: "2/5",   done: false },
+      { name: "Co-working King",   emoji: "💻", prog: "2/2",   done: true },
+      { name: "Globe-trotter",     emoji: "🌍", prog: "4/10",  done: false },
+      { name: "Bon Samaritain",    emoji: "🛟", prog: "1/3",   done: false },
+    ];
+
+    const COUPONS = [
+      { emoji: "🍸", name: "Cocktail Bar", desc: "-20% sur votre premier verre !" },
+      { emoji: "📷", name: "Fotografiska Museum", desc: "Entrée gratuite." },
+      { emoji: "🚗", name: "Bolt", desc: "-10% sur votre prochain trajet !" },
+      { emoji: "🛍️", name: "Boutique Locale", desc: "-15% de réduction !" },
+    ];
+
+    const headColors = ["", "blue", "purp", "green"];
+
+    function renderJeux() {
+      // Jeux populaires
+      $("gamesGrid").innerHTML = GAMES.map((g, i) => `
+        <div class="gcard" data-game="${i}">
+          <div class="ghead ${headColors[i % 4]}">${g.emoji}<span class="grate">★ ${g.rating}</span></div>
+          <div class="gbody"><div class="gname">${escapeHtml(g.name)}</div><div class="gcity">${escapeHtml(g.city)}</div></div>
+        </div>`).join("");
+      $("gamesGrid").querySelectorAll("[data-game]").forEach((el) =>
+        el.addEventListener("click", () => openDetail(GAMES[Number(el.dataset.game)])));
+
+      // Quêtes du jour
+      $("questsList").innerHTML = QUESTS.map((q, i) => `
+        <div class="qrow" data-quest="${i}">
+          <div class="qico">${q.emoji}</div>
+          <div class="qname">${escapeHtml(q.name)}</div>
+          <div class="qarrow">›</div>
+        </div>`).join("");
+      $("questsList").querySelectorAll("[data-quest]").forEach((el) =>
+        el.addEventListener("click", () => openDetail(QUESTS[Number(el.dataset.quest)])));
+
+      // Badges
+      $("badgeGrid").innerHTML = BADGES.map((b) => `
+        <div class="bitem ${b.done ? "" : "locked"}">
+          <div class="hex">${b.emoji}</div>
+          <div class="bname">${escapeHtml(b.name)}</div>
+          <div class="bprog">${b.done ? "✅ débloqué" : b.prog}</div>
+        </div>`).join("");
+
+      // Coupons
+      $("couponList").innerHTML = COUPONS.map((c) => `
+        <div class="coupon"><div class="cico">${c.emoji}</div>
+          <div><div class="cname">${escapeHtml(c.name)}</div><div class="cdesc">${escapeHtml(c.desc)}</div></div>
+        </div>`).join("");
+    }
+
+    // Affiche une seule sous-vue de l'onglet Jeux
+    function showJeuxView(id) {
+      ["jeuxHome", "jeuxDetail", "jeuxBadges", "jeuxCoupons"].forEach((v) => show($(v), v === id));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openDetail(item) {
+      $("detailEmoji").textContent = item.emoji;
+      $("detailName").textContent = item.name;
+      $("detailCity").textContent = item.city;
+      $("detailDesc").textContent = item.desc;
+      $("detailStats").innerHTML = `
+        <div class="dstat"><b>${item.participants}</b><span>Participants</span></div>
+        <div class="dstat"><b>★ ${item.rating}</b><span>Note</span></div>
+        <div class="dstat"><b>2/4</b><span>Coupons</span></div>`;
+      $("detailCouponIco").textContent = item.coupon[0];
+      $("detailCouponName").textContent = item.coupon[1];
+      $("detailCouponDesc").textContent = item.coupon[2];
+      $("detailMsg").textContent = "";
+      showJeuxView("jeuxDetail");
+    }
+
+    // Boutons "Retour" des sous-vues
+    document.querySelectorAll("[data-back]").forEach((b) =>
+      b.addEventListener("click", () => showJeuxView("jeuxHome")));
+    $("openBadges").addEventListener("click", () => showJeuxView("jeuxBadges"));
+    $("openCoupons").addEventListener("click", () => showJeuxView("jeuxCoupons"));
+    $("detailCta").addEventListener("click", () => {
+      const m = $("detailMsg"); m.style.color = "var(--ok)"; m.textContent = "Défi rejoint ! (démo visuelle) 🎉";
+    });
+
+    // ====================== MESSAGERIE (visuel) ======================
+    let travelerMap = {};       // profils chargés depuis Supabase (pour la fiche)
+    let currentTravelerId = null;
+
+    // Conversations d'exemple (pas encore branchées à Supabase)
+    const CONVERSATIONS = [
+      { name: "Maria Cruz", init: "M", last: "Parfait. On s'y retrouve dans une heure ?",
+        thread: [
+          { them: true,  text: "Hey ! Tu viens d'arriver à Bogota toi aussi ?" },
+          { them: false, text: "Oui, hier soir 😄 Et toi ?" },
+          { them: true,  text: "Pareil ! Je t'avoue que la ville est cool mais intense toute seule quand même" },
+          { them: true,  text: "Surtout la circulation 😅 Tu loges où ?" },
+          { them: false, text: "Vers Chapinero, et toi ?" },
+          { them: true,  text: "Pas loin, vers Zona G. Je pensais aller bosser dans un café cet aprèm, mais pas trop envie d'y aller seule" },
+          { them: false, text: "Oui carrément. Tu connais un endroit sympa ?" },
+          { them: true,  text: "J'ai entendu parler d'un café vers Chapinero, tranquille en journée." },
+          { them: false, text: "Parfait. On s'y retrouve dans une heure ?" },
+        ] },
+      { name: "Lucas Smith", init: "L", last: "Hâte de visiter le quartier avec toi !",
+        thread: [
+          { them: true,  text: "Salut ! On se fait la visite du centre demain ?" },
+          { them: false, text: "Avec plaisir 🙌" },
+          { them: true,  text: "Hâte de visiter le quartier avec toi !" },
+        ] },
+    ];
+
+    function renderConversations() {
+      $("convList").innerHTML = CONVERSATIONS.map((c, i) => `
+        <div class="person conv-open" data-conv="${i}" style="cursor:pointer">
+          <div class="avatar">${c.init}</div>
+          <div class="info"><div class="name">${escapeHtml(c.name)}</div><div class="meta">${escapeHtml(c.last)}</div></div>
+          <div class="qarrow">›</div>
+        </div>`).join("");
+      $("convList").querySelectorAll("[data-conv]").forEach((el) =>
+        el.addEventListener("click", () => {
+          const c = CONVERSATIONS[Number(el.dataset.conv)];
+          openChat(c.name, c.init, c.thread);
+        }));
+    }
+
+    function showMatesView(id) {
+      ["matesHome", "matesProfile", "matesChat"].forEach((v) => show($(v), v === id));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Fil de discussion générique (quand on ouvre un chat depuis une connexion)
+    const GENERIC_THREAD = [
+      { them: true,  text: "Salut ! Ravi·e d'être connecté·e sur SunMates 🌞" },
+      { them: false, text: "Salut ! Pareil 🙌 Tu voyages où en ce moment ?" },
+    ];
+
+    function openChat(name, init, thread) {
+      $("chatName").textContent = name;
+      $("chatAvatar").textContent = (init || name[0] || "?").toUpperCase();
+      const msgs = thread || GENERIC_THREAD;
+      $("chatBody").innerHTML = msgs.map((m) => `<div class="bubble ${m.them ? "them" : "me"}">${escapeHtml(m.text)}</div>`).join("");
+      showMatesView("matesChat");
+      setTimeout(() => { const b = $("chatBody"); b.scrollIntoView({ block: "end" }); }, 50);
+    }
+
+    function sendChatMessage() {
+      const input = $("chatInput");
+      const text = input.value.trim();
+      if (!text) return;
+      $("chatBody").insertAdjacentHTML("beforeend", `<div class="bubble me">${escapeHtml(text)}</div>`);
+      input.value = "";
+      const last = $("chatBody").lastElementChild;
+      if (last) last.scrollIntoView({ block: "end", behavior: "smooth" });
+    }
+    $("chatSend").addEventListener("click", sendChatMessage);
+    $("chatInput").addEventListener("keydown", (e) => { if (e.key === "Enter") sendChatMessage(); });
+
+    // ====================== PROFIL VOYAGEUR DÉTAILLÉ ======================
+    function openTravelerProfile(p) {
+      if (!p) return;
+      currentTravelerId = p.id;
+      const name = p.username || "Voyageur";
+      $("tpEmoji").textContent = "🧑‍🦰";
+      $("tpName").textContent = name;
+      $("tpCity").textContent = "📍 " + (p.city || "Quelque part dans le monde");
+      $("tpRate").textContent = "★ " + (((p.trust_score ?? 0) / 10 + 8).toFixed(1));
+      $("tpBio").textContent = p.bio || "Voyageur·se SunMates en quête de belles rencontres et d'aventures en sécurité. ✨";
+      const verif = $("tpVerif");
+      verif.textContent = p.is_verified ? "✅ Vérifié" : "Non vérifié";
+      verif.className = "badge " + (p.is_verified ? "ok" : "no");
+      const cityTag = (p.city || "").split(",")[0].replace(/\s/g, "");
+      $("tpTags").innerHTML = ["#SoloTravel", "#AdventureTogether", "#SunMates", cityTag ? "#" + escapeHtml(cityTag) : ""]
+        .filter(Boolean).map((t) => `<span>${t}</span>`).join("");
+      $("tpMsg").textContent = "";
+      showMatesView("matesProfile");
+    }
+    $("tpMsgBtn").addEventListener("click", () => openChat($("tpName").textContent, null));
+    $("tpChallengeBtn").addEventListener("click", () => {
+      const m = $("tpMsg"); m.style.color = "var(--ok)"; m.textContent = "Défi proposé ! (démo visuelle) 🎯";
+    });
+    $("tpConnectBtn").addEventListener("click", async () => {
+      const m = $("tpMsg");
+      if (!currentTravelerId) return;
+      m.style.color = "var(--muted)"; m.textContent = "Envoi…";
+      await sendConnection(currentTravelerId); // vraie demande Supabase
+      m.style.color = "var(--ok)"; m.textContent = "Demande de connexion envoyée ✅";
+    });
+
+    // Boutons "Retour" des sous-vues Mates
+    document.querySelectorAll("[data-mback]").forEach((b) =>
+      b.addEventListener("click", () => showMatesView("matesHome")));
+
+    // ====================== CENTRE DE SÉCURITÉ ======================
+    function showSecuView(id) {
+      ["secuHome", "secuHelp"].forEach((v) => show($(v), v === id));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    $("needHelpBtn").addEventListener("click", () => showSecuView("secuHelp"));
+    document.querySelectorAll("[data-sback]").forEach((b) =>
+      b.addEventListener("click", () => showSecuView("secuHome")));
+
+    // Lignes "Sécurité & confidentialité" / "Préférences" (visuelles)
+    document.querySelectorAll("[data-secu]").forEach((el) =>
+      el.addEventListener("click", () => {
+        const m = $("secuMsg"); m.style.color = "var(--muted)";
+        m.textContent = "« " + el.querySelector(".qname").textContent + " » — bientôt disponible 🙂";
+      }));
+
+    // Actions de l'écran "Besoin d'aide"
+    document.querySelectorAll("[data-help]").forEach((el) =>
+      el.addEventListener("click", () => {
+        const action = el.dataset.help;
+        const m = $("helpMsg"); m.style.color = "var(--text)";
+        if (action === "police") { window.open("https://www.google.com/maps/search/commissariat+de+police", "_blank"); }
+        else if (action === "hopital") { window.open("https://www.google.com/maps/search/hopital", "_blank"); }
+        else if (action === "lieux") { showSecuView("secuHome"); goToTab("lieux"); }
+        else if (action === "mate") { showSecuView("secuHome"); goToTab("connexions"); }
+        else if (action === "support") { window.location.href = "mailto:support@sunmates.app"; }
+        else if (action === "position") { showSecuView("secuHome"); $("shareLocBtn").click(); }
+        else { m.textContent = "Action bientôt disponible 🙂"; }
+      }));
+
+    renderJeux();          // rendu immédiat (données d'exemple)
+    renderConversations(); // conversations d'exemple
 
     // Au chargement : vérifie s'il y a déjà une session
     db.auth.getSession().then(({ data }) => render(data.session));
