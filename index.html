@@ -395,6 +395,7 @@
           </div>
           <div class="card">
             <h3 style="margin-top:0">🌍 Voyageurs à rencontrer</h3>
+            <div class="search"><span class="ico">🔍</span><input id="travSearch" type="text" placeholder="Rechercher par pseudo ou ville…" /></div>
             <div id="travelersList"><p class="muted">Chargement…</p></div>
             <div class="msg" id="connMsg"></div>
           </div>
@@ -759,7 +760,11 @@
 
     // ====================== PROFIL ======================
     async function loadProfile() {
-      const { data, error } = await db.from("profiles").select("*").maybeSingle();
+      const { data: { user } } = await db.auth.getUser();
+      if (!user) return;
+      // IMPORTANT : filtrer sur MON id. Sinon, avec plusieurs comptes, la requête
+      // renvoie tous les profils et .maybeSingle() échoue (le profil ne s'affiche pas).
+      const { data, error } = await db.from("profiles").select("*").eq("id", user.id).maybeSingle();
       if (error || !data) return;
       $("pUsername").value = data.username || "";
       $("pCity").value = data.city || "";
@@ -945,19 +950,31 @@
         if (c.user_a === myId) related.add(c.user_b);
         if (c.user_b === myId) related.add(c.user_a);
       });
-      const others = all.filter((p) => p.id !== myId && !related.has(p.id));
-      $("travelersList").innerHTML = others.length
-        ? others.map((p) => `<div class="person trav-open" data-profile="${p.id}" style="cursor:pointer">
+      travelersCache = all.filter((p) => p.id !== myId && !related.has(p.id));
+      renderTravelers($("travSearch") ? $("travSearch").value : "");
+    }
+
+    // Liste des voyageurs, filtrable par pseudo ou ville (recherche)
+    let travelersCache = [];
+    function renderTravelers(query) {
+      const q = (query || "").trim().toLowerCase();
+      const list = travelersCache.filter((p) =>
+        !q || (p.username || "").toLowerCase().includes(q) || (p.city || "").toLowerCase().includes(q));
+      $("travelersList").innerHTML = list.length
+        ? list.map((p) => `<div class="person trav-open" data-profile="${p.id}" style="cursor:pointer">
             <div class="avatar">${(p.username?.[0] || "?").toUpperCase()}</div>
             <div class="info">
               <div class="name">${escapeHtml(p.username || 'Voyageur')} ${p.is_verified ? '<span class="badge ok">vérifié</span>' : ''}</div>
               <div class="meta">${escapeHtml(p.city || '')} · score ${p.trust_score ?? 0}</div>
             </div>
             <div class="qarrow">›</div></div>`).join("")
-        : '<p class="muted">Aucun autre voyageur pour l\'instant. Crée un 2e compte pour tester !</p>';
+        : (q
+            ? '<p class="muted">Aucun voyageur ne correspond à « ' + escapeHtml(query) + ' ».</p>'
+            : '<p class="muted">Aucun autre voyageur pour l\'instant. Invite quelqu\'un à s\'inscrire !</p>');
       $("travelersList").querySelectorAll("[data-profile]").forEach((el) =>
         el.addEventListener("click", () => openTravelerProfile(travelerMap[el.dataset.profile])));
     }
+    $("travSearch").addEventListener("input", (e) => renderTravelers(e.target.value));
 
     async function sendConnection(otherId) {
       const { data: { user } } = await db.auth.getUser();
