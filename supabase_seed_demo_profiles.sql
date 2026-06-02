@@ -70,7 +70,7 @@ begin
         ARRAY['Aventure','Nature','Sport']::text[], ARRAY['Español','English']::text[],
         'Aventure', 65, true, 'https://i.pravatar.cc/300?img=51',
         'Volcans, cenotes et tacos. La vie est une grande expédition.')
-    ) as v(email,username,first_name,last_name,city,interests,languages,travel_style,trust_score,is_verified,avatar_url,bio)
+    ) as v(email,first_name,last_name,city,interests,languages,travel_style,trust_score,is_verified,avatar_url,bio)
   loop
     -- Crée le compte s'il n'existe pas encore
     select id into uid from auth.users where email = rec.email;
@@ -82,14 +82,14 @@ begin
          confirmation_token, recovery_token, email_change_token_new, email_change)
       values
         ('00000000-0000-0000-0000-000000000000', uid, 'authenticated', 'authenticated', rec.email, null, now(),
-         now(), now(), '{"provider":"email","providers":["email"]}'::jsonb, jsonb_build_object('username', rec.username),
+         now(), now(), '{"provider":"email","providers":["email"]}'::jsonb, jsonb_build_object('username', rec.first_name),
          '', '', '', '');
     end if;
 
     -- Crée / met à jour le profil
     insert into profiles (id, username, first_name, last_name, city, bio,
                           interests, languages, travel_style, trust_score, is_verified, avatar_url)
-    values (uid, rec.username, rec.first_name, rec.last_name, rec.city, rec.bio,
+    values (uid, rec.first_name, rec.first_name, rec.last_name, rec.city, rec.bio,
             rec.interests, rec.languages, rec.travel_style, rec.trust_score, rec.is_verified, rec.avatar_url)
     on conflict (id) do update set
       username     = excluded.username,
