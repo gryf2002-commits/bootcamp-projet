@@ -25,13 +25,39 @@
 <body>
   <h1>Mon projet bootcamp</h1>
   <p>ça marche ✅</p>
-  <div class="status" id="status">Supabase : pas encore connecté</div>
+  <button id="testBtn" style="margin-top:1.5rem;padding:0.7rem 1.4rem;font-size:1rem;border:0;border-radius:8px;background:#38bdf8;color:#0f172a;cursor:pointer;">
+    Tester l'écriture Supabase
+  </button>
+  <div class="status" id="status">Supabase : prêt</div>
 
   <!-- ====================================================== -->
-  <!-- SUPABASE : sera configuré à l'étape 4 du setup         -->
+  <!-- SUPABASE : client chargé via CDN                       -->
   <!-- ====================================================== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Le code Supabase sera ajouté ici automatiquement.
+    // La clé "anon" est PUBLIQUE par conception : elle peut figurer ici.
+    // (Ne JAMAIS mettre la clé "service_role" secrète dans ce fichier.)
+    const SUPABASE_URL = "https://ihiwuharxkmkzaxixhae.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_-Q0evGrgq76Fp-YWLNA1Qg_jsOXEIcn";
+
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const statusEl = document.getElementById("status");
+
+    document.getElementById("testBtn").addEventListener("click", async () => {
+      statusEl.textContent = "Envoi en cours...";
+      const { data, error } = await db
+        .from("events")
+        .insert({ type: "test" })
+        .select();
+
+      if (error) {
+        statusEl.style.color = "#f87171";
+        statusEl.textContent = "Erreur : " + error.message;
+      } else {
+        statusEl.style.color = "#4ade80";
+        statusEl.textContent = "✅ Écriture réussie ! id = " + data[0].id;
+      }
+    });
   </script>
 </body>
 </html>
