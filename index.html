@@ -282,6 +282,19 @@
     .hashtags { margin-top: .6rem; }
     .hashtags span { color: var(--accent); font-weight: 600; font-size: .85rem; margin-right: .5rem; }
 
+    /* -------------------- PROFIL : chips / complétion --------------- */
+    .chips.wrap { flex-wrap: wrap; overflow: visible; margin-bottom: .3rem; }
+    .completion { margin-top: 1rem; }
+    .completion-bar { height: 9px; border-radius: 999px; background: var(--accent-soft); overflow: hidden; }
+    .completion-bar span { display: block; height: 100%; width: 0; background: var(--accent-grad); transition: width .4s ease; }
+    .completion-txt { font-size: .78rem; color: var(--muted); margin-top: .35rem; }
+
+    /* ------------------------ Compatibilité ------------------------- */
+    .compat { display: inline-block; padding: .28rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 800; }
+    .compat.high { background: rgba(34,197,94,.14); color: var(--ok); }
+    .compat.mid  { background: var(--accent-soft); color: var(--accent); }
+    .compat.low  { background: #f1f2f5; color: var(--muted); }
+
     /* ------------------------ Bannière d'alerte --------------------- */
     #alertBanner {
       position: fixed; top: 0; left: 50%; transform: translateX(-50%); max-width: 460px; width: 100%; z-index: 1000;
@@ -414,6 +427,7 @@
           </div>
           <div class="card">
             <div class="section-head" style="margin-bottom:.4rem"><h3 style="margin:0">Détails</h3><span class="badge no" id="tpVerif">Non vérifié</span></div>
+            <div style="margin:.2rem 0 .6rem"><span class="compat mid" id="tpCompat">❤️ —</span> <span class="muted" style="font-size:.82rem">de compatibilité avec toi</span></div>
             <p class="muted" id="tpBio" style="line-height:1.5">—</p>
             <div class="hashtags" id="tpTags"></div>
           </div>
@@ -682,7 +696,11 @@
       if (loggedIn) {
         myUserId = session.user.id;
         $("userEmail").textContent = session.user.email;
-        await ensureAuthedSession(); // ATTEND que le jeton soit rattaché (course au rechargement)
+        console.log("DBG render uid=" + myUserId);
+        const authed = await ensureAuthedSession(); // ATTEND que le jeton soit rattaché (course au rechargement)
+        console.log("DBG ensureAuthed=" + authed);
+        const t = await db.from("profiles").select("username").eq("id", myUserId).maybeSingle();
+        console.log("DBG profileRead=" + JSON.stringify(t.data) + " err=" + (t.error && t.error.message));
         await ensureProfile(session.user);
         await Promise.all([loadProfile(), loadCafes(), loadCheckins(), loadConnections(), loadCircleLocations()]);
         subscribeToCircle();
@@ -790,18 +808,73 @@
     }
 
     // ====================== PROFIL ======================
+    // Options proposées pour les "chips" (cases à cocher)
+    const INTEREST_OPTS = ["Randonnée", "Plage", "Gastronomie", "Fête", "Culture", "Photo", "Aventure", "Nature", "Sport", "Nomade"];
+    const LANGUAGE_OPTS = ["Français", "English", "Español", "Italiano", "Deutsch", "Português"];
+    const STYLE_OPTS    = ["Routard", "Confort", "Aventure", "Slow travel", "Fête", "Nature"];
+
+    // État de sélection en cours
+    const selInterests = new Set();
+    const selLanguages = new Set();
+    let   selStyle = null;
+    let   myProfile = null; // mon profil complet (utilisé pour le matchmaking)
+
+    // Construit des chips cliquables dans un conteneur (single = choix unique)
+    function buildChips(containerId, options, selectedSet, single) {
+      const c = $(containerId);
+      c.innerHTML = options.map((o) =>
+        `<button type="button" class="chip" data-val="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join("");
+      const sync = () => c.querySelectorAll(".chip").forEach((b) => {
+        const on = single ? (selStyle === b.dataset.val) : selectedSet.has(b.dataset.val);
+        b.classList.toggle("active", on);
+      });
+      c.querySelectorAll(".chip").forEach((b) =>
+        b.addEventListener("click", () => {
+          const v = b.dataset.val;
+          if (single) { selStyle = (selStyle === v) ? null : v; }
+          else { selectedSet.has(v) ? selectedSet.delete(v) : selectedSet.add(v); }
+          sync(); updateCompletion();
+        }));
+      sync();
+    }
+
+    // Calcule et affiche le taux de complétion du profil (9 éléments)
+    function updateCompletion() {
+      const filled = [
+        $("pUsername").value.trim(), $("pCity").value.trim(), $("pBio").value.trim(),
+        $("pFirstName").value.trim(), $("pLastName").value.trim(), $("pPhone").value.trim(),
+        selInterests.size ? "x" : "", selLanguages.size ? "x" : "", selStyle || "",
+      ].filter(Boolean).length;
+      const pct = Math.round((filled / 9) * 100);
+      $("completionFill").style.width = pct + "%";
+      $("completionTxt").textContent = "Profil complété à " + pct + "%";
+    }
+
     async function loadProfile() {
       if (!myUserId) return;
-      // On utilise myUserId (issu de la session) plutôt que getUser() : appelé via
-      // onAuthStateChange, getUser() peut bloquer (verrou auth) et faire échouer la
-      // lecture du profil après un rechargement de page. On filtre aussi sur MON id
-      // (sinon, avec plusieurs comptes, .maybeSingle() reçoit trop de lignes et échoue).
-      const { data, error } = await db.from("profiles").select("*").eq("id", myUserId).maybeSingle();
-      if (error || !data) return;
+      // On filtre sur MON id (avec plusieurs comptes, maybeSingle recevrait trop de lignes).
+      const [main, priv] = await Promise.all([
+        db.from("profiles").select("*").eq("id", myUserId).maybeSingle(),
+        db.from("profiles_private").select("phone").eq("id", myUserId).maybeSingle(),
+      ]);
+      const data = main.data;
+      if (main.error || !data) return;
+      myProfile = data;
       $("pUsername").value = data.username || "";
+      $("pFirstName").value = data.first_name || "";
+      $("pLastName").value = data.last_name || "";
+      $("pPhone").value = priv?.data?.phone || "";
       $("pCity").value = data.city || "";
       $("pBio").value = data.bio || "";
       $("trustScore").textContent = data.trust_score ?? 0;
+      // Recharge les sélections (chips)
+      selInterests.clear(); (data.interests || []).forEach((x) => selInterests.add(x));
+      selLanguages.clear(); (data.languages || []).forEach((x) => selLanguages.add(x));
+      selStyle = data.travel_style || null;
+      buildChips("interestChips", INTEREST_OPTS, selInterests, false);
+      buildChips("languageChips", LANGUAGE_OPTS, selLanguages, false);
+      buildChips("styleChips", STYLE_OPTS, null, true);
+      updateCompletion();
       const uname = data.username || "Voyageur";
       $("profileName").textContent = uname;
       $("profileAvatar").textContent = (uname[0] || "😎").toUpperCase();
@@ -814,16 +887,27 @@
     $("saveProfileBtn").addEventListener("click", async () => {
       const msg = $("profileMsg");
       if (!myUserId) { msg.style.color = "var(--danger)"; msg.textContent = "Reconnecte-toi puis réessaie."; return; }
+      msg.style.color = "var(--muted)"; msg.textContent = "Enregistrement…";
       // upsert = crée le profil s'il n'existe pas, le met à jour sinon (profil de A à Z)
       const { error } = await db.from("profiles").upsert({
         id: myUserId,
         username: $("pUsername").value.trim(),
+        first_name: $("pFirstName").value.trim(),
+        last_name: $("pLastName").value.trim(),
         city: $("pCity").value.trim(),
         bio: $("pBio").value.trim(),
+        interests: [...selInterests],
+        languages: [...selLanguages],
+        travel_style: selStyle,
       });
-      msg.style.color = error ? "var(--danger)" : "var(--ok)";
-      msg.textContent = error ? "Erreur : " + error.message : "Profil enregistré ✅";
-      if (!error) await loadProfile();
+      // Téléphone : stocké à part dans profiles_private (privé, RLS propriétaire)
+      const { error: errPhone } = await db.from("profiles_private").upsert({
+        id: myUserId, phone: $("pPhone").value.trim(), updated_at: new Date().toISOString(),
+      });
+      const err = error || errPhone;
+      msg.style.color = err ? "var(--danger)" : "var(--ok)";
+      msg.textContent = err ? "Erreur : " + err.message : "Profil enregistré ✅";
+      if (!err) await Promise.all([loadProfile(), loadConnections()]);
     });
 
     $("verifyBtn").addEventListener("click", async () => {
@@ -928,16 +1012,17 @@
       if (!myUserId) return;
       const myId = myUserId;
       const [{ data: profiles }, { data: conns }] = await Promise.all([
-        db.from("profiles").select("id, username, city, is_verified, trust_score, bio"),
+        db.from("profiles").select("id, username, city, is_verified, trust_score, bio, interests, languages, travel_style"),
         db.from("matches_connections").select("*"),
       ]);
       const all = profiles || [];
       const list = conns || [];
       const nameOf = (id) => (all.find((p) => p.id === id)?.username) || "Voyageur";
       const initOf = (id) => (nameOf(id)[0] || "?").toUpperCase();
-      // mémorise les profils pour la fiche détaillée
+      // mémorise les profils pour la fiche détaillée + mon profil pour le matchmaking
       travelerMap = {};
       all.forEach((p) => { travelerMap[p.id] = p; });
+      myMatchProfile = all.find((p) => p.id === myId) || myProfile;
 
       // Demandes reçues (je suis user_b, statut en attente)
       const received = list.filter((c) => c.user_b === myId && c.status === "pending");
@@ -987,20 +1072,39 @@
       renderTravelers($("travSearch") ? $("travSearch").value : "");
     }
 
-    // Liste des voyageurs, filtrable par pseudo ou ville (recherche)
+    // ---- Matchmaking : % de compatibilité (intérêts 60% + ville 25% + score 15%) ----
+    let myMatchProfile = null;
+    function compatibility(me, other) {
+      if (!me || !other) return 0;
+      const a = new Set((me.interests || []).map((x) => x.toLowerCase()));
+      const b = new Set((other.interests || []).map((x) => x.toLowerCase()));
+      let inter = 0; a.forEach((x) => { if (b.has(x)) inter++; });
+      const union = new Set([...a, ...b]).size;
+      const interestScore = union ? inter / union : 0;                  // 0..1
+      const sameCity = me.city && other.city &&
+        me.city.trim().toLowerCase() === other.city.trim().toLowerCase();
+      const cityScore = sameCity ? 1 : 0;                               // 0 ou 1
+      const trustScore = Math.min(other.trust_score || 0, 100) / 100;   // 0..1
+      return Math.round((interestScore * 0.6 + cityScore * 0.25 + trustScore * 0.15) * 100);
+    }
+    function compatTier(pct) { return pct >= 70 ? "high" : (pct >= 40 ? "mid" : "low"); }
+
+    // Liste des voyageurs : recherche + tri par compatibilité décroissante
     let travelersCache = [];
     function renderTravelers(query) {
       const q = (query || "").trim().toLowerCase();
-      const list = travelersCache.filter((p) =>
-        !q || (p.username || "").toLowerCase().includes(q) || (p.city || "").toLowerCase().includes(q));
+      const list = travelersCache
+        .filter((p) => !q || (p.username || "").toLowerCase().includes(q) || (p.city || "").toLowerCase().includes(q))
+        .map((p) => ({ p, pct: compatibility(myMatchProfile, p) }))
+        .sort((x, y) => y.pct - x.pct);
       $("travelersList").innerHTML = list.length
-        ? list.map((p) => `<div class="person trav-open" data-profile="${p.id}" style="cursor:pointer">
+        ? list.map(({ p, pct }) => `<div class="person trav-open" data-profile="${p.id}" style="cursor:pointer">
             <div class="avatar">${(p.username?.[0] || "?").toUpperCase()}</div>
             <div class="info">
               <div class="name">${escapeHtml(p.username || 'Voyageur')} ${p.is_verified ? '<span class="badge ok">vérifié</span>' : ''}</div>
               <div class="meta">${escapeHtml(p.city || '')} · score ${p.trust_score ?? 0}</div>
             </div>
-            <div class="qarrow">›</div></div>`).join("")
+            <span class="compat ${compatTier(pct)}">❤️ ${pct}%</span></div>`).join("")
         : (q
             ? '<p class="muted">Aucun voyageur ne correspond à « ' + escapeHtml(query) + ' ».</p>'
             : '<p class="muted">Aucun autre voyageur pour l\'instant. Invite quelqu\'un à s\'inscrire !</p>');
@@ -1240,9 +1344,16 @@
       const verif = $("tpVerif");
       verif.textContent = p.is_verified ? "✅ Vérifié" : "Non vérifié";
       verif.className = "badge " + (p.is_verified ? "ok" : "no");
-      const cityTag = (p.city || "").split(",")[0].replace(/\s/g, "");
-      $("tpTags").innerHTML = ["#SoloTravel", "#AdventureTogether", "#SunMates", cityTag ? "#" + escapeHtml(cityTag) : ""]
-        .filter(Boolean).map((t) => `<span>${t}</span>`).join("");
+      // Compatibilité avec moi
+      const pct = compatibility(myMatchProfile, p);
+      const tpc = $("tpCompat");
+      tpc.textContent = "❤️ " + pct + "%";
+      tpc.className = "compat " + compatTier(pct);
+      // Tags = vrais centres d'intérêt si renseignés, sinon hashtags par défaut
+      const tags = (p.interests && p.interests.length)
+        ? p.interests.map((t) => "#" + t.replace(/\s/g, ""))
+        : ["#SoloTravel", "#AdventureTogether", "#SunMates"];
+      $("tpTags").innerHTML = tags.map((t) => `<span>${escapeHtml(t)}</span>`).join("");
       $("tpMsg").textContent = "";
       showMatesView("matesProfile");
     }
