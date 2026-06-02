@@ -513,16 +513,34 @@
             <div class="stat-box"><div class="stat" id="trustScore">0</div><div class="lbl">Score de confiance</div></div>
             <div class="stat-box"><div class="stat" id="checkinCount">0</div><div class="lbl">Check-ins</div></div>
           </div>
+          <div class="completion">
+            <div class="completion-bar"><span id="completionFill"></span></div>
+            <div class="completion-txt" id="completionTxt">Profil complété à 0%</div>
+          </div>
         </div>
 
         <div class="card">
           <h3 style="margin-top:0">Modifier mon profil</h3>
           <label>Pseudo</label>
           <input id="pUsername" placeholder="Chloé" />
+          <div class="row" style="margin-top:0">
+            <div style="flex:1"><label>Prénom</label><input id="pFirstName" placeholder="Chloé" /></div>
+            <div style="flex:1"><label>Nom</label><input id="pLastName" placeholder="Martin" /></div>
+          </div>
+          <label>Téléphone <span class="muted" style="font-weight:400">(privé, visible que par toi)</span></label>
+          <input id="pPhone" type="tel" placeholder="+33 6 12 34 56 78" />
           <label>Ville actuelle</label>
           <input id="pCity" placeholder="Lisbonne" />
           <label>Bio</label>
           <textarea id="pBio" rows="3" placeholder="Exploratrice solo, fan de cafés calmes ☕"></textarea>
+
+          <label>Centres d'intérêt</label>
+          <div class="chips wrap" id="interestChips"></div>
+          <label>Langues parlées</label>
+          <div class="chips wrap" id="languageChips"></div>
+          <label>Style de voyage</label>
+          <div class="chips wrap" id="styleChips"></div>
+
           <div class="row">
             <button class="btn-primary" id="saveProfileBtn">Enregistrer</button>
             <button class="btn-accent" id="verifyBtn">Demander la vérification</button>
@@ -664,6 +682,7 @@
       if (loggedIn) {
         myUserId = session.user.id;
         $("userEmail").textContent = session.user.email;
+        await ensureAuthedSession(); // ATTEND que le jeton soit rattaché (course au rechargement)
         await ensureProfile(session.user);
         await Promise.all([loadProfile(), loadCafes(), loadCheckins(), loadConnections(), loadCircleLocations()]);
         subscribeToCircle();
@@ -673,6 +692,19 @@
         unsubscribeCircle();
         unsubscribeMessages();
       }
+    }
+
+    // Après un rechargement de page, le client Supabase met un court instant à
+    // rattacher le jeton d'authentification aux requêtes. Si on lit trop tôt, la
+    // sécurité RLS renvoie du vide (profil/voyageurs non chargés). On attend donc
+    // qu'une lecture authentifiée réussisse avant de charger les données.
+    async function ensureAuthedSession() {
+      for (let i = 0; i < 16; i++) {
+        const { data } = await db.from("partner_cafes").select("id").limit(1);
+        if (data && data.length) return true; // lecture authentifiée OK
+        await new Promise((r) => setTimeout(r, 200));
+      }
+      return false;
     }
 
     // ====================== TEMPS RÉEL (alertes du cercle) ======================
