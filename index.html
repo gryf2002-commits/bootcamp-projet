@@ -685,8 +685,11 @@
 
     $("logoutBtn").addEventListener("click", () => db.auth.signOut());
 
-    // Réagit aux changements d'état (connexion/déconnexion)
-    db.auth.onAuthStateChange((_event, session) => render(session));
+    // Réagit aux changements d'état (connexion/déconnexion).
+    // IMPORTANT : on diffère render hors du callback (setTimeout 0). Sinon, faire des
+    // requêtes db.from(...) DANS le callback onAuthStateChange provoque un deadlock
+    // (verrou interne de Supabase) → au rechargement, plus rien ne se charge.
+    db.auth.onAuthStateChange((_event, session) => { setTimeout(() => render(session), 0); });
 
     async function render(session) {
       const loggedIn = !!session;
