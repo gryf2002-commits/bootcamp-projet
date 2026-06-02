@@ -699,11 +699,7 @@
       if (loggedIn) {
         myUserId = session.user.id;
         $("userEmail").textContent = session.user.email;
-        console.log("DBG render uid=" + myUserId);
-        const authed = await ensureAuthedSession(); // ATTEND que le jeton soit rattaché (course au rechargement)
-        console.log("DBG ensureAuthed=" + authed);
-        const t = await db.from("profiles").select("username").eq("id", myUserId).maybeSingle();
-        console.log("DBG profileRead=" + JSON.stringify(t.data) + " err=" + (t.error && t.error.message));
+        await ensureAuthedSession(); // attend que le jeton soit rattaché (course au rechargement)
         await ensureProfile(session.user);
         await Promise.all([loadProfile(), loadCafes(), loadCheckins(), loadConnections(), loadCircleLocations()]);
         subscribeToCircle();
