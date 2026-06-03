@@ -618,6 +618,36 @@
     .pf-body { display: none; padding: 0 1rem 1rem; }
     .pf-section.open .pf-body { display: block; }
 
+    /* ===== SESSION 4 — sous-onglets Mates, feed "posts", recherche ===== */
+    /* Sous-onglets (Mates) */
+    .mseg { display: flex; gap: .35rem; background: var(--cream); border: 1px solid rgba(244,101,94,.12); border-radius: 14px; padding: .3rem; margin: .7rem 0 1rem; }
+    .mseg button { flex: 1; background: transparent; color: var(--text); font-weight: 700; font-size: .8rem; padding: .55rem .2rem; border-radius: 10px; position: relative; }
+    .mseg button.active { background: var(--accent-grad); color: #fff; }
+    .mseg .segb { position: absolute; top: 2px; right: 5px; background: var(--accent); color: #fff; font-size: .56rem; min-width: 15px; height: 15px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
+    .mseg button.active .segb { background: #fff; color: var(--accent); }
+    .mates-stat { display: flex; align-items: baseline; gap: .45rem; margin: .2rem 0 .2rem; }
+    .mates-stat b { font-family: "Fraunces", serif; font-size: 1.5rem; color: var(--accent); }
+    .mates-stat span { color: var(--muted); font-size: .85rem; }
+
+    /* Feed "posts" de l'accueil */
+    .post { background: #fff; border: 1px solid rgba(244,101,94,.1); border-radius: 18px; padding: .9rem 1rem; margin-bottom: .7rem; box-shadow: var(--shadow-sm); }
+    .post-head { display: flex; align-items: center; gap: .6rem; }
+    .post-head .ph-name { font-weight: 700; color: var(--ink-warm); font-size: .9rem; }
+    .post-head .ph-time { color: var(--muted); font-size: .74rem; margin-left: auto; }
+    .post-body { margin-top: .55rem; display: flex; align-items: center; gap: .7rem; background: linear-gradient(160deg,#fff,var(--cream)); border: 1px solid rgba(244,101,94,.1); border-radius: 13px; padding: .65rem .8rem; }
+    .post-body .pemoji { font-size: 1.7rem; }
+    .post-body .pb-title { font-weight: 700; color: var(--ink-warm); font-size: .9rem; }
+    .post-body .pb-sub { color: var(--muted); font-size: .78rem; }
+
+    /* Résultats de recherche (accueil) */
+    .sresult { display: flex; align-items: center; gap: .7rem; padding: .55rem; border-radius: 12px; cursor: pointer; }
+    .sresult:hover { background: #fff6f3; }
+    .sresult .sicon { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: var(--accent-soft); font-size: 1.15rem; flex-shrink: 0; }
+    .sresult .sname { font-weight: 700; color: var(--ink-warm); font-size: .9rem; }
+    .sresult .smeta { color: var(--muted); font-size: .78rem; }
+    .conv-preview { color: var(--muted); font-size: .8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
+    .conv-unread { background: var(--accent); color: #fff; font-size: .62rem; font-weight: 800; min-width: 18px; height: 18px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; padding: 0 5px; }
+
     /* Le grain et les ombres restent désactivés pour « mouvement réduit »
        déjà géré plus haut ; rien d'animé n'est ajouté ici. */
   </style>
@@ -687,22 +717,14 @@
         <h1 id="homeHello">Salut 🌞</h1>
         <p class="muted" style="margin-top:0">Prêt·e pour ta prochaine aventure ?</p>
 
-        <div class="section-head"><h3 style="margin-top:.6rem">Ton fil ✨</h3><a id="feedRefresh" style="cursor:pointer">↻ Rafraîchir</a></div>
-        <div id="homeFeed"><p class="muted">Chargement…</p></div>
-
-        <div class="section-head"><h3>Explorer des lieux sûrs</h3></div>
         <div class="search">
           <span class="ico">🔍</span>
-          <input id="homeSearch" type="text" placeholder="Rechercher un lieu, une ville…" />
+          <input id="homeSearch" type="text" placeholder="Rechercher un lieu ou un·e voyageur·se…" />
         </div>
+        <div id="searchResults"></div>
 
-        <div class="chips" id="homeChips">
-          <button class="chip active">Suggérés</button>
-          <button class="chip">Villes</button>
-          <button class="chip">Montagnes</button>
-          <button class="chip">Plages</button>
-          <button class="chip">Éco 🌱</button>
-        </div>
+        <div class="section-head"><h3 style="margin-top:.4rem">Ton fil ✨</h3><a id="feedRefresh" style="cursor:pointer">↻ Rafraîchir</a></div>
+        <div id="homeFeed"><p class="muted">Chargement…</p></div>
 
         <div class="section-head"><h3 style="margin-top:.2rem">Lieux sûrs à proximité</h3><a data-goto="lieux">Voir tout</a></div>
         <div id="homeCafes"><p class="muted">Chargement…</p></div>
@@ -730,44 +752,53 @@
       <!-- ---------------- Onglet MATES (connexions + messagerie) ---------------- -->
       <div class="tab-panel hidden" data-panel="connexions">
 
-        <!-- Vue principale -->
+        <!-- Vue principale (sous-onglets) -->
         <div id="matesHome" class="mates-view">
           <h1>Mes Mates 🤝</h1>
-          <p class="muted" style="margin-top:0">Discute avec tes Mates, accepte les demandes et rencontre de nouveaux voyageurs.</p>
+          <div class="mates-stat"><b id="matesCount">0</b><span>Mates de confiance 🛡️</span></div>
 
-          <div class="card" id="recoSection" style="display:none">
-            <div class="section-head"><h3 style="margin:0">✨ Pour toi</h3><span class="muted" style="font-size:.78rem">Tes meilleurs matchs</span></div>
-            <div id="recoList"></div>
+          <div class="mseg">
+            <button data-mseg="messages" class="active">💬 Messages<span class="segb hidden" id="segMsg"></span></button>
+            <button data-mseg="discover">🔍 Découvrir</button>
+            <button data-mseg="requests">📨 Demandes<span class="segb hidden" id="segReq"></span></button>
           </div>
 
-          <div class="section-head"><h3 style="margin-top:.4rem">💬 Mes conversations</h3></div>
-          <div class="card" id="convList"></div>
+          <!-- Sous-onglet : Messages -->
+          <div class="mates-seg" data-msegpanel="messages">
+            <div class="card" id="convList"></div>
+          </div>
 
-          <div class="card">
-            <h3 style="margin-top:0">📨 Demandes reçues</h3>
-            <div id="requestsList"><p class="muted">—</p></div>
-          </div>
-          <div class="card">
-            <h3 style="margin-top:0">✅ Mes connexions</h3>
-            <div id="myConnectionsList"><p class="muted">—</p></div>
-          </div>
-          <div class="card">
-            <h3 style="margin-top:0">🌍 Voyageurs à rencontrer</h3>
-            <div class="search"><span class="ico">🔍</span><input id="travSearch" type="text" placeholder="Rechercher par pseudo ou ville…" /></div>
-            <div class="chips wrap" id="travFilters" style="margin-bottom:.5rem">
-              <button class="chip" data-filter="verified">Vérifiés</button>
-              <button class="chip" data-filter="city">Même ville</button>
-              <button class="chip" data-filter="affinity">Affinité 50%+</button>
+          <!-- Sous-onglet : Découvrir -->
+          <div class="mates-seg hidden" data-msegpanel="discover">
+            <div class="card">
+              <div class="search"><span class="ico">🔍</span><input id="travSearch" type="text" placeholder="Rechercher par pseudo ou ville…" /></div>
+              <div class="chips wrap" id="travFilters" style="margin-bottom:.5rem">
+                <button class="chip" data-filter="verified">Vérifiés</button>
+                <button class="chip" data-filter="city">Même ville</button>
+                <button class="chip" data-filter="affinity">Affinité 50%+</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem">
+                <span class="muted" style="font-size:.82rem;white-space:nowrap">Trier par</span>
+                <select id="travSort">
+                  <option value="compat">Compatibilité ❤️</option>
+                  <option value="trust">Score de confiance 🛡️</option>
+                </select>
+              </div>
+              <div id="travelersList"><p class="muted">Chargement…</p></div>
+              <div class="msg" id="connMsg"></div>
             </div>
-            <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem">
-              <span class="muted" style="font-size:.82rem;white-space:nowrap">Trier par</span>
-              <select id="travSort">
-                <option value="compat">Compatibilité ❤️</option>
-                <option value="trust">Score de confiance 🛡️</option>
-              </select>
+          </div>
+
+          <!-- Sous-onglet : Demandes -->
+          <div class="mates-seg hidden" data-msegpanel="requests">
+            <div class="card">
+              <h3 style="margin-top:0">📨 Demandes reçues</h3>
+              <div id="requestsList"><p class="muted">—</p></div>
             </div>
-            <div id="travelersList"><p class="muted">Chargement…</p></div>
-            <div class="msg" id="connMsg"></div>
+            <div class="card">
+              <h3 style="margin-top:0">✅ Mes connexions</h3>
+              <div id="myConnectionsList"><p class="muted">—</p></div>
+            </div>
           </div>
         </div>
 
@@ -830,10 +861,11 @@
           <h1>Sécurité 🚨</h1>
           <p class="muted" style="margin-top:0">En cas de besoin, un seul geste. On est là pour toi.</p>
 
-          <div class="card" style="background:var(--sunset-grad);border:0;text-align:center;padding:1.8rem 1.2rem">
-            <div style="font-size:2.6rem;margin-bottom:.4rem">🆘</div>
-            <button class="btn-danger" id="needHelpBtn" style="font-size:1.3rem;padding:1.4rem 1rem;width:100%;max-width:340px;background:#fff;color:#d11">J'ai besoin d'aide</button>
-            <p style="color:#fff;font-size:.82rem;margin:.9rem 0 0;text-shadow:0 1px 6px rgba(0,0,0,.2)">Position, alerte d'urgence, cercle de confiance et plus.</p>
+          <div class="card" style="text-align:center;padding:1.8rem 1.2rem;background:#fff;border:1px solid rgba(244,101,94,.15)">
+            <div style="font-size:2.8rem">🆘</div>
+            <h2 style="margin:.2rem 0;color:var(--accent)">Besoin d'aide ?</h2>
+            <p class="muted" style="font-size:.85rem;margin:0 0 1.1rem">Partage de position, alerte d'urgence, cercle de confiance et plus.</p>
+            <button class="btn-danger" id="needHelpBtn" style="font-size:1.2rem;padding:1.2rem 1rem;width:100%">🆘 J'ai besoin d'aide</button>
           </div>
 
           <div class="section-head"><h3>Accès rapides</h3></div>
@@ -1325,7 +1357,7 @@
       document.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle("active", b.dataset.tab === target));
       document.querySelectorAll(".tab-panel").forEach((p) => show(p, p.dataset.panel === target));
       if (target === "jeux" && typeof showJeuxView === "function") { showJeuxView("jeuxHome"); if (typeof loadGameData === "function" && myUserId) loadGameData(); }
-      if (target === "connexions" && typeof showMatesView === "function") { showMatesView("matesHome"); if (typeof markMsgsSeen === "function") markMsgsSeen(); }
+      if (target === "connexions" && typeof showMatesView === "function") { showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("messages"); }
       if (target === "securite" && typeof showSecuView === "function") showSecuView("secuHome");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -1567,6 +1599,7 @@
       const { data, error } = await db.from("partner_cafes").select("*").order("name");
       const list = $("cafesList");
       if (error) { list.innerHTML = '<p class="muted">Erreur de chargement.</p>'; return; }
+      allCafes = data || []; // pour la recherche globale de l'accueil
       if (!data.length) { list.innerHTML = '<p class="muted">Aucun lieu pour l\'instant.</p>'; return; }
       list.innerHTML = data.map((c) => `
         <div class="place">
@@ -1659,12 +1692,19 @@
     async function loadConnections() {
       if (!myUserId) return;
       const myId = myUserId;
-      const [{ data: profiles }, { data: conns }] = await Promise.all([
+      const [{ data: profiles }, { data: conns }, { data: msgs }] = await Promise.all([
         db.from("profiles").select("*"),
         db.from("matches_connections").select("*"),
+        db.from("messages").select("sender_id,recipient_id,content,created_at").order("created_at", { ascending: false }).limit(300),
       ]);
       const all = profiles || [];
       const list = conns || [];
+      // Dernier message échangé avec chaque interlocuteur (pour l'aperçu)
+      const lastByPeer = {};
+      (msgs || []).forEach((m) => {
+        const peer = m.sender_id === myId ? m.recipient_id : m.sender_id;
+        if (!lastByPeer[peer]) lastByPeer[peer] = m;
+      });
       const nameOf = (id) => (all.find((p) => p.id === id)?.username) || "Voyageur";
       const initOf = (id) => (nameOf(id)[0] || "?").toUpperCase();
       // mémorise les profils pour la fiche détaillée + mon profil pour le matchmaking
@@ -1698,13 +1738,20 @@
       $("myConnectionsList").querySelectorAll("[data-profile]").forEach((el) =>
         el.addEventListener("click", () => openTravelerProfile(travelerMap[el.dataset.profile])));
 
-      // « Mes conversations » = mes connexions acceptées (clic → chat réel)
+      // « Mes conversations » = connexions acceptées, triées par dernier message, avec aperçu
       $("convList").innerHTML = connectedIds.size
-        ? [...connectedIds].map((other) => `<div class="person conv-open" data-chat="${other}" style="cursor:pointer">
-              ${avatarMarkup(nameOf(other), avatarOf(other))}
-              <div class="info"><div class="name">${escapeHtml(nameOf(other))}</div><div class="meta">Toucher pour discuter 💬</div></div>
-              <div class="qarrow">›</div></div>`).join("")
-        : '<p class="muted">Pas encore de conversation. Connecte-toi avec un voyageur ci-dessous 👇</p>';
+        ? [...connectedIds]
+            .sort((a, b) => (lastByPeer[b]?.created_at || "").localeCompare(lastByPeer[a]?.created_at || ""))
+            .map((other) => {
+              const lm = lastByPeer[other];
+              const preview = lm ? ((lm.sender_id === myId ? "Toi : " : "") + lm.content) : "Toucher pour discuter 💬";
+              const t = lm ? timeAgo(lm.created_at) : "";
+              return `<div class="person conv-open" data-chat="${other}" style="cursor:pointer">
+                ${avatarMarkup(nameOf(other), avatarOf(other))}
+                <div class="info"><div class="name">${escapeHtml(nameOf(other))}</div><div class="conv-preview">${escapeHtml(preview)}</div></div>
+                <div style="text-align:right;white-space:nowrap"><div class="muted" style="font-size:.7rem">${t}</div><div class="qarrow">›</div></div></div>`;
+            }).join("")
+        : '<p class="muted">Pas encore de conversation. Va dans « Découvrir » pour rencontrer des voyageurs 👇</p>';
       $("convList").querySelectorAll("[data-chat]").forEach((el) =>
         el.addEventListener("click", () => openChat(el.dataset.chat)));
 
@@ -1716,7 +1763,7 @@
       });
       travelersCache = all.filter((p) => p.id !== myId && !related.has(p.id));
       renderTravelers($("travSearch") ? $("travSearch").value : "");
-      renderRecos();
+      const mc = $("matesCount"); if (mc) mc.textContent = connectedIds.size;
       if (typeof updateNotifBadges === "function") updateNotifBadges();
       if (typeof buildHomeFeed === "function") buildHomeFeed();
     }
@@ -1940,13 +1987,17 @@
         sec.style.display = "";
         $("suggestionsList").innerHTML = mySuggestions.map((s) => {
           const fromName = travelerMap[s.from_user]?.username || "Un Mate";
-          return `<div class="qrow" data-sugg="${escapeHtml(s.quest_key)}">
+          return `<div class="qrow" style="gap:.4rem">
             <div class="qico">🎯</div>
             <div class="qname">${escapeHtml(s.quest_title || "Une quête")}<div class="meta muted" style="font-size:.76rem">proposé par ${escapeHtml(fromName)}</div></div>
-            <div class="qarrow">›</div></div>`;
+            <button class="btn-accent" data-suggok="${s.id}|${escapeHtml(s.quest_key)}" style="padding:.4rem .7rem;font-size:.8rem">Voir</button>
+            <button class="btn-ghost" data-suggno="${s.id}" style="padding:.4rem .6rem;font-size:.8rem">✕</button>
+          </div>`;
         }).join("");
-        $("suggestionsList").querySelectorAll("[data-sugg]").forEach((el) =>
-          el.addEventListener("click", () => { const q = questByKey(el.dataset.sugg); if (q) openDetail(q); }));
+        $("suggestionsList").querySelectorAll("[data-suggok]").forEach((el) =>
+          el.addEventListener("click", () => { const [id, key] = el.dataset.suggok.split("|"); acceptSuggestion(Number(id), key); }));
+        $("suggestionsList").querySelectorAll("[data-suggno]").forEach((el) =>
+          el.addEventListener("click", () => dismissSuggestion(Number(el.dataset.suggno))));
       } else { sec.style.display = "none"; }
     }
 
@@ -2327,20 +2378,56 @@
     // Les données de jeu (quêtes/badges/coupons/défis) sont chargées par
     // loadGameData() après la connexion ; les conversations par loadConnections().
 
-    // ---- Accueil : chips de catégorie (sélection) + recherche ----
-    function filterHomeCafes(q) {
+    // ---- Recherche globale de l'accueil (lieux sûrs + voyageurs) ----
+    let allCafes = [];
+    function renderSearch(q) {
       q = (q || "").trim().toLowerCase();
-      document.querySelectorAll("#homeCafes .tile").forEach((t) => {
-        t.style.display = (!q || t.textContent.toLowerCase().includes(q)) ? "" : "none";
-      });
+      const box = $("searchResults"); if (!box) return;
+      if (!q) { box.innerHTML = ""; return; }
+      const places = allCafes.filter((c) => (c.name || "").toLowerCase().includes(q) || (c.city || "").toLowerCase().includes(q)).slice(0, 5);
+      const people = Object.values(travelerMap).filter((p) => p.id !== myUserId && (p.username || "").toLowerCase().includes(q)).slice(0, 6);
+      let html = "";
+      if (people.length) html += '<div class="card" style="margin-top:.6rem"><h3 style="margin-top:0">Voyageurs</h3>' +
+        people.map((p) => `<div class="sresult" data-sp="${p.id}">${avatarMarkup(p.username, p.avatar_url)}<div class="info"><div class="sname">${escapeHtml(p.username || "Voyageur")} ${p.is_verified ? "✅" : ""}</div><div class="smeta">${escapeHtml(p.city || "")}</div></div></div>`).join("") + "</div>";
+      if (places.length) html += '<div class="card"><h3 style="margin-top:0">Lieux sûrs</h3>' +
+        places.map((c) => `<div class="sresult" data-splace="${c.id}"><div class="sicon">🛟</div><div class="info"><div class="sname">${escapeHtml(c.name)}</div><div class="smeta">${escapeHtml(c.city || "")}${c.is_eco ? " · 🌱" : ""}</div></div></div>`).join("") + "</div>";
+      box.innerHTML = html || '<div class="card"><p class="muted">Aucun résultat pour « ' + escapeHtml(q) + ' ».</p></div>';
+      box.querySelectorAll("[data-sp]").forEach((el) => el.addEventListener("click", () => { goToTab("connexions"); openTravelerProfile(travelerMap[el.dataset.sp]); }));
+      box.querySelectorAll("[data-splace]").forEach((el) => el.addEventListener("click", () => goToTab("lieux")));
     }
-    document.querySelectorAll("#homeChips .chip").forEach((b) =>
-      b.addEventListener("click", () => {
-        document.querySelectorAll("#homeChips .chip").forEach((x) => x.classList.remove("active"));
-        b.classList.add("active");
-        filterHomeCafes($("homeSearch").value);
-      }));
-    $("homeSearch").addEventListener("input", (e) => filterHomeCafes(e.target.value));
+    $("homeSearch").addEventListener("input", (e) => renderSearch(e.target.value));
+
+    // Temps relatif (« il y a 5 min »)
+    function timeAgo(iso) {
+      if (!iso) return "";
+      const d = new Date(iso); if (isNaN(d)) return "";
+      const s = Math.max(0, (Date.now() - d.getTime()) / 1000);
+      if (s < 60) return "à l'instant";
+      if (s < 3600) return "il y a " + Math.floor(s / 60) + " min";
+      if (s < 86400) return "il y a " + Math.floor(s / 3600) + " h";
+      if (s < 604800) return "il y a " + Math.floor(s / 86400) + " j";
+      return d.toLocaleDateString("fr-FR");
+    }
+
+    // ---- Sous-onglets de la page Mates ----
+    function showMatesSegment(seg) {
+      document.querySelectorAll("[data-mseg]").forEach((b) => b.classList.toggle("active", b.dataset.mseg === seg));
+      document.querySelectorAll("[data-msegpanel]").forEach((p) => show(p, p.dataset.msegpanel === seg));
+      if (seg === "messages" && typeof markMsgsSeen === "function") markMsgsSeen();
+    }
+    document.querySelectorAll("[data-mseg]").forEach((b) => b.addEventListener("click", () => showMatesSegment(b.dataset.mseg)));
+
+    // ---- Accepter / refuser un défi reçu (la notif disparaît ensuite) ----
+    async function acceptSuggestion(id, key) {
+      await db.from("quest_suggestions").update({ status: "accepted" }).eq("id", id);
+      await loadGameData();
+      const q = questByKey(key); if (q) { goToTab("jeux"); openDetail(q); }
+    }
+    async function dismissSuggestion(id) {
+      await db.from("quest_suggestions").update({ status: "dismissed" }).eq("id", id);
+      toast("👍", "Défi refusé");
+      await loadGameData();
+    }
 
     // ====================== NOTIFICATIONS / TOASTS / FEED ======================
     let pendingRequestsList = [];  // demandes de connexion reçues (en attente)
@@ -2389,6 +2476,8 @@
       setBadge("navMates", mates);
       setBadge("navJeux", jeux);
       setBadge("notifBellCount", mates + jeux);
+      setBadge("segMsg", unreadMsgCount);
+      setBadge("segReq", pendingRequestsList.length);
     }
 
     // ---- Panneau de notifications (cloche) ----
@@ -2396,7 +2485,7 @@
       const items = [];
       pendingRequestsList.forEach((r) => items.push({ e: "📨", h: `<b>${escapeHtml(nameById(r.fromId))}</b> souhaite se connecter`, go: () => { closeNotif(); goToTab("connexions"); } }));
       unreadList.forEach((u) => items.push({ e: "💬", h: `Nouveau message de <b>${escapeHtml(nameById(u.sender_id))}</b>`, go: () => { closeNotif(); goToTab("connexions"); openChat(u.sender_id); markMsgsSeen(); } }));
-      (mySuggestions || []).forEach((s) => items.push({ e: "🎯", h: `<b>${escapeHtml(nameById(s.from_user))}</b> te propose : ${escapeHtml(s.quest_title || "une quête")}`, go: () => { closeNotif(); goToTab("jeux"); } }));
+      (mySuggestions || []).forEach((s) => items.push({ e: "🎯", h: `<b>${escapeHtml(nameById(s.from_user))}</b> te propose : ${escapeHtml(s.quest_title || "une quête")}`, go: () => { closeNotif(); acceptSuggestion(s.id, s.quest_key); } }));
       $("notifList").innerHTML = items.length
         ? items.map((it, i) => `<div class="notif-item" data-n="${i}"><div class="nemoji">${it.e}</div><div class="info"><div class="name">${it.h}</div></div><div class="qarrow">›</div></div>`).join("")
         : '<p class="muted" style="text-align:center;padding:1rem">Aucune notification pour l\'instant 🎉</p>';
@@ -2408,26 +2497,41 @@
     $("notifClose").addEventListener("click", closeNotif);
     $("notifPanel").addEventListener("click", (e) => { if (e.target.id === "notifPanel") closeNotif(); });
 
-    // ---- Fil d'actualité de l'accueil ----
-    function buildHomeFeed() {
+    // ---- Fil d'actualité : vrais "posts" (quêtes accomplies récemment) ----
+    async function buildHomeFeed() {
       const feed = $("homeFeed"); if (!feed) return;
-      const items = [];
-      (mySuggestions || []).forEach((s) => items.push({ ic: "🎯", title: nameById(s.from_user) + " te propose un défi", meta: s.quest_title || "", cta: "Voir", go: () => goToTab("jeux") }));
-      pendingRequestsList.forEach((r) => items.push({ ic: "📨", title: nameById(r.fromId) + " souhaite se connecter", meta: "Demande de connexion", cta: "Répondre", go: () => goToTab("connexions") }));
-      const topReco = (travelersCache || []).filter((p) => p.is_demo).map((p) => ({ p, pct: compatibility(myMatchProfile, p) })).sort((a, b) => b.pct - a.pct)[0];
-      if (topReco && topReco.pct > 0) items.push({ ic: "✨", title: "Match à " + topReco.pct + "% avec " + (topReco.p.username || "un voyageur"), meta: topReco.p.city || "", cta: "Profil", go: () => { goToTab("connexions"); openTravelerProfile(topReco.p); } });
-      if (myBadgeKeys && myBadgeKeys.size) items.push({ ic: "🏅", title: "Tu as débloqué " + myBadgeKeys.size + " badge(s)", meta: "Continue les quêtes pour en gagner d'autres", cta: "Jeux", go: () => goToTab("jeux") });
-      if ((myCoupons || []).length) items.push({ ic: "🎟️", title: myCoupons.length + " coupon(s) disponible(s)", meta: "À utiliser chez nos partenaires", cta: "Voir", go: () => { goToTab("jeux"); showJeuxView("jeuxCoupons"); } });
-      const ci = parseInt($("checkinCount").textContent, 10) || 0;
-      if (ci) items.push({ ic: "🛟", title: ci + " check-in(s) validé(s)", meta: "Ton score de confiance grimpe", cta: "Lieux", go: () => goToTab("lieux") });
-      if (!items.length) items.push({ ic: "🌅", title: "Bienvenue sur SunMates !", meta: "Complète ton profil et fais un check-in pour démarrer", cta: "Profil", go: () => goToTab("profil") });
-      feed.innerHTML = items.map((it, i) => `<div class="feed-card" data-f="${i}">
-          <div class="fic">${it.ic}</div>
-          <div class="fbody"><div class="ftitle">${escapeHtml(it.title)}</div><div class="fmeta">${escapeHtml(it.meta || "")}</div></div>
-          <div class="fcta">${escapeHtml(it.cta || "")} ›</div></div>`).join("");
-      feed.querySelectorAll("[data-f]").forEach((el) => el.addEventListener("click", () => items[Number(el.dataset.f)].go()));
+      const { data: badges } = await db.from("user_badges")
+        .select("user_id,name,emoji,earned_at").order("earned_at", { ascending: false }).limit(15);
+      const posts = (badges || []).map((b) => {
+        const p = travelerMap[b.user_id] || {};
+        const isMe = b.user_id === myUserId;
+        return {
+          uid: b.user_id, isMe, avatar: p.avatar_url,
+          name: isMe ? "Toi" : (p.username || "Un voyageur"),
+          emoji: b.emoji || "🏅",
+          title: "a accompli une quête",
+          sub: "Badge « " + (b.name || "") + " » débloqué 🎉",
+          time: timeAgo(b.earned_at),
+        };
+      });
+      if (!posts.length) {
+        feed.innerHTML = '<div class="post"><div class="post-body"><div class="pemoji">🌅</div><div><div class="pb-title">Le fil est encore vide</div><div class="pb-sub">Accomplis une quête dans l\'onglet Jeux pour ouvrir le bal 🎉</div></div></div></div>';
+        return;
+      }
+      feed.innerHTML = posts.map((po, i) => `<div class="post" data-pf="${i}">
+          <div class="post-head">${avatarMarkup(po.name, po.avatar)}
+            <div><div class="ph-name">${escapeHtml(po.name)}</div><div class="ph-time" style="margin:0">${escapeHtml(po.title)}</div></div>
+            <div class="ph-time">${po.time}</div></div>
+          <div class="post-body"><div class="pemoji">${po.emoji}</div>
+            <div><div class="pb-title">${escapeHtml(po.sub)}</div></div></div>
+        </div>`).join("");
+      feed.querySelectorAll("[data-pf]").forEach((el) => el.addEventListener("click", () => {
+        const po = posts[Number(el.dataset.pf)];
+        if (!po.isMe && travelerMap[po.uid]) { goToTab("connexions"); openTravelerProfile(travelerMap[po.uid]); }
+        else { goToTab("jeux"); showJeuxView("jeuxBadges"); }
+      }));
     }
-    $("feedRefresh").addEventListener("click", async () => { await Promise.all([loadConnections(), loadGameData(), loadUnread()]); });
+    $("feedRefresh").addEventListener("click", () => { buildHomeFeed(); });
 
     // ---- Accordéon du formulaire de profil ----
     document.querySelectorAll(".pf-head").forEach((h) =>
