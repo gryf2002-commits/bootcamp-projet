@@ -664,6 +664,40 @@
     .bubble-act button { background: rgba(255,255,255,.25); border: 0; border-radius: 7px; padding: .12rem .4rem; font-size: .72rem; cursor: pointer; line-height: 1; }
     .bubble.me .bubble-act button:hover { background: rgba(255,255,255,.45); }
 
+    /* ===================================================================
+       MODE SOMBRE — « crépuscule / plage de nuit » (parallèle de l'aube)
+       Ciel violet-indigo + lueur de coucher de soleil. Activé par body.theme-dusk
+       =================================================================== */
+    body.theme-dusk {
+      --bg: #171026; --card: #221a33; --paper: #241b35; --cream: #2b2240;
+      --accent: #ff7e72; --accent-2: #ff9a8d; --accent-3: #ffc07a;
+      --accent-soft: rgba(255,126,114,.16);
+      --accent-grad: linear-gradient(135deg, #ffc07a 0%, #ff9a8d 45%, #ff7e72 100%);
+      --ink: #f3ecf6; --ink-warm: #f6eef8; --text: #ded3e6; --muted: #a99fbe;
+      --line: rgba(255,255,255,.09); --retro-teal: #4fd6c4;
+      color: var(--text);
+      background: radial-gradient(130% 80% at 50% -8%, #3b2550 0%, #2a1c3e 34%, #20182f 64%, #171026 100%) fixed;
+    }
+    body.theme-dusk .app-shell { background: radial-gradient(120% 55% at 50% -12%, rgba(255,150,110,.30) 0%, rgba(255,150,110,0) 58%), var(--bg) !important; }
+    body.theme-dusk .card { background: linear-gradient(180deg, #241b36 0%, #1f1830 100%) !important; border-color: rgba(255,255,255,.07) !important; box-shadow: 0 14px 34px rgba(0,0,0,.42) !important; }
+    body.theme-dusk input, body.theme-dusk textarea, body.theme-dusk select,
+    body.theme-dusk .search input { background: #2b2240 !important; color: #ede6f2; border-color: rgba(255,255,255,.13) !important; }
+    body.theme-dusk .post, body.theme-dusk .pf-section { background: #221a34 !important; border-color: rgba(255,255,255,.07); }
+    body.theme-dusk .post-body, body.theme-dusk .pcell, body.theme-dusk .pprompt,
+    body.theme-dusk .feed-card, body.theme-dusk .coupon, body.theme-dusk .stat-box,
+    body.theme-dusk .dstat, body.theme-dusk .tile, body.theme-dusk .gcard,
+    body.theme-dusk .mseg, body.theme-dusk .chip { background: #2a2140 !important; border-color: rgba(255,255,255,.08) !important; }
+    body.theme-dusk .chip.active, body.theme-dusk .mseg button.active { background: var(--accent-grad) !important; color: #fff !important; }
+    body.theme-dusk .notif-card, body.theme-dusk .picker-card { background: #221a34; }
+    body.theme-dusk .topbar { background: linear-gradient(rgba(23,16,38,.86), rgba(23,16,38,0)); }
+    body.theme-dusk .bottom-nav { background: rgba(28,20,44,.86) !important; }
+    body.theme-dusk .iconbtn { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.13); }
+    body.theme-dusk .bubble.them { background: #2c2342; color: #ede6f2; }
+    body.theme-dusk .sresult:hover, body.theme-dusk .notif-item:hover, body.theme-dusk .matepick:hover,
+    body.theme-dusk .qrow:hover, body.theme-dusk .person:hover, body.theme-dusk .person[style*="cursor"]:hover { background: rgba(255,255,255,.06); }
+    body.theme-dusk .badge.no { background: #2a2140; color: var(--muted); }
+    body.theme-dusk .leaflet-popup-content-wrapper, body.theme-dusk .leaflet-popup-tip { background: #241b35; color: #ede6f2; }
+
     /* Le grain et les ombres restent désactivés pour « mouvement réduit »
        déjà géré plus haut ; rien d'animé n'est ajouté ici. */
   </style>
@@ -722,6 +756,7 @@
     <header class="topbar">
       <div class="brand"><span class="mark">🌅</span><b><span class="sun">Sun</span>Mates</b></div>
       <div class="topbar-actions hidden" id="userBox">
+        <button class="iconbtn" id="themeToggle" title="Changer de thème">🌙</button>
         <button class="iconbtn" id="notifBell">🔔<span class="nbadge hidden" id="notifBellCount">0</span></button>
         <button class="btn-ghost" id="logoutBtn" style="padding:.5rem .8rem;font-size:.82rem">Déconnexion</button>
       </div>
@@ -739,7 +774,13 @@
         </div>
         <div id="searchResults"></div>
 
-        <div class="section-head"><h3 style="margin-top:.4rem">Ton fil ✨</h3><a id="feedRefresh" style="cursor:pointer">↻ Rafraîchir</a></div>
+        <div class="section-head">
+          <h3 style="margin-top:.4rem">Ton fil ✨</h3>
+          <div style="display:flex;gap:1rem;align-items:center">
+            <a id="feedRefresh" style="cursor:pointer">↻</a>
+            <a id="feedToggle" style="cursor:pointer">Masquer</a>
+          </div>
+        </div>
         <div id="homeFeed"><p class="muted">Chargement…</p></div>
 
         <div class="section-head"><h3 style="margin-top:.2rem">Lieux sûrs à proximité</h3><a data-goto="lieux">Voir tout</a></div>
@@ -844,7 +885,8 @@
           </div>
           <div class="dstats" style="margin-bottom:1rem">
             <div class="dstat"><b id="tpCompat">—</b><span>Compatibilité ❤️</span></div>
-            <div class="dstat"><b id="tpTrust">0</b><span>Score de confiance</span></div>
+            <div class="dstat"><b id="tpMates">0</b><span>Mates 🛡️</span></div>
+            <div class="dstat"><b id="tpTrust">0</b><span>Confiance</span></div>
           </div>
           <div class="card">
             <div class="section-head" style="margin-bottom:.4rem"><h3 style="margin:0">À propos</h3><span class="badge no" id="tpVerif">Non vérifié</span></div>
@@ -895,7 +937,7 @@
           <h1>Sécurité 🚨</h1>
           <p class="muted" style="margin-top:0">En cas de besoin, un seul geste. On est là pour toi.</p>
 
-          <div class="card" style="text-align:center;padding:1.8rem 1.2rem;background:#fff;border:1px solid rgba(244,101,94,.15)">
+          <div class="card" style="text-align:center;padding:1.8rem 1.2rem;border:1px solid rgba(244,101,94,.15)">
             <div style="font-size:2.8rem">🆘</div>
             <h2 style="margin:.2rem 0;color:var(--accent)">Besoin d'aide ?</h2>
             <p class="muted" style="font-size:.85rem;margin:0 0 1.1rem">Partage de position, alerte d'urgence, cercle de confiance et plus.</p>
@@ -916,13 +958,13 @@
         <div id="secuHelp" class="secu-view hidden">
           <button class="backbtn" data-sback>‹ Retour</button>
           <h1>Besoin d'aide 🆘</h1>
-          <a class="btn-danger" href="tel:112" style="display:block;text-align:center;text-decoration:none;margin-bottom:1rem">☎️ Contacter les autorités locales (112)</a>
-
-          <div class="card">
-            <button class="btn-primary btn-block" id="shareLocBtn">📍 Partager ma position</button>
+          <div class="card" style="border:1px solid rgba(239,68,68,.22)">
+            <a class="btn-danger btn-block" href="tel:112" style="text-decoration:none;text-align:center;display:block;font-size:1.05rem">☎️ Appeler les secours (112)</a>
+            <div class="row" style="margin-top:.7rem">
+              <button class="btn-primary" id="shareLocBtn">📍 Ma position</button>
+              <button class="btn-ghost" id="emergencyBtn" style="color:var(--danger);border-color:rgba(239,68,68,.4)">🚨 Alerte</button>
+            </div>
             <div class="msg" id="locMsg"></div>
-            <hr />
-            <button class="btn-danger" id="emergencyBtn">🚨 Déclencher l'alerte d'urgence</button>
             <div class="msg" id="emergencyMsg"></div>
           </div>
 
@@ -1310,6 +1352,7 @@
         subscribeMessages();
         subscribeConnections();
         subscribeSuggestions();
+        askNotifPermission();
       } else {
         myUserId = null;
         unsubscribeCircle();
@@ -1641,10 +1684,15 @@
           <div class="name">${escapeHtml(c.name)} ${c.is_eco ? '<span class="eco">🌱 éco</span>' : ''}</div>
           <div class="meta">${escapeHtml(c.category || '')} · ${escapeHtml(c.city || '')}</div>
           <div class="meta">${escapeHtml(c.safety_note || '')}</div>
-          <button class="btn-accent" data-checkin="${c.id}" data-name="${escapeHtml(c.name)}">🔒 Check-in ici (+10)</button>
+          <div class="row" style="margin-top:.4rem">
+            <button class="btn-accent" data-checkin="${c.id}" data-name="${escapeHtml(c.name)}">🔒 Check-in (+10)</button>
+            ${c.lat != null && c.lng != null ? `<button class="btn-ghost" data-mapcafe="${c.id}">📍 Carte</button>` : ""}
+          </div>
         </div>`).join("");
       list.querySelectorAll("[data-checkin]").forEach((b) =>
         b.addEventListener("click", () => checkIn(Number(b.dataset.checkin), b.dataset.name)));
+      list.querySelectorAll("[data-mapcafe]").forEach((b) =>
+        b.addEventListener("click", () => focusMapOn(Number(b.dataset.mapcafe))));
       loadHome(); // garde l'accueil synchronisé
       if (typeof renderMap === "function" && leafMap) renderMap(); // rafraîchit les marqueurs
     }
@@ -2285,6 +2333,7 @@
             updateNotifBadges();
             toast("💬", `<b>${escapeHtml(nameById(m.sender_id))}</b> t'a envoyé un message`,
               () => { goToTab("connexions"); openChat(m.sender_id); markMsgsSeen(); });
+            sysNotify("Nouveau message 💬", nameById(m.sender_id) + " t'a écrit sur SunMates");
             loadConnections();
           }
         })
@@ -2327,6 +2376,9 @@
       tpc.textContent = pct + "%";
       tpc.style.color = pct >= 70 ? "var(--ok)" : (pct >= 40 ? "var(--accent)" : "var(--muted)");
       $("tpTrust").textContent = p.trust_score ?? 0;
+      // Nombre de Mates (abonnés) — via la fonction serveur mates_count
+      $("tpMates").textContent = "…";
+      db.rpc("mates_count", { p_uid: p.id }).then(({ data }) => { $("tpMates").textContent = (data ?? 0); }).catch(() => { $("tpMates").textContent = "0"; });
       // Tags = vrais centres d'intérêt si renseignés, sinon hashtags par défaut
       const tags = (p.interests && p.interests.length)
         ? p.interests.map((t) => "#" + t.replace(/\s/g, ""))
@@ -2482,7 +2534,7 @@
     $("homeSearch").addEventListener("input", (e) => renderSearch(e.target.value));
 
     // ---- Carte interactive des lieux sûrs (Leaflet) ----
-    let leafMap = null, mapMarkers = [];
+    let leafMap = null, mapMarkers = [], mapMarkerById = {};
     function renderMap() {
       if (typeof L === "undefined") return;
       const el = $("map"); if (!el) return;
@@ -2494,15 +2546,23 @@
           if (b) b.addEventListener("click", () => checkIn(Number(b.dataset.cid), b.dataset.cname));
         });
       }
-      mapMarkers.forEach((m) => leafMap.removeLayer(m)); mapMarkers = [];
+      mapMarkers.forEach((m) => leafMap.removeLayer(m)); mapMarkers = []; mapMarkerById = {};
       const pts = (allCafes || []).filter((c) => c.lat != null && c.lng != null);
       pts.forEach((c) => {
         const mk = L.marker([c.lat, c.lng]).addTo(leafMap);
         mk.bindPopup(`<b>${escapeHtml(c.name)}</b><br>${escapeHtml(c.city || "")}${c.is_eco ? " · 🌱" : ""}<br><button class="mappop" data-cid="${c.id}" data-cname="${escapeHtml(c.name)}" style="margin-top:6px;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:.35rem .6rem;cursor:pointer">🔒 Check-in</button>`);
-        mapMarkers.push(mk);
+        mapMarkers.push(mk); mapMarkerById[c.id] = mk;
       });
       if (pts.length) { try { leafMap.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(0.25)); } catch (err) {} }
       setTimeout(() => { try { leafMap.invalidateSize(); } catch (err) {} }, 120);
+    }
+    // Centre la carte sur un lieu précis (depuis la liste) et ouvre sa bulle
+    function focusMapOn(id) {
+      renderMap();
+      const mk = mapMarkerById[id];
+      if (!mk || !leafMap) return;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => { leafMap.invalidateSize(); leafMap.setView(mk.getLatLng(), 15, { animate: true }); mk.openPopup(); }, 180);
     }
 
     // Temps relatif (« il y a 5 min »)
@@ -2681,8 +2741,10 @@
       connChannel = db.channel("conn-rt").on("postgres_changes",
         { event: "*", schema: "public", table: "matches_connections" }, (payload) => {
           const row = payload.new || payload.old; if (!row) return;
-          if (payload.eventType === "INSERT" && row.user_b === myUserId)
+          if (payload.eventType === "INSERT" && row.user_b === myUserId) {
             toast("📨", `<b>${escapeHtml(nameById(row.user_a))}</b> souhaite se connecter`, () => goToTab("connexions"));
+            sysNotify("Nouvelle demande 📨", nameById(row.user_a) + " souhaite se connecter");
+          }
           if (payload.eventType === "UPDATE" && row.status === "accepted" && (row.user_a === myUserId || row.user_b === myUserId)) {
             const other = row.user_a === myUserId ? row.user_b : row.user_a;
             toast("✅", `<b>${escapeHtml(nameById(other))}</b> a accepté ta connexion`, () => goToTab("connexions"));
@@ -2698,10 +2760,49 @@
         { event: "INSERT", schema: "public", table: "quest_suggestions" }, (payload) => {
           const row = payload.new; if (!row || row.to_user !== myUserId) return;
           toast("🎯", `<b>${escapeHtml(nameById(row.from_user))}</b> te propose : ${escapeHtml(row.quest_title || "une quête")}`, () => goToTab("jeux"));
+          sysNotify("Nouveau défi 🎯", nameById(row.from_user) + " te propose : " + (row.quest_title || "une quête"));
           loadGameData();
         }).subscribe();
     }
     function unsubscribeSuggestions() { if (suggChannel) { db.removeChannel(suggChannel); suggChannel = null; } }
+
+    // ---- Thème : jour (aube) ↔ nuit (crépuscule plage) ----
+    function applyTheme(t) {
+      const dusk = t === "dusk";
+      document.body.classList.toggle("theme-dusk", dusk);
+      const tt = $("themeToggle"); if (tt) tt.textContent = dusk ? "☀️" : "🌙";
+      const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", dusk ? "#20182f" : "#f4655e");
+    }
+    applyTheme(localStorage.getItem("sm_theme") || "day");
+    $("themeToggle").addEventListener("click", () => {
+      const next = document.body.classList.contains("theme-dusk") ? "day" : "dusk";
+      localStorage.setItem("sm_theme", next); applyTheme(next);
+    });
+
+    // ---- Masquer / afficher le fil d'actualité ----
+    if (localStorage.getItem("sm_feed_hidden") === "1") { $("homeFeed").classList.add("hidden"); $("feedToggle").textContent = "Afficher"; }
+    $("feedToggle").addEventListener("click", () => {
+      const hidden = $("homeFeed").classList.toggle("hidden");
+      localStorage.setItem("sm_feed_hidden", hidden ? "1" : "0");
+      $("feedToggle").textContent = hidden ? "Afficher" : "Masquer";
+    });
+
+    // ---- Notifications système (quand l'app tourne mais n'est pas au premier plan) ----
+    function askNotifPermission() {
+      if (!("Notification" in window)) return;
+      if (Notification.permission === "default") { try { Notification.requestPermission(); } catch (e) {} }
+    }
+    function sysNotify(title, body) {
+      if (!("Notification" in window) || Notification.permission !== "granted") return;
+      if (!document.hidden) return; // app déjà visible → le toast à l'écran suffit
+      try {
+        if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+          navigator.serviceWorker.ready
+            .then((reg) => reg.showNotification(title, { body: body, icon: "icon.svg", badge: "icon.svg", tag: "sunmates" }))
+            .catch(() => { new Notification(title, { body: body, icon: "icon.svg" }); });
+        } else { new Notification(title, { body: body, icon: "icon.svg" }); }
+      } catch (e) {}
+    }
 
     // Au chargement : vérifie s'il y a déjà une session
     db.auth.getSession().then(({ data }) => render(data.session));
