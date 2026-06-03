@@ -1328,6 +1328,7 @@
           <button data-pseg="edit" class="active">Mon profil</button>
           <button data-pseg="checkins">Check-ins</button>
           <button data-pseg="premium">Premium ✨</button>
+          <button data-pseg="admin" id="adminSegBtn" style="display:none">Admin 🛡️</button>
         </div>
 
         <div class="prof-seg" data-psegpanel="edit">
@@ -1514,6 +1515,13 @@
             <div class="msg" id="premiumMsg" style="color:#4a3500"></div>
           </div>
         </div><!-- /prof-seg premium -->
+
+        <div class="prof-seg hidden" data-psegpanel="admin">
+          <div class="card">
+            <h3 style="margin-top:0">🛡️ Modération — signalements</h3>
+            <div id="reportsList"><p class="muted">Chargement…</p></div>
+          </div>
+        </div><!-- /prof-seg admin -->
         </div><!-- /profMain -->
 
         <div class="card hidden" id="settingsCard">
@@ -1949,6 +1957,8 @@
       const cp = $("contactPrefVal"); if (cp) cp.textContent = (data.allow_contact === "connections") ? "Connexions ›" : "Tout le monde ›";
       myBffId = data.bff_id || null;
       renderBff();
+      const adminBtn = $("adminSegBtn"); if (adminBtn) adminBtn.style.display = data.is_admin ? "" : "none";
+      if (data.is_admin && typeof loadReports === "function") loadReports();
     }
 
     $("saveProfileBtn").addEventListener("click", async () => {
@@ -2106,6 +2116,30 @@
             <h3 style="margin:.3rem 0">${escapeHtml(g.name)}</h3>
             <p class="muted" style="margin:.2rem 0">${escapeHtml(g.city)} · ${g.count} check-in${g.count > 1 ? "s" : ""}</p>
             <div class="muted" style="font-size:.82rem;margin-top:.5rem;line-height:1.8;text-align:left;display:inline-block">${dates}</div></div>`);
+      }));
+    }
+
+    // ---- Modération (admin) : liste des signalements ----
+    async function loadReports() {
+      const wrap = $("reportsList"); if (!wrap) return;
+      const { data, error } = await db.from("reports").select("*").order("created_at", { ascending: false });
+      if (error) { wrap.innerHTML = '<p class="muted">Accès refusé ou erreur.</p>'; return; }
+      const list = data || [];
+      wrap.innerHTML = list.length ? list.map((r) => {
+        const who = travelerMap[r.reported_user]?.username || "Voyageur";
+        const by = travelerMap[r.reporter]?.username || "Quelqu'un";
+        const d = new Date(r.created_at).toLocaleString("fr-FR");
+        return `<div class="qrow" style="align-items:flex-start;${r.handled ? "opacity:.5" : ""}">
+            <div class="qico">🚩</div>
+            <div class="qname" style="flex:1">${escapeHtml(who)}
+              <div class="meta muted" style="font-size:.74rem">Signalé par ${escapeHtml(by)} · ${d}</div>
+              <div class="meta" style="font-size:.82rem;margin-top:.2rem">« ${escapeHtml(r.reason || "")} »</div></div>
+            ${r.handled ? '<span class="badge ok">traité</span>' : `<button class="btn-accent" data-handle="${r.id}" style="padding:.4rem .6rem;font-size:.78rem">Traiter</button>`}
+          </div>`;
+      }).join("") : '<p class="muted">Aucun signalement 🎉</p>';
+      wrap.querySelectorAll("[data-handle]").forEach((el) => el.addEventListener("click", async () => {
+        await db.from("reports").update({ handled: true }).eq("id", Number(el.dataset.handle));
+        loadReports();
       }));
     }
 
@@ -3091,6 +3125,7 @@
     function showProfileSegment(seg) {
       document.querySelectorAll("[data-pseg]").forEach((b) => b.classList.toggle("active", b.dataset.pseg === seg));
       document.querySelectorAll("[data-psegpanel]").forEach((p) => show(p, p.dataset.psegpanel === seg));
+      if (seg === "admin" && typeof loadReports === "function") loadReports();
     }
     document.querySelectorAll("[data-pseg]").forEach((b) => b.addEventListener("click", () => showProfileSegment(b.dataset.pseg)));
     $("premiumBtn").addEventListener("click", () => { const m = $("premiumMsg"); m.textContent = "Génial ! On te préviendra dès le lancement de Gold 🎉"; });
