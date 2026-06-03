@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Fraunces : serif éditorial chaleureux (esprit « magazine de voyage » rétro) -->
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&display=swap" rel="stylesheet" />
   <style>
     /* ===================================================================
        SUNMATES — Système de design (thème clair / corail)
@@ -448,6 +450,116 @@
     .badge.ok { box-shadow: inset 0 0 0 1px rgba(34,197,94,.15); }
 
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+    /* ===================================================================
+       POLISH v3 — « VACATION × SUNMATES » : voyage rétro & réaliste
+       Inspiration : l'esthétique solaire rétro de la marque Vacation Inc.
+       (crème solaire, années 80, loisir balnéaire), mais on garde l'âme
+       corail « sécurité d'abord » de SunMates. On ajoute des MATIÈRES
+       crédibles : grain photo, papier chaud, brillance « huile solaire »,
+       tampons de passeport, cartes d'embarquement, rayons de soleil.
+       Couche ajoutée en dernier — n'affecte QUE l'apparence.
+       =================================================================== */
+    :root {
+      --retro-teal:   #1f9e92;   /* turquoise rétro — la touche « mer/voyage » */
+      --retro-teal-2: #36c3b4;
+      --butter:       #ffd27a;   /* jaune beurre (soleil) */
+      --cream:        #fff6e9;   /* crème solaire */
+      --paper:        #fffaf3;   /* papier chaud des cartes */
+      --ink-warm:     #2b2333;   /* encre brune chaude pour les titres */
+      --sunset-grad:  linear-gradient(180deg, #ffe1a8 0%, #ffc28a 30%, #ff9b7c 62%, #f4655e 100%);
+      --gloss:        linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.10) 42%, rgba(255,255,255,0) 60%);
+    }
+
+    /* --- Typographie éditoriale : titres en serif rétro chaleureux --- */
+    h1, h2, h3, .brand b, .logo-text, #homeHello, .auth-title h1, .stat, .feature h2, .detail-hero h2 {
+      font-family: "Fraunces", "Poppins", Georgia, serif;
+      font-optical-sizing: auto;
+    }
+    h1, h2 { font-weight: 600; letter-spacing: -.015em; color: var(--ink-warm); }
+    h3 { font-weight: 600; letter-spacing: -.01em; color: var(--ink-warm); }
+    .brand b { font-weight: 700; letter-spacing: -.01em; }
+    .logo-text { font-weight: 900; letter-spacing: .03em; }
+
+    /* Petites étiquettes en capitales espacées — façon signalétique rétro */
+    .logo-tag, .t-meta, .section-head a, label {
+      text-transform: uppercase; letter-spacing: .13em; font-size: .68rem; font-weight: 600;
+    }
+    .logo-tag { letter-spacing: .22em; opacity: .92; }
+
+    /* --- Fond : ciel solaire + GRAIN photographique (réalisme analogique) --- */
+    body {
+      background: radial-gradient(130% 80% at 50% -8%, #ffe6b8 0%, #ffd2b0 26%, #fce2d8 56%, #f9eee7 100%) fixed;
+    }
+    body::after {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 60;
+      opacity: .05; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    /* Halo de soleil chaud en haut du « téléphone » */
+    .app-shell {
+      background: radial-gradient(120% 55% at 50% -12%, rgba(255,188,116,.55) 0%, rgba(255,188,116,0) 58%), var(--bg) !important;
+    }
+
+    /* --- Écran de connexion : ciel coucher de soleil + rayons rétro --- */
+    .auth-hero {
+      background:
+        repeating-conic-gradient(from 0deg at 50% 16%, rgba(255,255,255,.10) 0deg 5deg, rgba(255,255,255,0) 5deg 13deg),
+        var(--sunset-grad) !important;
+    }
+    .logo-text { text-shadow: 0 2px 16px rgba(120,40,20,.22); }
+
+    /* --- Boutons principaux : brillance « huile solaire » --- */
+    .btn-primary, .btn-danger { position: relative; overflow: hidden; }
+    .btn-primary::before, .btn-danger::before {
+      content: ""; position: absolute; left: 0; right: 0; top: 0; height: 60%;
+      border-radius: inherit; background: var(--gloss); pointer-events: none;
+    }
+
+    /* --- Cartes : papier chaud + liseré fin + reflet de soleil en haut --- */
+    .card {
+      background: linear-gradient(180deg, #ffffff 0%, var(--paper) 100%) !important;
+      border: 1px solid rgba(244,101,94,.10) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.9),
+        0 16px 40px rgba(206,120,86,.13),
+        0 3px 10px rgba(40,30,20,.05) !important;
+    }
+
+    /* --- Héros & bandeaux : cadre « carte postale » en relief --- */
+    .feature, .detail-hero {
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.35), var(--shadow-pop) !important;
+    }
+    .feature { background: var(--sunset-grad) !important; }
+    .tile .thumb { background: var(--sunset-grad); }
+
+    /* --- Badges : façon TAMPON DE PASSEPORT (cerné, en capitales) --- */
+    .badge {
+      text-transform: uppercase; letter-spacing: .06em; font-size: .66rem;
+      border-radius: 7px; border: 1.5px solid currentColor;
+    }
+    .badge.ok   { background: rgba(31,158,146,.10); color: var(--retro-teal); box-shadow: inset 0 0 0 1px rgba(31,158,146,.18) !important; }
+    .badge.warn { background: var(--accent-soft); color: var(--accent); }
+    .badge.no   { border-color: #d9d3cc; }
+
+    /* --- Chips : galets crème, actif corail (touche rétro) --- */
+    .chip { background: var(--cream); border: 1px solid rgba(244,101,94,.12); font-weight: 600; }
+    .chip.active { background: var(--accent-grad); color: #fff; border-color: transparent; }
+
+    /* --- Coupons : façon CARTE D'EMBARQUEMENT (papier + pointillés) --- */
+    .coupon {
+      background: var(--cream) !important;
+      border: 1.5px dashed rgba(244,101,94,.38) !important;
+    }
+
+    /* --- Médaillons de jeu : petite lueur de soleil (moins « arcade ») --- */
+    .hex { background-image: radial-gradient(circle at 50% 30%, rgba(255,255,255,.35), rgba(255,255,255,0) 60%), var(--accent-grad); }
+
+    /* --- Liens d'action : turquoise rétro (équilibre le corail) --- */
+    .section-head a { color: var(--retro-teal); }
+
+    /* Le grain et les ombres restent désactivés pour « mouvement réduit »
+       déjà géré plus haut ; rien d'animé n'est ajouté ici. */
   </style>
 </head>
 <body>
