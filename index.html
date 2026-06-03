@@ -558,6 +558,25 @@
     /* --- Liens d'action : turquoise rétro (équilibre le corail) --- */
     .section-head a { color: var(--retro-teal); }
 
+    /* --- Séparateurs de sections dans le formulaire de profil --- */
+    .pfield-sep { font-size: .98rem; margin: 1.5rem 0 .3rem; padding-top: 1rem; border-top: 1px dashed rgba(244,101,94,.28); color: var(--accent); }
+    /* --- Fiche profil détaillée : grille d'infos --- */
+    .pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-top: .4rem; }
+    .pgrid .pcell { background: var(--cream); border: 1px solid rgba(244,101,94,.12); border-radius: 12px; padding: .55rem .7rem; }
+    .pgrid .pcell .k { font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .pgrid .pcell .v { font-size: .9rem; font-weight: 600; color: var(--ink-warm); }
+    .pprompt { background: var(--paper); border: 1px solid rgba(244,101,94,.12); border-radius: 14px; padding: .7rem .9rem; margin-top: .6rem; }
+    .pprompt .pq { font-size: .76rem; color: var(--muted); }
+    .pprompt .pa { font-family: "Fraunces", serif; font-size: 1.05rem; color: var(--ink-warm); margin-top: .15rem; }
+    /* --- Sélecteur de Mate (proposer un défi) --- */
+    .matepick { display:flex; align-items:center; gap:.7rem; padding:.6rem; border-radius:12px; cursor:pointer; }
+    .matepick:hover { background:#fff6f3; }
+    /* --- Overlay sélecteur générique --- */
+    #pickerOverlay { position: fixed; inset: 0; z-index: 200; background: rgba(40,25,20,.45); display: flex; align-items: flex-end; justify-content: center; }
+    #pickerOverlay.hidden { display: none; }
+    .picker-card { background: var(--paper); width: 100%; max-width: 460px; border-radius: 22px 22px 0 0; padding: 1.2rem 1.1rem 1.6rem; max-height: 80vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,.25); }
+    .picker-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+
     /* Le grain et les ombres restent désactivés pour « mouvement réduit »
        déjà géré plus haut ; rien d'animé n'est ajouté ici. */
   </style>
@@ -565,6 +584,14 @@
 <body>
   <!-- Bannière d'alerte temps réel (cachée par défaut) -->
   <div id="alertBanner" class="hidden"></div>
+
+  <!-- Sélecteur générique (choisir un Mate / une quête) -->
+  <div id="pickerOverlay" class="hidden">
+    <div class="picker-card">
+      <div class="picker-head"><h3 id="pickerTitle" style="margin:0">Choisir</h3><button id="pickerClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
+      <div id="pickerBody"></div>
+    </div>
+  </div>
 
   <!-- ============ ÉCRAN CONNEXION / INSCRIPTION ============ -->
   <section id="authView" class="auth-wrap">
@@ -699,9 +726,18 @@
             <div class="dstat"><b id="tpTrust">0</b><span>Score de confiance</span></div>
           </div>
           <div class="card">
-            <div class="section-head" style="margin-bottom:.4rem"><h3 style="margin:0">Détails</h3><span class="badge no" id="tpVerif">Non vérifié</span></div>
+            <div class="section-head" style="margin-bottom:.4rem"><h3 style="margin:0">À propos</h3><span class="badge no" id="tpVerif">Non vérifié</span></div>
             <p class="muted" id="tpBio" style="line-height:1.5">—</p>
             <div class="hashtags" id="tpTags"></div>
+          </div>
+          <div class="card" id="tpInfoCard">
+            <h3 style="margin-top:0">Infos</h3>
+            <div class="pgrid" id="tpGrid"></div>
+          </div>
+          <div id="tpPrompts"></div>
+          <div class="card" id="tpBadgesCard" style="display:none">
+            <h3 style="margin-top:0">🏅 Badges</h3>
+            <div class="bgrid" id="tpBadges"></div>
           </div>
           <div class="row">
             <button class="btn-primary" id="tpMsgBtn">Envoyer un message</button>
@@ -732,10 +768,26 @@
       <!-- ---------------- Onglet SÉCURITÉ ---------------- -->
       <div class="tab-panel hidden" data-panel="securite">
 
-        <!-- Vue principale -->
+        <!-- Vue principale : UNIQUEMENT le bouton SOS -->
         <div id="secuHome" class="secu-view">
           <h1>Sécurité 🚨</h1>
-          <p class="muted" style="margin-top:0">Partage ta position avec ton cercle de confiance, ou déclenche une alerte en cas d'urgence.</p>
+          <p class="muted" style="margin-top:0">En cas de besoin, un seul geste. On est là pour toi.</p>
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:48vh;gap:1.2rem">
+            <button class="btn-danger" id="needHelpBtn" style="font-size:1.3rem;padding:1.6rem 1rem;max-width:340px">🆘 J'ai besoin d'aide</button>
+            <p class="muted" style="text-align:center;font-size:.85rem;max-width:320px">
+              Appuie ici pour accéder au partage de position, à l'alerte d'urgence,
+              à ton cercle de confiance et à toutes les options de sécurité.
+            </p>
+          </div>
+          <div class="msg" id="secuMsg" style="text-align:center"></div>
+        </div>
+
+        <!-- Vue Besoin d'aide : TOUTES les sous-catégories -->
+        <div id="secuHelp" class="secu-view hidden">
+          <button class="backbtn" data-sback>‹ Retour</button>
+          <h1>Besoin d'aide 🆘</h1>
+          <a class="btn-danger" href="tel:112" style="display:block;text-align:center;text-decoration:none;margin-bottom:1rem">☎️ Contacter les autorités locales (112)</a>
+
           <div class="card">
             <button class="btn-primary btn-block" id="shareLocBtn">📍 Partager ma position</button>
             <div class="msg" id="locMsg"></div>
@@ -743,6 +795,7 @@
             <button class="btn-danger" id="emergencyBtn">🚨 Déclencher l'alerte d'urgence</button>
             <div class="msg" id="emergencyMsg"></div>
           </div>
+
           <div class="card">
             <div class="section-head">
               <h3 style="margin:0">🛟 Cercle de confiance</h3>
@@ -750,6 +803,15 @@
             </div>
             <p class="muted" style="font-size:.82rem">Seules les positions de tes <strong>connexions acceptées</strong> apparaissent ici.</p>
             <div id="circleLocList"><p class="muted">—</p></div>
+          </div>
+
+          <div class="section-head"><h3 style="margin-top:.4rem">Trouver de l'aide autour de moi</h3></div>
+          <div class="grid2">
+            <div class="tile" data-help="police"><div class="thumb blue">🚓</div><div class="t-name">Trouver un commissariat</div><div class="t-meta">À proximité</div></div>
+            <div class="tile" data-help="hopital"><div class="thumb green">🏥</div><div class="t-name">Trouver un hôpital</div><div class="t-meta">À proximité</div></div>
+            <div class="tile" data-help="lieux"><div class="thumb purp">🛟</div><div class="t-name">Lieux publics sûrs</div><div class="t-meta">Validés</div></div>
+            <div class="tile" data-help="mate"><div class="thumb blue">🤝</div><div class="t-name">Trouver un Mate sûr·e</div><div class="t-meta">Cercle de confiance</div></div>
+            <div class="tile" data-help="support"><div class="thumb">💬</div><div class="t-name">Support SunMates</div><div class="t-meta">Nous écrire</div></div>
           </div>
 
           <div class="card">
@@ -760,27 +822,10 @@
 
           <div class="card">
             <h3 style="margin-top:0">Préférences</h3>
-            <div class="qrow" data-secu="contact"><div class="qico">📢</div><div class="qname">Qui peut me contacter</div><div class="qarrow">›</div></div>
+            <div class="qrow" data-secu="contact"><div class="qico">📢</div><div class="qname">Qui peut me contacter</div><div class="qarrow" id="contactPrefVal">›</div></div>
             <div class="qrow" data-secu="assistance"><div class="qico">🔁</div><div class="qname">Assistance</div><div class="qarrow">›</div></div>
           </div>
 
-          <button class="btn-danger" id="needHelpBtn">🆘 J'ai besoin d'aide</button>
-          <div class="msg" id="secuMsg" style="text-align:center"></div>
-        </div>
-
-        <!-- Vue Besoin d'aide -->
-        <div id="secuHelp" class="secu-view hidden">
-          <button class="backbtn" data-sback>‹ Retour</button>
-          <h1>Besoin d'aide 🆘</h1>
-          <a class="btn-danger" href="tel:112" style="display:block;text-align:center;text-decoration:none;margin-bottom:1rem">☎️ Contacter les autorités locales (112)</a>
-          <div class="grid2">
-            <div class="tile" data-help="position"><div class="thumb">📍</div><div class="t-name">Partager ma position</div><div class="t-meta">À mon cercle</div></div>
-            <div class="tile" data-help="police"><div class="thumb blue">🚓</div><div class="t-name">Trouver un commissariat</div><div class="t-meta">À proximité</div></div>
-            <div class="tile" data-help="hopital"><div class="thumb green">🏥</div><div class="t-name">Trouver un hôpital</div><div class="t-meta">À proximité</div></div>
-            <div class="tile" data-help="lieux"><div class="thumb purp">🛟</div><div class="t-name">Lieux publics sûrs</div><div class="t-meta">Validés</div></div>
-            <div class="tile" data-help="support"><div class="thumb">💬</div><div class="t-name">Support SunMates</div><div class="t-meta">Nous écrire</div></div>
-            <div class="tile" data-help="mate"><div class="thumb blue">🤝</div><div class="t-name">Trouver un Mate sûr·e</div><div class="t-meta">Cercle de confiance</div></div>
-          </div>
           <div class="msg" id="helpMsg" style="text-align:center"></div>
         </div>
 
@@ -838,6 +883,87 @@
           <label>Style de voyage</label>
           <div class="chips wrap" id="styleChips"></div>
 
+          <h3 class="pfield-sep">Je suis ici pour</h3>
+          <div class="chips wrap" id="intentChips"></div>
+
+          <h3 class="pfield-sep">Identité</h3>
+          <div class="row" style="margin-top:0">
+            <div style="flex:1"><label>Date de naissance</label><input id="pBirthdate" type="date" /></div>
+            <div style="flex:1"><label>Taille (cm)</label><input id="pHeight" type="number" min="120" max="230" placeholder="170" /></div>
+          </div>
+          <div class="row" style="margin-top:0">
+            <div style="flex:1"><label>Genre</label>
+              <select id="pGender"><option value="">—</option><option>Femme</option><option>Homme</option><option>Non-binaire</option><option>Autre</option></select></div>
+            <div style="flex:1"><label>Pronoms</label>
+              <select id="pPronouns"><option value="">—</option><option>elle</option><option>il</option><option>iel</option><option>elle/iel</option><option>il/iel</option></select></div>
+          </div>
+          <div class="row" style="margin-top:0">
+            <div style="flex:1"><label>Orientation</label>
+              <select id="pOrientation"><option value="">—</option><option>Hétéro</option><option>Homo</option><option>Bi</option><option>Pansexuel·le</option><option>Asexuel·le</option><option>Queer</option><option>Je préfère ne pas dire</option></select></div>
+            <div style="flex:1"><label>Statut</label>
+              <select id="pRelationship"><option value="">—</option><option>Célibataire</option><option>En couple</option><option>C'est compliqué</option><option>Je préfère ne pas dire</option></select></div>
+          </div>
+          <label>Ville d'origine</label>
+          <input id="pHometown" placeholder="Nantes, France" />
+
+          <h3 class="pfield-sep">Travail &amp; études</h3>
+          <div class="row" style="margin-top:0">
+            <div style="flex:1"><label>Métier</label><input id="pJob" placeholder="Photographe" /></div>
+            <div style="flex:1"><label>Entreprise</label><input id="pCompany" placeholder="Freelance" /></div>
+          </div>
+          <label>École / université</label>
+          <input id="pSchool" placeholder="Université de Lisbonne" />
+          <label>Niveau d'études</label>
+          <select id="pEducation"><option value="">—</option><option>Lycée</option><option>Bac+2/3</option><option>Master</option><option>Doctorat</option><option>Autre</option></select>
+
+          <h3 class="pfield-sep">Style de vie</h3>
+          <div class="row" style="margin-top:0">
+            <div style="flex:1"><label>Alcool</label>
+              <select id="pDrinking"><option value="">—</option><option>Jamais</option><option>Socialement</option><option>Souvent</option></select></div>
+            <div style="flex:1"><label>Tabac</label>
+              <select id="pSmoking"><option value="">—</option><option>Non-fumeur·se</option><option>Occasionnel</option><option>Régulier</option></select></div>
+          </div>
+          <div class="row" style="margin-top:0">
+            <div style="flex:1"><label>Cannabis</label>
+              <select id="pCannabis"><option value="">—</option><option>Jamais</option><option>Parfois</option><option>Régulièrement</option></select></div>
+            <div style="flex:1"><label>Régime</label>
+              <select id="pDiet"><option value="">—</option><option>Omnivore</option><option>Végétarien·ne</option><option>Végan·e</option><option>Pescétarien·ne</option><option>Halal</option><option>Casher</option></select></div>
+          </div>
+          <div class="row" style="margin-top:0">
+            <div style="flex:1"><label>Sport / forme</label>
+              <select id="pFitness"><option value="">—</option><option>Jamais</option><option>Parfois</option><option>Souvent</option><option>Tous les jours</option></select></div>
+            <div style="flex:1"><label>Rythme</label>
+              <select id="pSleep"><option value="">—</option><option>Lève-tôt 🌅</option><option>Couche-tard 🌙</option><option>Ça dépend</option></select></div>
+          </div>
+          <div class="row" style="margin-top:0">
+            <div style="flex:1"><label>Signe astro</label>
+              <select id="pZodiac"><option value="">—</option><option>Bélier</option><option>Taureau</option><option>Gémeaux</option><option>Cancer</option><option>Lion</option><option>Vierge</option><option>Balance</option><option>Scorpion</option><option>Sagittaire</option><option>Capricorne</option><option>Verseau</option><option>Poissons</option></select></div>
+            <div style="flex:1"><label>Personnalité</label>
+              <select id="pPersonality"><option value="">—</option><option>Introverti·e</option><option>Extraverti·e</option><option>Entre les deux</option></select></div>
+          </div>
+          <div class="row" style="margin-top:0">
+            <div style="flex:1"><label>Enfants</label>
+              <select id="pChildren"><option value="">—</option><option>J'en ai</option><option>Je n'en ai pas</option><option>J'en veux un jour</option><option>Je ne veux pas</option><option>Je préfère ne pas dire</option></select></div>
+            <div style="flex:1"><label>Religion</label>
+              <select id="pReligion"><option value="">—</option><option>Athée</option><option>Agnostique</option><option>Chrétien·ne</option><option>Musulman·e</option><option>Juif·ve</option><option>Hindou·e</option><option>Bouddhiste</option><option>Spirituel·le</option><option>Autre</option></select></div>
+          </div>
+          <label>Opinions politiques</label>
+          <select id="pPolitics"><option value="">—</option><option>Apolitique</option><option>Gauche</option><option>Centre</option><option>Droite</option><option>Je préfère ne pas dire</option></select>
+          <label>Animaux</label>
+          <div class="chips wrap" id="petsChips"></div>
+          <label>Musique</label>
+          <div class="chips wrap" id="musicChips"></div>
+          <label>Destinations de rêve <span class="muted" style="font-weight:400">(séparées par des virgules)</span></label>
+          <input id="pFavPlaces" placeholder="Japon, Patagonie, Islande" />
+          <label>Ma bucket list de voyage</label>
+          <textarea id="pBucket" rows="2" placeholder="Voir une aurore boréale, plonger à Bali…"></textarea>
+          <label>Instagram <span class="muted" style="font-weight:400">(sans @)</span></label>
+          <input id="pInstagram" placeholder="chloe.travels" />
+
+          <h3 class="pfield-sep">Mes prompts ✍️</h3>
+          <p class="muted" style="font-size:.8rem;margin:.2rem 0 .6rem">Choisis une question et réponds-y pour donner vie à ton profil.</p>
+          <div id="promptsWrap"></div>
+
           <div class="row">
             <button class="btn-primary" id="saveProfileBtn">Enregistrer</button>
             <button class="btn-accent" id="verifyBtn">Demander la vérification</button>
@@ -858,6 +984,11 @@
         <div id="jeuxHome" class="jeux-view">
           <h1>Jeux &amp; Quêtes 🔥</h1>
           <p class="muted" style="margin-top:0">Relève des défis, gagne des badges et débloque des coupons.</p>
+
+          <div class="card" id="suggestionsSection" style="display:none">
+            <h3 style="margin-top:0">🎯 Défis reçus</h3>
+            <div id="suggestionsList"></div>
+          </div>
 
           <div class="section-head"><h3 style="margin-top:.4rem">Jeux populaires</h3></div>
           <div class="grid2" id="gamesGrid"></div>
@@ -880,8 +1011,25 @@
           </div>
           <div class="dstats" id="detailStats"></div>
           <div class="card"><h3 style="margin-top:0">Description</h3><p class="muted" id="detailDesc" style="line-height:1.5">—</p></div>
-          <div class="coupon"><div class="cico" id="detailCouponIco">🎟️</div><div><div class="cname" id="detailCouponName">Coupon</div><div class="cdesc" id="detailCouponDesc">—</div></div></div>
-          <button class="btn-primary btn-block" id="detailCta" style="margin-top:.4rem">C'est parti ! 🚀</button>
+
+          <div class="card">
+            <h3 style="margin-top:0">🎁 Récompenses</h3>
+            <div class="person" style="border:0;padding:.2rem 0" id="detailBadgeRow">
+              <div class="qico" id="detailBadgeIco">🏅</div>
+              <div class="info"><div class="name" id="detailBadgeName">Badge</div><div class="meta" id="detailBadgeState">À débloquer</div></div>
+            </div>
+            <div class="coupon" id="detailCouponBox"><div class="cico" id="detailCouponIco">🎟️</div><div><div class="cname" id="detailCouponName">Coupon</div><div class="cdesc" id="detailCouponDesc">—</div></div></div>
+          </div>
+
+          <div class="card" id="detailCodeBox" style="display:none">
+            <label>Code du lieu partenaire 🔒</label>
+            <input id="detailCode" placeholder="Demande-le sur place" />
+            <p class="muted" style="font-size:.78rem;margin-bottom:0">Cette quête se valide avec le code affiché chez le partenaire (anti-triche).</p>
+          </div>
+
+          <button class="btn-primary btn-block" id="detailJoinBtn">➕ Rejoindre la quête</button>
+          <button class="btn-accent btn-block" id="detailCompleteBtn" style="margin-top:.5rem">✅ Marquer comme accompli</button>
+          <button class="btn-ghost btn-block" id="detailSuggestBtn" style="margin-top:.5rem">🤝 Proposer à un Mate</button>
           <div class="msg" id="detailMsg" style="text-align:center"></div>
         </div>
 
@@ -985,6 +1133,7 @@
         await ensureAuthedSession(); // attend que le jeton soit rattaché (course au rechargement)
         await ensureProfile(session.user);
         await Promise.all([loadProfile(), loadCafes(), loadCheckins(), loadConnections(), loadCircleLocations()]);
+        await loadGameData(); // après loadConnections : travelerMap dispo pour les noms des défis
         subscribeToCircle();
         subscribeMessages();
       } else {
@@ -1065,7 +1214,7 @@
     function goToTab(target) {
       document.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle("active", b.dataset.tab === target));
       document.querySelectorAll(".tab-panel").forEach((p) => show(p, p.dataset.panel === target));
-      if (target === "jeux" && typeof showJeuxView === "function") showJeuxView("jeuxHome");
+      if (target === "jeux" && typeof showJeuxView === "function") { showJeuxView("jeuxHome"); if (typeof loadGameData === "function" && myUserId) loadGameData(); }
       if (target === "connexions" && typeof showMatesView === "function") showMatesView("matesHome");
       if (target === "securite" && typeof showSecuView === "function") showSecuView("secuHome");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1094,10 +1243,28 @@
     const INTEREST_OPTS = ["Randonnée", "Plage", "Gastronomie", "Fête", "Culture", "Photo", "Aventure", "Nature", "Sport", "Nomade"];
     const LANGUAGE_OPTS = ["Français", "English", "Español", "Italiano", "Deutsch", "Português"];
     const STYLE_OPTS    = ["Routard", "Confort", "Aventure", "Slow travel", "Fête", "Nature"];
+    const INTENT_OPTS   = ["Amitié", "Compagnons de voyage", "Réseau", "Rencontre", "Fête"];
+    const PETS_OPTS     = ["Chien 🐶", "Chat 🐱", "Pas d'animaux", "J'adore les animaux"];
+    const MUSIC_OPTS    = ["Pop", "Rock", "Rap/Hip-hop", "Électro", "Jazz", "Classique", "Reggaeton", "Indie", "Métal", "World"];
+    const PROMPT_QUESTIONS = [
+      "Mon spot voyage préféré",
+      "On se reconnaît si…",
+      "Ma façon de décompresser",
+      "Mon indispensable en voyage",
+      "Le lieu qui m'a marqué·e",
+      "Ma définition d'un dimanche parfait",
+      "On s'entendra si…",
+      "Mon prochain défi",
+      "Le truc dont je ne me lasse pas",
+      "Ce qui me fait vibrer en voyage",
+    ];
 
     // État de sélection en cours
     const selInterests = new Set();
     const selLanguages = new Set();
+    const selIntent    = new Set();
+    const selPets      = new Set();
+    const selMusic     = new Set();
     let   selStyle = null;
     let   myProfile = null; // mon profil complet (utilisé pour le matchmaking)
 
@@ -1120,18 +1287,43 @@
       sync();
     }
 
-    // Calcule et affiche le taux de complétion du profil (9 éléments)
+    // Construit les 3 "prompts" (question + réponse) à la Hinge
+    function buildPrompts() {
+      const wrap = $("promptsWrap");
+      if (!wrap) return;
+      const d = myProfile || {};
+      const pairs = [[d.prompt1_q, d.prompt1_a], [d.prompt2_q, d.prompt2_a], [d.prompt3_q, d.prompt3_a]];
+      wrap.innerHTML = pairs.map((pr, i) => {
+        const opts = ['<option value="">— Choisir une question —</option>']
+          .concat(PROMPT_QUESTIONS.map((q) => `<option ${pr[0] === q ? "selected" : ""}>${escapeHtml(q)}</option>`)).join("");
+        return `<div style="margin-bottom:.7rem">
+            <select id="promptQ${i}">${opts}</select>
+            <textarea id="promptA${i}" rows="2" placeholder="Ta réponse…" style="margin-top:.3rem">${escapeHtml(pr[1] || "")}</textarea>
+          </div>`;
+      }).join("");
+      wrap.querySelectorAll("textarea,select").forEach((el) => el.addEventListener("input", updateCompletion));
+    }
+    function getPrompts() {
+      return [0, 1, 2].map((i) => ({ q: $("promptQ" + i)?.value || "", a: ($("promptA" + i)?.value || "").trim() }));
+    }
+
+    // Calcule et affiche le taux de complétion du profil
+    const COMPLETION_FIELDS = ["pUsername", "pCity", "pBio", "pFirstName", "pLastName", "pPhone",
+      "pBirthdate", "pGender", "pJob", "pHometown", "pInstagram", "pBucket", "pFavPlaces", "pHeight"];
     function updateCompletion() {
-      const filled = [
-        $("pUsername").value.trim(), $("pCity").value.trim(), $("pBio").value.trim(),
-        $("pFirstName").value.trim(), $("pLastName").value.trim(), $("pPhone").value.trim(),
-        selInterests.size ? "x" : "", selLanguages.size ? "x" : "", selStyle || "",
-      ].filter(Boolean).length;
-      const pct = Math.round((filled / 9) * 100);
+      let filled = COMPLETION_FIELDS.filter((id) => $(id) && ($(id).value || "").trim()).length;
+      if (selInterests.size) filled++;
+      if (selLanguages.size) filled++;
+      if (selIntent.size) filled++;
+      if (selStyle) filled++;
+      if (getPrompts().some((p) => p.a)) filled++;
+      const total = COMPLETION_FIELDS.length + 5;
+      const pct = Math.min(100, Math.round((filled / total) * 100));
       $("completionFill").style.width = pct + "%";
       $("completionTxt").textContent = "Profil complété à " + pct + "%";
     }
 
+    const setV = (id, v) => { const el = $(id); if (el) el.value = (v ?? ""); };
     async function loadProfile() {
       if (!myUserId) return;
       // On filtre sur MON id (avec plusieurs comptes, maybeSingle recevrait trop de lignes).
@@ -1142,20 +1334,32 @@
       const data = main.data;
       if (main.error || !data) return;
       myProfile = data;
-      $("pUsername").value = data.username || "";
-      $("pFirstName").value = data.first_name || "";
-      $("pLastName").value = data.last_name || "";
-      $("pPhone").value = priv?.data?.phone || "";
-      $("pCity").value = data.city || "";
-      $("pBio").value = data.bio || "";
+      // Champs texte / select / date simples
+      setV("pUsername", data.username); setV("pFirstName", data.first_name); setV("pLastName", data.last_name);
+      setV("pPhone", priv?.data?.phone); setV("pCity", data.city); setV("pBio", data.bio);
+      setV("pBirthdate", data.birthdate); setV("pHeight", data.height_cm);
+      setV("pGender", data.gender); setV("pPronouns", data.pronouns); setV("pOrientation", data.orientation);
+      setV("pRelationship", data.relationship_status); setV("pHometown", data.hometown);
+      setV("pJob", data.job_title); setV("pCompany", data.company); setV("pSchool", data.school); setV("pEducation", data.education_level);
+      setV("pDrinking", data.drinking); setV("pSmoking", data.smoking); setV("pCannabis", data.cannabis); setV("pDiet", data.diet);
+      setV("pFitness", data.fitness); setV("pSleep", data.sleep_schedule); setV("pZodiac", data.zodiac); setV("pPersonality", data.personality);
+      setV("pChildren", data.children); setV("pReligion", data.religion); setV("pPolitics", data.politics);
+      setV("pFavPlaces", (data.favorite_places || []).join(", ")); setV("pBucket", data.bucket_list); setV("pInstagram", data.instagram);
       $("trustScore").textContent = data.trust_score ?? 0;
-      // Recharge les sélections (chips)
+      // Sélections multiples (chips)
       selInterests.clear(); (data.interests || []).forEach((x) => selInterests.add(x));
       selLanguages.clear(); (data.languages || []).forEach((x) => selLanguages.add(x));
+      selIntent.clear(); (data.intent || []).forEach((x) => selIntent.add(x));
+      selPets.clear(); (data.pets || []).forEach((x) => selPets.add(x));
+      selMusic.clear(); (data.music || []).forEach((x) => selMusic.add(x));
       selStyle = data.travel_style || null;
       buildChips("interestChips", INTEREST_OPTS, selInterests, false);
       buildChips("languageChips", LANGUAGE_OPTS, selLanguages, false);
       buildChips("styleChips", STYLE_OPTS, null, true);
+      buildChips("intentChips", INTENT_OPTS, selIntent, false);
+      buildChips("petsChips", PETS_OPTS, selPets, false);
+      buildChips("musicChips", MUSIC_OPTS, selMusic, false);
+      buildPrompts();
       updateCompletion();
       const uname = data.username || "Voyageur";
       $("profileName").textContent = uname;
@@ -1165,23 +1369,35 @@
       const badge = $("verifBadge");
       badge.textContent = data.is_verified ? "✅ Vérifié" : "Non vérifié";
       badge.className = "badge " + (data.is_verified ? "ok" : "no");
+      const cp = $("contactPrefVal"); if (cp) cp.textContent = (data.allow_contact === "connections") ? "Connexions ›" : "Tout le monde ›";
     }
 
     $("saveProfileBtn").addEventListener("click", async () => {
       const msg = $("profileMsg");
       if (!myUserId) { msg.style.color = "var(--danger)"; msg.textContent = "Reconnecte-toi puis réessaie."; return; }
       msg.style.color = "var(--muted)"; msg.textContent = "Enregistrement…";
+      const txt = (id) => { const v = ($(id)?.value || "").trim(); return v || null; };
+      const num = (id) => { const v = parseInt($(id)?.value, 10); return isNaN(v) ? null : v; };
+      const arr = (id) => ($(id)?.value || "").split(",").map((s) => s.trim()).filter(Boolean);
+      const pr = getPrompts();
       // upsert = crée le profil s'il n'existe pas, le met à jour sinon (profil de A à Z)
       const { error } = await db.from("profiles").upsert({
         id: myUserId,
-        username: $("pUsername").value.trim(),
-        first_name: $("pFirstName").value.trim(),
-        last_name: $("pLastName").value.trim(),
-        city: $("pCity").value.trim(),
-        bio: $("pBio").value.trim(),
-        interests: [...selInterests],
-        languages: [...selLanguages],
-        travel_style: selStyle,
+        username: txt("pUsername"), first_name: txt("pFirstName"), last_name: txt("pLastName"),
+        city: txt("pCity"), bio: txt("pBio"),
+        interests: [...selInterests], languages: [...selLanguages], travel_style: selStyle,
+        intent: [...selIntent], pets: [...selPets], music: [...selMusic],
+        birthdate: txt("pBirthdate"), height_cm: num("pHeight"),
+        gender: txt("pGender"), pronouns: txt("pPronouns"), orientation: txt("pOrientation"),
+        relationship_status: txt("pRelationship"), hometown: txt("pHometown"),
+        job_title: txt("pJob"), company: txt("pCompany"), school: txt("pSchool"), education_level: txt("pEducation"),
+        drinking: txt("pDrinking"), smoking: txt("pSmoking"), cannabis: txt("pCannabis"), diet: txt("pDiet"),
+        fitness: txt("pFitness"), sleep_schedule: txt("pSleep"), zodiac: txt("pZodiac"), personality: txt("pPersonality"),
+        children: txt("pChildren"), religion: txt("pReligion"), politics: txt("pPolitics"),
+        favorite_places: arr("pFavPlaces"), bucket_list: txt("pBucket"), instagram: txt("pInstagram"),
+        prompt1_q: pr[0].q || null, prompt1_a: pr[0].a || null,
+        prompt2_q: pr[1].q || null, prompt2_a: pr[1].a || null,
+        prompt3_q: pr[2].q || null, prompt3_a: pr[2].a || null,
       });
       // Téléphone : stocké à part dans profiles_private (privé, RLS propriétaire)
       const { error: errPhone } = await db.from("profiles_private").upsert({
@@ -1247,23 +1463,28 @@
           <div class="name">${escapeHtml(c.name)} ${c.is_eco ? '<span class="eco">🌱 éco</span>' : ''}</div>
           <div class="meta">${escapeHtml(c.category || '')} · ${escapeHtml(c.city || '')}</div>
           <div class="meta">${escapeHtml(c.safety_note || '')}</div>
-          <button class="btn-accent" data-checkin="${c.id}">Check-in ici (+10)</button>
+          <button class="btn-accent" data-checkin="${c.id}" data-name="${escapeHtml(c.name)}">🔒 Check-in ici (+10)</button>
         </div>`).join("");
       list.querySelectorAll("[data-checkin]").forEach((b) =>
-        b.addEventListener("click", () => checkIn(Number(b.dataset.checkin))));
+        b.addEventListener("click", () => checkIn(Number(b.dataset.checkin), b.dataset.name)));
       loadHome(); // garde l'accueil synchronisé
     }
 
-    async function checkIn(cafeId) {
+    // Check-in SÉCURISÉ : il faut le CODE affiché sur place. Les points sont
+    // attribués par la fonction serveur redeem_checkin (anti-triche) : le
+    // navigateur ne peut ni lire le code ni gonfler le score lui-même.
+    async function checkIn(cafeId, cafeName) {
       const msg = $("cafesMsg");
       if (!myUserId) return;
-      const { error } = await db.from("checkpoints").insert({ user_id: myUserId, cafe_id: cafeId });
+      const code = prompt("Entre le code affiché à « " + (cafeName || "ce lieu") + " » pour valider ton check-in :");
+      if (code === null) return; // annulé
+      msg.style.color = "var(--muted)"; msg.textContent = "Vérification du code…";
+      const { data, error } = await db.rpc("redeem_checkin", { p_cafe_id: cafeId, p_code: code });
       if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; return; }
-      // +10 points de confiance par check-in
-      const { data: prof } = await db.from("profiles").select("trust_score").eq("id", myUserId).maybeSingle();
-      await db.from("profiles").update({ trust_score: (prof?.trust_score || 0) + 10 }).eq("id", myUserId);
-      msg.style.color = "var(--ok)"; msg.textContent = "Check-in enregistré ✅ (+10 points)";
-      await Promise.all([loadProfile(), loadCheckins()]);
+      const res = data || {};
+      msg.style.color = res.ok ? "var(--ok)" : "var(--danger)";
+      msg.textContent = res.message || (res.ok ? "Check-in validé ✅" : "Échec.");
+      if (res.ok) await Promise.all([loadProfile(), loadCheckins()]);
     }
 
     // ====================== CHECK-INS ======================
@@ -1329,7 +1550,7 @@
       if (!myUserId) return;
       const myId = myUserId;
       const [{ data: profiles }, { data: conns }] = await Promise.all([
-        db.from("profiles").select("id, username, city, is_verified, trust_score, bio, interests, languages, travel_style, avatar_url"),
+        db.from("profiles").select("*"),
         db.from("matches_connections").select("*"),
       ]);
       const all = profiles || [];
@@ -1430,6 +1651,7 @@
     // Carte « Pour toi » : top 3 matchs
     function renderRecos() {
       const top = travelersCache
+        .filter((p) => p.is_demo) // recommandations basées sur les profils démo/IA
         .map((p) => ({ p, pct: compatibility(myMatchProfile, p), reasons: matchReasons(myMatchProfile, p) }))
         .filter((o) => o.pct > 0)
         .sort((a, b) => b.pct - a.pct)
@@ -1456,7 +1678,14 @@
     function renderTravelers(query) {
       const q = (query || "").trim().toLowerCase();
       let list = travelersCache
-        .filter((p) => !q || (p.username || "").toLowerCase().includes(q) || (p.city || "").toLowerCase().includes(q))
+        .filter((p) => {
+          const nameHit = (p.username || "").toLowerCase().includes(q);
+          const cityHit = (p.city || "").toLowerCase().includes(q);
+          // Profils démo (IA) : toujours visibles dans la découverte.
+          if (p.is_demo) return !q || nameHit || cityHit;
+          // Vrais utilisateurs : trouvables UNIQUEMENT en cherchant leur pseudo.
+          return q && nameHit;
+        })
         .map((p) => ({ p, pct: compatibility(myMatchProfile, p), reasons: matchReasons(myMatchProfile, p) }));
       if (travFilters.verified) list = list.filter((o) => o.p.is_verified);
       if (travFilters.city) list = list.filter((o) => sameCityAs(myMatchProfile, o.p));
@@ -1475,7 +1704,7 @@
             <span class="compat ${compatTier(pct)}">❤️ ${pct}%</span></div>`).join("")
         : (q || travFilters.verified || travFilters.city || travFilters.affinity
             ? '<p class="muted">Aucun voyageur ne correspond à ces critères.</p>'
-            : '<p class="muted">Aucun autre voyageur pour l\'instant. Invite quelqu\'un à s\'inscrire !</p>');
+            : '<p class="muted">Découvre nos voyageurs ci-dessus 🌍 — pour trouver une vraie personne, tape son pseudo dans la recherche.</p>');
       $("travelersList").querySelectorAll("[data-profile]").forEach((el) =>
         el.addEventListener("click", () => openTravelerProfile(travelerMap[el.dataset.profile])));
     }
@@ -1513,79 +1742,97 @@
         ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     }
 
-    // ====================== JEUX / QUÊTES / BADGES / COUPONS ======================
-    // Étape VISUELLE : données d'exemple (pas encore branchées à Supabase).
-    // Plus tard, ces tableaux seront remplacés par des appels db.from(...).
-    const GAMES = [
-      { name: "Chasse au Trésor Urbaine", city: "Lisbonne, Portugal", emoji: "🗺️", color: "",     participants: "428",   rating: "9.5", coupon: ["🍸", "Cocktail Bar", "-20% sur ton premier verre"], desc: "Réalise cette chasse au trésor en collaboration avec tes Mates ! Trouvez ensemble les quatre checkpoints cachés dans la ville. Chaque étape validée débloque un badge et des avantages exclusifs chez nos commerçants partenaires." },
-      { name: "Quiz de Culture Locale",   city: "Barcelone, Espagne", emoji: "🧠", color: "blue",  participants: "1 240", rating: "9.2", coupon: ["🎟️", "Musée Picasso", "Entrée à -50%"], desc: "Teste tes connaissances sur l'histoire et les traditions locales. Réponds en équipe avec tes Mates pour décrocher le meilleur score et gagner des récompenses." },
-      { name: "Safari Photo Urbain",       city: "Berlin, Allemagne",  emoji: "📸", color: "purp",  participants: "980",   rating: "9.4", coupon: ["☕", "Green Bean Hub", "1 café offert"], desc: "Capture les plus beaux spots street-art de la ville. Poste tes clichés, fais voter la communauté et débloque le badge Photographe Urbain." },
-      { name: "Défi Culinaire",            city: "Rome, Italie",       emoji: "🍝", color: "green", participants: "756",   rating: "9.6", coupon: ["🍕", "Trattoria Roma", "Dessert offert"], desc: "Pars à la découverte des meilleures adresses locales avec tes Mates et relève des défis gourmands à chaque table." },
-    ];
-
-    const QUESTS = [
-      { name: "Photo Panoramique",          emoji: "📷", city: "Stockholm, Suède", participants: "2 428", rating: "9.5", coupon: ["📷", "Fotografiska Museum", "Entrée gratuite"], desc: "Atteins les trois belvédères indiqués sur ta carte, prends une photo avec tes Mates et poste tes clichés pour confirmer votre exploit. En immortalisant ce panorama, tu débloques le badge Photographe Urbain ainsi que des avantages exclusifs chez nos partenaires locaux." },
-      { name: "Pause Café Secrète",         emoji: "☕", city: "Lisbonne, Portugal", participants: "1 102", rating: "9.3", coupon: ["☕", "Le Comptoir Solaire", "Boisson offerte"], desc: "Trouve le café partenaire caché du quartier, fais-y un check-in avec un Mate et savoure une pause bien méritée. Ce moment partagé te rapporte des points de confiance." },
-      { name: "Rencontre d'Artisan",        emoji: "🧑‍🎨", city: "Barcelone, Espagne", participants: "640", rating: "9.1", coupon: ["🛍️", "Boutique Locale", "-15% de réduction"], desc: "Va à la rencontre d'un artisan local recommandé par la communauté, découvre son savoir-faire et soutiens l'économie locale." },
-      { name: "Cocktail Bar (signature)",   emoji: "🍸", city: "Berlin, Allemagne", participants: "880", rating: "9.0", coupon: ["🍸", "Cocktail Bar", "-20% sur ton premier verre"], desc: "Goûte le cocktail signature d'un bar partenaire en bonne compagnie. Une sortie conviviale et sécurisée entre Mates." },
-      { name: "Sensations Fortes",          emoji: "🪂", city: "Interlaken, Suisse", participants: "412", rating: "9.7", coupon: ["🎟️", "Adventure Park", "Activité à -10%"], desc: "Relève un défi à sensations avec tes Mates : tyrolienne, parapente ou via ferrata. L'aventure, c'est mieux à plusieurs !" },
-      { name: "Valider ton premier trajet", emoji: "🧭", city: "Partout", participants: "5 600", rating: "9.8", coupon: ["🚗", "Bolt", "-10% sur ton prochain trajet"], desc: "Effectue ton tout premier trajet vérifié avec un Mate de confiance et débloque ton badge de bienvenue." },
-    ];
-
-    const BADGES = [
-      { name: "Randonnée Épique",  emoji: "⛰️", prog: "3/3",   done: true },
-      { name: "Explorateur Urbain", emoji: "🏙️", prog: "5/5",  done: true },
-      { name: "Social Champion",   emoji: "🤝", prog: "10/20", done: false },
-      { name: "Foodie Tour",       emoji: "🍔", prog: "3/5",   done: false },
-      { name: "Beach Clean-up",    emoji: "🏖️", prog: "5/5",   done: true },
-      { name: "Night Ride",        emoji: "🌙", prog: "2/5",   done: false },
-      { name: "Co-working King",   emoji: "💻", prog: "2/2",   done: true },
-      { name: "Globe-trotter",     emoji: "🌍", prog: "4/10",  done: false },
-      { name: "Bon Samaritain",    emoji: "🛟", prog: "1/3",   done: false },
-    ];
-
-    const COUPONS = [
-      { emoji: "🍸", name: "Cocktail Bar", desc: "-20% sur votre premier verre !" },
-      { emoji: "📷", name: "Fotografiska Museum", desc: "Entrée gratuite." },
-      { emoji: "🚗", name: "Bolt", desc: "-10% sur votre prochain trajet !" },
-      { emoji: "🛍️", name: "Boutique Locale", desc: "-15% de réduction !" },
-    ];
-
+    // ====================== JEUX / QUÊTES / BADGES / COUPONS (réels via Supabase) ======================
+    let allQuests = [];          // définitions (table quests)
     const headColors = ["", "blue", "purp", "green"];
+    let myQuestStatus = {};      // quest_key -> 'joined' | 'completed'
+    let myBadgeKeys = new Set(); // badges débloqués (clés)
+    let myCoupons = [];          // coupons gagnés
+    let mySuggestions = [];      // défis reçus (en attente)
+    let currentQuest = null;     // quête ouverte dans la vue détail
+
+    // Charge toutes les données de jeu de l'utilisateur connecté.
+    async function loadGameData() {
+      if (!myUserId) return;
+      const [qs, uq, ub, uc, sg] = await Promise.all([
+        db.from("quests").select("*").order("sort_order"),
+        db.from("user_quests").select("quest_key,status").eq("user_id", myUserId),
+        db.from("user_badges").select("badge_key,name,emoji").eq("user_id", myUserId),
+        db.from("user_coupons").select("*").eq("user_id", myUserId).order("earned_at", { ascending: false }),
+        db.from("quest_suggestions").select("*").eq("to_user", myUserId).eq("status", "pending").order("created_at", { ascending: false }),
+      ]);
+      allQuests = qs.data || [];
+      myQuestStatus = {}; (uq.data || []).forEach((r) => { myQuestStatus[r.quest_key] = r.status; });
+      myBadgeKeys = new Set((ub.data || []).map((b) => b.badge_key));
+      myCoupons = uc.data || [];
+      mySuggestions = sg.data || [];
+      renderJeux();
+    }
+
+    const questByKey = (k) => allQuests.find((q) => q.key === k);
 
     function renderJeux() {
+      const games = allQuests.filter((q) => q.kind === "game");
+      const quests = allQuests.filter((q) => q.kind === "quest");
+
       // Jeux populaires
-      $("gamesGrid").innerHTML = GAMES.map((g, i) => `
-        <div class="gcard" data-game="${i}">
-          <div class="ghead ${headColors[i % 4]}">${g.emoji}<span class="grate">★ ${g.rating}</span></div>
-          <div class="gbody"><div class="gname">${escapeHtml(g.name)}</div><div class="gcity">${escapeHtml(g.city)}</div></div>
+      $("gamesGrid").innerHTML = games.map((g, i) => `
+        <div class="gcard" data-qkey="${g.key}">
+          <div class="ghead ${headColors[i % 4]}">${g.emoji}<span class="grate">★ ${escapeHtml(g.rating || "")}</span></div>
+          <div class="gbody"><div class="gname">${escapeHtml(g.title)}${myQuestStatus[g.key] === "completed" ? " ✅" : ""}</div><div class="gcity">${escapeHtml(g.city || "")}</div></div>
         </div>`).join("");
-      $("gamesGrid").querySelectorAll("[data-game]").forEach((el) =>
-        el.addEventListener("click", () => openDetail(GAMES[Number(el.dataset.game)])));
 
       // Quêtes du jour
-      $("questsList").innerHTML = QUESTS.map((q, i) => `
-        <div class="qrow" data-quest="${i}">
+      $("questsList").innerHTML = quests.length ? quests.map((q) => `
+        <div class="qrow" data-qkey="${q.key}">
           <div class="qico">${q.emoji}</div>
-          <div class="qname">${escapeHtml(q.name)}</div>
+          <div class="qname">${escapeHtml(q.title)}${myQuestStatus[q.key] === "completed" ? " ✅" : (myQuestStatus[q.key] === "joined" ? " · en cours" : "")}</div>
           <div class="qarrow">›</div>
-        </div>`).join("");
-      $("questsList").querySelectorAll("[data-quest]").forEach((el) =>
-        el.addEventListener("click", () => openDetail(QUESTS[Number(el.dataset.quest)])));
+        </div>`).join("") : '<p class="muted">Lance le script SQL pour voir les quêtes 🙂</p>';
 
-      // Badges
-      $("badgeGrid").innerHTML = BADGES.map((b) => `
-        <div class="bitem ${b.done ? "" : "locked"}">
-          <div class="hex">${b.emoji}</div>
-          <div class="bname">${escapeHtml(b.name)}</div>
-          <div class="bprog">${b.done ? "✅ débloqué" : b.prog}</div>
-        </div>`).join("");
+      // clic → détail (jeux + quêtes)
+      document.querySelectorAll("[data-qkey]").forEach((el) =>
+        el.addEventListener("click", () => openDetail(questByKey(el.dataset.qkey))));
 
-      // Coupons
-      $("couponList").innerHTML = COUPONS.map((c) => `
-        <div class="coupon"><div class="cico">${c.emoji}</div>
-          <div><div class="cname">${escapeHtml(c.name)}</div><div class="cdesc">${escapeHtml(c.desc)}</div></div>
-        </div>`).join("");
+      // Badges : tous les badges définis (uniques), verrouillés sauf si gagnés
+      const defs = []; const seen = new Set();
+      allQuests.forEach((q) => { if (q.badge_key && !seen.has(q.badge_key)) { seen.add(q.badge_key); defs.push({ key: q.badge_key, name: q.badge_name, emoji: q.badge_emoji }); } });
+      const earned = defs.filter((d) => myBadgeKeys.has(d.key)).length;
+      $("badgeGrid").innerHTML = defs.map((b) => {
+        const done = myBadgeKeys.has(b.key);
+        return `<div class="bitem ${done ? "" : "locked"}">
+          <div class="hex">${b.emoji || "🏅"}</div>
+          <div class="bname">${escapeHtml(b.name || "")}</div>
+          <div class="bprog">${done ? "✅ débloqué" : "🔒 à débloquer"}</div>
+        </div>`;
+      }).join("");
+      // Compteurs remis à la réalité (0 si rien d'accompli)
+      const bm = $("openBadges").querySelector(".t-meta"); if (bm) bm.textContent = earned + "/" + defs.length + " débloqués";
+      const cm = $("openCoupons").querySelector(".t-meta"); if (cm) cm.textContent = myCoupons.length + " disponible" + (myCoupons.length > 1 ? "s" : "");
+      const bh = document.querySelectorAll("#jeuxBadges .badge.warn, #jeuxBadges .badge.ok");
+      if (bh[0]) bh[0].textContent = earned + " / " + defs.length;
+      if (bh[1]) bh[1].textContent = String(myCoupons.length);
+
+      // Coupons réels
+      $("couponList").innerHTML = myCoupons.length
+        ? myCoupons.map((c) => `<div class="coupon"><div class="cico">🎟️</div>
+            <div><div class="cname">${escapeHtml(c.title || "Coupon")}</div><div class="cdesc">${escapeHtml(c.descr || "")}${c.used ? " · utilisé" : ""}</div></div></div>`).join("")
+        : '<p class="muted">Pas encore de coupon. Accomplis une quête qui en offre un 🎟️</p>';
+
+      // Défis reçus (proposés par mes Mates)
+      const sec = $("suggestionsSection");
+      if (mySuggestions.length) {
+        sec.style.display = "";
+        $("suggestionsList").innerHTML = mySuggestions.map((s) => {
+          const fromName = travelerMap[s.from_user]?.username || "Un Mate";
+          return `<div class="qrow" data-sugg="${escapeHtml(s.quest_key)}">
+            <div class="qico">🎯</div>
+            <div class="qname">${escapeHtml(s.quest_title || "Une quête")}<div class="meta muted" style="font-size:.76rem">proposé par ${escapeHtml(fromName)}</div></div>
+            <div class="qarrow">›</div></div>`;
+        }).join("");
+        $("suggestionsList").querySelectorAll("[data-sugg]").forEach((el) =>
+          el.addEventListener("click", () => { const q = questByKey(el.dataset.sugg); if (q) openDetail(q); }));
+      } else { sec.style.display = "none"; }
     }
 
     // Affiche une seule sous-vue de l'onglet Jeux
@@ -1594,30 +1841,113 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function openDetail(item) {
-      $("detailEmoji").textContent = item.emoji;
-      $("detailName").textContent = item.name;
-      $("detailCity").textContent = item.city;
-      $("detailDesc").textContent = item.desc;
+    function openDetail(q) {
+      if (!q) return;
+      currentQuest = q;
+      const status = myQuestStatus[q.key];
+      $("detailEmoji").textContent = q.emoji || "🎮";
+      $("detailName").textContent = q.title;
+      $("detailCity").textContent = q.city || "";
+      $("detailDesc").textContent = q.description || "";
       $("detailStats").innerHTML = `
-        <div class="dstat"><b>${item.participants}</b><span>Participants</span></div>
-        <div class="dstat"><b>★ ${item.rating}</b><span>Note</span></div>
-        <div class="dstat"><b>2/4</b><span>Coupons</span></div>`;
-      $("detailCouponIco").textContent = item.coupon[0];
-      $("detailCouponName").textContent = item.coupon[1];
-      $("detailCouponDesc").textContent = item.coupon[2];
-      $("detailMsg").textContent = "";
+        <div class="dstat"><b>${escapeHtml(q.participants || "—")}</b><span>Participants</span></div>
+        <div class="dstat"><b>★ ${escapeHtml(q.rating || "—")}</b><span>Note</span></div>
+        <div class="dstat"><b>+${q.points || 0}</b><span>Points</span></div>`;
+      // Récompense badge
+      $("detailBadgeIco").textContent = q.badge_emoji || "🏅";
+      $("detailBadgeName").textContent = q.badge_name || "Badge";
+      $("detailBadgeState").textContent = myBadgeKeys.has(q.badge_key) ? "✅ Débloqué" : "À débloquer";
+      // Récompense coupon (si la mission en accorde un)
+      if (q.coupon_title) {
+        $("detailCouponBox").style.display = "";
+        $("detailCouponName").textContent = q.coupon_title;
+        $("detailCouponDesc").textContent = q.coupon_desc || "";
+      } else { $("detailCouponBox").style.display = "none"; }
+      // Champ code si la quête se valide par code (et pas déjà accomplie)
+      $("detailCodeBox").style.display = (q.requires_code && status !== "completed") ? "" : "none";
+      if ($("detailCode")) $("detailCode").value = "";
+      // Boutons selon l'état
+      const joinBtn = $("detailJoinBtn"), compBtn = $("detailCompleteBtn");
+      joinBtn.style.display = status ? "none" : "";
+      compBtn.style.display = status === "completed" ? "none" : "";
+      $("detailMsg").style.color = "var(--muted)";
+      $("detailMsg").textContent = status === "completed" ? "✅ Quête accomplie !" : (status === "joined" ? "🎒 Quête en cours" : "");
       showJeuxView("jeuxDetail");
     }
 
-    // Boutons "Retour" des sous-vues
+    // Rejoindre une quête
+    $("detailJoinBtn").addEventListener("click", async () => {
+      if (!currentQuest || !myUserId) return;
+      const m = $("detailMsg"); m.style.color = "var(--muted)"; m.textContent = "…";
+      const { error } = await db.from("user_quests")
+        .upsert({ user_id: myUserId, quest_key: currentQuest.key, status: "joined" }, { onConflict: "user_id,quest_key" });
+      if (error) { m.style.color = "var(--danger)"; m.textContent = "Erreur : " + error.message; return; }
+      myQuestStatus[currentQuest.key] = "joined";
+      openDetail(currentQuest);
+      m.style.color = "var(--ok)"; m.textContent = "Quête rejointe ! 🎒";
+    });
+
+    // Marquer comme accompli → valide le code si requis, attribue badge + coupon + points
+    $("detailCompleteBtn").addEventListener("click", async () => {
+      if (!currentQuest || !myUserId) return;
+      const m = $("detailMsg");
+      const code = currentQuest.requires_code ? ($("detailCode").value || "").trim() : null;
+      if (currentQuest.requires_code && !code) { m.style.color = "var(--danger)"; m.textContent = "Entre le code du lieu pour valider."; return; }
+      m.style.color = "var(--muted)"; m.textContent = "Validation…";
+      const { data, error } = await db.rpc("complete_quest", { p_quest_key: currentQuest.key, p_code: code });
+      if (error) { m.style.color = "var(--danger)"; m.textContent = "Erreur : " + error.message; return; }
+      const res = data || {};
+      m.style.color = res.ok ? "var(--ok)" : "var(--danger)";
+      m.textContent = res.message || (res.ok ? "Accompli ✅" : "Échec.");
+      if (res.ok) { await Promise.all([loadGameData(), loadProfile()]); const q = questByKey(currentQuest.key); if (q) openDetail(q); }
+    });
+
+    // Proposer la quête à un Mate (section dédiée + message dans le chat)
+    $("detailSuggestBtn").addEventListener("click", () => {
+      if (!currentQuest) return;
+      const mates = [...connectedIds].map((id) => travelerMap[id]).filter(Boolean);
+      const m = $("detailMsg");
+      if (!mates.length) { m.style.color = "var(--danger)"; m.textContent = "Connecte-toi d'abord avec un Mate pour lui proposer un défi."; return; }
+      openPicker("À quel Mate proposer ce défi ?",
+        mates.map((p) => ({ label: p.username || "Voyageur", avatar: p.avatar_url, id: p.id })),
+        (item) => suggestQuestTo(item.id, currentQuest));
+    });
+
+    async function suggestQuestTo(toUserId, quest, msgEl) {
+      closePicker();
+      const m = msgEl || $("detailMsg"); m.style.color = "var(--muted)"; m.textContent = "Envoi du défi…";
+      const { error } = await db.from("quest_suggestions").insert({
+        from_user: myUserId, to_user: toUserId, quest_key: quest.key, quest_title: quest.title,
+      });
+      // + un message dans le chat (option « les deux »)
+      await db.from("messages").insert({ sender_id: myUserId, recipient_id: toUserId, content: "🎯 Je te propose la quête : " + quest.title });
+      if (error) { m.style.color = "var(--danger)"; m.textContent = "Erreur : " + error.message; return; }
+      m.style.color = "var(--ok)"; m.textContent = "Défi proposé ✅";
+    }
+
+    // Boutons "Retour" des sous-vues + accès badges/coupons
     document.querySelectorAll("[data-back]").forEach((b) =>
       b.addEventListener("click", () => showJeuxView("jeuxHome")));
     $("openBadges").addEventListener("click", () => showJeuxView("jeuxBadges"));
     $("openCoupons").addEventListener("click", () => showJeuxView("jeuxCoupons"));
-    $("detailCta").addEventListener("click", () => {
-      const m = $("detailMsg"); m.style.color = "var(--ok)"; m.textContent = "Défi rejoint ! (démo visuelle) 🎉";
-    });
+
+    // ---- Sélecteur générique (overlay : choisir un Mate) ----
+    let pickerCb = null;
+    function openPicker(title, items, cb) {
+      pickerCb = cb;
+      $("pickerTitle").textContent = title;
+      $("pickerBody").innerHTML = items.length
+        ? items.map((it, i) => `<div class="matepick" data-pick="${i}">
+            ${avatarMarkup(it.label, it.avatar)}
+            <div class="info"><div class="name">${escapeHtml(it.label)}</div></div></div>`).join("")
+        : '<p class="muted">Personne pour l\'instant.</p>';
+      $("pickerBody").querySelectorAll("[data-pick]").forEach((el) =>
+        el.addEventListener("click", () => { const it = items[Number(el.dataset.pick)]; if (pickerCb) pickerCb(it); }));
+      show($("pickerOverlay"), true);
+    }
+    function closePicker() { show($("pickerOverlay"), false); pickerCb = null; }
+    $("pickerClose").addEventListener("click", closePicker);
+    $("pickerOverlay").addEventListener("click", (e) => { if (e.target.id === "pickerOverlay") closePicker(); });
 
     // ====================== MESSAGERIE (chat réel via Supabase) ======================
     let travelerMap = {};         // profils chargés depuis Supabase (pour la fiche)
@@ -1711,7 +2041,18 @@
     }
 
     // ====================== PROFIL VOYAGEUR DÉTAILLÉ ======================
-    function openTravelerProfile(p) {
+    // Calcule l'âge à partir d'une date de naissance
+    function ageFrom(birthdate) {
+      if (!birthdate) return null;
+      const d = new Date(birthdate); if (isNaN(d)) return null;
+      const now = new Date(); let a = now.getFullYear() - d.getFullYear();
+      const mm = now.getMonth() - d.getMonth();
+      if (mm < 0 || (mm === 0 && now.getDate() < d.getDate())) a--;
+      return (a > 0 && a < 120) ? a : null;
+    }
+    const tpCell = (k, v) => v ? `<div class="pcell"><div class="k">${escapeHtml(k)}</div><div class="v">${escapeHtml(String(v))}</div></div>` : "";
+
+    async function openTravelerProfile(p) {
       if (!p) return;
       currentTravelerId = p.id;
       const name = p.username || "Voyageur";
@@ -1736,16 +2077,62 @@
         ? p.interests.map((t) => "#" + t.replace(/\s/g, ""))
         : ["#SoloTravel", "#AdventureTogether", "#SunMates"];
       $("tpTags").innerHTML = tags.map((t) => `<span>${escapeHtml(t)}</span>`).join("");
+      // Grille d'infos riche (n'affiche que les champs renseignés)
+      const age = ageFrom(p.birthdate);
+      const cells = [
+        tpCell("Âge", age ? age + " ans" : ""),
+        tpCell("Genre", [p.gender, p.pronouns].filter(Boolean).join(" · ")),
+        tpCell("Orientation", p.orientation),
+        tpCell("Recherche", (p.intent || []).join(", ")),
+        tpCell("Métier", [p.job_title, p.company].filter(Boolean).join(" · ")),
+        tpCell("Études", [p.education_level, p.school].filter(Boolean).join(" · ")),
+        tpCell("Origine", p.hometown),
+        tpCell("Taille", p.height_cm ? p.height_cm + " cm" : ""),
+        tpCell("Langues", (p.languages || []).join(", ")),
+        tpCell("Style de voyage", p.travel_style),
+        tpCell("Alcool", p.drinking),
+        tpCell("Tabac", p.smoking),
+        tpCell("Régime", p.diet),
+        tpCell("Sport", p.fitness),
+        tpCell("Signe astro", p.zodiac),
+        tpCell("Personnalité", p.personality),
+        tpCell("Enfants", p.children),
+        tpCell("Animaux", (p.pets || []).join(", ")),
+        tpCell("Musique", (p.music || []).join(", ")),
+        tpCell("Instagram", p.instagram ? "@" + p.instagram : ""),
+        tpCell("Destinations de rêve", (p.favorite_places || []).join(", ")),
+        tpCell("Bucket list", p.bucket_list),
+      ].filter(Boolean).join("");
+      $("tpGrid").innerHTML = cells || '<p class="muted">Profil encore peu rempli.</p>';
+      // Prompts (seulement ceux qui ont une réponse)
+      const prompts = [[p.prompt1_q, p.prompt1_a], [p.prompt2_q, p.prompt2_a], [p.prompt3_q, p.prompt3_a]].filter((x) => x[1]);
+      $("tpPrompts").innerHTML = prompts.map((x) =>
+        `<div class="pprompt"><div class="pq">${escapeHtml(x[0] || "")}</div><div class="pa">${escapeHtml(x[1])}</div></div>`).join("");
       // Bouton connexion adapté si déjà connecté
       const cbtn = $("tpConnectBtn");
       if (connectedIds.has(p.id)) { cbtn.textContent = "✅ Connecté"; cbtn.disabled = true; cbtn.style.opacity = ".6"; }
       else { cbtn.textContent = "Connexion"; cbtn.disabled = false; cbtn.style.opacity = "1"; }
       $("tpMsg").textContent = "";
+      $("tpBadgesCard").style.display = "none"; $("tpBadges").innerHTML = "";
       showMatesView("matesProfile");
+      // Badges du voyageur (chargés en arrière-plan)
+      const { data: badges } = await db.from("user_badges").select("badge_key,name,emoji").eq("user_id", p.id);
+      if (badges && badges.length) {
+        $("tpBadgesCard").style.display = "";
+        $("tpBadges").innerHTML = badges.map((b) =>
+          `<div class="bitem"><div class="hex">${b.emoji || "🏅"}</div><div class="bname">${escapeHtml(b.name || "")}</div><div class="bprog">✅</div></div>`).join("");
+      }
     }
     $("tpMsgBtn").addEventListener("click", () => { if (currentTravelerId) openChat(currentTravelerId); });
+    // Proposer un défi à CE voyageur (doit être une connexion acceptée)
     $("tpChallengeBtn").addEventListener("click", () => {
-      const m = $("tpMsg"); m.style.color = "var(--ok)"; m.textContent = "Défi proposé ! (démo visuelle) 🎯";
+      const m = $("tpMsg");
+      if (!currentTravelerId) return;
+      if (!connectedIds.has(currentTravelerId)) { m.style.color = "var(--danger)"; m.textContent = "Connecte-toi d'abord avec ce Mate pour lui proposer un défi."; return; }
+      if (!allQuests.length) { m.style.color = "var(--danger)"; m.textContent = "Aucune quête disponible (lance le script SQL)."; return; }
+      openPicker("Quel défi proposer ?",
+        allQuests.map((q) => ({ label: (q.emoji || "🎯") + " " + q.title, key: q.key })),
+        (item) => { const q = questByKey(item.key); if (q) suggestQuestTo(currentTravelerId, q, m); });
     });
     $("tpConnectBtn").addEventListener("click", async () => {
       const m = $("tpMsg");
@@ -1768,12 +2155,39 @@
     document.querySelectorAll("[data-sback]").forEach((b) =>
       b.addEventListener("click", () => showSecuView("secuHome")));
 
-    // Lignes "Sécurité & confidentialité" / "Préférences" (visuelles)
+    // Lignes "Sécurité & confidentialité" / "Préférences" — fonctionnelles
     document.querySelectorAll("[data-secu]").forEach((el) =>
-      el.addEventListener("click", () => {
-        const m = $("secuMsg"); m.style.color = "var(--muted)";
-        m.textContent = "« " + el.querySelector(".qname").textContent + " » — bientôt disponible 🙂";
-      }));
+      el.addEventListener("click", () => handleSecu(el.dataset.secu)));
+
+    async function handleSecu(action) {
+      const m = $("helpMsg"); m.style.color = "var(--text)";
+      if (action === "signaler") {
+        const mates = [...connectedIds].map((id) => travelerMap[id]).filter(Boolean);
+        if (!mates.length) { m.style.color = "var(--danger)"; m.textContent = "Tu n'as pas encore de connexion à signaler."; return; }
+        openPicker("Signaler un voyageur", mates.map((p) => ({ label: p.username || "Voyageur", avatar: p.avatar_url, id: p.id })), async (it) => {
+          closePicker();
+          const reason = prompt("Pour quelle raison signales-tu « " + it.label + " » ?");
+          if (!reason) return;
+          const { error } = await db.from("reports").insert({ reporter: myUserId, reported_user: it.id, reason });
+          m.style.color = error ? "var(--danger)" : "var(--ok)";
+          m.textContent = error ? "Erreur : " + error.message : "Signalement envoyé. Merci, on regarde ça. 🙏";
+        });
+      } else if (action === "historique") {
+        m.style.color = "var(--text)";
+        m.textContent = "Tu as " + connectedIds.size + " connexion(s) et " + $("checkinCount").textContent + " check-in(s). Détail dans les onglets Profil & Mates.";
+      } else if (action === "contact") {
+        const cur = (myProfile?.allow_contact === "connections") ? "connections" : "everyone";
+        const next = cur === "everyone" ? "connections" : "everyone";
+        const { error } = await db.from("profiles").update({ allow_contact: next }).eq("id", myUserId);
+        if (!error && myProfile) myProfile.allow_contact = next;
+        const cp = $("contactPrefVal"); if (cp) cp.textContent = (next === "connections" ? "Connexions ›" : "Tout le monde ›");
+        m.style.color = error ? "var(--danger)" : "var(--ok)";
+        m.textContent = error ? "Erreur : " + error.message
+          : "Préférence enregistrée : " + (next === "connections" ? "seules tes connexions peuvent te contacter" : "tout le monde peut te contacter") + " ✅";
+      } else if (action === "assistance") {
+        window.location.href = "mailto:support@sunmates.app?subject=Assistance%20SunMates";
+      }
+    }
 
     // Actions de l'écran "Besoin d'aide"
     document.querySelectorAll("[data-help]").forEach((el) =>
@@ -1789,8 +2203,23 @@
         else { m.textContent = "Action bientôt disponible 🙂"; }
       }));
 
-    renderJeux();          // Jeux/Quêtes : rendu immédiat (données d'exemple, visuel)
-    // Les conversations réelles sont remplies par loadConnections() après connexion.
+    // Les données de jeu (quêtes/badges/coupons/défis) sont chargées par
+    // loadGameData() après la connexion ; les conversations par loadConnections().
+
+    // ---- Accueil : chips de catégorie (sélection) + recherche ----
+    function filterHomeCafes(q) {
+      q = (q || "").trim().toLowerCase();
+      document.querySelectorAll("#homeCafes .tile").forEach((t) => {
+        t.style.display = (!q || t.textContent.toLowerCase().includes(q)) ? "" : "none";
+      });
+    }
+    document.querySelectorAll("#homeChips .chip").forEach((b) =>
+      b.addEventListener("click", () => {
+        document.querySelectorAll("#homeChips .chip").forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        filterHomeCafes($("homeSearch").value);
+      }));
+    $("homeSearch").addEventListener("input", (e) => filterHomeCafes(e.target.value));
 
     // Au chargement : vérifie s'il y a déjà une session
     db.auth.getSession().then(({ data }) => render(data.session));
