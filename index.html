@@ -577,6 +577,47 @@
     .picker-card { background: var(--paper); width: 100%; max-width: 460px; border-radius: 22px 22px 0 0; padding: 1.2rem 1.1rem 1.6rem; max-height: 80vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,.25); }
     .picker-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
 
+    /* ===================================================================
+       SESSION 3 — Notifications, toasts, feed d'accueil, accordéon profil
+       =================================================================== */
+    .topbar-actions { display: flex; align-items: center; gap: .5rem; }
+    .iconbtn { background: rgba(255,255,255,.75); border: 1px solid rgba(244,101,94,.15); border-radius: 12px; padding: .45rem .6rem; font-size: 1.15rem; line-height: 1; box-shadow: var(--shadow-sm); cursor: pointer; position: relative; }
+    .nbadge { position: absolute; top: -6px; right: -6px; background: var(--accent); color: #fff; font-size: .62rem; font-weight: 800; min-width: 17px; height: 17px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 4px; box-shadow: 0 2px 6px rgba(244,101,94,.5); }
+    .bottom-nav button { position: relative; }
+    .navbadge { position: absolute; top: 3px; right: calc(50% - 22px); background: var(--accent); color: #fff; font-size: .6rem; font-weight: 800; min-width: 16px; height: 16px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 3px; box-shadow: 0 2px 6px rgba(244,101,94,.5); }
+
+    /* Toasts (notifications éphémères) */
+    #toastWrap { position: fixed; top: .7rem; left: 50%; transform: translateX(-50%); z-index: 300; display: flex; flex-direction: column; gap: .5rem; width: calc(100% - 1.5rem); max-width: 430px; pointer-events: none; }
+    .toast { pointer-events: auto; background: rgba(45,35,50,.96); color: #fff; border-radius: 14px; padding: .7rem .9rem; display: flex; align-items: center; gap: .6rem; box-shadow: 0 12px 30px rgba(0,0,0,.3); animation: toastIn .3s cubic-bezier(.2,.8,.3,1) both; cursor: pointer; }
+    .toast .tico { font-size: 1.35rem; flex-shrink: 0; }
+    .toast .ttxt { font-size: .85rem; line-height: 1.25; } .toast .ttxt b { font-weight: 700; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) scale(.96); } to { opacity: 1; transform: none; } }
+
+    /* Panneau de notifications (cloche) */
+    #notifPanel { position: fixed; inset: 0; z-index: 210; background: rgba(40,25,20,.45); display: flex; align-items: flex-start; justify-content: center; }
+    #notifPanel.hidden { display: none; }
+    .notif-card { background: var(--paper); width: 100%; max-width: 460px; margin-top: 3.4rem; border-radius: 22px; padding: 1.1rem; max-height: 74vh; overflow-y: auto; box-shadow: 0 22px 55px rgba(0,0,0,.32); }
+    .notif-item { display: flex; align-items: center; gap: .7rem; padding: .6rem; border-radius: 12px; cursor: pointer; }
+    .notif-item:hover { background: #fff6f3; }
+    .notif-item .nemoji { font-size: 1.35rem; flex-shrink: 0; }
+
+    /* Fil d'actualité de l'accueil */
+    .feed-card { background: linear-gradient(180deg, #fff, var(--paper)); border: 1px solid rgba(244,101,94,.1); border-radius: 18px; padding: .85rem 1rem; margin-bottom: .7rem; display: flex; gap: .75rem; align-items: center; box-shadow: var(--shadow-sm); cursor: pointer; transition: transform .18s, box-shadow .18s; }
+    .feed-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .feed-card .fic { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; font-size: 1.35rem; background: var(--accent-soft); flex-shrink: 0; }
+    .feed-card .fbody { flex: 1; min-width: 0; }
+    .feed-card .ftitle { font-weight: 700; color: var(--ink-warm); font-size: .92rem; }
+    .feed-card .fmeta { color: var(--muted); font-size: .78rem; }
+    .feed-card .fcta { color: var(--retro-teal); font-weight: 700; font-size: .8rem; white-space: nowrap; }
+
+    /* Accordéon du formulaire de profil */
+    .pf-section { border: 1px solid rgba(244,101,94,.14); border-radius: 16px; margin-bottom: .7rem; overflow: hidden; background: #fff; }
+    .pf-head { display: flex; align-items: center; justify-content: space-between; padding: .85rem 1rem; cursor: pointer; font-weight: 700; color: var(--ink-warm); font-family: "Fraunces", serif; font-size: 1rem; }
+    .pf-head .chev { transition: transform .2s; color: var(--muted); }
+    .pf-section.open .pf-head .chev { transform: rotate(90deg); }
+    .pf-body { display: none; padding: 0 1rem 1rem; }
+    .pf-section.open .pf-body { display: block; }
+
     /* Le grain et les ombres restent désactivés pour « mouvement réduit »
        déjà géré plus haut ; rien d'animé n'est ajouté ici. */
   </style>
@@ -590,6 +631,17 @@
     <div class="picker-card">
       <div class="picker-head"><h3 id="pickerTitle" style="margin:0">Choisir</h3><button id="pickerClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
       <div id="pickerBody"></div>
+    </div>
+  </div>
+
+  <!-- Notifications éphémères (toasts) -->
+  <div id="toastWrap"></div>
+
+  <!-- Panneau de notifications (ouvert par la cloche) -->
+  <div id="notifPanel" class="hidden">
+    <div class="notif-card">
+      <div class="picker-head"><h3 style="margin:0">Notifications 🔔</h3><button id="notifClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
+      <div id="notifList"></div>
     </div>
   </div>
 
@@ -623,7 +675,8 @@
   <section id="appView" class="app-shell hidden">
     <header class="topbar">
       <div class="brand"><span class="mark">🌅</span><b><span class="sun">Sun</span>Mates</b></div>
-      <div id="userBox" class="hidden">
+      <div class="topbar-actions hidden" id="userBox">
+        <button class="iconbtn" id="notifBell">🔔<span class="nbadge hidden" id="notifBellCount">0</span></button>
         <button class="btn-ghost" id="logoutBtn" style="padding:.5rem .8rem;font-size:.82rem">Déconnexion</button>
       </div>
     </header>
@@ -634,6 +687,10 @@
         <h1 id="homeHello">Salut 🌞</h1>
         <p class="muted" style="margin-top:0">Prêt·e pour ta prochaine aventure ?</p>
 
+        <div class="section-head"><h3 style="margin-top:.6rem">Ton fil ✨</h3><a id="feedRefresh" style="cursor:pointer">↻ Rafraîchir</a></div>
+        <div id="homeFeed"><p class="muted">Chargement…</p></div>
+
+        <div class="section-head"><h3>Explorer des lieux sûrs</h3></div>
         <div class="search">
           <span class="ico">🔍</span>
           <input id="homeSearch" type="text" placeholder="Rechercher un lieu, une ville…" />
@@ -768,16 +825,23 @@
       <!-- ---------------- Onglet SÉCURITÉ ---------------- -->
       <div class="tab-panel hidden" data-panel="securite">
 
-        <!-- Vue principale : UNIQUEMENT le bouton SOS -->
+        <!-- Vue principale : SOS bien visible + quelques accès rapides -->
         <div id="secuHome" class="secu-view">
           <h1>Sécurité 🚨</h1>
           <p class="muted" style="margin-top:0">En cas de besoin, un seul geste. On est là pour toi.</p>
-          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:48vh;gap:1.2rem">
-            <button class="btn-danger" id="needHelpBtn" style="font-size:1.3rem;padding:1.6rem 1rem;max-width:340px">🆘 J'ai besoin d'aide</button>
-            <p class="muted" style="text-align:center;font-size:.85rem;max-width:320px">
-              Appuie ici pour accéder au partage de position, à l'alerte d'urgence,
-              à ton cercle de confiance et à toutes les options de sécurité.
-            </p>
+
+          <div class="card" style="background:var(--sunset-grad);border:0;text-align:center;padding:1.8rem 1.2rem">
+            <div style="font-size:2.6rem;margin-bottom:.4rem">🆘</div>
+            <button class="btn-danger" id="needHelpBtn" style="font-size:1.3rem;padding:1.4rem 1rem;width:100%;max-width:340px;background:#fff;color:#d11">J'ai besoin d'aide</button>
+            <p style="color:#fff;font-size:.82rem;margin:.9rem 0 0;text-shadow:0 1px 6px rgba(0,0,0,.2)">Position, alerte d'urgence, cercle de confiance et plus.</p>
+          </div>
+
+          <div class="section-head"><h3>Accès rapides</h3></div>
+          <div class="grid2">
+            <div class="tile" data-secuquick="position"><div class="thumb">📍</div><div class="t-name">Partager ma position</div><div class="t-meta">À mon cercle</div></div>
+            <div class="tile" data-secuquick="emergency"><div class="thumb">🚨</div><div class="t-name">Alerte d'urgence</div><div class="t-meta">Diffuser ma position</div></div>
+            <div class="tile" data-secuquick="circle"><div class="thumb green">🛟</div><div class="t-name">Mon cercle</div><div class="t-meta">Positions partagées</div></div>
+            <div class="tile" data-secuquick="lieux"><div class="thumb blue">🏛️</div><div class="t-name">Aide à proximité</div><div class="t-meta">Police · hôpital</div></div>
           </div>
           <div class="msg" id="secuMsg" style="text-align:center"></div>
         </div>
@@ -854,117 +918,157 @@
 
         <div class="card">
           <h3 style="margin-top:0">Modifier mon profil</h3>
-          <label>Photo de profil</label>
-          <div class="avatar-edit">
-            <div class="avatar lg" id="pAvatarPreview">😎</div>
-            <div style="flex:1">
-              <label for="pAvatarFile" class="btn-accent" style="display:inline-block;cursor:pointer;padding:.6rem 1rem">📷 Choisir une photo</label>
-              <input id="pAvatarFile" type="file" accept="image/*" style="display:none" />
-              <div class="msg" id="avatarMsg" style="margin-top:.3rem"></div>
+          <p class="muted" style="font-size:.82rem;margin-top:0">Touche une section pour la déplier. Pense à <strong>Enregistrer</strong> en bas.</p>
+
+          <!-- Section 1 : Photo & présentation (ouverte par défaut) -->
+          <div class="pf-section open">
+            <div class="pf-head">📸 Photo &amp; présentation<span class="chev">›</span></div>
+            <div class="pf-body">
+              <label>Photo de profil</label>
+              <div class="avatar-edit">
+                <div class="avatar lg" id="pAvatarPreview">😎</div>
+                <div style="flex:1">
+                  <label for="pAvatarFile" class="btn-accent" style="display:inline-block;cursor:pointer;padding:.6rem 1rem">📷 Choisir une photo</label>
+                  <input id="pAvatarFile" type="file" accept="image/*" style="display:none" />
+                  <div class="msg" id="avatarMsg" style="margin-top:.3rem"></div>
+                </div>
+              </div>
+              <label>Pseudo</label>
+              <input id="pUsername" placeholder="Chloé" />
+              <div class="row" style="margin-top:0">
+                <div style="flex:1"><label>Prénom</label><input id="pFirstName" placeholder="Chloé" /></div>
+                <div style="flex:1"><label>Nom</label><input id="pLastName" placeholder="Martin" /></div>
+              </div>
+              <label>Téléphone <span class="muted" style="font-weight:400">(privé, visible que par toi)</span></label>
+              <input id="pPhone" type="tel" placeholder="+33 6 12 34 56 78" />
+              <label>Ville actuelle</label>
+              <input id="pCity" placeholder="Lisbonne" />
+              <label>Bio</label>
+              <textarea id="pBio" rows="3" placeholder="Exploratrice solo, fan de cafés calmes ☕"></textarea>
             </div>
           </div>
-          <label>Pseudo</label>
-          <input id="pUsername" placeholder="Chloé" />
-          <div class="row" style="margin-top:0">
-            <div style="flex:1"><label>Prénom</label><input id="pFirstName" placeholder="Chloé" /></div>
-            <div style="flex:1"><label>Nom</label><input id="pLastName" placeholder="Martin" /></div>
-          </div>
-          <label>Téléphone <span class="muted" style="font-weight:400">(privé, visible que par toi)</span></label>
-          <input id="pPhone" type="tel" placeholder="+33 6 12 34 56 78" />
-          <label>Ville actuelle</label>
-          <input id="pCity" placeholder="Lisbonne" />
-          <label>Bio</label>
-          <textarea id="pBio" rows="3" placeholder="Exploratrice solo, fan de cafés calmes ☕"></textarea>
 
-          <label>Centres d'intérêt</label>
-          <div class="chips wrap" id="interestChips"></div>
-          <label>Langues parlées</label>
-          <div class="chips wrap" id="languageChips"></div>
-          <label>Style de voyage</label>
-          <div class="chips wrap" id="styleChips"></div>
+          <!-- Section 2 : Voyage & affinités -->
+          <div class="pf-section">
+            <div class="pf-head">🧭 Voyage &amp; affinités<span class="chev">›</span></div>
+            <div class="pf-body">
+              <label>Je suis ici pour</label>
+              <div class="chips wrap" id="intentChips"></div>
+              <label>Centres d'intérêt</label>
+              <div class="chips wrap" id="interestChips"></div>
+              <label>Langues parlées</label>
+              <div class="chips wrap" id="languageChips"></div>
+              <label>Style de voyage</label>
+              <div class="chips wrap" id="styleChips"></div>
+            </div>
+          </div>
 
-          <h3 class="pfield-sep">Je suis ici pour</h3>
-          <div class="chips wrap" id="intentChips"></div>
+          <!-- Section 3 : Identité -->
+          <div class="pf-section">
+            <div class="pf-head">🪪 Identité<span class="chev">›</span></div>
+            <div class="pf-body">
+              <div class="row" style="margin-top:0">
+                <div style="flex:1"><label>Date de naissance</label><input id="pBirthdate" type="date" /></div>
+                <div style="flex:1"><label>Taille (cm)</label><input id="pHeight" type="number" min="120" max="230" placeholder="170" /></div>
+              </div>
+              <div class="row" style="margin-top:0">
+                <div style="flex:1"><label>Genre</label>
+                  <select id="pGender"><option value="">—</option><option>Femme</option><option>Homme</option><option>Non-binaire</option><option>Autre</option></select></div>
+                <div style="flex:1"><label>Pronoms</label>
+                  <select id="pPronouns"><option value="">—</option><option>elle</option><option>il</option><option>iel</option><option>elle/iel</option><option>il/iel</option></select></div>
+              </div>
+              <div class="row" style="margin-top:0">
+                <div style="flex:1"><label>Orientation</label>
+                  <select id="pOrientation"><option value="">—</option><option>Hétéro</option><option>Homo</option><option>Bi</option><option>Pansexuel·le</option><option>Asexuel·le</option><option>Queer</option><option>Je préfère ne pas dire</option></select></div>
+                <div style="flex:1"><label>Statut</label>
+                  <select id="pRelationship"><option value="">—</option><option>Célibataire</option><option>En couple</option><option>C'est compliqué</option><option>Je préfère ne pas dire</option></select></div>
+              </div>
+              <label>Ville d'origine</label>
+              <input id="pHometown" placeholder="Nantes, France" />
+            </div>
+          </div>
 
-          <h3 class="pfield-sep">Identité</h3>
-          <div class="row" style="margin-top:0">
-            <div style="flex:1"><label>Date de naissance</label><input id="pBirthdate" type="date" /></div>
-            <div style="flex:1"><label>Taille (cm)</label><input id="pHeight" type="number" min="120" max="230" placeholder="170" /></div>
+          <!-- Section 4 : Travail & études -->
+          <div class="pf-section">
+            <div class="pf-head">💼 Travail &amp; études<span class="chev">›</span></div>
+            <div class="pf-body">
+              <div class="row" style="margin-top:0">
+                <div style="flex:1"><label>Métier</label><input id="pJob" placeholder="Photographe" /></div>
+                <div style="flex:1"><label>Entreprise</label><input id="pCompany" placeholder="Freelance" /></div>
+              </div>
+              <label>École / université</label>
+              <input id="pSchool" placeholder="Université de Lisbonne" />
+              <label>Niveau d'études</label>
+              <select id="pEducation"><option value="">—</option><option>Lycée</option><option>Bac+2/3</option><option>Master</option><option>Doctorat</option><option>Autre</option></select>
+            </div>
           </div>
-          <div class="row" style="margin-top:0">
-            <div style="flex:1"><label>Genre</label>
-              <select id="pGender"><option value="">—</option><option>Femme</option><option>Homme</option><option>Non-binaire</option><option>Autre</option></select></div>
-            <div style="flex:1"><label>Pronoms</label>
-              <select id="pPronouns"><option value="">—</option><option>elle</option><option>il</option><option>iel</option><option>elle/iel</option><option>il/iel</option></select></div>
-          </div>
-          <div class="row" style="margin-top:0">
-            <div style="flex:1"><label>Orientation</label>
-              <select id="pOrientation"><option value="">—</option><option>Hétéro</option><option>Homo</option><option>Bi</option><option>Pansexuel·le</option><option>Asexuel·le</option><option>Queer</option><option>Je préfère ne pas dire</option></select></div>
-            <div style="flex:1"><label>Statut</label>
-              <select id="pRelationship"><option value="">—</option><option>Célibataire</option><option>En couple</option><option>C'est compliqué</option><option>Je préfère ne pas dire</option></select></div>
-          </div>
-          <label>Ville d'origine</label>
-          <input id="pHometown" placeholder="Nantes, France" />
 
-          <h3 class="pfield-sep">Travail &amp; études</h3>
-          <div class="row" style="margin-top:0">
-            <div style="flex:1"><label>Métier</label><input id="pJob" placeholder="Photographe" /></div>
-            <div style="flex:1"><label>Entreprise</label><input id="pCompany" placeholder="Freelance" /></div>
+          <!-- Section 5 : Style de vie -->
+          <div class="pf-section">
+            <div class="pf-head">🌿 Style de vie<span class="chev">›</span></div>
+            <div class="pf-body">
+              <div class="row" style="margin-top:0">
+                <div style="flex:1"><label>Alcool</label>
+                  <select id="pDrinking"><option value="">—</option><option>Jamais</option><option>Socialement</option><option>Souvent</option></select></div>
+                <div style="flex:1"><label>Tabac</label>
+                  <select id="pSmoking"><option value="">—</option><option>Non-fumeur·se</option><option>Occasionnel</option><option>Régulier</option></select></div>
+              </div>
+              <div class="row" style="margin-top:0">
+                <div style="flex:1"><label>Cannabis</label>
+                  <select id="pCannabis"><option value="">—</option><option>Jamais</option><option>Parfois</option><option>Régulièrement</option></select></div>
+                <div style="flex:1"><label>Régime</label>
+                  <select id="pDiet"><option value="">—</option><option>Omnivore</option><option>Végétarien·ne</option><option>Végan·e</option><option>Pescétarien·ne</option><option>Halal</option><option>Casher</option></select></div>
+              </div>
+              <div class="row" style="margin-top:0">
+                <div style="flex:1"><label>Sport / forme</label>
+                  <select id="pFitness"><option value="">—</option><option>Jamais</option><option>Parfois</option><option>Souvent</option><option>Tous les jours</option></select></div>
+                <div style="flex:1"><label>Rythme</label>
+                  <select id="pSleep"><option value="">—</option><option>Lève-tôt 🌅</option><option>Couche-tard 🌙</option><option>Ça dépend</option></select></div>
+              </div>
+              <div class="row" style="margin-top:0">
+                <div style="flex:1"><label>Signe astro</label>
+                  <select id="pZodiac"><option value="">—</option><option>Bélier</option><option>Taureau</option><option>Gémeaux</option><option>Cancer</option><option>Lion</option><option>Vierge</option><option>Balance</option><option>Scorpion</option><option>Sagittaire</option><option>Capricorne</option><option>Verseau</option><option>Poissons</option></select></div>
+                <div style="flex:1"><label>Personnalité</label>
+                  <select id="pPersonality"><option value="">—</option><option>Introverti·e</option><option>Extraverti·e</option><option>Entre les deux</option></select></div>
+              </div>
+              <div class="row" style="margin-top:0">
+                <div style="flex:1"><label>Enfants</label>
+                  <select id="pChildren"><option value="">—</option><option>J'en ai</option><option>Je n'en ai pas</option><option>J'en veux un jour</option><option>Je ne veux pas</option><option>Je préfère ne pas dire</option></select></div>
+                <div style="flex:1"><label>Religion</label>
+                  <select id="pReligion"><option value="">—</option><option>Athée</option><option>Agnostique</option><option>Chrétien·ne</option><option>Musulman·e</option><option>Juif·ve</option><option>Hindou·e</option><option>Bouddhiste</option><option>Spirituel·le</option><option>Autre</option></select></div>
+              </div>
+              <label>Opinions politiques</label>
+              <select id="pPolitics"><option value="">—</option><option>Apolitique</option><option>Gauche</option><option>Centre</option><option>Droite</option><option>Je préfère ne pas dire</option></select>
+              <label>Animaux</label>
+              <div class="chips wrap" id="petsChips"></div>
+              <label>Musique</label>
+              <div class="chips wrap" id="musicChips"></div>
+            </div>
           </div>
-          <label>École / université</label>
-          <input id="pSchool" placeholder="Université de Lisbonne" />
-          <label>Niveau d'études</label>
-          <select id="pEducation"><option value="">—</option><option>Lycée</option><option>Bac+2/3</option><option>Master</option><option>Doctorat</option><option>Autre</option></select>
 
-          <h3 class="pfield-sep">Style de vie</h3>
-          <div class="row" style="margin-top:0">
-            <div style="flex:1"><label>Alcool</label>
-              <select id="pDrinking"><option value="">—</option><option>Jamais</option><option>Socialement</option><option>Souvent</option></select></div>
-            <div style="flex:1"><label>Tabac</label>
-              <select id="pSmoking"><option value="">—</option><option>Non-fumeur·se</option><option>Occasionnel</option><option>Régulier</option></select></div>
+          <!-- Section 6 : Plus sur moi -->
+          <div class="pf-section">
+            <div class="pf-head">✨ Plus sur moi<span class="chev">›</span></div>
+            <div class="pf-body">
+              <label>Destinations de rêve <span class="muted" style="font-weight:400">(séparées par des virgules)</span></label>
+              <input id="pFavPlaces" placeholder="Japon, Patagonie, Islande" />
+              <label>Ma bucket list de voyage</label>
+              <textarea id="pBucket" rows="2" placeholder="Voir une aurore boréale, plonger à Bali…"></textarea>
+              <label>Instagram <span class="muted" style="font-weight:400">(sans @)</span></label>
+              <input id="pInstagram" placeholder="chloe.travels" />
+            </div>
           </div>
-          <div class="row" style="margin-top:0">
-            <div style="flex:1"><label>Cannabis</label>
-              <select id="pCannabis"><option value="">—</option><option>Jamais</option><option>Parfois</option><option>Régulièrement</option></select></div>
-            <div style="flex:1"><label>Régime</label>
-              <select id="pDiet"><option value="">—</option><option>Omnivore</option><option>Végétarien·ne</option><option>Végan·e</option><option>Pescétarien·ne</option><option>Halal</option><option>Casher</option></select></div>
-          </div>
-          <div class="row" style="margin-top:0">
-            <div style="flex:1"><label>Sport / forme</label>
-              <select id="pFitness"><option value="">—</option><option>Jamais</option><option>Parfois</option><option>Souvent</option><option>Tous les jours</option></select></div>
-            <div style="flex:1"><label>Rythme</label>
-              <select id="pSleep"><option value="">—</option><option>Lève-tôt 🌅</option><option>Couche-tard 🌙</option><option>Ça dépend</option></select></div>
-          </div>
-          <div class="row" style="margin-top:0">
-            <div style="flex:1"><label>Signe astro</label>
-              <select id="pZodiac"><option value="">—</option><option>Bélier</option><option>Taureau</option><option>Gémeaux</option><option>Cancer</option><option>Lion</option><option>Vierge</option><option>Balance</option><option>Scorpion</option><option>Sagittaire</option><option>Capricorne</option><option>Verseau</option><option>Poissons</option></select></div>
-            <div style="flex:1"><label>Personnalité</label>
-              <select id="pPersonality"><option value="">—</option><option>Introverti·e</option><option>Extraverti·e</option><option>Entre les deux</option></select></div>
-          </div>
-          <div class="row" style="margin-top:0">
-            <div style="flex:1"><label>Enfants</label>
-              <select id="pChildren"><option value="">—</option><option>J'en ai</option><option>Je n'en ai pas</option><option>J'en veux un jour</option><option>Je ne veux pas</option><option>Je préfère ne pas dire</option></select></div>
-            <div style="flex:1"><label>Religion</label>
-              <select id="pReligion"><option value="">—</option><option>Athée</option><option>Agnostique</option><option>Chrétien·ne</option><option>Musulman·e</option><option>Juif·ve</option><option>Hindou·e</option><option>Bouddhiste</option><option>Spirituel·le</option><option>Autre</option></select></div>
-          </div>
-          <label>Opinions politiques</label>
-          <select id="pPolitics"><option value="">—</option><option>Apolitique</option><option>Gauche</option><option>Centre</option><option>Droite</option><option>Je préfère ne pas dire</option></select>
-          <label>Animaux</label>
-          <div class="chips wrap" id="petsChips"></div>
-          <label>Musique</label>
-          <div class="chips wrap" id="musicChips"></div>
-          <label>Destinations de rêve <span class="muted" style="font-weight:400">(séparées par des virgules)</span></label>
-          <input id="pFavPlaces" placeholder="Japon, Patagonie, Islande" />
-          <label>Ma bucket list de voyage</label>
-          <textarea id="pBucket" rows="2" placeholder="Voir une aurore boréale, plonger à Bali…"></textarea>
-          <label>Instagram <span class="muted" style="font-weight:400">(sans @)</span></label>
-          <input id="pInstagram" placeholder="chloe.travels" />
 
-          <h3 class="pfield-sep">Mes prompts ✍️</h3>
-          <p class="muted" style="font-size:.8rem;margin:.2rem 0 .6rem">Choisis une question et réponds-y pour donner vie à ton profil.</p>
-          <div id="promptsWrap"></div>
+          <!-- Section 7 : Mes prompts -->
+          <div class="pf-section">
+            <div class="pf-head">✍️ Mes prompts<span class="chev">›</span></div>
+            <div class="pf-body">
+              <p class="muted" style="font-size:.8rem;margin:.2rem 0 .6rem">Choisis une question et réponds-y pour donner vie à ton profil.</p>
+              <div id="promptsWrap"></div>
+            </div>
+          </div>
 
-          <div class="row">
+          <div class="row" style="margin-top:1rem">
             <button class="btn-primary" id="saveProfileBtn">Enregistrer</button>
             <button class="btn-accent" id="verifyBtn">Demander la vérification</button>
           </div>
@@ -1059,8 +1163,8 @@
     <nav class="bottom-nav">
       <button data-tab="accueil" class="active"><span class="ni">🏠</span>Accueil</button>
       <button data-tab="lieux"><span class="ni">🛟</span>Lieux</button>
-      <button data-tab="jeux"><span class="ni">🎮</span>Jeux</button>
-      <button data-tab="connexions"><span class="ni">🤝</span>Mates</button>
+      <button data-tab="jeux"><span class="ni">🎮</span>Jeux<span class="navbadge hidden" id="navJeux"></span></button>
+      <button data-tab="connexions"><span class="ni">🤝</span>Mates<span class="navbadge hidden" id="navMates"></span></button>
       <button data-tab="securite"><span class="ni">🚨</span>Sécurité</button>
       <button data-tab="profil"><span class="ni">👤</span>Profil</button>
     </nav>
@@ -1134,12 +1238,18 @@
         await ensureProfile(session.user);
         await Promise.all([loadProfile(), loadCafes(), loadCheckins(), loadConnections(), loadCircleLocations()]);
         await loadGameData(); // après loadConnections : travelerMap dispo pour les noms des défis
+        await loadUnread();
+        buildHomeFeed();
         subscribeToCircle();
         subscribeMessages();
+        subscribeConnections();
+        subscribeSuggestions();
       } else {
         myUserId = null;
         unsubscribeCircle();
         unsubscribeMessages();
+        unsubscribeConnections();
+        unsubscribeSuggestions();
       }
     }
 
@@ -1215,7 +1325,7 @@
       document.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle("active", b.dataset.tab === target));
       document.querySelectorAll(".tab-panel").forEach((p) => show(p, p.dataset.panel === target));
       if (target === "jeux" && typeof showJeuxView === "function") { showJeuxView("jeuxHome"); if (typeof loadGameData === "function" && myUserId) loadGameData(); }
-      if (target === "connexions" && typeof showMatesView === "function") showMatesView("matesHome");
+      if (target === "connexions" && typeof showMatesView === "function") { showMatesView("matesHome"); if (typeof markMsgsSeen === "function") markMsgsSeen(); }
       if (target === "securite" && typeof showSecuView === "function") showSecuView("secuHome");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -1565,6 +1675,7 @@
 
       // Demandes reçues (je suis user_b, statut en attente)
       const received = list.filter((c) => c.user_b === myId && c.status === "pending");
+      pendingRequestsList = received.map((c) => ({ connId: c.id, fromId: c.user_a }));
       $("requestsList").innerHTML = received.length
         ? received.map((c) => `<div class="person">
             ${avatarMarkup(nameOf(c.user_a), avatarOf(c.user_a))}
@@ -1606,6 +1717,8 @@
       travelersCache = all.filter((p) => p.id !== myId && !related.has(p.id));
       renderTravelers($("travSearch") ? $("travSearch").value : "");
       renderRecos();
+      if (typeof updateNotifBadges === "function") updateNotifBadges();
+      if (typeof buildHomeFeed === "function") buildHomeFeed();
     }
 
     // ---- Matchmaking : compatibilité enrichie ----
@@ -1767,6 +1880,8 @@
       myCoupons = uc.data || [];
       mySuggestions = sg.data || [];
       renderJeux();
+      if (typeof updateNotifBadges === "function") updateNotifBadges();
+      if (typeof buildHomeFeed === "function") buildHomeFeed();
     }
 
     const questByKey = (k) => allQuests.find((q) => q.key === k);
@@ -2030,7 +2145,13 @@
             $("chatBody").insertAdjacentHTML("beforeend", bubbleHtml(m));
             scrollChatBottom();
           } else if (m.recipient_id === myUserId && m.sender_id !== myUserId) {
-            loadConnections(); // message reçu hors conversation ouverte → rafraîchit la liste
+            // message reçu hors conversation ouverte → toast + pastille
+            unreadList.unshift({ sender_id: m.sender_id, content: m.content, created_at: m.created_at });
+            unreadMsgCount = unreadList.length;
+            updateNotifBadges();
+            toast("💬", `<b>${escapeHtml(nameById(m.sender_id))}</b> t'a envoyé un message`,
+              () => { goToTab("connexions"); openChat(m.sender_id); markMsgsSeen(); });
+            loadConnections();
           }
         })
         .subscribe();
@@ -2220,6 +2341,136 @@
         filterHomeCafes($("homeSearch").value);
       }));
     $("homeSearch").addEventListener("input", (e) => filterHomeCafes(e.target.value));
+
+    // ====================== NOTIFICATIONS / TOASTS / FEED ======================
+    let pendingRequestsList = [];  // demandes de connexion reçues (en attente)
+    let unreadList = [];           // messages non lus (depuis le dernier passage)
+    let unreadMsgCount = 0;
+    const nameById = (id) => (travelerMap[id]?.username) || "Un voyageur";
+
+    // ---- Toasts (notifications éphémères) ----
+    function toast(emoji, html, onClick) {
+      const wrap = $("toastWrap"); if (!wrap) return;
+      const el = document.createElement("div");
+      el.className = "toast";
+      el.innerHTML = `<div class="tico">${emoji}</div><div class="ttxt">${html}</div>`;
+      if (onClick) el.addEventListener("click", () => { onClick(); el.remove(); });
+      wrap.appendChild(el);
+      setTimeout(() => { el.style.transition = "opacity .3s"; el.style.opacity = "0"; setTimeout(() => el.remove(), 320); }, 5200);
+    }
+
+    // ---- Messages non lus (basé sur un horodatage stocké localement) ----
+    const seenKey = () => "sm_seen_msgs_" + myUserId;
+    async function loadUnread() {
+      if (!myUserId) return;
+      let since = localStorage.getItem(seenKey());
+      if (!since) { since = new Date().toISOString(); localStorage.setItem(seenKey(), since); }
+      const { data } = await db.from("messages").select("sender_id,content,created_at")
+        .eq("recipient_id", myUserId).gt("created_at", since).order("created_at", { ascending: false });
+      unreadList = (data || []).filter((m) => m.sender_id !== myUserId);
+      unreadMsgCount = unreadList.length;
+      updateNotifBadges();
+    }
+    function markMsgsSeen() {
+      if (!myUserId) return;
+      localStorage.setItem(seenKey(), new Date().toISOString());
+      unreadList = []; unreadMsgCount = 0; updateNotifBadges();
+    }
+
+    // ---- Pastilles (barre du bas + cloche) ----
+    function setBadge(id, n) {
+      const el = $(id); if (!el) return;
+      if (n > 0) { el.textContent = n > 9 ? "9+" : String(n); el.classList.remove("hidden"); }
+      else el.classList.add("hidden");
+    }
+    function updateNotifBadges() {
+      const mates = pendingRequestsList.length + unreadMsgCount;
+      const jeux = (mySuggestions || []).length;
+      setBadge("navMates", mates);
+      setBadge("navJeux", jeux);
+      setBadge("notifBellCount", mates + jeux);
+    }
+
+    // ---- Panneau de notifications (cloche) ----
+    function openNotifPanel() {
+      const items = [];
+      pendingRequestsList.forEach((r) => items.push({ e: "📨", h: `<b>${escapeHtml(nameById(r.fromId))}</b> souhaite se connecter`, go: () => { closeNotif(); goToTab("connexions"); } }));
+      unreadList.forEach((u) => items.push({ e: "💬", h: `Nouveau message de <b>${escapeHtml(nameById(u.sender_id))}</b>`, go: () => { closeNotif(); goToTab("connexions"); openChat(u.sender_id); markMsgsSeen(); } }));
+      (mySuggestions || []).forEach((s) => items.push({ e: "🎯", h: `<b>${escapeHtml(nameById(s.from_user))}</b> te propose : ${escapeHtml(s.quest_title || "une quête")}`, go: () => { closeNotif(); goToTab("jeux"); } }));
+      $("notifList").innerHTML = items.length
+        ? items.map((it, i) => `<div class="notif-item" data-n="${i}"><div class="nemoji">${it.e}</div><div class="info"><div class="name">${it.h}</div></div><div class="qarrow">›</div></div>`).join("")
+        : '<p class="muted" style="text-align:center;padding:1rem">Aucune notification pour l\'instant 🎉</p>';
+      $("notifList").querySelectorAll("[data-n]").forEach((el) => el.addEventListener("click", () => items[Number(el.dataset.n)].go()));
+      show($("notifPanel"), true);
+    }
+    function closeNotif() { show($("notifPanel"), false); }
+    $("notifBell").addEventListener("click", openNotifPanel);
+    $("notifClose").addEventListener("click", closeNotif);
+    $("notifPanel").addEventListener("click", (e) => { if (e.target.id === "notifPanel") closeNotif(); });
+
+    // ---- Fil d'actualité de l'accueil ----
+    function buildHomeFeed() {
+      const feed = $("homeFeed"); if (!feed) return;
+      const items = [];
+      (mySuggestions || []).forEach((s) => items.push({ ic: "🎯", title: nameById(s.from_user) + " te propose un défi", meta: s.quest_title || "", cta: "Voir", go: () => goToTab("jeux") }));
+      pendingRequestsList.forEach((r) => items.push({ ic: "📨", title: nameById(r.fromId) + " souhaite se connecter", meta: "Demande de connexion", cta: "Répondre", go: () => goToTab("connexions") }));
+      const topReco = (travelersCache || []).filter((p) => p.is_demo).map((p) => ({ p, pct: compatibility(myMatchProfile, p) })).sort((a, b) => b.pct - a.pct)[0];
+      if (topReco && topReco.pct > 0) items.push({ ic: "✨", title: "Match à " + topReco.pct + "% avec " + (topReco.p.username || "un voyageur"), meta: topReco.p.city || "", cta: "Profil", go: () => { goToTab("connexions"); openTravelerProfile(topReco.p); } });
+      if (myBadgeKeys && myBadgeKeys.size) items.push({ ic: "🏅", title: "Tu as débloqué " + myBadgeKeys.size + " badge(s)", meta: "Continue les quêtes pour en gagner d'autres", cta: "Jeux", go: () => goToTab("jeux") });
+      if ((myCoupons || []).length) items.push({ ic: "🎟️", title: myCoupons.length + " coupon(s) disponible(s)", meta: "À utiliser chez nos partenaires", cta: "Voir", go: () => { goToTab("jeux"); showJeuxView("jeuxCoupons"); } });
+      const ci = parseInt($("checkinCount").textContent, 10) || 0;
+      if (ci) items.push({ ic: "🛟", title: ci + " check-in(s) validé(s)", meta: "Ton score de confiance grimpe", cta: "Lieux", go: () => goToTab("lieux") });
+      if (!items.length) items.push({ ic: "🌅", title: "Bienvenue sur SunMates !", meta: "Complète ton profil et fais un check-in pour démarrer", cta: "Profil", go: () => goToTab("profil") });
+      feed.innerHTML = items.map((it, i) => `<div class="feed-card" data-f="${i}">
+          <div class="fic">${it.ic}</div>
+          <div class="fbody"><div class="ftitle">${escapeHtml(it.title)}</div><div class="fmeta">${escapeHtml(it.meta || "")}</div></div>
+          <div class="fcta">${escapeHtml(it.cta || "")} ›</div></div>`).join("");
+      feed.querySelectorAll("[data-f]").forEach((el) => el.addEventListener("click", () => items[Number(el.dataset.f)].go()));
+    }
+    $("feedRefresh").addEventListener("click", async () => { await Promise.all([loadConnections(), loadGameData(), loadUnread()]); });
+
+    // ---- Accordéon du formulaire de profil ----
+    document.querySelectorAll(".pf-head").forEach((h) =>
+      h.addEventListener("click", () => h.parentElement.classList.toggle("open")));
+
+    // ---- Accès rapides de l'écran Sécurité ----
+    document.querySelectorAll("[data-secuquick]").forEach((el) =>
+      el.addEventListener("click", () => {
+        const a = el.dataset.secuquick;
+        showSecuView("secuHelp");
+        if (a === "position") $("shareLocBtn").click();
+        else if (a === "emergency") $("emergencyBtn").click();
+        // circle / lieux : la vue secuHelp affiche déjà le cercle et les accès d'aide
+      }));
+
+    // ---- Temps réel : nouvelles demandes de connexion ----
+    let connChannel = null, suggChannel = null;
+    function subscribeConnections() {
+      if (connChannel) return;
+      connChannel = db.channel("conn-rt").on("postgres_changes",
+        { event: "*", schema: "public", table: "matches_connections" }, (payload) => {
+          const row = payload.new || payload.old; if (!row) return;
+          if (payload.eventType === "INSERT" && row.user_b === myUserId)
+            toast("📨", `<b>${escapeHtml(nameById(row.user_a))}</b> souhaite se connecter`, () => goToTab("connexions"));
+          if (payload.eventType === "UPDATE" && row.status === "accepted" && (row.user_a === myUserId || row.user_b === myUserId)) {
+            const other = row.user_a === myUserId ? row.user_b : row.user_a;
+            toast("✅", `<b>${escapeHtml(nameById(other))}</b> a accepté ta connexion`, () => goToTab("connexions"));
+          }
+          loadConnections();
+        }).subscribe();
+    }
+    function unsubscribeConnections() { if (connChannel) { db.removeChannel(connChannel); connChannel = null; } }
+    // ---- Temps réel : défis reçus ----
+    function subscribeSuggestions() {
+      if (suggChannel) return;
+      suggChannel = db.channel("sugg-rt").on("postgres_changes",
+        { event: "INSERT", schema: "public", table: "quest_suggestions" }, (payload) => {
+          const row = payload.new; if (!row || row.to_user !== myUserId) return;
+          toast("🎯", `<b>${escapeHtml(nameById(row.from_user))}</b> te propose : ${escapeHtml(row.quest_title || "une quête")}`, () => goToTab("jeux"));
+          loadGameData();
+        }).subscribe();
+    }
+    function unsubscribeSuggestions() { if (suggChannel) { db.removeChannel(suggChannel); suggChannel = null; } }
 
     // Au chargement : vérifie s'il y a déjà une session
     db.auth.getSession().then(({ data }) => render(data.session));
