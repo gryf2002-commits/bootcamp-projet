@@ -142,6 +142,39 @@
     .chip.active { background: var(--accent-grad); color: #fff; box-shadow: 0 6px 14px rgba(244,101,94,.3); }
 
     /* ------------------------- Liste de lieux ----------------------- */
+    /* Démo guidée automatique (barre de narration) */
+    .ad-bar { position: fixed; left: 50%; bottom: calc(76px + env(safe-area-inset-bottom)); transform: translateX(-50%); width: calc(100% - 1.2rem); max-width: 448px; z-index: 5000;
+      background: linear-gradient(135deg, #2a1850, #160b2e); color: #fff; border-radius: 18px;
+      padding: .85rem 1.05rem; box-shadow: 0 18px 44px rgba(0,0,0,.5); animation: adIn .35s ease; transition: opacity .35s ease; }
+    /* Auto-replié quand on ne touche pas : le texte et les boutons se rétractent en douceur
+       (pas de glissement brusque), il ne reste que l'en-tête + le titre. Touche l'écran pour le rouvrir. */
+    .ad-bar .ad-text, .ad-bar .ad-ctrl { max-height: 220px; overflow: hidden; transition: max-height .4s ease, opacity .35s ease, margin .4s ease; }
+    .ad-bar.dim .ad-text { max-height: 0; opacity: 0; margin: 0; }
+    .ad-bar.dim .ad-ctrl { max-height: 0; opacity: 0; margin: 0; pointer-events: none; }
+    .ad-bar.dim .ad-title { font-size: .92rem; opacity: .8; }
+    @keyframes adIn { from { transform: translate(-50%, 24px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+    .ad-head { display: flex; align-items: center; gap: .6rem; margin-bottom: .4rem; }
+    .ad-prog { font-size: .72rem; font-weight: 800; background: rgba(255,255,255,.16); padding: .14rem .55rem; border-radius: 999px; }
+    .ad-live { font-size: .68rem; font-weight: 800; color: #ff6b6b; letter-spacing: .05em; }
+    .ad-x { margin-left: auto; background: rgba(255,255,255,.12); color: #fff; border: 0; border-radius: 999px; padding: .3rem .7rem; font-size: .76rem; font-weight: 700; cursor: pointer; }
+    .ad-title { font-size: 1.1rem; font-weight: 800; }
+    .ad-text { font-size: .86rem; color: rgba(255,255,255,.88); line-height: 1.45; margin: .25rem 0 .7rem; }
+    .ad-ctrl { display: flex; gap: .5rem; }
+    .ad-ctrl button { flex: 1; background: rgba(255,255,255,.12); color: #fff; border: 0; border-radius: 12px; padding: .6rem; font-weight: 800; cursor: pointer; font-size: .9rem; }
+    .ad-ctrl #adPause { flex: 2; background: linear-gradient(135deg,#ffb274,#ff7e5f 60%,#f4655e); }
+    .ad-ctrl button:hover { filter: brightness(1.1); }
+
+    /* Parcours de démo MVP (admin) */
+    .demo-intro { background: linear-gradient(135deg, rgba(255,201,60,.18), rgba(244,101,94,.14)); }
+    .demo-step { display: flex; gap: .8rem; background: var(--card); border-radius: 16px; padding: .9rem; margin-bottom: .6rem; box-shadow: var(--shadow-sm); }
+    .ds-num { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background: var(--accent-grad); color: #fff; font-weight: 800; display: grid; place-items: center; }
+    .ds-body { flex: 1; min-width: 0; }
+    .ds-title { font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+    .ds-wow { font-size: .66rem; font-weight: 800; background: linear-gradient(90deg,#ffd15c,#ff7e5f); color: #5a2a00; padding: .12rem .45rem; border-radius: 999px; }
+    .ds-say { color: var(--ink); font-size: .88rem; margin: .35rem 0; font-style: italic; }
+    .ds-wowtxt { color: var(--muted); font-size: .8rem; line-height: 1.45; }
+    .ds-go { margin-top: .55rem; padding: .4rem .8rem; font-size: .8rem; }
+
     /* Carte « score de confiance » */
     .stat-click { cursor: pointer; transition: transform .15s ease; user-select: none; }
     .stat-click:hover { transform: translateY(-2px); }
@@ -203,7 +236,8 @@
 
     /* --------------------- Onboarding « du futur » -------------------- */
     .onb { position: fixed; inset: 0; z-index: 4000; display: grid; place-items: center; padding: 1.2rem;
-      background: radial-gradient(120% 120% at 50% 0%, #2a1850 0%, #160b2e 55%, #0c0720 100%); overflow: hidden; }
+      background: radial-gradient(120% 120% at 50% 0%, #FFB24D 0%, #FF6B6B 48%, #B25CC9 100%); overflow: hidden; }
+    body.theme-dusk .onb { background: radial-gradient(120% 120% at 50% 0%, #2a1850 0%, #160b2e 55%, #0c0720 100%); }
     .onb.show { animation: onbFade .4s ease; }
     @keyframes onbFade { from { opacity: 0; } to { opacity: 1; } }
     .onb-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
@@ -212,8 +246,8 @@
     .onb-bg .o2 { width: 200px; height: 200px; background: #6a5cff; bottom: -30px; right: -20px; animation-delay: -3s; }
     .onb-bg .o3 { width: 160px; height: 160px; background: #29d8c2; top: 42%; right: 26%; animation-delay: -6s; }
     @keyframes orbFloat { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-26px) scale(1.08); } }
-    .onb-card { position: relative; width: 100%; max-width: 420px; background: rgba(255,255,255,.08);
-      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,.16);
+    .onb-card { position: relative; width: 100%; max-width: 420px; background: rgba(22,15,42,.30);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,.22);
       border-radius: 28px; padding: 2.4rem 1.6rem 1.4rem; color: #fff; box-shadow: 0 30px 80px rgba(0,0,0,.45); text-align: center; }
     .onb-skip { position: absolute; top: 1rem; right: 1.1rem; background: none; border: 0; color: rgba(255,255,255,.7); font-size: .82rem; cursor: pointer; }
     .onb-stage { position: relative; min-height: 280px; }
@@ -1178,6 +1212,18 @@
   </div>
 
 
+  <!-- ===== Démo guidée automatique : barre de narration ===== -->
+  <div id="autoDemo" class="ad-bar hidden">
+    <div class="ad-head"><span class="ad-prog" id="adProg">1 / 12</span><span class="ad-live">● DÉMO</span><button class="ad-x" id="adQuit">✕ Quitter</button></div>
+    <div class="ad-title" id="adTitle">—</div>
+    <div class="ad-text" id="adText">—</div>
+    <div class="ad-ctrl">
+      <button id="adPrev">‹</button>
+      <button id="adPause">⏸ Pause</button>
+      <button id="adNext">›</button>
+    </div>
+  </div>
+
   <!-- ===== Pop-up : mes connexions (ouverte par le compteur de Mates) ===== -->
   <div id="matesListModal" class="act-overlay hidden">
     <div class="act-card">
@@ -1793,14 +1839,27 @@
 
         <div class="prof-seg hidden" data-psegpanel="admin">
           <div class="mseg" style="flex-wrap:wrap">
-            <button data-aseg="dash" class="active">📊</button>
+            <button data-aseg="demo" class="active">🎤</button>
+            <button data-aseg="dash">📊</button>
             <button data-aseg="users">👥</button>
             <button data-aseg="places">📍</button>
             <button data-aseg="reports">🚩</button>
             <button data-aseg="quotes">💼</button>
           </div>
 
-          <div class="aseg" data-asegpanel="dash">
+          <div class="aseg" data-asegpanel="demo">
+            <div class="card demo-intro" style="text-align:center">
+              <h3 style="margin-top:0">🎬 Démo guidée automatique</h3>
+              <p class="muted" style="margin:.2rem 0 .9rem;font-size:.84rem">Clé en main : l'app déroule toute seule le parcours d'un nouvel utilisateur, écran par écran, avec une narration. Tu n'as qu'à regarder (ou commenter par-dessus).</p>
+              <button class="btn-primary btn-block" id="demoPlay" style="font-size:1.05rem">▶ Démarrer la démo guidée</button>
+              <p class="muted" style="font-size:.76rem;margin:.6rem 0 0">Tu peux mettre en pause, avancer ou quitter à tout moment.</p>
+            </div>
+            <div class="section-head"><h3 style="margin:.4rem 0 .2rem">📚 Knowledge base : tout ce que l'app permet</h3></div>
+            <p class="muted" style="font-size:.8rem;margin:.1rem 0 .6rem">La liste complète des fonctionnalités. Touche « ▶ Jouer depuis ici » pour lancer la démo à partir d'une étape précise.</p>
+            <div id="demoSteps"></div>
+          </div>
+
+          <div class="aseg hidden" data-asegpanel="dash">
             <div class="card"><h3 style="margin-top:0">📊 Tableau de bord</h3><div id="adminDash" class="pgrid"><p class="muted">Chargement…</p></div></div>
           </div>
 
@@ -2190,16 +2249,22 @@
       el.addEventListener("click", () => goToTab(el.dataset.goto));
     });
 
+    let __lastTab = null;
     function goToTab(target) {
-      if (typeof toggleHomeFull === "function") toggleHomeFull(false); // sort du plein écran carte si actif
+      const changed = target !== __lastTab;
+      if (typeof toggleHomeFull === "function" && document.querySelector(".homemap-card.fs")) toggleHomeFull(false); // sort du plein écran seulement si actif
       document.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle("active", b.dataset.tab === target));
       document.querySelectorAll(".tab-panel").forEach((p) => show(p, p.dataset.panel === target));
-      if (target === "jeux" && typeof showJeuxView === "function") { showJeuxView("jeuxHome"); if (typeof loadGameData === "function" && myUserId) loadGameData(); }
-      if (target === "connexions" && typeof showMatesView === "function") { showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("messages"); }
-      if (target === "securite" && typeof showSecuView === "function") showSecuView("secuHome");
+      // Réinitialisations de sous-vues seulement si on CHANGE d'onglet (évite le « pop » en restant dessus)
+      if (changed) {
+        if (target === "jeux" && typeof showJeuxView === "function") { showJeuxView("jeuxHome"); if (typeof loadGameData === "function" && myUserId) loadGameData(); }
+        if (target === "connexions" && typeof showMatesView === "function") { showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("messages"); }
+        if (target === "securite" && typeof showSecuView === "function") showSecuView("secuHome");
+        if (target === "profil") { const sc = $("settingsCard"), pm = $("profMain"); if (sc) sc.classList.add("hidden"); if (pm) pm.classList.remove("hidden"); }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
       if (target === "accueil" && typeof renderHomeMap === "function") setTimeout(renderHomeMap, 60);
-      if (target === "profil") { const sc = $("settingsCard"), pm = $("profMain"); if (sc) sc.classList.add("hidden"); if (pm) pm.classList.remove("hidden"); }
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      __lastTab = target;
     }
 
     // ====================== ACCUEIL ======================
@@ -2652,13 +2717,176 @@
     function showAdminSegment(seg) {
       document.querySelectorAll("[data-aseg]").forEach((b) => b.classList.toggle("active", b.dataset.aseg === seg));
       document.querySelectorAll("[data-asegpanel]").forEach((p) => show(p, p.dataset.asegpanel === seg));
-      if (seg === "dash") loadAdminDash();
+      if (seg === "demo") renderDemoScript();
+      else if (seg === "dash") loadAdminDash();
       else if (seg === "users") loadAdminUsers();
       else if (seg === "places") loadAdminPlaces();
       else if (seg === "reports") loadReports();
       else if (seg === "quotes") loadAdminQuotes();
     }
     document.querySelectorAll("[data-aseg]").forEach((b) => b.addEventListener("click", () => showAdminSegment(b.dataset.aseg)));
+
+    // ---- Knowledge base : l'aperçu complet de TOUT ce que l'app permet (onglet 🎤) ----
+    // La liste est générée depuis le scénario de la démo, donc toujours à jour et exhaustive.
+    function renderDemoScript() {
+      const box = $("demoSteps"); if (!box || typeof AUTO_DEMO === "undefined") return;
+      box.innerHTML = AUTO_DEMO.map((s, i) => `
+        <div class="demo-step">
+          <div class="ds-num">${i + 1}</div>
+          <div class="ds-body">
+            <div class="ds-title">${escapeHtml(s.title)}</div>
+            <div class="ds-wowtxt">${escapeHtml(s.text)}</div>
+            <button class="btn-ghost ds-go" data-demojump="${i}">▶ Jouer depuis ici</button>
+          </div>
+        </div>`).join("");
+      box.querySelectorAll("[data-demojump]").forEach((b) => b.addEventListener("click", () => startAutoDemo(Number(b.dataset.demojump))));
+    }
+    // ====================== DÉMO GUIDÉE AUTOMATIQUE (clé en main, A à Z) ======================
+    let adIdx = 0, adTimer = null, adPaused = false, adHideTimer = null, adThemeWasDusk = false;
+    const A = (fn) => { try { fn(); } catch (e) {} };
+    const adClick = (id) => { const e = $(id); if (e) A(() => e.click()); };
+    const adInto = (sel, ms, block) => setTimeout(() => { const e = document.querySelector(sel); if (e) A(() => e.scrollIntoView({ block: block || "start", behavior: "smooth" })); }, ms || 350);
+    const adDemoProfile = () => (typeof travelersCache !== "undefined" && travelersCache && travelersCache[0]) || Object.values(travelerMap).find((p) => p.is_demo && !String(p.id).startsWith("ia-") && p.id !== myUserId) || travelerMap["ia-lina"];
+    const adFirstCafe = () => (allCafes || []).find((c) => c.lat != null && c.lng != null);
+    // Ferme tout ce qui pourrait rester ouvert entre deux scènes
+    function adCleanup() {
+      ["trustModal", "actCreate", "matesListModal", "onboarding", "tour", "notifPanel"].forEach((id) => { const e = $(id); if (e) e.classList.add("hidden"); });
+      // Revenir à l'app si une scène avait affiché la connexion ou l'espace Pro
+      const b2b = $("b2bView"), auth = $("authView"), app = $("appView");
+      if (b2b) A(() => show(b2b, false));
+      if (auth && app && myUserId) { A(() => show(auth, false)); A(() => show(app, true)); }
+      // Vue profil ramenée à l'écran principal (sinon les sous-onglets ne s'affichent pas)
+      const pm = $("profMain"), sc = $("settingsCard");
+      if (pm) pm.classList.remove("hidden"); if (sc) sc.classList.add("hidden");
+      const sr = $("searchResults"); if (sr) sr.innerHTML = ""; const hs = $("homeSearch"); if (hs) hs.value = "";
+      if (typeof setHomeAddMode === "function") A(() => setHomeAddMode(false));
+      if (typeof toggleHomeFull === "function" && document.querySelector(".homemap-card.fs")) A(() => toggleHomeFull(false));
+      document.body.style.overflow = "";
+    }
+    const adShowApp = () => { const a = $("authView"), b = $("b2bView"), p = $("appView"); if (a) show(a, false); if (b) show(b, false); if (p) show(p, true); };
+    const AUTO_DEMO = [
+      { title: "👋 On démarre", text: "On découvre SunMates de A à Z, comme un tout nouvel utilisateur, depuis le tout premier écran.", ms: 5000,
+        run: () => { adCleanup(); A(() => goToTab("accueil")); } },
+      { title: "🔑 L'écran de connexion", text: "Le premier contact : un pitch clair, et trois entrées : Connexion, Inscription, et un espace Pro pour les établissements.", ms: 7000,
+        run: () => { adCleanup(); A(() => { const p = $("appView"), a = $("authView"); if (p) show(p, false); if (a) show(a, true); if (typeof setAuthMode === "function") setAuthMode("login"); window.scrollTo({ top: 0 }); }); } },
+      { title: "✨ L'onboarding en arrivant", text: "Juste après l'inscription, l'app se présente toute seule en quatre étapes animées : rencontres, carte vivante, activités, et sécurité.", ms: 10500,
+        run: () => { adShowApp(); A(() => goToTab("accueil")); setTimeout(() => { if (typeof openOnboarding === "function") openOnboarding(); }, 400); [[1, 3000], [2, 5400], [3, 7800]].forEach(([s, t]) => setTimeout(() => { if (typeof showOnbStep === "function") showOnbStep(s); }, t)); } },
+      { title: "💼 L'espace Pro (B2B)", text: "Cafés, co-livings, bars et hôtels demandent à être référencés comme lieux sûrs. Ils remplissent un devis directement dans l'app : visibilité, mise en avant et coupons sponsorisés. La piste de revenus B2B.", ms: 9000,
+        run: () => { adCleanup(); A(() => { if (typeof openB2B === "function") openB2B("auth"); }); setTimeout(() => { if (typeof b2bScrollToForm === "function") b2bScrollToForm(); }, 3300); } },
+      { title: "🗺️ Ta carte vivante", text: "L'accueil, c'est une seule carte qui montre tout autour de toi : lieux, Mates, activités et check-ins.", ms: 6500,
+        run: () => { adCleanup(); A(() => goToTab("accueil")); adInto(".homemap-card", 400); } },
+      { title: "🎛️ Filtrer la carte", text: "Chaque catégorie est une couche que l'on affiche ou masque d'un geste.", ms: 6000,
+        run: () => { A(() => goToTab("accueil")); adInto(".homemap-card", 300); const chip = document.querySelector('#homeMapFilters .chip[data-layer="checkins"]'); if (chip) { chip.click(); setTimeout(() => chip.click(), 2600); } } },
+      { title: "🎯 Recentrer la carte", text: "Un bouton « Autour de moi » te localise, un autre « Tout voir » recadre sur l'ensemble.", ms: 5500,
+        run: () => { A(() => goToTab("accueil")); adInto(".homemap-card", 300); setTimeout(() => adClick("hmFit"), 700); } },
+      { title: "📍 Ouvrir un lieu", text: "On touche une pastille pour voir le lieu : sa photo, son activité récente et le bouton de check-in.", ms: 6500,
+        run: () => { adInto(".homemap-card", 300); const c = adFirstCafe(); if (c && typeof focusHomeMapOn === "function") setTimeout(() => focusHomeMapOn(c.id), 350); } },
+      { title: "🖥️ Plein écran", text: "La carte passe en plein écran pour explorer confortablement.", ms: 5500,
+        run: () => { A(() => goToTab("accueil")); adInto(".homemap-card", 250); setTimeout(() => { if (typeof toggleHomeFull === "function") toggleHomeFull(true, true); }, 600); } },
+      { title: "➕ Proposer une sortie", text: "N'importe qui peut poser une activité sur la carte : un titre, et le point apparaît pour tout le monde.", ms: 7000,
+        run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => { if (typeof openActCreate === "function") { openActCreate({ lat: 38.7223, lng: -9.1393 }); const t = $("actTitle"); if (t) t.value = "🌅 Coucher de soleil au belvédère"; } }, 700); } },
+      { title: "🔍 Recherche globale", text: "Depuis l'accueil, on cherche un lieu ou un voyageur en quelques lettres.", ms: 6000,
+        run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => { const s = $("homeSearch"); if (s && typeof renderSearch === "function") { s.value = "a"; renderSearch("a"); } }, 500); } },
+      { title: "📰 Ton fil d'actu", text: "Sur l'accueil, un fil affiche les temps forts de la communauté des 3 derniers jours : quêtes accomplies, badges débloqués.", ms: 6000,
+        run: () => { adCleanup(); A(() => goToTab("accueil")); A(() => { if (typeof buildHomeFeed === "function") buildHomeFeed(); }); } },
+      { title: "📚 Le catalogue des lieux", text: "L'onglet Lieux liste tous les spots validés, avec photo, ville, distance et nombre de check-ins.", ms: 6000,
+        run: () => { const s = $("homeSearch"); if (s) s.value = ""; const sr = $("searchResults"); if (sr) sr.innerHTML = ""; A(() => goToTab("lieux")); } },
+      { title: "🔎 Rechercher un lieu", text: "On filtre la liste en tapant un nom ou une ville.", ms: 5500,
+        run: () => { A(() => goToTab("lieux")); A(() => { cafeFilter.q = "a"; const s = $("cafeSearch"); if (s) s.value = "a"; if (typeof renderCafesList === "function") renderCafesList(); }); } },
+      { title: "🌱 Filtre éco-responsable", text: "Un filtre met en avant les lieux éco-responsables. Un autre trie par distance autour de toi.", ms: 6000,
+        run: () => { A(() => { cafeFilter = { q: "", mode: "eco" }; const s = $("cafeSearch"); if (s) s.value = ""; if (typeof setCafeChipActive === "function") setCafeChipActive("eco"); if (typeof renderCafesList === "function") renderCafesList(); }); } },
+      { title: "🔒 Le check-in anti-triche", text: "Pour valider un lieu, il faut le code affiché sur place. Les points sont attribués côté serveur : impossible de tricher à distance.", ms: 7500,
+        run: () => { A(() => { cafeFilter = { q: "", mode: "all" }; if (typeof setCafeChipActive === "function") setCafeChipActive("all"); if (typeof renderCafesList === "function") renderCafesList(); }); setTimeout(() => { const c = document.querySelector("#cafesList [data-cafecard]"); if (c) { c.scrollIntoView({ block: "center", behavior: "smooth" }); c.classList.add("flash"); setTimeout(() => c.classList.remove("flash"), 1800); } }, 250); } },
+      { title: "🤝 Rencontrer des voyageurs", text: "L'onglet Mates propose des voyageurs vérifiés autour de toi, triés par compatibilité ou par confiance.", ms: 6500,
+        run: () => { A(() => goToTab("connexions")); A(() => { if (typeof showMatesView === "function") showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); }); } },
+      { title: "👤 Une fiche détaillée", text: "Chaque profil affiche le pourcentage de compatibilité, le score de confiance, les centres d'intérêt et le nombre de Mates.", ms: 7000,
+        run: () => { if (typeof ensureIaPersonas === "function") A(ensureIaPersonas); A(() => goToTab("connexions")); setTimeout(() => { if (typeof openTravelerProfile === "function" && travelerMap["ia-lina"]) openTravelerProfile(travelerMap["ia-lina"]); }, 500); } },
+      { title: "➕ Ajouter un Mate", text: "Sur un profil, le bouton « Se connecter » envoie une demande. La personne devient un Mate une fois qu'elle accepte.", ms: 7000,
+        run: () => { if (typeof ensureIaPersonas === "function") A(ensureIaPersonas); A(() => goToTab("connexions")); setTimeout(() => { const m = adDemoProfile(); if (m && typeof openTravelerProfile === "function") openTravelerProfile(m); }, 500); } },
+      { title: "📨 Les demandes reçues", text: "Dans l'onglet Demandes, on accepte ou non les voyageurs qui veulent se connecter avec toi.", ms: 6000,
+        run: () => { A(() => goToTab("connexions")); A(() => { if (typeof showMatesView === "function") showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("requests"); }); } },
+      { title: "🛡️ Voir tous tes Mates", text: "Le compteur « X Mates » est cliquable : il ouvre la liste de toutes tes connexions de confiance.", ms: 6000,
+        run: () => { A(() => goToTab("connexions")); A(() => { if (typeof showMatesView === "function") showMatesView("matesHome"); }); setTimeout(() => { const m = $("matesListModal"); if (m) m.classList.remove("hidden"); }, 500); } },
+      { title: "💬 Discuter en direct", text: "On écrit à un voyageur en un clic. La messagerie est en temps réel, horodatée, et on peut supprimer une conversation.", ms: 8500,
+        run: () => { if (typeof ensureIaPersonas === "function") A(ensureIaPersonas); A(() => { if (typeof demoChats !== "undefined") delete demoChats["ia-lina"]; }); A(() => goToTab("connexions")); A(() => { if (typeof openChat === "function") openChat("ia-lina"); }); setTimeout(() => { const inp = $("chatInput"); if (inp && typeof sendChatMessage === "function") { inp.value = "Salut Lina ! Un café demain ? ☕"; sendChatMessage(); } }, 1700); } },
+      { title: "🚫 Signaler ou bloquer", text: "Si besoin, on peut bloquer un voyageur ou le signaler à la modération : la sécurité va jusqu'au bout.", ms: 6500,
+        run: () => { if (typeof ensureIaPersonas === "function") A(ensureIaPersonas); A(() => goToTab("connexions")); setTimeout(() => { const m = adDemoProfile(); if (m && typeof openTravelerProfile === "function") openTravelerProfile(m); setTimeout(() => adInto("#tpBlockBtn", 0, "center"), 600); }, 500); } },
+      { title: "🎮 Jeux & quêtes", text: "On gagne à explorer : jeux, quêtes et défis entre Mates.", ms: 6000,
+        run: () => { adCleanup(); A(() => goToTab("jeux")); A(() => { if (typeof showJeuxView === "function") showJeuxView("jeuxHome"); }); } },
+      { title: "🏅 Le détail d'une quête", text: "Une quête se rejoint, se valide avec un code, se propose à un Mate, et se retrouve même sur la carte.", ms: 7500,
+        run: () => { A(() => goToTab("jeux")); setTimeout(() => { const q = (allQuests || []).find((x) => x.kind === "quest"); if (q && typeof openDetail === "function") openDetail(q); }, 500); } },
+      { title: "🎖️ Badges & récompenses", text: "Les quêtes accomplies débloquent des badges affichés sur ton profil.", ms: 5500,
+        run: () => { A(() => goToTab("jeux")); A(() => { if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); }); } },
+      { title: "🎟️ Coupons partenaires", text: "Et des coupons à utiliser chez les commerces partenaires : le pont vers le monde réel.", ms: 5500,
+        run: () => { A(() => goToTab("jeux")); A(() => { if (typeof showJeuxView === "function") showJeuxView("jeuxCoupons"); }); } },
+      { title: "🛡️ La sécurité", text: "La sécurité est le filet qui permet de profiter l'esprit léger.", ms: 5500,
+        run: () => { adCleanup(); A(() => goToTab("securite")); A(() => { if (typeof showSecuView === "function") showSecuView("secuHome"); }); } },
+      { title: "🆘 SOS & cercle de confiance", text: "L'écran d'aide réunit tout : bouton SOS, alerte d'urgence diffusée à ton cercle de confiance, partage de position en direct visible 1 h, aide à proximité (police et hôpital géolocalisés) et les numéros d'urgence 112, 114, 116 117 et 116 000.", ms: 9500,
+        run: () => { A(() => goToTab("securite")); setTimeout(() => { if (typeof showSecuView === "function") showSecuView("secuHelp"); window.scrollTo({ top: 0, behavior: "smooth" }); }, 450); } },
+      { title: "🛡️ Le score de confiance", text: "On clique le score et une pop-up détaille les vraies preuves : vérification, check-ins, lieux, Mates. Transparent.", ms: 7000,
+        run: () => { adCleanup(); A(() => goToTab("profil")); setTimeout(() => { if (typeof openTrustModal === "function") openTrustModal(); }, 600); } },
+      { title: "📝 Remplir son profil", text: "Le profil est complet façon appli de rencontre : photos, 3 prompts, centres d'intérêt, langues, style de voyage, mode de vie, signe astro… le tout en accordéon. On ouvre quelques sections pour voir.", ms: 9500,
+        run: () => { adCleanup(); A(() => goToTab("profil")); setTimeout(() => { if (typeof showProfileSegment === "function") showProfileSegment("edit"); const heads = document.querySelectorAll('[data-psegpanel="edit"] .pf-head'); heads.forEach((h, i) => { if (i < 2 && h.parentElement && !h.parentElement.classList.contains("open")) setTimeout(() => h.click(), 400 * i); }); adInto('[data-psegpanel="edit"] .pf-section', 600, "start"); }, 500); } },
+      { title: "📍 Tes check-ins", text: "Ton historique de check-ins, regroupés par lieu.", ms: 5500,
+        run: () => { A(() => goToTab("profil")); setTimeout(() => { if (typeof showProfileSegment === "function") showProfileSegment("checkins"); }, 400); } },
+      { title: "✨ SunMates Gold", text: "À 9,99 €/mois, l'abonnement premium débloque : Mates illimités, check-ins illimités, filtres de recherche avancés, BFF du moment, lieux et quêtes exclusifs, mode incognito et profil mis en avant. Un comparatif Gratuit/Gold détaille tout.", ms: 9500,
+        run: () => { adCleanup(); A(() => goToTab("profil")); setTimeout(() => { if (typeof showProfileSegment === "function") showProfileSegment("premium"); window.scrollTo({ top: 0 }); adInto('[data-psegpanel="premium"]', 250, "start"); }, 450); } },
+      { title: "⚙️ Paramètres du compte", text: "On peut changer son email, son mot de passe, et revoir la présentation animée à tout moment.", ms: 7000,
+        run: () => { adCleanup(); A(() => goToTab("profil")); setTimeout(() => adClick("profileSettingsBtn"), 500); } },
+      { title: "🔔 Notifications", text: "Cloche, panneau, pastilles et toasts en temps réel : on ne rate rien.", ms: 5500,
+        run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => adClick("notifBell"), 500); } },
+      { title: "🌙 Le mode sombre", text: "Un thème « nuit tropicale » repose les yeux le soir.", ms: 5500,
+        run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => { if (!document.body.classList.contains("theme-dusk")) adClick("themeToggle"); }, 500); } },
+      { title: "☀️ …et le retour au jour", text: "Un simple bouton bascule entre nuit tropicale et mode jour ensoleillé.", ms: 5500,
+        run: () => { setTimeout(() => { if (document.body.classList.contains("theme-dusk")) adClick("themeToggle"); }, 400); } },
+      { title: "🎉 Et voilà, de A à Z !", text: "Pars solo, trouve ta bande. SunMates transforme un voyage en solo en aventure partagée. Merci !", ms: 7000,
+        run: () => { adCleanup(); A(() => goToTab("accueil")); } },
+    ];
+    function adWake() {
+      const bar = $("autoDemo"); if (!bar || bar.classList.contains("hidden")) return;
+      bar.classList.remove("dim");
+      clearTimeout(adHideTimer);
+      adHideTimer = setTimeout(() => { const b = $("autoDemo"); if (b && !b.classList.contains("hidden")) b.classList.add("dim"); }, 3800);
+    }
+    function adSchedule() {
+      clearTimeout(adTimer);
+      if (adPaused) return;
+      const s = AUTO_DEMO[adIdx];
+      adTimer = setTimeout(() => adPlay(adIdx + 1), (s && s.ms) || 5000);
+    }
+    function adPlay(i) {
+      clearTimeout(adTimer);
+      if (i >= AUTO_DEMO.length) { endAutoDemo(); return; }
+      adIdx = i; const s = AUTO_DEMO[i];
+      adCleanup();                 // referme toute pop-up/état de la scène précédente
+      A(() => s.run && s.run());
+      $("adTitle").textContent = s.title;
+      $("adText").textContent = s.text;
+      $("adProg").textContent = (i + 1) + " / " + AUTO_DEMO.length;
+      adWake();                    // ré-affiche le texte en douceur, puis se replie tout seul
+      adSchedule();
+    }
+    function startAutoDemo(i) {
+      adPaused = false; $("adPause").textContent = "⏸ Pause";
+      adThemeWasDusk = document.body.classList.contains("theme-dusk");
+      $("autoDemo").classList.remove("hidden");
+      adWake();
+      adPlay(typeof i === "number" ? i : 0);
+    }
+    function endAutoDemo() {
+      clearTimeout(adTimer); clearTimeout(adHideTimer); adCleanup();
+      const bar = $("autoDemo"); if (bar) { bar.classList.add("hidden"); bar.classList.remove("dim"); }
+      if (document.body.classList.contains("theme-dusk") !== adThemeWasDusk) adClick("themeToggle"); // restaure le thème
+      A(() => goToTab("accueil"));
+    }
+    A(() => {
+      $("demoPlay").addEventListener("click", startAutoDemo);
+      $("adQuit").addEventListener("click", endAutoDemo);
+      $("adNext").addEventListener("click", () => adPlay(adIdx + 1));
+      $("adPrev").addEventListener("click", () => adPlay(Math.max(0, adIdx - 1)));
+      $("adPause").addEventListener("click", () => { adPaused = !adPaused; $("adPause").textContent = adPaused ? "▶ Reprendre" : "⏸ Pause"; if (adPaused) clearTimeout(adTimer); else adSchedule(); adWake(); });
+      ["pointerdown", "pointermove", "touchstart", "keydown"].forEach((ev) => document.addEventListener(ev, adWake, { passive: true }));
+    });
 
     async function loadAdminDash() {
       const el = $("adminDash"); if (!el) return;
@@ -4250,10 +4478,11 @@
         [60, 220, 450].forEach((d) => setTimeout(() => { try { homeLeaf.invalidateSize(); } catch (e) {} }, d));
       }
     }
-    function toggleHomeFull(on) {
+    function toggleHomeFull(on, forceFallback) {
       const card = document.querySelector(".homemap-card"); if (!card) return;
       const want = (on != null) ? on : !card.classList.contains("fs");
       if (want) {
+        if (forceFallback) { homeFsFallback = true; applyHomeFsClass(); return; } // plein écran CSS (garde les overlays visibles, ex. la démo)
         const req = card.requestFullscreen || card.webkitRequestFullscreen;
         if (req) { homeFsFallback = false; try { Promise.resolve(req.call(card)).catch(() => { homeFsFallback = true; applyHomeFsClass(); }); } catch (e) { homeFsFallback = true; applyHomeFsClass(); } }
         else { homeFsFallback = true; applyHomeFsClass(); }
@@ -4513,7 +4742,7 @@
     function showProfileSegment(seg) {
       document.querySelectorAll("[data-pseg]").forEach((b) => b.classList.toggle("active", b.dataset.pseg === seg));
       document.querySelectorAll("[data-psegpanel]").forEach((p) => show(p, p.dataset.psegpanel === seg));
-      if (seg === "admin" && typeof showAdminSegment === "function") showAdminSegment("dash");
+      if (seg === "admin" && typeof showAdminSegment === "function") showAdminSegment("demo");
     }
     document.querySelectorAll("[data-pseg]").forEach((b) => b.addEventListener("click", () => showProfileSegment(b.dataset.pseg)));
     // Chiffres du profil cliquables
