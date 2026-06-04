@@ -4415,8 +4415,7 @@
         else {
           $("tpCompatPct").textContent = pct + "%";
           $("tpCompatBreak").innerHTML = bd.map((i) =>
-            `<div class="cbrk"><span class="cbrk-l">${i.emoji} ${escapeHtml(i.label)}</span><span class="cbrk-bar"><i style="width:${Math.round(i.frac * 100)}%"></i></span><span class="cbrk-p">+${i.pts}%</span></div>`).join("")
-            + `<p class="muted" style="font-size:.72rem;margin:.5rem 0 0">📍 La ville ne compte pas : sur SunMates on se rencontre à l'étranger, être loin de chez soi c'est normal !</p>`;
+            `<div class="cbrk"><span class="cbrk-l">${i.emoji} ${escapeHtml(i.label)}</span><span class="cbrk-bar"><i style="width:${Math.round(i.frac * 100)}%"></i></span><span class="cbrk-p">+${i.pts}%</span></div>`).join("");
           compatCard.style.display = "";
         }
       }
