@@ -2147,15 +2147,14 @@
       const password = $("authPassword").value;
       const msg = $("authMsg");
       if (!email || !password) { msg.style.color = "var(--danger)"; msg.textContent = "Remplis l'email et le mot de passe."; return; }
-      msg.style.color = "var(--muted)"; msg.textContent = "Un instant…";
-
-      const fn = authMode === "login"
-        ? db.auth.signInWithPassword({ email, password })
-        : db.auth.signUp({ email, password });
-      const { error } = await fn;
-
-      if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; }
-      else if (authMode === "signup") { msg.style.color = "var(--ok)"; msg.textContent = "Compte créé ! Tu peux te connecter."; }
+      await once("auth:" + authMode, async () => {
+        msg.style.color = "var(--muted)"; msg.textContent = "Un instant…";
+        const { error } = authMode === "login"
+          ? await db.auth.signInWithPassword({ email, password })
+          : await db.auth.signUp({ email, password });
+        if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; }
+        else if (authMode === "signup") { msg.style.color = "var(--ok)"; msg.textContent = "Compte créé ! Tu peux te connecter."; }
+      });
     }
     $("authPlay").addEventListener("click", submitAuth);
     const EYE_OPEN = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.6"/></svg>';
@@ -2473,7 +2472,7 @@
       const adminBtn = $("adminSegBtn"); if (adminBtn) adminBtn.style.display = data.is_admin ? "" : "none";
     }
 
-    $("saveProfileBtn").addEventListener("click", async () => {
+    $("saveProfileBtn").addEventListener("click", () => once("saveProfile", async () => {
       const msg = $("profileMsg");
       if (!myUserId) { msg.style.color = "var(--danger)"; msg.textContent = "Reconnecte-toi puis réessaie."; return; }
       msg.style.color = "var(--muted)"; msg.textContent = "Enregistrement…";
@@ -2508,9 +2507,9 @@
       msg.style.color = err ? "var(--danger)" : "var(--ok)";
       msg.textContent = err ? "Erreur : " + err.message : "Profil enregistré ✅";
       if (!err) await Promise.all([loadProfile(), loadConnections()]);
-    });
+    }));
 
-    $("verifyBtn").addEventListener("click", async () => {
+    $("verifyBtn").addEventListener("click", () => once("verify", async () => {
       const msg = $("profileMsg");
       if (!myUserId) return;
       // MVP : la "vérification" est simulée — elle passe le badge à vérifié (+30 points).
@@ -2518,7 +2517,7 @@
         .update({ is_verified: true, trust_score: 30 }).eq("id", myUserId);
       if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; }
       else { msg.style.color = "var(--ok)"; msg.textContent = "Profil vérifié ✅ (+30 points)"; await loadProfile(); }
-    });
+    }));
 
     // ---- Avatar : applique une image OU une initiale dans un élément .avatar ----
     function setAvatarEl(el, url, fallbackChar) {
@@ -3068,15 +3067,19 @@
     });
 
     function sendLocation(isEmergency, msg, okText) {
-      msg.style.color = "var(--muted)"; msg.textContent = "Localisation en cours…";
-      getGeo(async (g) => {
-        const { error } = await db.from("locations_realtime").insert({
-          user_id: myUserId, lat: g.lat, lng: g.lng, is_emergency: isEmergency,
-        });
-        msg.style.color = error ? "var(--danger)" : (isEmergency ? "var(--danger)" : "var(--ok)");
-        msg.textContent = error ? "Erreur : " + error.message : okText + " (visible 1 h sur la carte)";
-        if (!error) { await loadCircleLocations(); if (typeof renderHomeMap === "function" && homeLeaf) renderHomeMap(); }
-      }, () => { msg.style.color = "var(--danger)"; msg.textContent = "Autorise la géolocalisation dans ton navigateur pour partager ta position."; });
+      // Verrou : on n'envoie qu'une position à la fois (anti double-clic / spam).
+      return once("loc:" + (isEmergency ? "sos" : "share"), () => new Promise((resolve) => {
+        msg.style.color = "var(--muted)"; msg.textContent = "Localisation en cours…";
+        getGeo(async (g) => {
+          const { error } = await db.from("locations_realtime").insert({
+            user_id: myUserId, lat: g.lat, lng: g.lng, is_emergency: isEmergency,
+          });
+          msg.style.color = error ? "var(--danger)" : (isEmergency ? "var(--danger)" : "var(--ok)");
+          msg.textContent = error ? "Erreur : " + error.message : okText + " (visible 1 h sur la carte)";
+          if (!error) { await loadCircleLocations(); if (typeof renderHomeMap === "function" && homeLeaf) renderHomeMap(); }
+          resolve();
+        }, () => { msg.style.color = "var(--danger)"; msg.textContent = "Autorise la géolocalisation dans ton navigateur pour partager ta position."; resolve(); });
+      }));
     }
 
     // Positions partagées par mon cercle de confiance (RLS : seules les connexions
