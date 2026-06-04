@@ -5492,6 +5492,9 @@
           body.style.maxHeight = "0px";                    // …puis collapse en douceur
         }
       }));
+    // Sections OUVERTES par défaut (ex. « Photo & présentation ») : on lève la contrainte
+    // de hauteur au chargement, sinon leur contenu resterait clippé à 0px (max-height:0).
+    document.querySelectorAll(".pf-section.open .pf-body").forEach((b) => { b.style.maxHeight = "none"; });
 
     // ---- Accès rapides de l'écran Sécurité ----
     document.querySelectorAll("[data-secuquick]").forEach((el) =>
