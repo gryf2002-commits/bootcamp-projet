@@ -27,7 +27,24 @@
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+      // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
+      // prend le contrôle, on recharge la page une fois -> tout le monde passe
+      // automatiquement à la dernière version (y compris les prochaines).
+      var hadController = !!navigator.serviceWorker.controller; // false à la 1re visite -> pas de reload inutile
+      var swRefreshing = false;
+      navigator.serviceWorker.addEventListener("controllerchange", function () {
+        if (!hadController || swRefreshing) return;
+        swRefreshing = true;
+        window.location.reload();
+      });
+      window.addEventListener("load", function () {
+        // updateViaCache:'none' = le navigateur ne sert jamais un sw.js périmé depuis son cache HTTP.
+        navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(function (reg) {
+          reg.update(); // vérifie tout de suite s'il y a une nouvelle version
+          setInterval(function () { reg.update(); }, 30 * 60 * 1000); // puis toutes les 30 min
+          document.addEventListener("visibilitychange", function () { if (!document.hidden) reg.update(); }); // et au retour sur l'app
+        }).catch(function () {});
+      });
     }
   </script>
   <style>
@@ -4612,7 +4629,21 @@
       const link = $("hmFull"); if (link) link.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran";
       if (homeLeaf) {
         if (homeLeaf.scrollWheelZoom) { on ? homeLeaf.scrollWheelZoom.enable() : homeLeaf.scrollWheelZoom.disable(); }
-        [60, 220, 450].forEach((d) => setTimeout(() => { try { homeLeaf.invalidateSize(); } catch (e) {} }, d));
+        // iOS : le conteneur change de taille via CSS sans event resize natif fiable.
+        // On force Leaflet à recalculer SES dimensions, puis à redessiner les pastilles :
+        // un setView "sur place" relance le rendu des marqueurs, et refreshClusters()
+        // recalcule les pastilles de regroupement pour la nouvelle taille d'écran.
+        const redraw = () => {
+          try {
+            const c = homeLeaf.getCenter(), z = homeLeaf.getZoom();
+            homeLeaf.invalidateSize(true);
+            homeLeaf.setView(c, z, { animate: false });
+            Object.values(homeLayers || {}).forEach((lyr) => {
+              if (lyr && typeof lyr.refreshClusters === "function") { try { lyr.refreshClusters(); } catch (e) {} }
+            });
+          } catch (e) {}
+        };
+        [60, 220, 450, 800].forEach((d) => setTimeout(redraw, d));
       }
     }
     function toggleHomeFull(on, forceFallback) {
