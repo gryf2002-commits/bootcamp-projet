@@ -153,34 +153,34 @@
     .act-tile .ic { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; font-size: 1.15rem; flex-shrink: 0; }
     .act-tile .lbl { flex: 1; }
     .act-tile .arr { opacity: .45; font-size: 1.2rem; font-weight: 800; }
-    .act-challenge { background: #f3f0ff; color: #5b3df5; border-color: #e4dcff; }
-    .act-challenge .ic { background: #e4dcff; }
-    .act-challenge:hover { box-shadow: 0 8px 18px rgba(122,92,255,.22); }
+    .act-challenge { background: #fdeceb; color: #d6483a; border-color: #f8d2cd; }
+    .act-challenge .ic { background: #f8d2cd; }
+    .act-challenge:hover { box-shadow: 0 8px 18px rgba(244,101,94,.22); }
     .act-bff { background: #fff6e8; color: #b9740a; border-color: #ffe6c2; }
     .act-bff .ic { background: #ffe6c2; }
     .act-bff:hover { box-shadow: 0 8px 18px rgba(255,178,116,.3); }
     .act-block { background: #fef2f2; color: #dc2626; border-color: #fbd5d5; }
     .act-block .ic { background: #fbd5d5; }
     .act-block:hover { box-shadow: 0 8px 18px rgba(239,68,68,.18); }
-    body.theme-dusk .act-challenge { background: rgba(122,92,255,.16); color: #c9bcff; border-color: rgba(122,92,255,.32); }
-    body.theme-dusk .act-challenge .ic { background: rgba(122,92,255,.32); }
+    body.theme-dusk .act-challenge { background: rgba(244,101,94,.16); color: #ffb0a6; border-color: rgba(244,101,94,.32); }
+    body.theme-dusk .act-challenge .ic { background: rgba(244,101,94,.32); }
     body.theme-dusk .act-bff { background: rgba(255,178,116,.16); color: #ffce9b; border-color: rgba(255,178,116,.32); }
     body.theme-dusk .act-bff .ic { background: rgba(255,178,116,.32); }
     body.theme-dusk .act-block { background: rgba(239,68,68,.15); color: #ff9b9b; border-color: rgba(239,68,68,.32); }
     body.theme-dusk .act-block .ic { background: rgba(239,68,68,.32); }
-    .act-map { background: #e7f3ff; color: #1f6fb2; border-color: #cfe6fb; }
-    .act-map .ic { background: #cfe6fb; }
-    .act-map:hover { box-shadow: 0 8px 18px rgba(58,160,240,.22); }
-    .act-teal { background: #e3f7f3; color: #0f8f86; border-color: #c5ede6; }
-    .act-teal .ic { background: #c5ede6; }
-    .act-teal:hover { box-shadow: 0 8px 18px rgba(25,179,107,.22); }
-    body.theme-dusk .act-map { background: rgba(58,160,240,.16); color: #9fd0ff; border-color: rgba(58,160,240,.32); }
-    body.theme-dusk .act-map .ic { background: rgba(58,160,240,.32); }
-    body.theme-dusk .act-teal { background: rgba(25,179,107,.16); color: #88e6c5; border-color: rgba(25,179,107,.32); }
-    body.theme-dusk .act-teal .ic { background: rgba(25,179,107,.32); }
+    .act-map { background: #fff3e2; color: #bf6a00; border-color: #ffe2bd; }
+    .act-map .ic { background: #ffe2bd; }
+    .act-map:hover { box-shadow: 0 8px 18px rgba(255,159,28,.25); }
+    .act-teal { background: #fdeceb; color: #d6483a; border-color: #f8d2cd; }
+    .act-teal .ic { background: #f8d2cd; }
+    .act-teal:hover { box-shadow: 0 8px 18px rgba(244,101,94,.22); }
+    body.theme-dusk .act-map { background: rgba(255,159,28,.16); color: #ffce93; border-color: rgba(255,159,28,.32); }
+    body.theme-dusk .act-map .ic { background: rgba(255,159,28,.32); }
+    body.theme-dusk .act-teal { background: rgba(244,101,94,.16); color: #ffb0a6; border-color: rgba(244,101,94,.32); }
+    body.theme-dusk .act-teal .ic { background: rgba(244,101,94,.32); }
 
     /* ---- Rangée de tuiles colorées (catégories Lieux / navigation Jeux) ---- */
-    .cat-row { display: flex; gap: .55rem; overflow-x: auto; padding: .2rem .05rem .5rem; margin: .2rem 0 .5rem; scrollbar-width: none; }
+    .cat-row { display: flex; gap: .55rem; justify-content: center; flex-wrap: wrap; padding: .2rem .05rem .5rem; margin: .2rem 0 .5rem; scrollbar-width: none; }
     .cat-row::-webkit-scrollbar { display: none; }
     .cat-tile { flex: 0 0 auto; min-width: 84px; background: var(--card); border: 1.5px solid var(--line); border-radius: 16px;
       padding: .65rem .5rem; text-align: center; cursor: pointer; transition: transform .1s ease, box-shadow .15s ease, border-color .15s ease; }
@@ -195,6 +195,13 @@
     .cic.c-purp { background: linear-gradient(135deg,#b9a6ff,#7c5cff); }
     .cic.c-gold { background: linear-gradient(135deg,#FFD15C,#F4A11E); }
     .cic.c-pink { background: linear-gradient(135deg,#ffa7d1,#ff5e9f); }
+
+    /* ---- Carte « N éléments au même endroit » (>6 marqueurs co-localisés) ---- */
+    .coloc-card { min-width: 180px; }
+    .coloc-head { font-weight: 800; color: var(--ink); margin-bottom: .5rem; font-size: .95rem; }
+    .coloc-row { display: flex; align-items: center; gap: .4rem; padding: .25rem 0; color: var(--ink); font-size: .85rem; }
+    .coloc-row b { color: var(--accent); }
+    .coloc-btn { margin-top: .6rem; width: 100%; background: var(--accent-grad); color: #fff; border: 0; border-radius: 10px; padding: .5rem; font-weight: 800; font-size: .82rem; cursor: pointer; }
 
     /* Bannière d'installation PWA (cachée par défaut, glisse depuis le haut) */
     .pwa-banner { position: fixed; left: 50%; top: .6rem; z-index: 400;
@@ -4597,6 +4604,18 @@
       if (markers && markers.length) { try { homeLeaf.fitBounds(L.featureGroup(markers).getBounds().pad(0.25)); } catch (e) {} }
     }
 
+    // Beaucoup d'éléments au MÊME endroit (>6) : au lieu d'une spirale illisible, une petite
+    // carte qui résume par type, avec un bouton pour déplier en éventail si on le souhaite.
+    function openColocatedList(latlng, markers, cluster) {
+      const counts = {}; markers.forEach((m) => { const t = m.smType || "places"; counts[t] = (counts[t] || 0) + 1; });
+      const LABELS = { places: "📍 lieu", mates: "🧑 Mates", activities: "🎉 activités", checkins: "✅ check-ins" };
+      const lines = Object.keys(counts).map((t) => `<div class="coloc-row"><b>${counts[t]}</b> <span>${LABELS[t] || t}</span></div>`).join("");
+      L.popup({ className: "coloc-popup", maxWidth: 240, closeButton: true }).setLatLng(latlng)
+        .setContent(`<div class="coloc-card"><div class="coloc-head">🔆 ${markers.length} éléments ici</div>${lines}<button class="coloc-btn" id="colocSpiderBtn">Déplier en éventail ✨</button></div>`)
+        .openOn(homeLeaf);
+      setTimeout(() => { const b = document.getElementById("colocSpiderBtn"); if (b) b.addEventListener("click", () => { homeLeaf.closePopup(); try { cluster.spiderfy(); } catch (e) {} }); }, 30);
+    }
+
     // Personas IA intégrés : toujours disponibles pour animer la carte et la messagerie.
     const IA_PERSONAS = [
       { id: "ia-lina",  username: "Lina",  city: "Lisbonne",  bio: "Slow travel & couchers de soleil 🌅", avatar_url: "https://i.pravatar.cc/120?img=47", interests: ["Photo", "Plage", "Slow travel"] },
@@ -4623,10 +4642,12 @@
         const LAYER_COLORS = { places: "#f4655e", mates: "#7a5cff", activities: "#ff9f1c", checkins: "#19b36b" };
         homeCluster = (typeof L.markerClusterGroup === "function")
           ? L.markerClusterGroup({
-              maxClusterRadius: 38, showCoverageOnHover: false, spiderfyDistanceMultiplier: 2,
-              // Clic sur un point regroupé → on OUVRE la rosace SUR PLACE (arc de cercle) à
-              // N'IMPORTE QUEL zoom, sans zoomer ni bouger la carte ; re-clic / clic ailleurs → referme.
-              spiderfyOnEveryZoom: true, zoomToBoundsOnClick: false,
+              maxClusterRadius: 38, showCoverageOnHover: false, spiderfyDistanceMultiplier: 2.2,
+              // Clics gérés à la main (voir clusterclick plus bas) : lieux DIFFÉRENTS → on zoome
+              // pour les séparer (jusqu'au max) ; MÊME endroit ≤6 → rosace sur place ; >6 → liste.
+              // ⚠️ spiderfyOnMaxZoom défaut = true → laisserait le comportement par défaut
+              // (zoom + spiderfy) s'exécuter EN PLUS de notre handler. On désactive tout.
+              spiderfyOnEveryZoom: false, zoomToBoundsOnClick: false, spiderfyOnMaxZoom: false,
               // Couleur du point unique = type dominant des marqueurs regroupés (lieu/mate/activité/check-in).
               iconCreateFunction: (cluster) => {
                 const counts = {};
@@ -4638,6 +4659,15 @@
             })
           : L.layerGroup();
         homeCluster.addTo(homeLeaf);
+        // Comportement au clic sur un point regroupé.
+        homeCluster.on("clusterclick", (a) => {
+          const cl = a.layer, kids = cl.getAllChildMarkers();
+          const p0 = kids[0].getLatLng();
+          const samePlace = kids.every((m) => m.getLatLng().distanceTo(p0) < 8); // < 8 m = vraiment le même endroit
+          if (!samePlace) { try { homeLeaf.fitBounds(cl.getBounds().pad(0.25)); } catch (e) {} return; } // lieux différents → on zoome
+          if (kids.length <= 6) { cl.spiderfy(); return; }                       // même endroit, peu d'éléments → rosace
+          openColocatedList(cl.getLatLng(), kids, cl);                            // beaucoup d'éléments → liste élégante
+        });
         homeLeaf.on("popupopen", (e) => {
           const node = e.popup._contentNode; if (!node) return;
           // Check-in sur un lieu
