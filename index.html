@@ -324,6 +324,13 @@
     /* ---- Cibles tactiles plus confortables (≥40px) sur les boutons-icônes ---- */
     .iconbtn { min-width: 40px; min-height: 40px; }
 
+    /* ---- Détail du score de compatibilité (transparence) ---- */
+    .cbrk { display: flex; align-items: center; gap: .5rem; margin: .4rem 0; font-size: .82rem; }
+    .cbrk-l { flex: 0 0 44%; color: var(--ink); }
+    .cbrk-bar { flex: 1; height: 8px; background: var(--cream); border-radius: 999px; overflow: hidden; }
+    .cbrk-bar i { display: block; height: 100%; background: var(--accent-grad); border-radius: 999px; transition: width .45s ease; }
+    .cbrk-p { flex: 0 0 auto; font-weight: 800; color: var(--accent); font-size: .76rem; min-width: 34px; text-align: right; }
+
     /* ---- Bandeau d'état réseau (hors-ligne) ---- */
     .net-banner { position: fixed; top: 0; left: 0; right: 0; z-index: var(--z-confetti);
       background: #b91c1c; color: #fff; text-align: center; font-size: .82rem; font-weight: 700;
@@ -1745,6 +1752,10 @@
             <div class="section-head" style="margin-bottom:.4rem"><h3 style="margin:0">À propos</h3><span class="badge no" id="tpVerif">Non vérifié</span></div>
             <p class="muted" id="tpBio" style="line-height:1.5">—</p>
             <div class="hashtags" id="tpTags"></div>
+          </div>
+          <div class="card" id="tpCompatCard" style="display:none">
+            <div class="section-head" style="margin-bottom:.5rem"><h3 style="margin:0">Pourquoi vous matchez ❤️</h3><b id="tpCompatPct" style="color:var(--accent)">—%</b></div>
+            <div id="tpCompatBreak"></div>
           </div>
           <div class="card" id="tpInfoCard">
             <h3 style="margin-top:0">Infos</h3>
@@ -3545,14 +3556,37 @@
       let inter = 0; a.forEach((x) => { if (b.has(x)) inter++; });
       return inter / new Set([...a, ...b]).size;
     }
+    // Pondérations du score de compatibilité. SunMates = rencontrer des voyageurs À
+    // L'ÉTRANGER → être dans une ville DIFFÉRENTE est NORMAL : la ville n'entre PAS dans
+    // le score. On valorise ce qui compte vraiment loin de chez soi : intérêts communs,
+    // langues partagées (pour se comprendre), mêmes envies de voyage, style, et confiance.
+    const COMPAT_W = [
+      { key: "interests", w: 0.35, label: "Intérêts communs", emoji: "❤️" },
+      { key: "languages", w: 0.25, label: "Langues partagées", emoji: "🗣" },
+      { key: "intent",    w: 0.15, label: "Mêmes envies de voyage", emoji: "🎯" },
+      { key: "style",     w: 0.10, label: "Style de voyage", emoji: "🧭" },
+      { key: "trust",     w: 0.15, label: "Confiance / sécurité", emoji: "🛡️" },
+    ];
+    function compatScores(me, other) {
+      return {
+        interests: jaccard(me && me.interests, other.interests),
+        languages: jaccard(me && me.languages, other.languages),
+        intent: jaccard(me && me.intent, other.intent),
+        style: (me && me.travel_style && other.travel_style && me.travel_style === other.travel_style) ? 1 : 0,
+        trust: Math.min(other.trust_score || 0, 100) / 100,
+      };
+    }
     function compatibility(me, other) {
       if (!me || !other) return 0;
-      const interest = jaccard(me.interests, other.interests);
-      const lang = jaccard(me.languages, other.languages);
-      const city = sameCityAs(me, other) ? 1 : 0;
-      const style = (me.travel_style && other.travel_style && me.travel_style === other.travel_style) ? 1 : 0;
-      const trust = Math.min(other.trust_score || 0, 100) / 100;
-      return Math.round((interest * 0.45 + city * 0.15 + lang * 0.15 + style * 0.10 + trust * 0.15) * 100);
+      const s = compatScores(me, other);
+      return Math.round(COMPAT_W.reduce((acc, f) => acc + s[f.key] * f.w, 0) * 100);
+    }
+    // Détail transparent du score (pour l'afficher sur la fiche profil).
+    function compatBreakdown(me, other) {
+      if (!me || !other) return [];
+      const s = compatScores(me, other);
+      return COMPAT_W.map((f) => ({ label: f.label, emoji: f.emoji, pts: Math.round(s[f.key] * f.w * 100), frac: s[f.key] }))
+        .filter((i) => i.pts > 0);
     }
     function compatTier(pct) { return pct >= 70 ? "high" : (pct >= 40 ? "mid" : "low"); }
 
@@ -3560,12 +3594,16 @@
     function matchReasons(me, other) {
       const r = [];
       const si = sharedList(me?.interests, other.interests);
-      if (si.length) r.push(si.length + " intérêt" + (si.length > 1 ? "s" : "") + " commun" + (si.length > 1 ? "s" : ""));
-      if (sameCityAs(me, other)) r.push("📍 Même ville");
+      if (si.length) r.push("❤️ " + si.length + " intérêt" + (si.length > 1 ? "s" : "") + " commun" + (si.length > 1 ? "s" : ""));
       const sl = sharedList(me?.languages, other.languages);
-      if (sl.length) r.push("🗣 " + sl[0]);
+      if (sl.length) r.push("🗣 " + sl.length + " langue" + (sl.length > 1 ? "s" : ""));
+      const sin = sharedList(me?.intent, other.intent);
+      if (sin.length) r.push("🎯 " + sin[0]);
       if (me?.travel_style && other.travel_style && me.travel_style === other.travel_style) r.push("🧭 " + other.travel_style);
-      return r.slice(0, 3);
+      // La même ville n'est pas un critère de compat (on voyage à l'étranger), mais c'est
+      // un bonus pratique : on peut se voir maintenant.
+      if (sameCityAs(me, other)) r.push("📍 Dans ta ville en ce moment");
+      return r.slice(0, 4);
     }
 
     // Carte « Pour toi » : top 3 matchs
@@ -4345,6 +4383,19 @@
       const tpc = $("tpCompat");
       tpc.textContent = pct + "%";
       tpc.style.color = pct >= 70 ? "var(--ok)" : (pct >= 40 ? "var(--accent)" : "var(--muted)");
+      // Transparence : détail de ce qui compose le score (sauf sur son propre profil)
+      const compatCard = $("tpCompatCard");
+      const bd = (p.id === myUserId) ? [] : compatBreakdown(myMatchProfile, p);
+      if (compatCard) {
+        if (!bd.length) compatCard.style.display = "none";
+        else {
+          $("tpCompatPct").textContent = pct + "%";
+          $("tpCompatBreak").innerHTML = bd.map((i) =>
+            `<div class="cbrk"><span class="cbrk-l">${i.emoji} ${escapeHtml(i.label)}</span><span class="cbrk-bar"><i style="width:${Math.round(i.frac * 100)}%"></i></span><span class="cbrk-p">+${i.pts}%</span></div>`).join("")
+            + `<p class="muted" style="font-size:.72rem;margin:.5rem 0 0">📍 La ville ne compte pas : sur SunMates on se rencontre à l'étranger, être loin de chez soi c'est normal !</p>`;
+          compatCard.style.display = "";
+        }
+      }
       $("tpTrust").textContent = p.trust_score ?? 0;
       // Nombre de Mates (abonnés)
       if (p.id === myUserId) {
