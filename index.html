@@ -77,6 +77,22 @@
       --shadow-sm: 0 6px 18px rgba(20,20,40,.06);
       --shadow-pop: 0 18px 50px rgba(244,101,94,.22);
       --ring:      0 0 0 4px rgba(244,101,94,.16);
+
+      /* Échelle de z-index nommée (valeurs identiques à l'existant ; ordre du plus bas
+         au plus haut). Centralisée ici pour éviter les conflits d'empilement. */
+      --z-header:   50;    /* en-tête collant */
+      --z-nav:      60;    /* barre de navigation du bas */
+      --z-picker:   200;   /* overlay sélecteur (choisir un Mate) */
+      --z-notif:    210;   /* panneau de notifications */
+      --z-toast:    300;   /* toasts éphémères */
+      --z-pwa:      400;   /* bannière « installer l'app » */
+      --z-alert:    1000;  /* bannière d'alerte d'urgence */
+      --z-map-fs:   3500;  /* carte en plein écran */
+      --z-onb:      4000;  /* onboarding */
+      --z-tour:     4200;  /* visite guidée */
+      --z-modal:    4300;  /* fenêtres modales (création d'activité…) */
+      --z-demo:     5000;  /* barre de la démo auto-pilotée */
+      --z-confetti: 6000;  /* confettis (au-dessus de tout) */
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -97,7 +113,7 @@
     /* ----------------------------- Header --------------------------- */
     .topbar {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 1.25rem .75rem; position: sticky; top: 0; z-index: 50;
+      padding: 1rem 1.25rem .75rem; position: sticky; top: 0; z-index: var(--z-header);
       background: linear-gradient(var(--bg) 70%, rgba(253,243,241,0));
     }
     .brand { display: flex; align-items: center; gap: .5rem; font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: .5px; }
@@ -243,7 +259,7 @@
     .pcard .pcard-actions button { flex: 1; }
 
     /* Bannière d'installation PWA (cachée par défaut, glisse depuis le haut) */
-    .pwa-banner { position: fixed; left: 50%; top: .6rem; z-index: 400;
+    .pwa-banner { position: fixed; left: 50%; top: .6rem; z-index: var(--z-pwa);
       width: calc(100% - 1.2rem); max-width: 460px; display: flex; align-items: center; gap: .7rem;
       padding: .7rem .8rem; background: var(--paper); border: 1px solid var(--line); border-radius: 16px;
       box-shadow: 0 14px 40px rgba(0,0,0,.22); opacity: 0; pointer-events: none;
@@ -291,7 +307,7 @@
     .bubble.msg-failed { background: #fde2e2 !important; color: #b91c1c !important; opacity: 1 !important; }
 
     /* ---- Confettis (déblocage de badge) ---- */
-    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 6000; overflow: hidden; }
+    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: var(--z-confetti); overflow: hidden; }
     .confetti-wrap i { position: absolute; top: -20px; border-radius: 2px; opacity: .95; animation: confettiFall linear forwards; }
     @keyframes confettiFall { to { transform: translateY(108vh) rotate(600deg); opacity: .85; } }
 
@@ -354,7 +370,7 @@
 
     /* ------------------------- Liste de lieux ----------------------- */
     /* Démo guidée automatique (barre de narration) */
-    .ad-bar { position: fixed; left: 50%; bottom: calc(76px + env(safe-area-inset-bottom)); transform: translateX(-50%); width: calc(100% - 1.2rem); max-width: 448px; z-index: 5000;
+    .ad-bar { position: fixed; left: 50%; bottom: calc(76px + env(safe-area-inset-bottom)); transform: translateX(-50%); width: calc(100% - 1.2rem); max-width: 448px; z-index: var(--z-demo);
       background: linear-gradient(135deg, #2a1850, #160b2e); color: #fff; border-radius: 18px;
       padding: .85rem 1.05rem; box-shadow: 0 18px 44px rgba(0,0,0,.5); animation: adIn .35s ease; transition: opacity .35s ease; }
     /* Auto-replié quand on ne touche pas : le texte et les boutons se rétractent en douceur
@@ -417,7 +433,7 @@
     .homemap { height: 340px; border-radius: 14px; overflow: hidden; background: var(--cream); }
     /* Plein écran : TOUTE la carte (filtres + carte + légende) passe en plein écran */
     .homemap-fsclose { display: none; }
-    .homemap-card.fs { position: fixed; inset: 0; z-index: 3500; margin: 0; border-radius: 0; padding: .55rem;
+    .homemap-card.fs { position: fixed; inset: 0; z-index: var(--z-map-fs); margin: 0; border-radius: 0; padding: .55rem;
       display: flex; flex-direction: column; background: var(--card); }
     .homemap-card.fs .homemap-wrap { flex: 1; min-height: 0; margin: .4rem 0; }
     .homemap-card.fs .homemap { height: 100% !important; border-radius: 12px; }
@@ -432,7 +448,7 @@
     .homemap-hint { position: absolute; top: .55rem; left: 50%; transform: translateX(-50%); z-index: 1100;
       background: var(--ink); color: #fff; padding: .42rem .85rem; border-radius: 999px; font-size: .76rem; box-shadow: var(--shadow-sm); white-space: nowrap; }
     .homemap-hint a { color: #ffd15c; cursor: pointer; font-weight: 800; }
-    .act-overlay { position: fixed; inset: 0; z-index: 4300; display: grid; place-items: center; background: rgba(12,7,32,.55); padding: 1.2rem; }
+    .act-overlay { position: fixed; inset: 0; z-index: var(--z-modal); display: grid; place-items: center; background: rgba(12,7,32,.55); padding: 1.2rem; }
     .act-card { width: 100%; max-width: 380px; background: var(--card); color: var(--ink); border-radius: 20px; padding: 1.2rem; box-shadow: 0 24px 60px rgba(0,0,0,.45); }
     /* Contrôles Leaflet raccord avec le design (zoom, attribution, popups) */
     .leaflet-control-attribution { font-size: 9px !important; line-height: 1.4 !important; background: rgba(255,255,255,.6) !important; color: var(--muted) !important; padding: 1px 6px !important; border-radius: 0 8px 0 0 !important; }
@@ -446,7 +462,7 @@
     body.theme-dusk .leaflet-control-zoom a { background: #241b35 !important; color: #ede6f2 !important; }
 
     /* --------------------- Onboarding « du futur » -------------------- */
-    .onb { position: fixed; inset: 0; z-index: 4000; display: grid; place-items: center; padding: 1.2rem;
+    .onb { position: fixed; inset: 0; z-index: var(--z-onb); display: grid; place-items: center; padding: 1.2rem;
       background: radial-gradient(120% 120% at 50% 0%, #FFB24D 0%, #FF6B6B 48%, #B25CC9 100%); overflow: hidden; }
     body.theme-dusk .onb { background: radial-gradient(120% 120% at 50% 0%, #2a1850 0%, #160b2e 55%, #0c0720 100%); }
     .onb.show { animation: onbFade .4s ease; }
@@ -481,7 +497,7 @@
     .onb-prev { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.18); flex: 0 0 32%; }
 
     /* --------------------- Visite guidée (spotlights) -------------------- */
-    .tour { position: fixed; inset: 0; z-index: 4200; }
+    .tour { position: fixed; inset: 0; z-index: var(--z-tour); }
     .tour-catch { position: absolute; inset: 0; }                  /* avale les clics pendant la visite */
     .tour-spot { position: absolute; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(12,7,32,.72);
       border: 2px solid rgba(255,255,255,.9); transition: all .35s cubic-bezier(.4,0,.2,1); pointer-events: none; }
@@ -589,7 +605,7 @@
       position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
       width: 100%; max-width: 460px; background: #fff; display: flex; justify-content: space-around;
       padding: .6rem .5rem calc(.6rem + env(safe-area-inset-bottom)); box-shadow: 0 -6px 24px rgba(20,20,40,.08);
-      border-radius: 24px 24px 0 0; z-index: 60;
+      border-radius: 24px 24px 0 0; z-index: var(--z-nav);
     }
     .bottom-nav button {
       background: transparent; border: 0; padding: .4rem .6rem; margin: 0; display: flex; flex-direction: column;
@@ -704,7 +720,7 @@
 
     /* ------------------------ Bannière d'alerte --------------------- */
     #alertBanner {
-      position: fixed; top: 0; left: 50%; transform: translateX(-50%); max-width: 460px; width: 100%; z-index: 1000;
+      position: fixed; top: 0; left: 50%; transform: translateX(-50%); max-width: 460px; width: 100%; z-index: var(--z-alert);
       background: var(--danger); color: #fff; padding: .9rem 1.2rem; text-align: center;
       font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.3); animation: pulse 1s ease-in-out infinite alternate;
     }
@@ -872,7 +888,7 @@
       background: radial-gradient(130% 80% at 50% -8%, #ffe6b8 0%, #ffd2b0 26%, #fce2d8 56%, #f9eee7 100%) fixed;
     }
     body::after {
-      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 60;
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: var(--z-nav);
       opacity: .05; mix-blend-mode: multiply;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
@@ -952,7 +968,7 @@
     .matepick { display:flex; align-items:center; gap:.7rem; padding:.6rem; border-radius:12px; cursor:pointer; }
     .matepick:hover { background:#fff6f3; }
     /* --- Overlay sélecteur générique --- */
-    #pickerOverlay { position: fixed; inset: 0; z-index: 200; background: rgba(40,25,20,.45); display: flex; align-items: flex-end; justify-content: center; }
+    #pickerOverlay { position: fixed; inset: 0; z-index: var(--z-picker); background: rgba(40,25,20,.45); display: flex; align-items: flex-end; justify-content: center; }
     #pickerOverlay.hidden { display: none; }
     .picker-card { background: var(--paper); width: 100%; max-width: 460px; border-radius: 22px 22px 0 0; padding: 1.2rem 1.1rem 1.6rem; max-height: 80vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,.25); }
     .picker-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
@@ -967,14 +983,14 @@
     .navbadge { position: absolute; top: 3px; right: calc(50% - 22px); background: var(--accent); color: #fff; font-size: .6rem; font-weight: 800; min-width: 16px; height: 16px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 3px; box-shadow: 0 2px 6px rgba(244,101,94,.5); }
 
     /* Toasts (notifications éphémères) */
-    #toastWrap { position: fixed; top: .7rem; left: 50%; transform: translateX(-50%); z-index: 300; display: flex; flex-direction: column; gap: .5rem; width: calc(100% - 1.5rem); max-width: 430px; pointer-events: none; }
+    #toastWrap { position: fixed; top: .7rem; left: 50%; transform: translateX(-50%); z-index: var(--z-toast); display: flex; flex-direction: column; gap: .5rem; width: calc(100% - 1.5rem); max-width: 430px; pointer-events: none; }
     .toast { pointer-events: auto; background: rgba(45,35,50,.96); color: #fff; border-radius: 14px; padding: .7rem .9rem; display: flex; align-items: center; gap: .6rem; box-shadow: 0 12px 30px rgba(0,0,0,.3); animation: toastIn .3s cubic-bezier(.2,.8,.3,1) both; cursor: pointer; }
     .toast .tico { font-size: 1.35rem; flex-shrink: 0; }
     .toast .ttxt { font-size: .85rem; line-height: 1.25; } .toast .ttxt b { font-weight: 700; }
     @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) scale(.96); } to { opacity: 1; transform: none; } }
 
     /* Panneau de notifications (cloche) */
-    #notifPanel { position: fixed; inset: 0; z-index: 210; background: rgba(40,25,20,.45); display: flex; align-items: flex-start; justify-content: center; }
+    #notifPanel { position: fixed; inset: 0; z-index: var(--z-notif); background: rgba(40,25,20,.45); display: flex; align-items: flex-start; justify-content: center; }
     #notifPanel.hidden { display: none; }
     .notif-card { background: var(--paper); width: 100%; max-width: 460px; margin-top: 3.4rem; border-radius: 22px; padding: 1.1rem; max-height: 74vh; overflow-y: auto; box-shadow: 0 22px 55px rgba(0,0,0,.32); }
     .notif-item { display: flex; align-items: center; gap: .7rem; padding: .6rem; border-radius: 12px; cursor: pointer; }
