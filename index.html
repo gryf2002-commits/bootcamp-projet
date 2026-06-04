@@ -213,6 +213,15 @@
     /* ---- Focus clavier visible (accessibilité) ---- */
     :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
 
+    /* ---- Bulles de chat : envoi optimiste (en cours / échec) ---- */
+    .bubble[data-pending="1"] { opacity: .66; }
+    .bubble.msg-failed { background: #fde2e2 !important; color: #b91c1c !important; opacity: 1 !important; }
+
+    /* ---- Confettis (déblocage de badge) ---- */
+    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 6000; overflow: hidden; }
+    .confetti-wrap i { position: absolute; top: -20px; border-radius: 2px; opacity: .95; animation: confettiFall linear forwards; }
+    @keyframes confettiFall { to { transform: translateY(108vh) rotate(600deg); opacity: .85; } }
+
     /* ----------------------------- Badges --------------------------- */
     .badge { display: inline-flex; align-items: center; gap: .25rem; padding: .25rem .65rem; border-radius: 999px; font-size: .78rem; font-weight: 700; }
     .badge.ok { background: rgba(34,197,94,.12); color: var(--ok); }
@@ -3525,6 +3534,7 @@
     let myQuestStatus = {};      // quest_key -> 'joined' | 'completed'
     let myBadgeKeys = new Set(); // badges débloqués (clés)
     let myBadges = [];           // badges débloqués (détails : nom, emoji, date)
+    let _badgeKeysInit = false;  // false au tout 1er chargement (évite de fêter les badges déjà acquis)
     let myCoupons = [];          // coupons gagnés
     let mySuggestions = [];      // défis reçus (en attente)
     let currentQuest = null;     // quête ouverte dans la vue détail
@@ -3552,7 +3562,17 @@
       allQuests = qs.data || [];
       myQuestStatus = {}; (uq.data || []).forEach((r) => { myQuestStatus[r.quest_key] = r.status; });
       myBadges = ub.data || [];
+      // Détecte les badges fraîchement débloqués (après le 1er chargement) → confettis 🎉
+      if (_badgeKeysInit) {
+        const fresh = myBadges.filter((b) => !myBadgeKeys.has(b.badge_key));
+        if (fresh.length && typeof celebrate === "function") {
+          celebrate();
+          fresh.forEach((b) => toast(b.emoji || "🏅", `Badge débloqué : <b>${escapeHtml(b.name || "Nouveau badge")}</b> 🎉`,
+            () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); }));
+        }
+      }
       myBadgeKeys = new Set(myBadges.map((b) => b.badge_key));
+      _badgeKeysInit = true;
       myCoupons = uc.data || [];
       mySuggestions = sg.data || [];
       renderJeux();
@@ -3873,6 +3893,7 @@
     let mateProfileBack = null;   // action de retour personnalisée (ex. depuis l'historique sécurité)
     let currentChatUserId = null; // interlocuteur de la conversation ouverte
     let messageChannel = null;    // abonnement temps réel aux messages
+    let _tempMsgSeq = 0;          // identifiants des bulles optimistes (avant confirmation serveur)
 
     function showMatesView(id) {
       ["matesHome", "matesProfile", "matesChat"].forEach((v) => show($(v), v === id));
@@ -4042,15 +4063,34 @@
         return;
       }
       const recipient = currentChatUserId;
-      const { error } = await once("msg:" + recipient + ":" + text, async () =>
+      // Affichage OPTIMISTE : la bulle apparaît tout de suite (ressenti instantané),
+      // marquée "pending". Le temps réel la remplacera proprement par la vraie (avec id).
+      const tempId = "temp-" + (++_tempMsgSeq);
+      const ph0 = $("chatBody").querySelector("p.muted"); if (ph0) $("chatBody").innerHTML = "";
+      $("chatBody").insertAdjacentHTML("beforeend",
+        `<div class="bubble me" data-mid="${tempId}" data-pending="1"><span class="bubble-txt">${escapeHtml(text)}</span><span class="bubble-time">⏳ envoi…</span></div>`);
+      scrollChatBottom();
+
+      const result = await once("msg:" + recipient + ":" + text, async () =>
         db.from("messages").insert({ sender_id: myUserId, recipient_id: recipient, content: text })
-      ) || {};
-      if (error) {
-        $("chatBody").insertAdjacentHTML("beforeend",
-          `<div class="bubble them" style="background:#fde2e2;color:#b91c1c">Échec de l'envoi : ${escapeHtml(error.message)}</div>`);
-        scrollChatBottom();
+      );
+      const bubble = $("chatBody").querySelector(`.bubble[data-mid="${tempId}"]`);
+      if (result === undefined) {
+        // Doublon ignoré par once() (clic en double) → on retire la bulle en trop.
+        if (bubble) bubble.remove();
+      } else if (result.error) {
+        // Échec d'envoi → la bulle optimiste devient une bulle d'erreur (le message N'a PAS été envoyé).
+        if (bubble) {
+          bubble.removeAttribute("data-pending");
+          bubble.classList.add("msg-failed");
+          const t = bubble.querySelector(".bubble-time"); if (t) t.textContent = "⚠️ non envoyé";
+        }
+      } else if (bubble) {
+        // Succès → on remplace "⏳ envoi…" par l'heure réelle (le temps réel finira le travail).
+        const t = bubble.querySelector(".bubble-time"); if (t) t.textContent = msgTime(new Date().toISOString());
       }
-      // Le message (le mien comme celui de l'autre) s'affiche via le temps réel ci-dessous.
+      // La vraie bulle (avec son id serveur) arrive ensuite via le temps réel ci-dessous,
+      // qui retire d'abord la bulle "pending" correspondante.
     }
     $("chatSend").addEventListener("click", sendChatMessage);
     $("chatInput").addEventListener("keydown", (e) => { if (e.key === "Enter") sendChatMessage(); });
@@ -4070,6 +4110,15 @@
             if (document.querySelector(`[data-mid="${m.id}"]`)) return; // déjà affiché
             const ph = $("chatBody").querySelector("p.muted");
             if (ph) $("chatBody").innerHTML = "";
+            // Si c'est MON message, retire la bulle optimiste "pending" correspondante
+            // (même texte) pour éviter un doublon, avant d'ajouter la vraie (avec id + 🗑️).
+            if (m.sender_id === myUserId) {
+              const pendings = $("chatBody").querySelectorAll('.bubble[data-pending="1"]');
+              for (const pb of pendings) {
+                const txt = pb.querySelector(".bubble-txt");
+                if (txt && txt.textContent === m.content) { pb.remove(); break; }
+              }
+            }
             $("chatBody").insertAdjacentHTML("beforeend", bubbleHtml(m));
             scrollChatBottom();
           } else if (m.recipient_id === myUserId && m.sender_id !== myUserId && notifyOnce("msg:" + m.id)) {
@@ -5236,6 +5285,23 @@
       if (onClick) el.addEventListener("click", () => { onClick(); el.remove(); });
       wrap.appendChild(el);
       setTimeout(() => { el.style.transition = "opacity .3s"; el.style.opacity = "0"; setTimeout(() => el.remove(), 320); }, 5200);
+    }
+
+    // ---- Confettis (déblocage de badge, moment de fête 🎉) ----
+    function celebrate() {
+      const colors = ["#f4655e", "#ffb274", "#7a5cff", "#19b36b", "#ffd15c", "#ff8a7d"];
+      const wrap = document.createElement("div");
+      wrap.className = "confetti-wrap";
+      for (let i = 0; i < 80; i++) {
+        const c = document.createElement("i");
+        const size = 6 + Math.random() * 9;
+        c.style.cssText = "left:" + (Math.random() * 100) + "%;width:" + size + "px;height:" + (size * 0.6) +
+          "px;background:" + colors[i % colors.length] + ";animation-duration:" + (1.6 + Math.random() * 1.5) +
+          "s;animation-delay:" + (Math.random() * 0.3) + "s;transform:rotate(" + (Math.random() * 360) + "deg)";
+        wrap.appendChild(c);
+      }
+      document.body.appendChild(wrap);
+      setTimeout(() => wrap.remove(), 3600);
     }
 
     // ---- Messages non lus (basé sur un horodatage stocké localement) ----
