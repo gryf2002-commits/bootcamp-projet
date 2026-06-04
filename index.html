@@ -222,6 +222,23 @@
     .confetti-wrap i { position: absolute; top: -20px; border-radius: 2px; opacity: .95; animation: confettiFall linear forwards; }
     @keyframes confettiFall { to { transform: translateY(108vh) rotate(600deg); opacity: .85; } }
 
+    /* ---- Bouton « effacer » (✕) dans les champs de recherche ---- */
+    .search { position: relative; }
+    .search input { padding-right: 2.4rem; }
+    .search-clear { position: absolute; right: .5rem; top: 50%; transform: translateY(-50%); width: 26px; height: 26px;
+      border-radius: 50%; border: 0; background: rgba(0,0,0,.09); color: var(--ink); font-size: .76rem; cursor: pointer;
+      display: grid; place-items: center; padding: 0; line-height: 1; }
+    .search-clear:hover { background: rgba(0,0,0,.17); }
+    body.theme-dusk .search-clear { background: rgba(255,255,255,.14); color: #fff; }
+    body.theme-dusk .search-clear:hover { background: rgba(255,255,255,.24); }
+
+    /* ---- Cibles tactiles plus confortables (≥40px) sur les boutons-icônes ---- */
+    .iconbtn { min-width: 40px; min-height: 40px; }
+
+    /* ---- Compteur de caractères (ex. bio) ---- */
+    .char-count { display: block; text-align: right; font-size: .72rem; color: var(--muted); margin-top: .25rem; }
+    .char-count.over { color: var(--danger); font-weight: 700; }
+
     /* ----------------------------- Badges --------------------------- */
     .badge { display: inline-flex; align-items: center; gap: .25rem; padding: .25rem .65rem; border-radius: 999px; font-size: .78rem; font-weight: 700; }
     .badge.ok { background: rgba(34,197,94,.12); color: var(--ok); }
@@ -1634,7 +1651,7 @@
               <div class="avatar" id="chatAvatar">M</div>
               <div><div class="name" style="font-weight:700;color:var(--ink)" id="chatName">—</div><div class="meta muted" style="font-size:.78rem" id="chatStatus">Voir le profil ›</div></div>
             </div>
-            <button class="iconbtn" id="chatDeleteBtn" title="Supprimer la conversation" style="font-size:1rem">🗑️</button>
+            <button class="iconbtn" id="chatDeleteBtn" title="Supprimer la conversation" aria-label="Supprimer la conversation" style="font-size:1rem">🗑️</button>
           </div>
           <div class="chat-body" id="chatBody"></div>
           <div class="chat-input">
@@ -1732,7 +1749,7 @@
 
         <div id="profMain">
         <div class="card" style="position:relative">
-          <button class="iconbtn" id="profileSettingsBtn" title="Paramètres du compte" style="position:absolute;top:.7rem;right:.7rem">⚙️</button>
+          <button class="iconbtn" id="profileSettingsBtn" title="Paramètres du compte" aria-label="Paramètres du compte" style="position:absolute;top:.7rem;right:.7rem">⚙️</button>
           <div class="person" style="border:0;padding:0">
             <div class="avatar" id="profileAvatar">😎</div>
             <div class="info">
@@ -1790,6 +1807,7 @@
               <input id="pCity" placeholder="Lisbonne" />
               <label>Bio</label>
               <textarea id="pBio" rows="3" placeholder="Exploratrice solo, fan de cafés calmes ☕"></textarea>
+              <small class="char-count" id="pBioCount" data-for="pBio" data-max="300">0/300</small>
             </div>
           </div>
 
@@ -2586,6 +2604,8 @@
       buildChips("musicChips", MUSIC_OPTS, selMusic, false);
       buildPrompts();
       updateCompletion();
+      // Rafraîchit les compteurs de caractères (setV n'émet pas d'événement input)
+      document.querySelectorAll(".char-count[data-for]").forEach((el) => { const i = $(el.dataset.for); if (i) i.dispatchEvent(new Event("input")); });
       const uname = data.username || "Voyageur";
       $("profileName").textContent = uname + (data.is_admin ? " 👑" : "");
       setAvatarEl($("profileAvatar"), data.avatar_url, uname[0] || "😎");
@@ -3305,7 +3325,7 @@
             ${avatarMarkup(nameOf(c.user_a), avatarOf(c.user_a))}
             <div class="info"><div class="name">${escapeHtml(nameOf(c.user_a))}</div><div class="meta">souhaite se connecter</div></div>
             <button class="btn-primary" data-accept="${c.id}">Accepter</button></div>`).join("")
-        : '<p class="muted">Aucune demande reçue.</p>';
+        : emptyState("📭", "Aucune demande reçue", "Quand un voyageur souhaitera se connecter avec toi, sa demande apparaîtra ici.");
       $("requestsList").querySelectorAll("[data-accept]").forEach((b) =>
         b.addEventListener("click", () => acceptConnection(Number(b.dataset.accept))));
 
@@ -3480,7 +3500,7 @@
             </div>
             <span class="compat ${compatTier(pct)}">❤️ ${pct}%</span></div>`).join("")
         : (q || travFilters.verified || travFilters.city || travFilters.affinity || advActive
-            ? '<p class="muted">Aucun voyageur ne correspond à ces critères.</p>'
+            ? emptyState("🔍", "Aucun voyageur trouvé", "Essaie d'élargir tes filtres ou de modifier ta recherche.")
             : '<p class="muted">Découvre nos voyageurs ci-dessus 🌍 Pour trouver une vraie personne, tape son pseudo dans la recherche.</p>');
       $("travelersList").querySelectorAll("[data-profile]").forEach((el) =>
         el.addEventListener("click", () => openTravelerProfile(travelerMap[el.dataset.profile])));
@@ -3688,7 +3708,7 @@
         ? myCoupons.map((c) => `<div class="coupon" style="${c.used ? "opacity:.55" : ""}"><div class="cico">🎟️</div>
             <div style="flex:1"><div class="cname">${escapeHtml(c.title || "Coupon")}</div><div class="cdesc">${escapeHtml(c.descr || "")}</div></div>
             ${c.used ? '<span class="badge no">Utilisé</span>' : `<button class="btn-accent" data-usecoupon="${c.id}" style="padding:.4rem .7rem;font-size:.8rem">Utiliser</button>`}</div>`).join("")
-        : '<p class="muted">Pas encore de coupon. Accomplis une quête qui en offre un 🎟️</p>';
+        : emptyState("🎟️", "Pas encore de coupon", "Accomplis une quête qui offre une récompense pour gagner ton premier coupon.", "Voir les quêtes", "jeux");
       $("couponList").querySelectorAll("[data-usecoupon]").forEach((el) =>
         el.addEventListener("click", () => useCoupon(Number(el.dataset.usecoupon))));
 
@@ -5536,6 +5556,32 @@
         } else { new Notification(title, { body: body, icon: "icon.svg" }); }
       } catch (e) {}
     }
+
+    // Bouton « effacer » (✕) dans chaque champ de recherche + touche Échap pour vider.
+    document.querySelectorAll(".search").forEach((wrap) => {
+      const input = wrap.querySelector("input");
+      if (!input || wrap.querySelector(".search-clear")) return;
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.className = "search-clear"; btn.textContent = "✕";
+      btn.setAttribute("aria-label", "Effacer la recherche");
+      btn.style.display = "none";
+      wrap.appendChild(btn);
+      const sync = () => { btn.style.display = input.value ? "grid" : "none"; };
+      const clear = () => { input.value = ""; input.dispatchEvent(new Event("input", { bubbles: true })); input.focus(); sync(); };
+      input.addEventListener("input", sync);
+      input.addEventListener("keydown", (e) => { if (e.key === "Escape" && input.value) clear(); });
+      btn.addEventListener("click", clear);
+      sync();
+    });
+
+    // Compteurs de caractères (éléments .char-count avec data-for / data-max).
+    document.querySelectorAll(".char-count[data-for]").forEach((el) => {
+      const input = $(el.dataset.for); if (!input) return;
+      const max = parseInt(el.dataset.max, 10) || 0;
+      const upd = () => { const n = (input.value || "").length; el.textContent = n + "/" + max; el.classList.toggle("over", max > 0 && n > max); };
+      input.addEventListener("input", upd);
+      upd();
+    });
 
     // Boutons d'action des états vides (« Découvrir des Mates », « Voir les lieux »…)
     document.addEventListener("click", (e) => {
