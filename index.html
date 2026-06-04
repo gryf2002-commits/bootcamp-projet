@@ -168,6 +168,16 @@
     body.theme-dusk .act-bff .ic { background: rgba(255,178,116,.32); }
     body.theme-dusk .act-block { background: rgba(239,68,68,.15); color: #ff9b9b; border-color: rgba(239,68,68,.32); }
     body.theme-dusk .act-block .ic { background: rgba(239,68,68,.32); }
+    .act-map { background: #e7f3ff; color: #1f6fb2; border-color: #cfe6fb; }
+    .act-map .ic { background: #cfe6fb; }
+    .act-map:hover { box-shadow: 0 8px 18px rgba(58,160,240,.22); }
+    .act-teal { background: #e3f7f3; color: #0f8f86; border-color: #c5ede6; }
+    .act-teal .ic { background: #c5ede6; }
+    .act-teal:hover { box-shadow: 0 8px 18px rgba(25,179,107,.22); }
+    body.theme-dusk .act-map { background: rgba(58,160,240,.16); color: #9fd0ff; border-color: rgba(58,160,240,.32); }
+    body.theme-dusk .act-map .ic { background: rgba(58,160,240,.32); }
+    body.theme-dusk .act-teal { background: rgba(25,179,107,.16); color: #88e6c5; border-color: rgba(25,179,107,.32); }
+    body.theme-dusk .act-teal .ic { background: rgba(25,179,107,.32); }
 
     /* Bannière d'installation PWA (cachée par défaut, glisse depuis le haut) */
     .pwa-banner { position: fixed; left: 50%; top: .6rem; z-index: 400;
@@ -1276,8 +1286,8 @@
     /* Exclus Gold (lieu / quête) — lisibles en clair ET en sombre */
     .gold-place { background: transparent !important; border: 0 !important; }
     /* Tuile « à venir » (Gold) grisée et non cliquable */
-    .tile.soon { opacity: .6; cursor: default; position: relative; }
-    .tile.soon .thumb { background: linear-gradient(135deg,#FFE08A,#E8A14B) !important; }
+    .tile.soon { opacity: .85; cursor: default; position: relative; }
+    .tile.soon .thumb { background: linear-gradient(135deg,#FFD15C,#F4A11E) !important; }
     .tile.soon .t-meta { color: var(--accent); font-weight: 700; }
   </style>
 </head>
@@ -2139,8 +2149,10 @@
 
           <button class="btn-primary btn-block" id="detailJoinBtn">➕ Rejoindre la quête</button>
           <button class="btn-accent btn-block" id="detailCompleteBtn" style="margin-top:.5rem">✅ Marquer comme accompli</button>
-          <button class="btn-ghost btn-block" id="detailSuggestBtn" style="margin-top:.5rem">🤝 Proposer à un Mate</button>
-          <button class="btn-ghost btn-block" id="detailMapBtn" style="margin-top:.5rem">📍 Voir sur la carte</button>
+          <button class="act-tile act-teal" id="detailSuggestBtn" style="margin-top:.6rem">
+            <span class="ic">🤝</span><span class="lbl">Proposer à un Mate</span><span class="arr">›</span></button>
+          <button class="act-tile act-map" id="detailMapBtn" style="margin-top:.5rem">
+            <span class="ic">📍</span><span class="lbl">Voir sur la carte</span><span class="arr">›</span></button>
           <div class="msg" id="detailMsg" style="text-align:center"></div>
         </div>
 
