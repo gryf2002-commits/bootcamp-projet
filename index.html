@@ -245,7 +245,7 @@
     .prof-seg:not(.hidden) { animation: tabFade .3s cubic-bezier(.22,.8,.3,1); }
 
     /* ---- Textareas : plus d'étirement infini (auto-grow géré en JS, hauteur plafonnée) ---- */
-    textarea { resize: none; max-height: 45vh; overflow-y: auto; }
+    textarea { resize: none; min-height: 4.6em; max-height: 45vh; overflow-y: hidden; line-height: 1.5; }
 
     /* ---- Flash de succès (DA SunMates : coucher de soleil ambre → corail) ---- */
     @keyframes flashOk {
@@ -1509,9 +1509,6 @@
         </div>
         <div id="homeFeed"><p class="muted">Chargement…</p></div>
 
-        <div class="section-head"><h3 style="margin-top:.2rem">Lieux sûrs à proximité</h3><a data-goto="lieux">Voir tout</a></div>
-        <div id="homeCafes"><p class="muted">Chargement…</p></div>
-
         <div class="section-head"><h3>Accès rapide</h3></div>
         <div class="grid2">
           <div class="tile" data-goto="connexions"><div class="thumb purp">🤝</div><div class="t-name">Mes Mates</div><div class="t-meta">Rencontre &amp; discute</div></div>
@@ -2467,8 +2464,8 @@
     // ====================== ACCUEIL ======================
     // Met en avant quelques lieux sûrs sur la page d'accueil.
     async function loadHome() {
+      const wrap = $("homeCafes"); if (!wrap) return; // section retirée de l'accueil (redondante avec l'onglet Lieux)
       const { data } = await db.from("partner_cafes").select("*").order("name").limit(4);
-      const wrap = $("homeCafes");
       if (!data || !data.length) { wrap.innerHTML = '<p class="muted">Aucun lieu pour l\'instant.</p>'; return; }
       const icons = ["☕", "🏠", "🌿", "📍"];
       wrap.innerHTML = '<div class="grid2">' + data.map((c, i) => `
@@ -2813,6 +2810,7 @@
           <div class="place-photo" style="background-image:url('${cafeImage(c)}')"></div>
           <div class="name">${escapeHtml(c.name)} ${c.is_eco ? '<span class="eco">🌱 éco</span>' : ''}</div>
           <div class="meta">${escapeHtml(c.category || '')} · ${escapeHtml(c.city || '')} ${dist}</div>
+          ${c.address ? `<div class="meta">📍 ${escapeHtml(c.address)}</div>` : ''}
           ${c.safety_note ? `<div class="meta">🛟 ${escapeHtml(c.safety_note)}</div>` : ''}
           <div class="meta">${nCk ? '✅ ' + nCk + ' check-in' + (nCk > 1 ? 's' : '') : '✨ Sois le·la 1er·ère à checker !'}</div>
           <div class="row" style="margin-top:.4rem">
@@ -4530,6 +4528,27 @@
     let homeMapToken = 0; // évite que deux rendus concurrents dupliquent les marqueurs
     let homeCafeMarkerById = {}; // id de lieu -> marqueur (pour centrer la carte depuis l'onglet Lieux)
     let homeFitDone = false; // on ne recadre la carte qu'une fois (sinon elle "snap" à chaque rendu)
+    let homeCityCenter = null; // coordonnées géocodées de la ville de l'utilisateur (cache)
+
+    // Vue initiale de la carte d'accueil : on cadre sur la VILLE / position de l'utilisateur
+    // (au lieu d'un dézoom monde). Priorité : GPS connu → dernière position partagée →
+    // ville du profil (géocodée) → repli sur l'ensemble des marqueurs.
+    async function centerHomeMapOnUser(markers) {
+      if (!homeLeaf) return;
+      if (lastKnownGeo) { homeLeaf.setView([lastKnownGeo.lat, lastKnownGeo.lng], 13, { animate: false }); return; }
+      const mine = (circleLocs || []).find((l) => l.user_id === myUserId && l.lat != null);
+      if (mine) { homeLeaf.setView([mine.lat, mine.lng], 13, { animate: false }); return; }
+      const city = myProfile && myProfile.city;
+      if (city) {
+        if (homeCityCenter) { homeLeaf.setView(homeCityCenter, 12, { animate: false }); return; }
+        try {
+          const r = await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(city));
+          const j = await r.json();
+          if (j && j[0]) { homeCityCenter = [parseFloat(j[0].lat), parseFloat(j[0].lon)]; homeLeaf.setView(homeCityCenter, 12, { animate: false }); return; }
+        } catch (e) {}
+      }
+      if (markers && markers.length) { try { homeLeaf.fitBounds(L.featureGroup(markers).getBounds().pad(0.25)); } catch (e) {} }
+    }
 
     // Personas IA intégrés : toujours disponibles pour animer la carte et la messagerie.
     const IA_PERSONAS = [
@@ -4634,7 +4653,7 @@
         const photo = c.image_url ? `<img src="${escapeHtml(c.image_url)}" style="width:100%;height:72px;object-fit:cover;border-radius:8px;margin-bottom:5px" alt="">` : "";
         const stats = `<div class="muted" style="margin:.2rem 0">${nCk ? "✅ " + nCk + " ici récemment" : "✨ Sois le·la 1er·ère à checker !"}${c.is_eco ? " · 🌱 éco" : ""}</div>`;
         const mk = L.marker([c.lat, c.lng], { icon: epinIcon("📍", "#f4655e") })
-          .bindPopup(`<div class="mappop-mini">${photo}<b>${escapeHtml(c.name)}</b><br>${escapeHtml(c.city || "")}${stats}<button class="mappop-btn" data-hmcid="${c.id}" data-hmcname="${escapeHtml(c.name)}">🔒 Check-in</button></div>`);
+          .bindPopup(`<div class="mappop-mini">${photo}<b>${escapeHtml(c.name)}</b><br>${c.address ? `<span class="muted" style="font-size:.72rem">📍 ${escapeHtml(c.address)}</span>` : escapeHtml(c.city || "")}${stats}<button class="mappop-btn" data-hmcid="${c.id}" data-hmcname="${escapeHtml(c.name)}">🔒 Check-in</button></div>`);
         homeLayers.places.addLayer(mk); allMarkers.push(mk); homeCafeMarkerById[c.id] = mk;
       });
 
@@ -4745,8 +4764,9 @@
 
       homeAllMarkers = allMarkers;
       applyHomeLayers();
-      // On ne recadre qu'au tout premier rendu : ensuite on préserve la vue de l'utilisateur
-      if (!homeFitDone && allMarkers.length) { try { homeLeaf.fitBounds(L.featureGroup(allMarkers).getBounds().pad(0.25)); homeFitDone = true; } catch (e) {} }
+      // On ne recadre qu'au tout premier rendu : ensuite on préserve la vue de l'utilisateur.
+      // On centre sur la ville/position de l'utilisateur (pas un dézoom monde).
+      if (!homeFitDone) { homeFitDone = true; centerHomeMapOnUser(allMarkers); }
       setTimeout(() => { try { homeLeaf.invalidateSize(); } catch (e) {} }, 120);
       renderHomeLegend();
     }
@@ -4883,7 +4903,12 @@
       // (sinon elle serait invisible), ou le <body> (centrage correct hors plein écran).
       (document.fullscreenElement || document.body).appendChild(modal);
       $("actTitle").value = ""; $("actNote").value = ""; $("actMsg").textContent = "";
-      $("actPos").textContent = "📍 Position choisie : " + latlng.lat.toFixed(4) + ", " + latlng.lng.toFixed(4);
+      // On affiche l'ADRESSE (géocodage inverse), pas des coordonnées « façon GPS ».
+      $("actPos").textContent = "📍 Recherche de l'adresse…";
+      fetch("https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&lat=" + latlng.lat + "&lon=" + latlng.lng)
+        .then((r) => r.json())
+        .then((j) => { $("actPos").textContent = "📍 " + (j && j.display_name ? j.display_name : "Position choisie sur la carte"); })
+        .catch(() => { $("actPos").textContent = "📍 Position choisie sur la carte"; });
       modal.classList.remove("hidden");
       setTimeout(() => $("actTitle").focus(), 50);
     }
@@ -5642,7 +5667,10 @@
     function autoGrowTextarea(t) {
       if (!t) return;
       t.style.height = "auto";
-      t.style.height = Math.min(t.scrollHeight, Math.round(window.innerHeight * 0.45)) + "px";
+      const max = Math.round(window.innerHeight * 0.45);
+      const h = Math.min(t.scrollHeight + 2, max);
+      t.style.height = h + "px";
+      t.style.overflowY = (t.scrollHeight + 2 > max) ? "auto" : "hidden"; // scrollbar seulement si on atteint le plafond
     }
     document.querySelectorAll("textarea").forEach((t) => {
       t.addEventListener("input", () => autoGrowTextarea(t));
