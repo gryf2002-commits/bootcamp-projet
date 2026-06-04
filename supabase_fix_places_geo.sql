@@ -24,3 +24,9 @@ update partner_cafes as p
 
 -- Vérifier le résultat :
 -- select name, city, address, lat, lng from partner_cafes order by name;
+
+-- ------------------------------------------------------------
+-- ACTIVITÉS PARTAGÉES : on stocke aussi l'adresse (géocodée à la création)
+-- pour l'afficher dans la bulle de la carte.
+-- ------------------------------------------------------------
+alter table map_activities add column if not exists address text;

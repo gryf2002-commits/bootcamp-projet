@@ -3779,7 +3779,9 @@
       if (hero) { hero.style.backgroundImage = "url('" + questImage(q) + "')"; hero.classList.add("has-photo"); }
       $("detailEmoji").textContent = q.emoji || "🎮";
       $("detailName").textContent = q.title;
-      $("detailCity").textContent = q.city || "";
+      // Si la quête est rattachée à un lieu réel, on montre son ADRESSE ; sinon la ville.
+      const linkedCafe = (q.cafe_id != null && typeof allCafes !== "undefined") ? (allCafes || []).find((c) => c.id === q.cafe_id) : null;
+      $("detailCity").textContent = (linkedCafe && linkedCafe.address) ? "📍 " + linkedCafe.address : (q.city || "");
       $("detailDesc").textContent = q.description || "";
       $("detailStats").innerHTML = `
         <div class="dstat"><b>+${q.points || 0}</b><span>Points</span></div>
@@ -4524,7 +4526,7 @@
     }
 
     let homeAllMarkers = [], homeGpsMarker = null;
-    let homeAddMode = false, homeAddLatLng = null;
+    let homeAddMode = false, homeAddLatLng = null, homeAddAddress = null;
     let homeMapToken = 0; // évite que deux rendus concurrents dupliquent les marqueurs
     let homeCafeMarkerById = {}; // id de lieu -> marqueur (pour centrer la carte depuis l'onglet Lieux)
     let homeFitDone = false; // on ne recadre la carte qu'une fois (sinon elle "snap" à chaque rendu)
@@ -4701,7 +4703,7 @@
           ? `<button class="mappop-btn ghost" data-hmdelact="${a.id}">🗑️ Supprimer</button>`
           : (creator ? `<button class="mappop-btn" data-hmchat="${a.creator}">💬 Message</button>` : "");
         const mk = L.marker([a.lat, a.lng], { icon: epinIcon("📣", "#ff5e9f") })
-          .bindPopup(`<div class="mappop-mini"><b>${escapeHtml(a.title)}</b><br><span class="muted">partagé par ${escapeHtml(byName)}</span>${a.note ? "<br>" + escapeHtml(a.note) : ""}<br>${actions}</div>`);
+          .bindPopup(`<div class="mappop-mini"><b>${escapeHtml(a.title)}</b><br><span class="muted">partagé par ${escapeHtml(byName)}</span>${a.address ? `<br><span class="muted" style="font-size:.72rem">📍 ${escapeHtml(a.address)}</span>` : ""}${a.note ? "<br>" + escapeHtml(a.note) : ""}<br>${actions}</div>`);
         homeLayers.activities.addLayer(mk); allMarkers.push(mk);
       });
 
@@ -4903,11 +4905,13 @@
       // (sinon elle serait invisible), ou le <body> (centrage correct hors plein écran).
       (document.fullscreenElement || document.body).appendChild(modal);
       $("actTitle").value = ""; $("actNote").value = ""; $("actMsg").textContent = "";
-      // On affiche l'ADRESSE (géocodage inverse), pas des coordonnées « façon GPS ».
+      // On affiche l'ADRESSE (géocodage inverse), pas des coordonnées « façon GPS »,
+      // et on la mémorise pour l'enregistrer avec l'activité.
+      homeAddAddress = null;
       $("actPos").textContent = "📍 Recherche de l'adresse…";
       fetch("https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&lat=" + latlng.lat + "&lon=" + latlng.lng)
         .then((r) => r.json())
-        .then((j) => { $("actPos").textContent = "📍 " + (j && j.display_name ? j.display_name : "Position choisie sur la carte"); })
+        .then((j) => { homeAddAddress = (j && j.display_name) || null; $("actPos").textContent = "📍 " + (homeAddAddress || "Position choisie sur la carte"); })
         .catch(() => { $("actPos").textContent = "📍 Position choisie sur la carte"; });
       modal.classList.remove("hidden");
       setTimeout(() => $("actTitle").focus(), 50);
@@ -4918,7 +4922,10 @@
       if (!homeAddLatLng || !myUserId) return;
       await once("mapact:" + myUserId, async () => {
         m.style.color = "var(--muted)"; m.textContent = "Publication…";
-        const { error } = await db.from("map_activities").insert({ creator: myUserId, title, note: note || null, lat: homeAddLatLng.lat, lng: homeAddLatLng.lng });
+        const base = { creator: myUserId, title, note: note || null, lat: homeAddLatLng.lat, lng: homeAddLatLng.lng };
+        let { error } = await db.from("map_activities").insert({ ...base, address: homeAddAddress || null });
+        // Si la colonne address n'existe pas encore (migration non lancée), on réessaie sans.
+        if (error && /address/i.test(error.message || "")) { ({ error } = await db.from("map_activities").insert(base)); }
         if (error) { m.style.color = "var(--danger)"; m.textContent = "Erreur : " + error.message; return; }
         $("actCreate").classList.add("hidden");
         if (typeof toast === "function") toast("📣", "Activité publiée sur la carte ✅");
