@@ -239,10 +239,13 @@
     .char-count { display: block; text-align: right; font-size: .72rem; color: var(--muted); margin-top: .25rem; }
     .char-count.over { color: var(--danger); font-weight: 700; }
 
-    /* ---- Fondu doux entre les onglets (et les segments du profil) ---- */
-    @keyframes tabFade { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
-    .tab-panel:not(.hidden) { animation: tabFade .26s ease; }
-    .prof-seg:not(.hidden) { animation: tabFade .22s ease; }
+    /* ---- Fondu entre les onglets (et les segments du profil) — bien visible ---- */
+    @keyframes tabFade { from { opacity: 0; transform: translateY(16px) scale(.985); } to { opacity: 1; transform: none; } }
+    .tab-panel:not(.hidden) { animation: tabFade .34s cubic-bezier(.22,.8,.3,1); }
+    .prof-seg:not(.hidden) { animation: tabFade .3s cubic-bezier(.22,.8,.3,1); }
+
+    /* ---- Textareas : plus d'étirement infini (auto-grow géré en JS, hauteur plafonnée) ---- */
+    textarea { resize: none; max-height: 45vh; overflow-y: auto; }
 
     /* ---- Flash de succès (DA SunMates : coucher de soleil ambre → corail) ---- */
     @keyframes flashOk {
@@ -698,8 +701,8 @@
       background: radial-gradient(circle, rgba(255,255,255,.45), rgba(255,255,255,0) 70%); top: -70px; right: -50px; }
     .auth-hero .logo-badge, .auth-hero .logo-text, .auth-hero .logo-tag { position: relative; z-index: 1; }
 
-    /* Apparition douce des panneaux au changement d'onglet */
-    .tab-panel:not(.hidden) { animation: fadeUp .35s ease both; }
+    /* Apparition des panneaux au changement d'onglet (voir keyframes tabFade plus haut) */
+    .tab-panel:not(.hidden) { animation: tabFade .34s cubic-bezier(.22,.8,.3,1) both; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
     /* ===================================================================
        POLISH v2 — finitions écran par écran
@@ -2860,9 +2863,12 @@
         msg.style.color = res.ok ? "var(--ok)" : "var(--danger)";
         msg.textContent = res.message || (res.ok ? "Check-in validé ✅" : "Échec.");
         if (res.ok) {
-          flashOk($("cafesMsg"));
           cafeCheckins[cafeId] = (cafeCheckins[cafeId] || 0) + 1; // maj immédiate du compteur
           if (typeof renderCafesList === "function") renderCafesList();
+          // Flash sur la TUILE du lieu validé (visible à l'écran), pas sur le message en haut.
+          const card = document.querySelector(`[data-cafecard="${cafeId}"]`);
+          if (card) { flashOk(card); card.scrollIntoView({ behavior: "smooth", block: "center" }); }
+          else flashOk($("cafesMsg"));
           await Promise.all([loadProfile(), loadCheckins()]);
           if (typeof renderHomeMap === "function" && homeLeaf) renderHomeMap();
         }
@@ -3170,21 +3176,29 @@
 
     async function loadAdminPlaces() {
       const wrap = $("adminPlaces"); if (!wrap) return;
-      const { data } = await db.from("partner_cafes").select("*").order("name");
+      // On charge AUSSI les codes (l'admin a le droit de les lire via RLS) pour les afficher.
+      const [{ data }, { data: codeRows }] = await Promise.all([
+        db.from("partner_cafes").select("*").order("name"),
+        db.from("cafe_codes").select("cafe_id,code"),
+      ]);
       const list = data || [];
-      wrap.innerHTML = list.length ? list.map((c) => `
+      const codeMap = {}; (codeRows || []).forEach((r) => { codeMap[r.cafe_id] = r.code; });
+      wrap.innerHTML = list.length ? list.map((c) => {
+        const code = codeMap[c.id];
+        return `
         <div class="qrow" style="align-items:center">
           <div class="qico">🛟</div>
-          <div class="qname" style="flex:1">${escapeHtml(c.name)}<div class="meta muted" style="font-size:.74rem">${escapeHtml(c.city || "")}${c.is_eco ? " · 🌱" : ""}</div></div>
+          <div class="qname" style="flex:1">${escapeHtml(c.name)}<div class="meta muted" style="font-size:.74rem">${escapeHtml(c.city || "")}${c.is_eco ? " · 🌱" : ""} · 🔑 ${code ? "<b>" + escapeHtml(code) + "</b>" : "<span style='color:var(--danger)'>aucun code</span>"}</div></div>
           <button class="btn-ghost" data-ap-edit="${c.id}" style="padding:.3rem .5rem;font-size:.7rem">Éditer</button>
           <button class="btn-ghost" data-ap-del="${c.id}" style="padding:.3rem .5rem;font-size:.7rem;color:var(--danger)">Suppr.</button>
-        </div>`).join("") : '<p class="muted">Aucun lieu.</p>';
+        </div>`; }).join("") : '<p class="muted">Aucun lieu.</p>';
       wrap.querySelectorAll("[data-ap-edit]").forEach((b) => b.addEventListener("click", () => {
         const c = list.find((x) => String(x.id) === b.dataset.apEdit); if (!c) return;
         $("apId").value = c.id; $("apName").value = c.name || ""; $("apCity").value = c.city || ""; $("apCat").value = c.category || "";
-        $("apNote").value = c.safety_note || ""; $("apEco").value = c.is_eco ? "true" : "false"; $("apLat").value = c.lat ?? ""; $("apLng").value = c.lng ?? ""; $("apCode").value = "";
+        $("apNote").value = c.safety_note || ""; $("apEco").value = c.is_eco ? "true" : "false"; $("apLat").value = c.lat ?? ""; $("apLng").value = c.lng ?? "";
+        $("apCode").value = codeMap[c.id] || ""; // ← on PRÉ-REMPLIT le vrai code (au lieu de le cacher)
         $("apAddr").value = c.address || ""; $("apImg").value = c.image_url || "";
-        $("apMsg").style.color = "var(--muted)"; $("apMsg").textContent = "Édition de « " + (c.name || "") + " » — laisse le code vide pour le conserver.";
+        $("apMsg").style.color = "var(--muted)"; $("apMsg").textContent = "Édition de « " + (c.name || "") + " » — le code actuel est affiché, modifie-le si besoin.";
         window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
       }));
       wrap.querySelectorAll("[data-ap-del]").forEach((b) => b.addEventListener("click", async () => {
@@ -5482,6 +5496,7 @@
         const opening = !sec.classList.contains("open");
         sec.classList.toggle("open", opening);
         if (opening) {
+          if (typeof autoGrowTextarea === "function") body.querySelectorAll("textarea").forEach(autoGrowTextarea);
           body.style.maxHeight = body.scrollHeight + "px";
           // une fois ouvert, on retire la contrainte pour que le contenu reste flexible
           const done = (e) => { if (e.propertyName === "max-height") { body.style.maxHeight = "none"; body.removeEventListener("transitionend", done); } };
@@ -5621,6 +5636,17 @@
       input.addEventListener("keydown", (e) => { if (e.key === "Escape" && input.value) clear(); });
       btn.addEventListener("click", clear);
       sync();
+    });
+
+    // Textareas qui grandissent avec le contenu (au lieu d'une poignée d'étirement infinie).
+    function autoGrowTextarea(t) {
+      if (!t) return;
+      t.style.height = "auto";
+      t.style.height = Math.min(t.scrollHeight, Math.round(window.innerHeight * 0.45)) + "px";
+    }
+    document.querySelectorAll("textarea").forEach((t) => {
+      t.addEventListener("input", () => autoGrowTextarea(t));
+      autoGrowTextarea(t);
     });
 
     // Compteurs de caractères (éléments .char-count avec data-for / data-max).
