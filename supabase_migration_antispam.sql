@@ -68,18 +68,16 @@ create unique index if not exists uniq_pending_suggestion
   where status = 'pending';
 
 -- ------------------------------------------------------------
--- 3) (Optionnel) POSITIONS D'URGENCE (locations_realtime)
---    Évite qu'un clic répété sur "Alerte d'urgence" crée des dizaines de lignes
---    SOS identiques dans la même minute. On garde au plus une alerte par
---    utilisateur et par minute. (Les positions normales ne sont pas concernées.)
+-- 3) POSITIONS D'URGENCE (locations_realtime)
+--    Note : on NE met PAS d'index unique "par minute" ici, car PostgreSQL refuse
+--    date_trunc() dans un index (fonction dépendante du fuseau horaire, non
+--    IMMUTABLE → erreur 42P17). Le spam du bouton d'urgence est déjà bloqué côté
+--    navigateur par le verrou once("loc:sos") dans index.html, ce qui suffit.
 -- ------------------------------------------------------------
-create unique index if not exists uniq_emergency_per_minute
-  on locations_realtime (user_id, date_trunc('minute', created_at))
-  where is_emergency = true;
 
 -- ============================================================
 -- Vérification rapide (facultatif) : liste les index créés.
 -- ============================================================
 -- select indexname from pg_indexes
--- where tablename in ('matches_connections','quest_suggestions','locations_realtime')
+-- where tablename in ('matches_connections','quest_suggestions')
 --   and indexname like 'uniq_%';
