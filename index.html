@@ -323,7 +323,14 @@
 
     /* ---- Cibles tactiles plus confortables (≥40px) sur les boutons-icônes ---- */
     .iconbtn { min-width: 40px; min-height: 40px; display: inline-grid; place-items: center; }
-    .iconbtn svg { display: block; }
+
+    /* ---- Accusé de lecture (« ✓ Vu » sous mon dernier message) ---- */
+    .seen-mark { align-self: flex-end; font-size: .68rem; color: var(--accent); font-weight: 700; margin: -.1rem .25rem .35rem 0; }
+
+    /* ---- Bannière « compte de démonstration (IA) » ---- */
+    .demo-banner { background: rgba(122,92,255,.12); color: #6a4ad8; border: 1px solid rgba(122,92,255,.25);
+      border-radius: 12px; padding: .5rem .7rem; font-size: .78rem; margin-bottom: .7rem; text-align: center; line-height: 1.35; }
+    body.theme-dusk .demo-banner { background: rgba(122,92,255,.2); color: #c9bcff; }
 
     /* ---- Séparateur de jour dans le chat ---- */
     .chat-daysep { text-align: center; margin: .85rem 0 .5rem; }
@@ -1556,7 +1563,7 @@
       </span><b><span class="sun">Sun</span>Mates</b></div>
       <div class="topbar-actions hidden" id="userBox">
         <button class="iconbtn" id="themeToggle" title="Changer de thème" aria-label="Changer de thème jour / nuit">🌙</button>
-        <button class="iconbtn" id="notifBell" aria-label="Notifications"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="nbadge hidden" id="notifBellCount">0</span></button>
+        <button class="iconbtn" id="notifBell" aria-label="Notifications">🔔<span class="nbadge hidden" id="notifBellCount">0</span></button>
         <button class="btn-ghost" id="logoutBtn" style="padding:.5rem .8rem;font-size:.82rem">Déconnexion</button>
       </div>
     </header>
@@ -1743,6 +1750,7 @@
             <div class="dh-emoji" id="tpEmoji">🧑</div>
             <div class="dh-body"><div class="dh-name" id="tpName">—</div><div class="dh-city" id="tpCity">📍 —</div></div>
           </div>
+          <div id="tpDemoBanner" class="demo-banner" style="display:none">🤖 Profil de <b>démonstration</b> (compte IA) — pour découvrir l'app, ce n'est pas un vrai voyageur.</div>
           <div class="dstats" style="margin-bottom:.8rem">
             <div class="dstat"><b id="tpCompat">—</b><span>Compatibilité ❤️</span></div>
             <div class="dstat"><b id="tpMates">0</b><span>Mates 🛡️</span></div>
@@ -1789,7 +1797,7 @@
               <div class="avatar" id="chatAvatar">M</div>
               <div><div class="name" style="font-weight:700;color:var(--ink)" id="chatName">—</div><div class="meta muted" style="font-size:.78rem" id="chatStatus">Voir le profil ›</div></div>
             </div>
-            <button class="iconbtn" id="chatDeleteBtn" title="Supprimer la conversation" aria-label="Supprimer la conversation"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></button>
+            <button class="iconbtn" id="chatDeleteBtn" title="Supprimer la conversation" aria-label="Supprimer la conversation" style="font-size:1rem">🗑️</button>
           </div>
           <div class="chat-body" id="chatBody"></div>
           <div class="chat-input">
@@ -1887,7 +1895,7 @@
 
         <div id="profMain">
         <div class="card" style="position:relative">
-          <button class="iconbtn" id="profileSettingsBtn" title="Paramètres du compte" aria-label="Paramètres du compte" style="position:absolute;top:.7rem;right:.7rem"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V15z"/></svg></button>
+          <button class="iconbtn" id="profileSettingsBtn" title="Paramètres du compte" aria-label="Paramètres du compte" style="position:absolute;top:.7rem;right:.7rem">⚙️</button>
           <div class="person" style="border:0;padding:0">
             <div class="avatar" id="profileAvatar">😎</div>
             <div class="info">
@@ -4076,6 +4084,14 @@
       $("pickerOverlay").classList.add("info");
       show($("pickerOverlay"), true);
     }
+    // Vignette explicative quand on touche un badge « Vérifié » (vérification simulée en MVP).
+    function showVerifInfo() {
+      showInfo("Vérification ✅", '<p style="line-height:1.55;text-align:left">Sur cette démo (MVP), la vérification est <b>simulée</b> : elle attribue le badge ✅ et des points de confiance, pour montrer le principe.<br><br>La <b>vraie vérification d\'identité</b> (pièce + selfie) arrivera avec le backend — c\'est le cœur de la promesse « sécurité » de SunMates. 🛡️</p>');
+    }
+    ["tpVerif", "verifBadge"].forEach((id) => {
+      const e = $(id);
+      if (e) { e.style.cursor = "pointer"; e.title = "En savoir plus sur la vérification"; e.addEventListener("click", showVerifInfo); }
+    });
     // Détail d'un badge : date d'obtention + quête liée
     function showBadgeInfo(key) {
       const quest = allQuests.find((q) => q.badge_key === key);
@@ -4108,10 +4124,62 @@
     let currentChatUserId = null; // interlocuteur de la conversation ouverte
     let messageChannel = null;    // abonnement temps réel aux messages
     let _tempMsgSeq = 0;          // identifiants des bulles optimistes (avant confirmation serveur)
+    // Temps réel par conversation : « en train d'écrire » + accusés de lecture (broadcast,
+    // sans table en base : éphémère, fonctionne quand les deux sont en ligne).
+    let chatRtChannel = null, typingHideTimer = null, lastTypingSentAt = 0;
+
+    function pairKey(a, b) { return [String(a), String(b)].sort().join("--"); }
+
+    function closeChatRt() {
+      if (chatRtChannel) { try { db.removeChannel(chatRtChannel); } catch (e) {} chatRtChannel = null; }
+      if (typingHideTimer) { clearTimeout(typingHideTimer); typingHideTimer = null; }
+    }
+    // Ouvre le canal temps réel d'UNE conversation (entre moi et otherId).
+    function openChatRt(otherId) {
+      closeChatRt();
+      if (!myUserId || !otherId) return;
+      chatRtChannel = db.channel("chat-rt:" + pairKey(myUserId, otherId))
+        .on("broadcast", { event: "typing" }, (m) => {
+          if (m.payload && m.payload.from === otherId && currentChatUserId === otherId) showTyping();
+        })
+        .on("broadcast", { event: "read" }, (m) => {
+          if (m.payload && m.payload.from === otherId && currentChatUserId === otherId) markMyMessagesSeen();
+        })
+        .subscribe();
+    }
+    // Affiche « en train d'écrire… » sous le nom, puis le masque après 2,5 s sans nouvel événement.
+    function showTyping() {
+      const st = $("chatStatus"); if (!st) return;
+      st.dataset.base = st.dataset.base || st.textContent;
+      st.textContent = "✍️ en train d'écrire…";
+      if (typingHideTimer) clearTimeout(typingHideTimer);
+      typingHideTimer = setTimeout(() => { st.textContent = st.dataset.base || "Voir le profil ›"; }, 2500);
+    }
+    // J'envoie un signal « je tape » (throttlé à 1/1,5 s) à mon interlocuteur.
+    function sendTyping() {
+      if (!chatRtChannel) return;
+      const now = Date.now(); if (now - lastTypingSentAt < 1500) return; lastTypingSentAt = now;
+      try { chatRtChannel.send({ type: "broadcast", event: "typing", payload: { from: myUserId } }); } catch (e) {}
+    }
+    // J'envoie un accusé de lecture (j'ai ouvert/lu la conversation).
+    function sendReadReceipt() {
+      if (!chatRtChannel) return;
+      try { chatRtChannel.send({ type: "broadcast", event: "read", payload: { from: myUserId } }); } catch (e) {}
+    }
+    // Marque MES messages comme « Vu » (l'autre a lu) : petit ✓ Vu sous la dernière bulle à moi.
+    function markMyMessagesSeen() {
+      const body = $("chatBody"); if (!body) return;
+      const mine = body.querySelectorAll(".bubble.me");
+      const last = mine[mine.length - 1]; if (!last) return;
+      body.querySelectorAll(".seen-mark").forEach((e) => e.remove());
+      const s = document.createElement("div"); s.className = "seen-mark"; s.textContent = "✓ Vu";
+      last.insertAdjacentElement("afterend", s);
+    }
 
     function showMatesView(id) {
       ["matesHome", "matesProfile", "matesChat"].forEach((v) => show($(v), v === id));
       window.scrollTo({ top: 0, behavior: "smooth" });
+      if (id !== "matesChat") closeChatRt(); // on quitte le chat → on ferme son canal temps réel
     }
 
     function scrollChatBottom() {
@@ -4229,12 +4297,14 @@
       if (typeof unhideConv === "function") unhideConv(otherUserId); // rouvrir = ré-afficher dans la liste
       const p = travelerMap[otherUserId] || {};
       const name = p.username || "Voyageur";
-      $("chatName").textContent = name;
+      $("chatName").textContent = name + ((p.is_demo || String(otherUserId).startsWith("ia-")) ? " 🤖" : "");
       setAvatarEl($("chatAvatar"), p.avatar_url, name[0] || "?");
-      $("chatStatus").textContent = "Voir le profil ›";
+      $("chatStatus").textContent = (p.is_demo || String(otherUserId).startsWith("ia-")) ? "🤖 Compte démo (IA) · Voir le profil ›" : "Voir le profil ›";
+      $("chatStatus").dataset.base = $("chatStatus").textContent; // base pour l'indicateur « écrit… »
       $("chatBody").innerHTML = '<p class="muted" style="text-align:center">Chargement…</p>';
       showMatesView("matesChat");
-      // Compte IA (démo) : conversation d'exemple simulée côté navigateur
+      closeChatRt(); // ferme le canal temps réel de la conversation précédente
+      // Compte IA (démo) : conversation d'exemple simulée côté navigateur (pas de temps réel)
       if (p.is_demo) {
         if (!demoChats[otherUserId]) demoChats[otherUserId] = demoIntro(p);
         renderDemoChat(otherUserId);
@@ -4251,6 +4321,9 @@
         ? chatHtml(data)
         : '<p class="muted" style="text-align:center">Démarrez la conversation 👋</p>';
       scrollChatBottom();
+      // Temps réel : « en train d'écrire » + accusés de lecture, et j'accuse réception (j'ai ouvert la conv).
+      openChatRt(otherUserId);
+      setTimeout(sendReadReceipt, 300);
     }
     // Depuis le chat, ouvrir le profil du Mate
     $("chatProfileBtn").addEventListener("click", () => {
@@ -4327,6 +4400,7 @@
     }
     $("chatSend").addEventListener("click", sendChatMessage);
     $("chatInput").addEventListener("keydown", (e) => { if (e.key === "Enter") sendChatMessage(); });
+    $("chatInput").addEventListener("input", sendTyping); // prévient l'autre que je suis en train d'écrire
 
     // Temps réel : nouveaux messages. La RLS garantit qu'on ne reçoit QUE
     // les messages dont on est l'expéditeur ou le destinataire.
@@ -4354,6 +4428,8 @@
             }
             $("chatBody").insertAdjacentHTML("beforeend", bubbleHtml(m));
             scrollChatBottom();
+            // Un message de l'autre arrive et j'ai le chat ouvert → je le lis : accusé de lecture.
+            if (m.sender_id === currentChatUserId) sendReadReceipt();
           } else if (m.recipient_id === myUserId && m.sender_id !== myUserId && notifyOnce("msg:" + m.id)) {
             // message reçu hors conversation ouverte → toast + pastille
             if (typeof unhideConv === "function") unhideConv(m.sender_id); // un nouveau message ré-affiche la conv
@@ -4394,6 +4470,9 @@
       if (String(p.id).startsWith("ia-")) { ["tpConnectBtn", "tpChallengeBtn", "tpBlockBtn"].forEach((id) => { const e = $(id); if (e) e.style.display = "none"; }); }
       const name = p.username || "Voyageur";
       $("tpName").textContent = name;
+      // Compte de démonstration (IA) : on le signale clairement.
+      const isDemo = p.is_demo || String(p.id).startsWith("ia-");
+      const demoB = $("tpDemoBanner"); if (demoB) demoB.style.display = isDemo ? "" : "none";
       $("tpCity").textContent = "📍 " + (p.city || "Quelque part dans le monde");
       // Photo en bandeau si disponible, sinon emoji
       const hero = $("tpHero");
