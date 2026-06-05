@@ -1742,6 +1742,15 @@
     .ice-name { font-weight: 700; color: var(--ink); }
     .ice-num { font-size: .8rem; }
     .ice-del { flex-shrink: 0; background: none; border: 0; color: var(--muted); font-size: 1rem; cursor: pointer; padding: .4rem .5rem; }
+    /* Signal lumineux d'aide (pulsation LENTE 1.6s = sans danger photosensible) */
+    .signal-screen { position: fixed; inset: 0; z-index: 99999; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: signalPulse 1.6s ease-in-out infinite; }
+    .signal-screen.hidden { display: none; }
+    @keyframes signalPulse { 0%, 100% { background: #fff; } 50% { background: #FFD15C; } }
+    .signal-inner { text-align: center; color: #111; padding: 1rem; }
+    .signal-sos { font-size: 5rem; font-weight: 900; letter-spacing: .18em; color: #e11d2e; line-height: 1; }
+    .signal-txt { font-size: 1.5rem; font-weight: 900; margin-top: .6rem; color: #111; }
+    .signal-sub { font-size: .88rem; color: #333; margin-top: .8rem; max-width: 280px; margin-left: auto; margin-right: auto; }
+    .signal-close { position: absolute; bottom: calc(1.4rem + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: #111; color: #fff; border: 0; border-radius: 999px; padding: .7rem 1.4rem; font-weight: 800; cursor: pointer; }
     #goldPreviewBanner { display: none; }
     body.gold-free #goldPreviewBanner { display: block; background: linear-gradient(135deg,#FFD15C,#E89B2B); color: #5a3d00; text-align: center; font-weight: 700; font-size: .8rem; padding: .5rem; }
     /* Exclus Gold (lieu / quête) — lisibles en clair ET en sombre */
@@ -1792,6 +1801,16 @@
       <button class="btn-primary btn-block" id="installNowBtn" style="margin-top:.4rem">Installer maintenant</button>
       <div class="muted" id="installNote" style="font-size:.76rem;margin-top:.6rem;text-align:center"></div>
     </div>
+  </div>
+
+  <!-- ===== Signal lumineux d'aide (écran clair pour se signaler / alerter) ===== -->
+  <div id="signalScreen" class="signal-screen hidden">
+    <div class="signal-inner">
+      <div class="signal-sos">SOS</div>
+      <div class="signal-txt">J'AI BESOIN D'AIDE</div>
+      <div class="signal-sub">Montre cet écran ou agite ton téléphone pour te signaler</div>
+    </div>
+    <button class="signal-close" id="signalClose">✕ Fermer</button>
   </div>
 
   <!-- ===== Faux appel (sortie de secours pour voyageur solo) ===== -->
@@ -2370,7 +2389,10 @@
             <div class="tile" data-secuquick="circle"><div class="thumb green">🛟</div><div class="t-name">Mon cercle</div><div class="t-meta">Positions partagées</div></div>
             <div class="tile" data-secuquick="lieux"><div class="thumb blue">🏛️</div><div class="t-name">Aide à proximité</div><div class="t-meta">Police · hôpital</div></div>
           </div>
-          <button class="btn-ghost btn-block" id="fakeCallBtn" style="margin-top:.7rem">📞 Simuler un appel — sortie de secours discrète</button>
+          <div class="row" style="margin-top:.7rem">
+            <button class="btn-ghost" id="fakeCallBtn">📞 Faux appel</button>
+            <button class="btn-ghost" id="signalBtn">🔦 Signal d'aide</button>
+          </div>
           <div class="msg" id="secuMsg" style="text-align:center"></div>
         </div>
 
@@ -4404,6 +4426,21 @@
         fcStartTimeout = setTimeout(() => startFakeCall(it.label), 5000);
       });
     }); }
+
+    // ---- Signal lumineux d'aide : écran clair (pulsation LENTE, pas de strobe) + écran maintenu allumé. ----
+    let _wakeLock = null;
+    async function openSignal() {
+      const s = $("signalScreen"); if (!s) return;
+      s.classList.remove("hidden");
+      try { if (navigator.wakeLock) _wakeLock = await navigator.wakeLock.request("screen"); } catch (e) {}
+    }
+    function closeSignal() {
+      const s = $("signalScreen"); if (s) s.classList.add("hidden");
+      try { if (_wakeLock && _wakeLock.release) _wakeLock.release(); } catch (e) {}
+      _wakeLock = null;
+    }
+    { const b = $("signalBtn"); if (b) b.addEventListener("click", openSignal); }
+    { const c = $("signalClose"); if (c) c.addEventListener("click", closeSignal); }
 
     // ====================== CONNEXIONS ENTRE VOYAGEURS ======================
     let connectedIds = new Set(); // ids des Mates déjà connectés (statut accepté)
