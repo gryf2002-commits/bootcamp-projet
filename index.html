@@ -848,6 +848,15 @@
 
     /* Badges hexagonaux */
     .bgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem .6rem; }
+    /* Cartes de check-in uniformes (icône + nom + ville/date + compteur) */
+    .ci-list { display: flex; flex-direction: column; gap: .5rem; }
+    .ci-card { display: flex; align-items: center; gap: .7rem; background: var(--cream); border: 1px solid var(--line); border-radius: 14px; padding: .7rem .8rem; cursor: pointer; transition: transform .1s, box-shadow .15s; }
+    .ci-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .ci-ic { width: 38px; height: 38px; min-width: 38px; border-radius: 11px; background: var(--accent-soft); display: grid; place-items: center; font-size: 18px; }
+    .ci-info { flex: 1; min-width: 0; }
+    .ci-name { font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ci-meta { font-size: .78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ci-count { flex-shrink: 0; font-weight: 800; font-size: .82rem; color: #B5740E; background: rgba(255,177,60,.18); padding: .2rem .55rem; border-radius: 999px; }
     .bitem { text-align: center; }
     .hex { width: 62px; height: 62px; margin: 0 auto .4rem; background: var(--accent-grad);
       clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
@@ -3413,12 +3422,19 @@
         groups[name].count++; groups[name].dates.push(c.created_at);
       });
       const arr = Object.values(groups);
+      // Cartes UNIFORMES (icône + nom + ville + dernière visite + compteur), bien alignées.
       $("checkinList").innerHTML = arr.length
-        ? '<div class="bgrid">' + arr.map((g, i) => `<div class="bitem" data-cig="${i}" style="cursor:pointer">
-              <div class="hex">📍</div>
-              <div class="bname">${escapeHtml(g.name)}</div>
-              <div class="bprog">${g.count > 1 ? "×" + g.count : escapeHtml(g.city)}</div>
-            </div>`).join("") + '</div>'
+        ? '<div class="ci-list">' + arr.map((g, i) => {
+            const last = g.dates.slice().sort((a, b) => (b || "").localeCompare(a || ""))[0];
+            return `<div class="ci-card" data-cig="${i}">
+              <div class="ci-ic">📍</div>
+              <div class="ci-info">
+                <div class="ci-name">${escapeHtml(g.name)}</div>
+                <div class="ci-meta">${escapeHtml(g.city || "—")}${last ? " · " + timeAgo(last) : ""}</div>
+              </div>
+              <span class="ci-count">×${g.count}</span>
+            </div>`;
+          }).join("") + '</div>'
         : emptyState("📍", "Aucun check-in encore", "Valide un check-in dans un lieu partenaire pour gagner des points de confiance.", "Voir les lieux sûrs", "lieux");
       $("checkinList").querySelectorAll("[data-cig]").forEach((el) => el.addEventListener("click", () => {
         const g = arr[Number(el.dataset.cig)];
