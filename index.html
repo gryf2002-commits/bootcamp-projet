@@ -1723,6 +1723,17 @@
     .faq-secu summary::-webkit-details-marker { display: none; }
     .faq-secu details[open] summary { margin-bottom: .4rem; color: var(--accent); }
     .faq-secu p { margin: 0; font-size: .84rem; line-height: 1.55; color: var(--text); }
+    /* Numéros d'urgence par pays */
+    .num-row { padding: .55rem 0; border-bottom: 1px solid var(--line); }
+    .num-row:last-child { border-bottom: 0; }
+    .num-head { display: flex; align-items: center; gap: .5rem; font-size: .92rem; color: var(--ink); margin-bottom: .4rem; }
+    .num-flag { font-size: 1.2rem; }
+    .num-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .num-chip { display: inline-flex; align-items: center; gap: .35rem; text-decoration: none; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); border-radius: 999px; padding: .25rem .6rem; }
+    .num-chip span { font-size: .72rem; color: var(--muted); font-weight: 600; }
+    .num-chip b { color: #e11d2e; font-size: .92rem; }
+    body.theme-dusk .num-chip { background: rgba(239,68,68,.16); }
+    body.theme-dusk .num-chip b { color: #ff9b9b; }
     #goldPreviewBanner { display: none; }
     body.gold-free #goldPreviewBanner { display: block; background: linear-gradient(135deg,#FFD15C,#E89B2B); color: #5a3d00; text-align: center; font-weight: 700; font-size: .8rem; padding: .5rem; }
     /* Exclus Gold (lieu / quête) — lisibles en clair ET en sombre */
@@ -1790,6 +1801,16 @@
       <div class="fc-actions hidden" id="fcInCall">
         <button class="fc-btn decline" id="fcHangup"><span>📵</span>Raccrocher</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ===== Numéros d'urgence par pays ===== -->
+  <div id="numbersModal" class="act-overlay hidden">
+    <div class="act-card" style="max-width:380px;max-height:86vh;display:flex;flex-direction:column">
+      <div class="picker-head"><h3 style="margin:0">📞 Numéros d'urgence</h3><button id="numbersClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
+      <p class="muted" style="font-size:.8rem;margin:.2rem 0 .5rem">Trouve les secours du pays où tu es. Touche un numéro pour appeler.</p>
+      <div class="search"><span class="ico">🔍</span><input id="numbersSearch" type="text" placeholder="Pays (ex : Thaïlande, Japon…)" /></div>
+      <div id="numbersList" style="overflow-y:auto;flex:1;margin-top:.5rem"></div>
     </div>
   </div>
 
@@ -2381,7 +2402,7 @@
             <div class="tile" data-help="lieux"><div class="thumb purp">🛟</div><div class="t-name">Lieux publics sûrs</div><div class="t-meta">Validés</div></div>
             <div class="tile" data-help="mate"><div class="thumb blue">🤝</div><div class="t-name">Trouver un Mate sûr·e</div><div class="t-meta">Cercle de confiance</div></div>
             <div class="tile" data-help="support"><div class="thumb">💬</div><div class="t-name">Support SunMates</div><div class="t-meta">Nous écrire</div></div>
-            <div class="tile" data-help="numeros"><div class="thumb green">📞</div><div class="t-name">Numéros utiles</div><div class="t-meta">Urgences Europe</div></div>
+            <div class="tile" data-help="numeros"><div class="thumb green">📞</div><div class="t-name">Numéros d'urgence</div><div class="t-meta">Par pays 🌍</div></div>
           </div>
 
           <div class="card" style="margin-top:1.4rem">
@@ -5837,18 +5858,60 @@
         else if (action === "lieux") { showSecuView("secuHome"); goToTab("lieux"); }
         else if (action === "mate") { showSecuView("secuHome"); goToTab("connexions"); }
         else if (action === "support") { window.location.href = "mailto:support@sunmates.app"; }
-        else if (action === "numeros") {
-          showInfo("Numéros utiles 📞", `<div style="line-height:2.1;font-size:.92rem">
-            <div>🚨 <b>112</b> · Urgences (toute l'Europe)</div>
-            <div>📱 <b>114</b> · Urgence par SMS</div>
-            <div>🩺 <b>116 117</b> · Médecin de garde</div>
-            <div>🧒 <b>116 000</b> · Enfants disparus</div>
-            <div style="margin-top:.6rem"><a href="tel:112" class="btn-danger btn-block" style="text-decoration:none;text-align:center;display:block">☎️ Appeler le 112</a></div>
-          </div>`);
-        }
+        else if (action === "numeros") { if (typeof openNumbers === "function") openNumbers(); }
         else if (action === "position") { showSecuView("secuHome"); $("shareLocBtn").click(); }
         else { m.textContent = "Action bientôt disponible 🙂"; }
       }));
+
+    // ---- Numéros d'urgence par pays (utile pour un·e voyageur·se solo à l'étranger) ----
+    // n = numéro général ; p = police ; a = ambulance/SAMU (quand distincts).
+    const EMERGENCY_NUMBERS = [
+      { c: "France", f: "🇫🇷", n: "112", p: "17", a: "15" },
+      { c: "Belgique", f: "🇧🇪", n: "112", p: "101", a: "112" },
+      { c: "Suisse", f: "🇨🇭", n: "112", p: "117", a: "144" },
+      { c: "Espagne", f: "🇪🇸", n: "112" },
+      { c: "Portugal", f: "🇵🇹", n: "112" },
+      { c: "Italie", f: "🇮🇹", n: "112" },
+      { c: "Allemagne", f: "🇩🇪", n: "112", p: "110" },
+      { c: "Royaume-Uni", f: "🇬🇧", n: "999", p: "999", a: "999" },
+      { c: "Pays-Bas", f: "🇳🇱", n: "112" },
+      { c: "Irlande", f: "🇮🇪", n: "112" },
+      { c: "Grèce", f: "🇬🇷", n: "112", p: "100", a: "166" },
+      { c: "Croatie", f: "🇭🇷", n: "112" },
+      { c: "Maroc", f: "🇲🇦", n: "112", p: "19", a: "15" },
+      { c: "Égypte", f: "🇪🇬", n: "112", p: "122", a: "123" },
+      { c: "Afrique du Sud", f: "🇿🇦", n: "112", p: "10111", a: "10177" },
+      { c: "États-Unis", f: "🇺🇸", n: "911" },
+      { c: "Canada", f: "🇨🇦", n: "911" },
+      { c: "Mexique", f: "🇲🇽", n: "911" },
+      { c: "Brésil", f: "🇧🇷", n: "190", p: "190", a: "192" },
+      { c: "Argentine", f: "🇦🇷", n: "911", p: "101", a: "107" },
+      { c: "Thaïlande", f: "🇹🇭", n: "191", p: "1155", a: "1669" },
+      { c: "Vietnam", f: "🇻🇳", n: "113", p: "113", a: "115" },
+      { c: "Indonésie (Bali)", f: "🇮🇩", n: "112", p: "110", a: "118" },
+      { c: "Japon", f: "🇯🇵", n: "110", p: "110", a: "119" },
+      { c: "Corée du Sud", f: "🇰🇷", n: "112", p: "112", a: "119" },
+      { c: "Inde", f: "🇮🇳", n: "112", p: "100", a: "102" },
+      { c: "Chine", f: "🇨🇳", n: "110", p: "110", a: "120" },
+      { c: "Australie", f: "🇦🇺", n: "000", p: "000", a: "000" },
+      { c: "Nouvelle-Zélande", f: "🇳🇿", n: "111" },
+      { c: "Turquie", f: "🇹🇷", n: "112" },
+      { c: "Émirats (Dubaï)", f: "🇦🇪", n: "999", p: "999", a: "998" },
+    ];
+    function renderNumbers(q) {
+      const box = $("numbersList"); if (!box) return;
+      q = (q || "").trim().toLowerCase();
+      const list = EMERGENCY_NUMBERS.filter((e) => !q || e.c.toLowerCase().includes(q));
+      const chip = (label, num) => num ? `<a href="tel:${num}" class="num-chip"><span>${label}</span><b>${num}</b></a>` : "";
+      box.innerHTML = list.length ? list.map((e) => `<div class="num-row">
+          <div class="num-head"><span class="num-flag">${e.f}</span><b>${escapeHtml(e.c)}</b></div>
+          <div class="num-chips">${chip("Urgences", e.n)}${e.p && e.p !== e.n ? chip("Police", e.p) : ""}${e.a && e.a !== e.n ? chip("Ambulance", e.a) : ""}</div>
+        </div>`).join("") : '<p class="muted" style="text-align:center;padding:1rem">Pays non listé — en cas de doute, essaie le <b>112</b> (fonctionne dans beaucoup de pays).</p>';
+    }
+    function openNumbers() { const m = $("numbersModal"); if (!m) return; $("numbersSearch").value = ""; renderNumbers(""); m.classList.remove("hidden"); }
+    { const c = $("numbersClose"); if (c) c.addEventListener("click", () => $("numbersModal").classList.add("hidden")); }
+    { const m = $("numbersModal"); if (m) m.addEventListener("click", (e) => { if (e.target.id === "numbersModal") m.classList.add("hidden"); }); }
+    { const s = $("numbersSearch"); if (s) s.addEventListener("input", () => renderNumbers(s.value)); }
 
     // Les données de jeu (quêtes/badges/coupons/défis) sont chargées par
     // loadGameData() après la connexion ; les conversations par loadConnections().
