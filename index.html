@@ -2613,6 +2613,12 @@
             <div id="suggestionsList"></div>
           </div>
 
+          <div class="card sugg-card" id="groupConfirmSection" style="display:none">
+            <h3 style="margin-top:0;display:flex;align-items:center;gap:.4rem">👥 Quêtes à confirmer <span class="sugg-count" id="groupCount"></span></h3>
+            <p class="muted" style="font-size:.8rem;margin:.2rem 0 .5rem">Un Mate t'a inclus·e dans une quête de groupe. Confirme pour valider — vous gagnez tous les deux l'XP <b>+ bonus</b> ✨</p>
+            <div id="groupConfirmList"></div>
+          </div>
+
           <div class="section-head"><h3 style="margin-top:.4rem">Jeux populaires</h3></div>
           <div class="grid2" id="gamesGrid"></div>
 
@@ -2660,6 +2666,7 @@
 
           <button class="btn-primary btn-block" id="detailJoinBtn">➕ Rejoindre la quête</button>
           <button class="btn-accent btn-block" id="detailCompleteBtn" style="margin-top:.5rem">✅ Marquer comme accompli</button>
+          <button class="btn-primary btn-block" id="detailGroupBtn" style="margin-top:.5rem;display:none">👥 Valider avec un Mate (+ bonus XP)</button>
           <button class="act-tile act-teal" id="detailSuggestBtn" style="margin-top:.6rem">
             <span class="ic">🤝</span><span class="lbl">Proposer à un Mate</span><span class="arr">›</span></button>
           <button class="act-tile act-map" id="detailMapBtn" style="margin-top:.5rem">
@@ -4272,6 +4279,7 @@
     let myBadgeKeys = new Set(); // badges débloqués (clés)
     let myBadges = [];           // badges débloqués (détails : nom, emoji, date)
     let allBadgeDefs = [];       // catalogue complet (publics + secrets) depuis badges_catalog
+    let myGroupRuns = [];        // quêtes de groupe en attente de MA confirmation
     let _badgeKeysInit = false;  // false au tout 1er chargement (évite de fêter les badges déjà acquis)
     let myCoupons = [];          // coupons gagnés
     let mySuggestions = [];      // défis reçus (en attente)
@@ -4290,15 +4298,17 @@
       if (!myUserId) return;
       skelFirst("badgeGrid", skelCards(4));
       skelFirst("couponList", skelRows(2));
-      const [qs, uq, ub, uc, sg, bc] = await Promise.all([
+      const [qs, uq, ub, uc, sg, bc, gr] = await Promise.all([
         db.from("quests").select("*").order("sort_order"),
         db.from("user_quests").select("quest_key,status").eq("user_id", myUserId),
         db.from("user_badges").select("badge_key,name,emoji,earned_at").eq("user_id", myUserId),
         db.from("user_coupons").select("*").eq("user_id", myUserId).order("earned_at", { ascending: false }),
         db.from("quest_suggestions").select("*").eq("to_user", myUserId).eq("status", "pending").order("created_at", { ascending: false }),
         db.from("badges_catalog").select("*").order("sort_order"),
+        db.from("quest_group_runs").select("*").eq("partner", myUserId).eq("status", "pending").order("created_at", { ascending: false }),
       ]);
       allBadgeDefs = (bc && bc.data) || []; // catalogue (publics + secrets) ; vide si migration pas lancée
+      myGroupRuns = (gr && gr.data) || []; // quêtes de groupe à confirmer (je suis le partenaire)
       allQuests = qs.data || [];
       myQuestStatus = {}; (uq.data || []).forEach((r) => { myQuestStatus[r.quest_key] = r.status; });
       myBadges = ub.data || [];
@@ -4456,6 +4466,38 @@
         $("suggestionsList").querySelectorAll("[data-suggno]").forEach((el) =>
           el.addEventListener("click", () => dismissSuggestion(Number(el.dataset.suggno))));
       } else { sec.style.display = "none"; }
+
+      // Quêtes de groupe à confirmer (je suis le Mate invité)
+      const gsec = $("groupConfirmSection");
+      const gc = $("groupCount"); if (gc) gc.textContent = myGroupRuns.length ? myGroupRuns.length : "";
+      if (gsec) {
+        if (myGroupRuns.length) {
+          gsec.style.display = "";
+          $("groupConfirmList").innerHTML = myGroupRuns.map((r) => {
+            const q = questByKey(r.quest_key) || {};
+            const fromName = travelerMap[r.initiator]?.username || "Un Mate";
+            return `<div class="qrow" style="gap:.4rem">
+              <div class="qico">${q.emoji || "👥"}</div>
+              <div class="qname">${escapeHtml(q.title || r.quest_key)}<div class="meta muted" style="font-size:.76rem">avec ${escapeHtml(fromName)}</div></div>
+              <button class="btn-accent" data-groupok="${r.id}" style="padding:.4rem .7rem;font-size:.8rem">✅ Confirmer</button>
+            </div>`;
+          }).join("");
+          $("groupConfirmList").querySelectorAll("[data-groupok]").forEach((el) =>
+            el.addEventListener("click", () => confirmGroupQuest(Number(el.dataset.groupok))));
+        } else { gsec.style.display = "none"; }
+      }
+    }
+
+    async function confirmGroupQuest(runId) {
+      await once("groupconfirm:" + runId, async () => {
+        const { data, error } = await db.rpc("confirm_group_quest", { p_run_id: runId });
+        if (error) { if (typeof toast === "function") toast("⚠️", "Erreur : " + escapeHtml(error.message)); return; }
+        const res = data || {};
+        if (!res.ok) { if (typeof toast === "function") toast("⚠️", res.message || "Échec."); return; }
+        if (typeof celebrate === "function") celebrate();
+        if (typeof toast === "function") toast("🎉", res.message || "Quête de groupe validée !");
+        await Promise.all([loadGameData(), loadProfile()]);
+      });
     }
 
     // Affiche une seule sous-vue de l'onglet Jeux
@@ -4494,9 +4536,10 @@
       $("detailCodeBox").style.display = (q.requires_code && status !== "completed") ? "" : "none";
       if ($("detailCode")) $("detailCode").value = "";
       // Boutons selon l'état
-      const joinBtn = $("detailJoinBtn"), compBtn = $("detailCompleteBtn"), sugBtn = $("detailSuggestBtn");
+      const joinBtn = $("detailJoinBtn"), compBtn = $("detailCompleteBtn"), sugBtn = $("detailSuggestBtn"), grpBtn = $("detailGroupBtn");
       if (q.demo) {
         joinBtn.style.display = "none"; compBtn.style.display = "none"; sugBtn.style.display = "none";
+        if (grpBtn) grpBtn.style.display = "none";
         $("detailCodeBox").style.display = "none";
         $("detailMsg").style.color = "var(--accent)";
         $("detailMsg").textContent = "👑 Quête exclusive réservée aux membres Gold";
@@ -4504,6 +4547,8 @@
         sugBtn.style.display = "";
         joinBtn.style.display = status ? "none" : "";
         compBtn.style.display = status === "completed" ? "none" : "";
+        // Quête de groupe : option "valider avec un Mate" (+ bonus), tant que pas accomplie
+        if (grpBtn) grpBtn.style.display = (q.is_group && status !== "completed") ? "" : "none";
         $("detailMsg").style.color = "var(--muted)";
         $("detailMsg").textContent = status === "completed" ? "✅ Quête accomplie !" : (status === "joined" ? "🎒 Quête en cours" : "");
       }
@@ -4559,6 +4604,29 @@
       openPicker("À quel Mate proposer ce défi ?",
         mates.map((p) => ({ label: p.username || "Voyageur", avatar: p.avatar_url, id: p.id })),
         (item) => suggestQuestTo(item.id, currentQuest));
+    });
+
+    // Quête de groupe : la valider AVEC un Mate (il devra confirmer → +bonus pour les deux)
+    $("detailGroupBtn").addEventListener("click", () => {
+      if (!currentQuest) return;
+      const mates = [...connectedIds].map((id) => travelerMap[id]).filter(Boolean);
+      const m = $("detailMsg");
+      if (!mates.length) { m.style.color = "var(--danger)"; m.textContent = "Connecte-toi d'abord avec un Mate pour valider une quête de groupe."; return; }
+      openPicker("Avec quel Mate as-tu fait cette quête ?",
+        mates.map((p) => ({ label: p.username || "Voyageur", avatar: p.avatar_url, id: p.id })),
+        async (item) => {
+          closePicker();
+          const qkey = currentQuest.key;
+          await once("groupq:" + qkey + ":" + item.id, async () => {
+            m.style.color = "var(--muted)"; m.textContent = "Envoi de la demande…";
+            const { data, error } = await db.rpc("request_group_quest", { p_quest_key: qkey, p_partner: item.id });
+            if (error) { m.style.color = "var(--danger)"; m.textContent = "Erreur : " + error.message; return; }
+            const res = data || {};
+            m.style.color = res.ok ? "var(--ok)" : "var(--danger)";
+            m.textContent = res.message || (res.ok ? "Demande envoyée." : "Échec.");
+            if (res.ok && typeof toast === "function") toast("👥", "Demande envoyée à <b>" + escapeHtml(item.label) + "</b> — il doit confirmer 🤝");
+          });
+        });
     });
 
     async function suggestQuestTo(toUserId, quest, msgEl) {
