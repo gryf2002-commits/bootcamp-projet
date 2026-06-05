@@ -1,5 +1,38 @@
 # SunMates — Roadmap « grosse session peaufinage »
 
+## 🌙 BATCH NUIT (retours du 2026-06-06) — à traiter
+**Pro/Accueil** : retirer raccourci B2B dans Premium · retirer titre « Espace Pro » (ressortir 1ʳᵉ carte) ·
+accueil connexion remonter (on voit pas Bonjour) · **« Bonjour » en rouge** (revert) · carte plein écran
+encore buggée · **rebosser tuiles accès rapides + carte** (trop sobre/pastilles = perte d'âme) · « Tout voir » = 🌍.
+**Lieux** : tri « pertinence » fait tache → remplacer par tuiles à côté de « Près de moi » · avis: descendre
+l'encart d'écriture (superposé étoiles) · **anonymat** : opt-in classement (tuile « pseudo partagé, recherchable »,
+pas tout le monde d'office) · **classement → onglet JEUX** (pas Lieux).
+**Jeux** : bandeau XP encore trop gros · retirer « Mes récompenses » (doublon tuiles haut) · emojis mal
+incrustés sur photos jeux populaires · retirer mot « antitriche » · tuiles bas de quête trop imposantes ·
+remanier récompenses dans une quête · **tuiles Quêtes/Jeux ouvrent en overlay** (moins de scroll) ·
+XP boutique ? (badges/titres/cosmétiques).
+**Mates** : refonte complète (trop basique, pas DA) · profil: choisir 3 badges affichés · carte « pourquoi
+vous matchez » → tuile cliquable · score confiance cliquable · « Proposer défi » vs « Bloquer » couleurs
+distinctes · clic tuile nav → revenir écran principal de l'onglet · « X mates de confiance » triste.
+**Sécurité** : faux appel + signal d'aide plus visibles · signal: croix trop longue à fermer · page 2 « 112 »
+morose + trop de scroll · « trouve un mate sûr » → juste rediriger vers Mates · support grisé (pas de support) ·
+numéros: « Europe 112 » une fois + **géoloc → afficher pays courant d'office** (recherche pour le reste) ·
+historique rencontres trop balèze · mes signalements bug + pas de croix · « qui peut me contacter » msg bas ·
+« nous contacter » n'ouvre plus les mails (pas de support).
+**Profil (TROP CHARGÉ)** : badges 3 max via onglet badge → profil · Mon parcours = bandeau fin/tuile (retirer
+timeline + 4 tuiles stats, garder Partager) · spot du jour → déplacer dans Lieux (+ vérifier expiration 24 h) ·
+retirer segment « check-ins » → clic sur la stat check-ins · stat XP cliquable → ouvre tuile (pas redirect) ·
+barre « profil complété » pas fiable/interactive · centres d'intérêt illimités · style de voyage multi.
+**Admin** : refonte aperçu mode gratuit (avec nos changements) · **supprimer segment KB/changelog** (déjà dans
+démo guidée — l'agrémenter à chaque nouvelle feature, **~70 tuiles explicatives**) · fiches membre + complètes/
+moins mornes · interface admin + belle · signalement cliquable (voir si vrai débordement, gérer faux
+signalements) · une fois traité → bouton « Supprimer » (pas juste grisé).
+**Onboarding** : bug passage 4→6 cartes · « Des spots à découvrir » montre le classement (reset seg Lieux) ·
+message de fin = CTA cliquable → redirige vers pseudo.
+**Badges** : pas assez beaux → **formes différentes** (solo vs social) pour donner envie.
+
+
+
 > Punch-list issue des retours du 2026-06-05 (test mobile). Cocher au fur et à mesure.
 > Règles produit durables : voir la section « Règles » de `CLAUDE.md`.
 

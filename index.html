@@ -1161,9 +1161,9 @@
     }
 
     /* --- Accueil : titre dégradé, vignettes en relief --- */
-    /* Le dégradé ne s'applique QU'AU prénom (.hello-name), pas au « Bonjour » ni à la ponctuation. */
-    #homeHello { color: var(--ink); }
-    #homeHello .hello-name { background: linear-gradient(90deg, #FF5A4D, #ff9f6b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    /* « Bonjour {pseudo} » en corail/rouge (l'âme SunMates). */
+    #homeHello { color: var(--accent); }
+    #homeHello .hello-name { color: var(--accent); }
     .search input { border: 1px solid rgba(255,90,77,.10); }
     .tile .thumb { box-shadow: inset 0 -12px 26px rgba(0,0,0,.10); }
 
@@ -2438,7 +2438,7 @@
             <div class="tile" data-help="hopital"><div class="thumb green">🏥</div><div class="t-name">Trouver un hôpital</div><div class="t-meta">À proximité</div></div>
             <div class="tile" data-help="lieux"><div class="thumb purp">🛟</div><div class="t-name">Lieux publics sûrs</div><div class="t-meta">Validés</div></div>
             <div class="tile" data-help="mate"><div class="thumb blue">🤝</div><div class="t-name">Trouver un Mate sûr·e</div><div class="t-meta">Cercle de confiance</div></div>
-            <div class="tile" data-help="support"><div class="thumb">💬</div><div class="t-name">Support SunMates</div><div class="t-meta">Nous écrire</div></div>
+            <div class="tile" data-help="support" style="opacity:.6"><div class="thumb">💬</div><div class="t-name">Support SunMates</div><div class="t-meta">Bientôt</div></div>
             <div class="tile" data-help="numeros"><div class="thumb green">📞</div><div class="t-name">Numéros d'urgence</div><div class="t-meta">Par pays 🌍</div></div>
           </div>
 
@@ -2715,12 +2715,6 @@
             <h3 style="margin-top:0">Gratuit vs Gold : l'avant / après</h3>
             <div id="goldCompare"></div>
           </div>
-
-          <div class="card" style="text-align:center">
-            <h3 style="margin-top:0">💼 Vous êtes une entreprise ?</h3>
-            <p class="muted" style="font-size:.85rem;margin-top:0">Offres groupées, sécurité des collaborateurs en déplacement, facturation…</p>
-            <button class="btn-accent btn-block" id="openB2BBtn">Découvrir l'espace Pro / B2B</button>
-          </div>
         </div><!-- /prof-seg premium -->
 
         <div class="prof-seg hidden" data-psegpanel="admin">
@@ -2985,8 +2979,7 @@
       <button class="btn-ghost" id="b2bBack" style="padding:.5rem .8rem;font-size:.82rem">‹ Retour</button>
     </header>
     <main>
-      <h1>Espace Pro</h1>
-      <div class="card" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:2rem 1.2rem">
+      <div class="card" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:2rem 1.2rem;margin-top:.4rem">
         <div style="font-size:2.8rem;line-height:1">🤝</div>
         <h2 style="margin:.5rem 0 .2rem;color:var(--accent)">Participez à l'aventure SunMates</h2>
         <p class="muted" style="font-size:.85rem;margin:0 0 1.2rem;max-width:300px">Faites de votre établissement un lieu sûr repéré par les voyageurs solo.</p>
@@ -3268,14 +3261,13 @@
       if (typeof toggleHomeFull === "function" && document.querySelector(".homemap-card.fs")) toggleHomeFull(false); // sort du plein écran seulement si actif
       document.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle("active", b.dataset.tab === target));
       document.querySelectorAll(".tab-panel").forEach((p) => show(p, p.dataset.panel === target));
-      // Réinitialisations de sous-vues seulement si on CHANGE d'onglet (évite le « pop » en restant dessus)
-      if (changed) {
-        if (target === "jeux" && typeof showJeuxView === "function") { showJeuxView("jeuxHome"); if (typeof loadGameData === "function" && myUserId) loadGameData(); }
-        if (target === "connexions" && typeof showMatesView === "function") { showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("messages"); }
-        if (target === "securite" && typeof showSecuView === "function") showSecuView("secuHome");
-        if (target === "profil") { const sc = $("settingsCard"), pm = $("profMain"); if (sc) sc.classList.add("hidden"); if (pm) pm.classList.remove("hidden"); }
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
+      // Taper une tuile du bas revient TOUJOURS à l'écran principal de l'onglet (même si déjà dessus).
+      if (target === "jeux" && typeof showJeuxView === "function") { showJeuxView("jeuxHome"); if (changed && typeof loadGameData === "function" && myUserId) loadGameData(); }
+      if (target === "connexions" && typeof showMatesView === "function") { showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("messages"); }
+      if (target === "securite" && typeof showSecuView === "function") showSecuView("secuHome");
+      if (target === "lieux" && typeof showLieuxSeg === "function") showLieuxSeg("places"); // toujours « Lieux », pas le dernier segment
+      if (target === "profil") { const sc = $("settingsCard"), pm = $("profMain"); if (sc) sc.classList.add("hidden"); if (pm) pm.classList.remove("hidden"); }
+      window.scrollTo({ top: 0, behavior: "smooth" });
       if (target === "accueil" && typeof renderHomeMap === "function") setTimeout(renderHomeMap, 60);
       __lastTab = target;
     }
@@ -3440,7 +3432,7 @@
         ${row("🛟", "Lieux sûrs différents visités", myDistinctPlaces, myDistinctPlaces > 0)}
         ${row("🤝", "Mates qui te font confiance", mates, mates > 0)}
         ${row("👍", "Mates qui te recommandent (vouch)", (window.myVouchCount || 0), (window.myVouchCount || 0) > 0)}
-        <p class="te-note">Un check-in se valide avec un <b>code affiché sur place</b> : impossible à tricher à distance. Plus tu te montres dans des lieux sûrs et tisses des liens, plus les autres peuvent te faire confiance. 🌍<br><br><b>Les quêtes</b>, elles, rapportent de l'<b>XP ⭐</b> (monnaie de jeu) — pas de la confiance — pour éviter toute triche.</p>`;
+        <p class="te-note">Un check-in se valide avec un <b>code affiché sur place</b>. Plus tu te montres dans des lieux sûrs et tisses des liens, plus les autres peuvent te faire confiance. 🌍<br><br><b>Les quêtes</b>, elles, rapportent de l'<b>XP ⭐</b> (monnaie de jeu) — pas de la confiance.</p>`;
     }
 
     async function loadProfile() {
@@ -4934,7 +4926,7 @@
       if (xpb) {
         xpb.innerHTML = `<span class="xp-ic">⭐</span><b>${(myProfile && myProfile.xp) || 0}</b><span class="xp-sub">XP · monnaie de jeu</span><button class="xp-info" id="xpInfoBtn" title="Comment ça marche ?">ⓘ</button>`;
         const xi = $("xpInfoBtn"); if (xi) xi.onclick = () => showInfo("⭐ L'XP, comment ça marche ?", `<div style="line-height:1.6;font-size:.9rem">
-          <p style="margin:.2rem 0">Tu gagnes de l'<b>XP</b> en accomplissant des <b>quêtes</b> (3 par jour max, pour éviter la triche).</p>
+          <p style="margin:.2rem 0">Tu gagnes de l'<b>XP</b> en accomplissant des <b>quêtes</b> (3 par jour max).</p>
           <p style="margin:.2rem 0">Les <b>quêtes de groupe</b> (confirmées par un Mate) rapportent un <b>bonus</b> ✨</p>
           <p style="margin:.2rem 0">⚠️ L'XP est une <b>monnaie de jeu</b> : elle ne change <b>pas</b> ton score de confiance 🛡️ (qui, lui, repose sur des preuves réelles).</p>
           <p style="margin:.2rem 0">Plus d'XP = tu grimpes dans le <b>Classement</b> 🏆</p></div>`);
@@ -5914,7 +5906,7 @@
           <p class="muted" style="font-size:.72rem;margin:.6rem 0 0">Ces tips ne remplacent pas une formation aux premiers secours (PSC1).</p>
         </div>`);
       } else if (action === "support2") {
-        window.location.href = "mailto:support@sunmates.app?subject=Contact%20SunMates";
+        showInfo("Nous contacter", '<p style="text-align:center;line-height:1.6;padding:.4rem">🛠️ Le support arrive bientôt.<br><br>Merci de ta patience — SunMates est en plein développement ☀️</p>');
       } else if (action === "voyage") {
         showInfo("Voyager en sécurité ✈️", `<div class="faq-secu">
           <details open><summary>📍 Avant de sortir</summary><p>Préviens un proche/ton cercle de ton plan, partage ta position, garde ton téléphone chargé (et une batterie externe).</p></details>
@@ -5934,7 +5926,7 @@
         else if (action === "hopital") { window.open("https://www.google.com/maps/search/hopital", "_blank"); }
         else if (action === "lieux") { showSecuView("secuHome"); goToTab("lieux"); }
         else if (action === "mate") { showSecuView("secuHome"); goToTab("connexions"); }
-        else if (action === "support") { window.location.href = "mailto:support@sunmates.app"; }
+        else if (action === "support") { showInfo("Support SunMates", '<p style="text-align:center;line-height:1.6;padding:.4rem">🛠️ Le support arrive bientôt.<br><br>En cas d\'urgence, utilise le <b>112</b>, tes <b>contacts d\'urgence</b> ou ton <b>cercle de confiance</b>.</p>'); }
         else if (action === "numeros") { if (typeof openNumbers === "function") openNumbers(); }
         else if (action === "position") { showSecuView("secuHome"); $("shareLocBtn").click(); }
         else { m.textContent = "Action bientôt disponible 🙂"; }
@@ -6866,7 +6858,7 @@
     let b2bOrigin = "app";
     function openB2B(origin) { b2bOrigin = origin; show($("appView"), false); show($("authView"), false); show($("b2bView"), true); window.scrollTo({ top: 0 }); }
     function closeB2B() { show($("b2bView"), false); if (b2bOrigin === "auth") show($("authView"), true); else show($("appView"), true); }
-    $("openB2BBtn").addEventListener("click", () => openB2B("app"));
+    { const ob = $("openB2BBtn"); if (ob) ob.addEventListener("click", () => openB2B("app")); }
     $("tabPro").addEventListener("click", () => setAuthMode("pro"));
     { const ps = $("authProStart"); if (ps) ps.addEventListener("click", () => openB2B("auth")); }
     $("b2bBack").addEventListener("click", closeB2B);
