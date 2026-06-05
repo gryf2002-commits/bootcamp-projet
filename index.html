@@ -194,8 +194,8 @@
     .act-tile .ic { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; font-size: 1.15rem; flex-shrink: 0; }
     .act-tile .lbl { flex: 1; }
     .act-tile .arr { opacity: .45; font-size: 1.2rem; font-weight: 800; }
-    .act-challenge { background: #fdeceb; color: #d6483a; border-color: #f8d2cd; }
-    .act-challenge .ic { background: #f8d2cd; }
+    .act-challenge { background: #efeaff; color: #6a4bff; border-color: #ddd3ff; }
+    .act-challenge .ic { background: #ddd3ff; }
     .act-challenge:hover { box-shadow: 0 8px 18px rgba(255,90,77,.22); }
     .act-bff { background: #fff6e8; color: #b9740a; border-color: #ffe6c2; }
     .act-bff .ic { background: #ffe6c2; }
@@ -203,8 +203,8 @@
     .act-block { background: #fef2f2; color: #dc2626; border-color: #fbd5d5; }
     .act-block .ic { background: #fbd5d5; }
     .act-block:hover { box-shadow: 0 8px 18px rgba(239,68,68,.18); }
-    body.theme-dusk .act-challenge { background: rgba(255,90,77,.16); color: #ffb0a6; border-color: rgba(255,90,77,.32); }
-    body.theme-dusk .act-challenge .ic { background: rgba(255,90,77,.32); }
+    body.theme-dusk .act-challenge { background: rgba(122,92,255,.18); color: #c9bcff; border-color: rgba(122,92,255,.34); }
+    body.theme-dusk .act-challenge .ic { background: rgba(122,92,255,.34); }
     body.theme-dusk .act-bff { background: rgba(255,178,116,.16); color: #ffce9b; border-color: rgba(255,178,116,.32); }
     body.theme-dusk .act-bff .ic { background: rgba(255,178,116,.32); }
     body.theme-dusk .act-block { background: rgba(239,68,68,.15); color: #ff9b9b; border-color: rgba(239,68,68,.32); }
@@ -2294,10 +2294,10 @@
             </div>
             <div class="msg" id="tpVouchMsg" style="text-align:center;margin-top:.4rem"></div>
           </div>
-          <div class="card" id="tpCompatCard" style="display:none">
-            <div class="section-head" style="margin-bottom:.5rem"><h3 style="margin:0">Pourquoi vous matchez ❤️</h3><b id="tpCompatPct" style="color:var(--accent)">—%</b></div>
-            <div id="tpCompatBreak"></div>
+          <div class="card" id="tpCompatCard" style="display:none;cursor:pointer;padding:.85rem 1rem">
+            <div class="section-head" style="margin:0"><h3 style="margin:0;font-size:.95rem">❤️ Pourquoi vous matchez · <b id="tpCompatPct" style="color:var(--accent)">—%</b></h3><span class="qarrow">›</span></div>
           </div>
+          <div id="tpCompatBreak" style="display:none"></div>
           <div class="card" id="tpInfoCard">
             <h3 style="margin-top:0">Infos</h3>
             <div class="pgrid" id="tpGrid"></div>
@@ -5710,6 +5710,10 @@
     }
     $("tpMsgBtn").addEventListener("click", () => { if (currentTravelerId) openChat(currentTravelerId); });
     $("tpBlockBtn").addEventListener("click", () => blockUser(currentTravelerId));
+    // « Pourquoi vous matchez » → ouvre le détail dans une fenêtre (tuile cliquable)
+    { const cc = $("tpCompatCard"); if (cc) cc.addEventListener("click", () => { const b = $("tpCompatBreak"); showInfo("Pourquoi vous matchez ❤️", (b && b.innerHTML) || "<p class='muted'>—</p>"); }); }
+    // Score de confiance d'un voyageur → cliquable (explication)
+    { const td = $("tpTrust"); const box = td && td.closest(".dstat"); if (box) { box.style.cursor = "pointer"; box.addEventListener("click", () => showInfo("🛡️ Score de confiance", "<p style='line-height:1.6'>Le score de confiance reflète des <b>preuves réelles</b> de fiabilité : profil vérifié ✅, check-ins dans des lieux sûrs 📍, recommandations de Mates 👍. Plus il est élevé, plus la personne est fiable pour se rencontrer en sécurité 🛡️</p>")); } }
     $("tpBffBtn").addEventListener("click", () => { if (currentTravelerId) setBff(currentTravelerId); });
     // Proposer un défi à CE voyageur (doit être une connexion acceptée)
     $("tpChallengeBtn").addEventListener("click", () => {
