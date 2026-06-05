@@ -426,10 +426,16 @@
     /* ---- Sélecteur de langue (réglages) ---- */
     .lang-seg { display: flex; gap: .5rem; }
     .lang-seg button { flex: 1; border: 1.5px solid var(--line); background: #fff; color: var(--text); border-radius: var(--radius-sm); padding: .7rem; font-weight: 700; }
+    /* Sélecteur de langue compact sur la page de connexion (haut-droite) */
+    .auth-lang { display: flex; gap: .3rem; justify-content: flex-end; margin-bottom: .6rem; }
+    .auth-lang button { background: var(--cream); border: 1.5px solid var(--line); color: var(--muted); border-radius: 999px; padding: .3rem .7rem; font-size: .76rem; font-weight: 700; cursor: pointer; }
+    .auth-lang button.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
     .lang-seg button.active { background: var(--accent-grad); color: #fff; border-color: transparent; }
     body.theme-dusk .lang-seg button:not(.active) { background: #2b2240; color: #ede6f2; }
     body.theme-dusk .spot-emoji-pick button:not(.active) { background: rgba(255,255,255,.08); }
     body.theme-dusk .spot-chip { color: #f3e9f3; }
+    .set-grouptitle { font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 1.1rem 0 .5rem; padding-top: .9rem; border-top: 1px solid var(--line); }
+    .set-grouptitle:first-of-type { border-top: 0; padding-top: 0; margin-top: .8rem; }
     .set-toggle { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .7rem 0; }
     .set-toggle .st-lbl { font-weight: 600; color: var(--ink); }
     .set-toggle .st-sub { font-size: .76rem; color: var(--muted); }
@@ -1730,6 +1736,11 @@
       <div class="logo-tag">Seul·e au départ, jamais à l'arrivée ☀️</div>
     </div>
     <div class="auth-body">
+      <!-- Langue choisissable AVANT la connexion (le choix est mémorisé pour toute l'app) -->
+      <div class="auth-lang">
+        <button type="button" data-lang="fr">🇫🇷 FR</button>
+        <button type="button" data-lang="en">🇬🇧 EN</button>
+      </div>
       <div class="auth-title">
         <h1>Pars solo, trouve ta bande 🌍</h1>
         <p class="muted">Repère les voyageurs autour de toi, propose un café ou une virée, et repars avec des potes.</p>
@@ -2434,13 +2445,18 @@
           <button class="backbtn" id="settingsBack" style="margin-bottom:.6rem" data-i18n="back">‹ Retour</button>
           <h3 style="margin-top:0" data-i18n="set.title">⚙️ Paramètres du compte</h3>
 
+          <!-- Préférences -->
+          <div class="set-grouptitle">Préférences</div>
           <label style="margin-top:.2rem" data-i18n="set.lang">🌍 Langue / Language</label>
           <div class="lang-seg" id="langSeg">
             <button type="button" data-lang="fr">🇫🇷 Français</button>
             <button type="button" data-lang="en">🇬🇧 English</button>
           </div>
-
           <div class="set-toggle" style="margin-top:.6rem">
+            <div><div class="st-lbl">🌙 Mode sombre</div><div class="st-sub">Thème « nuit tropicale », repose les yeux</div></div>
+            <label class="switch"><input type="checkbox" id="setThemeToggle"><span class="sl"></span></label>
+          </div>
+          <div class="set-toggle">
             <div><div class="st-lbl" data-i18n="set.haptics">Vibrations (haptique)</div><div class="st-sub" data-i18n="set.hapticsSub">Petit retour vibrant sur les actions clés</div></div>
             <label class="switch"><input type="checkbox" id="hapticsToggle"><span class="sl"></span></label>
           </div>
@@ -2448,20 +2464,27 @@
             <div><div class="st-lbl" data-i18n="set.presence">Afficher ma présence</div><div class="st-sub" data-i18n="set.presenceSub">« En ligne » sur ton avatar</div></div>
             <label class="switch"><input type="checkbox" id="presenceToggle" checked><span class="sl"></span></label>
           </div>
-          <div class="row" style="margin-top:.5rem">
+
+          <!-- Mon profil partageable -->
+          <div class="set-grouptitle">Mon profil partageable</div>
+          <div class="row" style="margin-top:0">
             <button class="btn-accent" id="showQrBtn" data-i18n="set.myQr">🪪 Mon QR</button>
             <button class="btn-ghost" id="scanQrBtn" data-i18n="set.scanQr">📷 Scanner</button>
           </div>
-          <button class="btn-ghost btn-block" id="installAppBtn" style="margin-top:.5rem">📲 Installer l'app sur mon téléphone</button>
-          <hr>
 
+          <!-- Application -->
+          <div class="set-grouptitle">Application</div>
+          <button class="btn-ghost btn-block" id="installAppBtn">📲 Installer l'app sur mon téléphone</button>
+          <button class="btn-ghost btn-block" id="replayOnbBtn" style="margin-top:.5rem" data-i18n="profile.replay">🚀 Revoir la présentation</button>
+
+          <!-- Compte -->
+          <div class="set-grouptitle">Compte</div>
           <label data-i18n="set.newEmail">Nouvel email</label>
           <input id="setEmail" type="email" placeholder="nouvel@email.com" />
           <button class="btn-accent btn-block" id="saveEmailBtn" style="margin-top:.4rem">Changer l'email</button>
-          <label style="margin-top:1rem">Nouveau mot de passe</label>
+          <label style="margin-top:.8rem">Nouveau mot de passe</label>
           <input id="setPassword" type="password" placeholder="Au moins 6 caractères" />
           <button class="btn-accent btn-block" id="savePasswordBtn" style="margin-top:.4rem">Changer le mot de passe</button>
-          <button class="btn-ghost btn-block" id="replayOnbBtn" style="margin-top:1rem" data-i18n="profile.replay">🚀 Revoir la présentation</button>
           <div class="msg" id="settingsMsg"></div>
         </div>
       </div>
@@ -6299,6 +6322,7 @@
       const dusk = t === "dusk";
       document.body.classList.toggle("theme-dusk", dusk);
       const tt = $("themeToggle"); if (tt) tt.textContent = dusk ? "☀️" : "🌙";
+      const st = $("setThemeToggle"); if (st) st.checked = dusk; // garde le toggle des Réglages synchro
       const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", dusk ? "#20182f" : "#FF5A4D");
     }
     applyTheme(localStorage.getItem("sm_theme") || "day");
@@ -6306,6 +6330,10 @@
       const next = document.body.classList.contains("theme-dusk") ? "day" : "dusk";
       localStorage.setItem("sm_theme", next); applyTheme(next);
     });
+    { const st = $("setThemeToggle"); if (st) st.addEventListener("change", () => {
+      const next = st.checked ? "dusk" : "day";
+      localStorage.setItem("sm_theme", next); applyTheme(next);
+    }); }
 
     /* ====================================================================
        NOUVEAUTÉS sociales (session 14)
@@ -6362,14 +6390,14 @@
       if (!opts || opts.persist !== false) localStorage.setItem("sm_lang", currentLang);
       document.documentElement.lang = currentLang;
       applyI18n();
-      document.querySelectorAll("#langSeg [data-lang]").forEach((b) => b.classList.toggle("active", b.dataset.lang === currentLang));
+      document.querySelectorAll("[data-lang]").forEach((b) => b.classList.toggle("active", b.dataset.lang === currentLang));
       // Re-rendu des vues dynamiques pour appliquer la langue sans recharger
       try { if (typeof renderTravelers === "function") renderTravelers($("travSearch") ? $("travSearch").value : ""); } catch (e) {}
       try { if (typeof renderTrustExplain === "function") renderTrustExplain(); } catch (e) {}
       try { if (currentTravelerId && typeof renderTravelerExtras === "function" && travelerMap[currentTravelerId]) renderTravelerExtras(travelerMap[currentTravelerId]); } catch (e) {}
       try { renderSpotComposer(); } catch (e) {}
     }
-    document.querySelectorAll("#langSeg [data-lang]").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
+    document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
 
     // -------------------- 2) Présence « actif récemment » --------------------
     const PRESENCE_WINDOW = 10 * 60 * 1000; // actif si vu il y a moins de 10 min
