@@ -840,8 +840,10 @@
     /* Vue chat = vraie messagerie : occupe l'espace entre l'en-tête et la barre du bas,
        le corps défile tout seul et la zone de saisie reste collée en bas. */
     #matesChat { display: flex; flex-direction: column; margin-bottom: -6.5rem;
-      height: calc(100vh - 3.6rem - 5rem);
-      height: calc(100dvh - 3.6rem - 5rem - env(safe-area-inset-bottom)); }
+      height: calc(100vh - 3.6rem - 5.6rem);
+      /* on retranche AUSSI le safe-area du haut (topbar à encoche) + plus de marge pour la
+         barre de nav -> la zone de saisie ne passe plus sous les logos du bas. */
+      height: calc(100dvh - 3.6rem - 5.6rem - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
     .chat-body { display: flex; flex-direction: column; gap: .45rem; flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-bottom: .5rem; }
     .bubble { max-width: 80%; padding: .6rem .85rem; border-radius: 16px; font-size: .9rem; line-height: 1.35; word-wrap: break-word; }
     .bubble.them { background: #ffe7e1; color: var(--text); border-bottom-left-radius: 5px; align-self: flex-start; }
