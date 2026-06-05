@@ -617,10 +617,19 @@
     .sos-logo:hover { transform: scale(1.08); }
     .safety-check { display: flex; align-items: center; gap: .8rem; }
     /* Carte « En cas d'urgence » : bord rouge léger, alerte qui dénote */
-    .secu-urgent { border: 1.5px solid rgba(239,68,68,.28); }
-    .sos-alert-btn { width: 100%; background: linear-gradient(135deg,#FF6A6A,#E11D2E); color: #fff; font-weight: 800; font-size: 1.02rem;
-      padding: .95rem; border: 0; border-radius: var(--radius-sm); cursor: pointer; box-shadow: 0 8px 22px rgba(225,29,46,.4), 0 0 0 0 rgba(225,29,46,.5); animation: sosPulse 2.2s ease-out infinite; }
-    .sos-alert-btn:active { transform: scale(.98); }
+    .secu-urgent { border: 1.5px solid rgba(239,68,68,.28); background: linear-gradient(180deg, rgba(239,68,68,.05), transparent 60%); }
+    .su-head { display: flex; align-items: center; gap: .7rem; margin-bottom: .8rem; }
+    .su-head .su-ic { font-size: 2rem; line-height: 1; }
+    .su-head .su-t { font-weight: 800; font-size: 1.1rem; color: var(--ink); font-family: "Fraunces", serif; }
+    .su-head .su-s { font-size: .8rem; color: var(--muted); }
+    .su-actions { display: flex; gap: .6rem; }
+    .su-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem; min-height: 92px;
+      border: 0; border-radius: 16px; cursor: pointer; color: #fff; text-decoration: none; padding: .8rem .5rem; text-align: center; }
+    .su-btn .su-e { font-size: 1.7rem; line-height: 1; }
+    .su-btn .su-l { font-size: .86rem; font-weight: 700; line-height: 1.2; }
+    .su-call { background: linear-gradient(135deg,#3a3a44,#1f1f27); box-shadow: 0 8px 20px rgba(0,0,0,.25); }
+    .su-sos { background: linear-gradient(135deg,#FF6A6A,#E11D2E); box-shadow: 0 8px 22px rgba(225,29,46,.4), 0 0 0 0 rgba(225,29,46,.5); animation: sosPulse 2.2s ease-out infinite; }
+    .su-btn:active { transform: scale(.97); }
     .secu-explain { margin-top: .8rem; background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .85rem; font-size: .78rem; line-height: 1.5; color: var(--muted); }
     /* Pastille sur l'onglet Sécurité (check-in en attente) : petit point ambre pulsant */
     #navSecu { background: #F5A623; box-shadow: 0 0 0 0 rgba(245,166,35,.6); animation: sosPulse 1.9s ease-out infinite; min-width: 10px; width: 10px; height: 10px; padding: 0; font-size: 0; right: calc(50% - 16px); }
@@ -2307,10 +2316,12 @@
           <button class="backbtn" data-sback>‹ Retour</button>
           <h1>Besoin d'aide</h1>
           <div class="card secu-urgent">
-            <h3 style="margin-top:0;display:flex;align-items:center;gap:.45rem">🆘 En cas d'urgence</h3>
-            <a class="btn-danger btn-block" href="tel:112" style="text-decoration:none;text-align:center;display:block;font-size:1.05rem">☎️ Appeler les secours (112)</a>
-            <!-- L'alerte DÉNOTE : pleine largeur, rouge, halo pulsant -->
-            <button class="sos-alert-btn" id="emergencyBtn" style="margin-top:.6rem">🚨 Déclencher une alerte d'urgence</button>
+            <div class="su-head"><span class="su-ic">🆘</span><div><div class="su-t">En cas d'urgence</div><div class="su-s">Un geste, et tu n'es plus seul·e.</div></div></div>
+            <!-- Les 2 actions critiques, côte à côte, bien visibles -->
+            <div class="su-actions">
+              <a class="su-btn su-call" href="tel:112"><span class="su-e">☎️</span><span class="su-l">Appeler le <b>112</b></span></a>
+              <button class="su-btn su-sos" id="emergencyBtn"><span class="su-e">🚨</span><span class="su-l">Alerte <b>d'urgence</b></span></button>
+            </div>
             <div class="msg" id="emergencyMsg" style="text-align:center"></div>
             <button class="btn-accent btn-block" id="shareLocBtn" style="margin-top:.55rem">📍 Partager ma position (sans urgence)</button>
             <div class="msg" id="locMsg" style="text-align:center"></div>
@@ -3821,7 +3832,8 @@
       { v: "Migrations Supabase à lancer (dans l'ordre)", body: "17 (XP+classement), 18 (badges_catalog), 19 (signalements antispam), 20 (quêtes de groupe), 21 (avis lieux), 22 (badges jalons), 23 (profil public/privé)." },
       { v: "Règles produit", body: "Sécurité jamais payante · quêtes = XP (jamais de confiance), 3/jour + cooldown, groupe confirmé par un mate (+bonus) · badges secrets cachés (admin voit la condition) · DA sunset (pas de vert criard) · profil privé = hors classement." },
       { v: "Features", body: "Avis sur les lieux (⭐ + commentaires, tri, top noté) · Mon parcours (récap journée/quêtes partageable) · Faux appel (sortie de secours) · Classement multi-onglets · Check-in de sécurité « Tout va bien » + FAQ premiers secours · Faux appel · XP/badges sur le profil." },
-      { v: "À faire (passes en cours)", body: "Remanier les cartes de lieux · réagencer la page 2 Sécurité (urgence) · garder ce changelog à jour." },
+      { v: "Fait récemment", body: "Cartes de lieux remaniées · page 2 Sécurité (urgence) réagencée · profil public/privé · Mon parcours · faux appel · badges jalons + secrets cachés · onglet Pro de connexion (sans identifiants)." },
+      { v: "À surveiller", body: "Lancer les migrations 21/22/23 · garder ce changelog à jour à chaque session." },
     ];
     function renderAdminKb() {
       const el = $("adminKb"); if (!el) return;
