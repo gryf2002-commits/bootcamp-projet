@@ -2690,6 +2690,10 @@
             <div><div class="st-lbl" data-i18n="set.presence">Afficher ma présence</div><div class="st-sub" data-i18n="set.presenceSub">« En ligne » sur ton avatar</div></div>
             <label class="switch"><input type="checkbox" id="presenceToggle" checked><span class="sl"></span></label>
           </div>
+          <div class="set-toggle">
+            <div><div class="st-lbl">Profil public</div><div class="st-sub">Apparaître dans le <b>classement</b>. Désactive pour rester discret·ète.</div></div>
+            <label class="switch"><input type="checkbox" id="publicToggle" checked><span class="sl"></span></label>
+          </div>
 
           <!-- Mon profil partageable -->
           <div class="set-grouptitle">Mon profil partageable</div>
@@ -3322,6 +3326,7 @@
       setV("pFavPlaces", (data.favorite_places || []).join(", ")); setV("pBucket", data.bucket_list); setV("pInstagram", data.instagram);
       $("trustScore").textContent = data.trust_score ?? 0;
       { const xs = $("xpScore"); if (xs) xs.textContent = data.xp ?? 0; }
+      { const pub = $("publicToggle"); if (pub) pub.checked = data.is_public !== false; }
       if (typeof renderTrustExplain === "function") renderTrustExplain();
       // Sélections multiples (chips)
       selInterests.clear(); (data.interests || []).forEach((x) => selInterests.add(x));
@@ -7336,6 +7341,13 @@
     (function initToggles() {
       const h = $("hapticsToggle"); if (h) { h.checked = hapticsOn(); h.addEventListener("change", () => { localStorage.setItem("sm_haptics", h.checked ? "1" : "0"); if (h.checked) vibrate(20); }); }
       const pr = $("presenceToggle"); if (pr) { pr.checked = presenceEnabled(); pr.addEventListener("change", () => { localStorage.setItem("sm_presence", pr.checked ? "1" : "0"); if (pr.checked) startPresence(); else stopPresence(); }); }
+      const pub = $("publicToggle"); if (pub) pub.addEventListener("change", async () => {
+        const v = pub.checked;
+        if (myProfile) myProfile.is_public = v;
+        const { error } = await db.from("profiles").update({ is_public: v }).eq("id", myUserId);
+        if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); pub.checked = !v; if (myProfile) myProfile.is_public = !v; }
+        else toast(v ? "🌍" : "🔒", v ? "Profil public — tu apparais dans le classement" : "Profil privé — tu n'apparais plus dans le classement");
+      });
     })();
 
     // -------------------- Initialisation à la connexion --------------------
