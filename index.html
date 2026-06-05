@@ -2,7 +2,9 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <!-- viewport-fit=cover : l'app passe sous l'encoche / status bar (on gère les safe-area en CSS).
+       maximum-scale retiré : le pinch-to-zoom d'accessibilité reste possible (surtout iOS). -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>SunMates · pars solo, trouve ta bande</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,7 +17,9 @@
   <link rel="icon" type="image/svg+xml" href="icon.svg" />
   <link rel="apple-touch-icon" href="icon-180.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <!-- black-translucent : le fond de l'app passe SOUS la status bar (plus de bande corail fixe) ;
+       la couleur réelle vient de theme-color, mis à jour dynamiquement selon le thème jour/nuit. -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="SunMates" />
   <!-- Leaflet : carte interactive des lieux sûrs -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -114,11 +118,14 @@
 
     /* ----------------------------- Header --------------------------- */
     .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 1.25rem .75rem; position: sticky; top: 0; z-index: var(--z-header);
+      display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+      /* safe-area-inset-top : laisse la place de l'encoche / status bar (iPhone) sans chevauchement */
+      padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem .75rem; position: sticky; top: 0; z-index: var(--z-header);
       background: linear-gradient(var(--bg) 70%, rgba(253,243,241,0));
     }
-    .brand { display: flex; align-items: center; gap: .5rem; font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: .5px; }
+    /* min-width:0 : le wordmark peut rétrécir au lieu de pousser les actions ; padding-right : espace constant avec le bouton thème */
+    .brand { display: flex; align-items: center; gap: .5rem; min-width: 0; padding-right: .25rem; font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: .5px; }
+    .topbar-actions { flex-shrink: 0; }
     .brand .mark {
       width: 30px; height: 30px; border-radius: 9px; background: var(--accent-grad);
       display: grid; place-items: center; font-size: 16px; box-shadow: var(--shadow-sm);
@@ -154,6 +161,9 @@
     button { border: 0; border-radius: var(--radius-sm); padding: .8rem 1.2rem; font-size: .95rem;
       cursor: pointer; font-weight: 600; font-family: inherit; transition: transform .08s, filter .15s; }
     button:active { transform: scale(.97); }
+    /* Arrondi explicite : ces classes servent aussi sur des <a> (ex. bouton 112) qui
+       n'héritent PAS du border-radius du sélecteur button -> on l'impose ici pour une DA cohérente. */
+    .btn-primary, .btn-accent, .btn-ghost, .btn-danger { border-radius: var(--radius-sm); }
     .btn-primary { background: var(--accent-grad); color: #fff; box-shadow: 0 6px 16px rgba(255,90,77,.35); }
     .btn-primary:hover { filter: brightness(1.04); }
     .btn-accent  { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
@@ -261,7 +271,7 @@
     .pcard .pcard-actions button { flex: 1; }
 
     /* Bannière d'installation PWA (cachée par défaut, glisse depuis le haut) */
-    .pwa-banner { position: fixed; left: 50%; top: .6rem; z-index: var(--z-pwa);
+    .pwa-banner { position: fixed; left: 50%; top: calc(.6rem + env(safe-area-inset-top, 0px)); z-index: var(--z-pwa);
       width: calc(100% - 1.2rem); max-width: 460px; display: flex; align-items: center; gap: .7rem;
       padding: .7rem .8rem; background: var(--paper); border: 1px solid var(--line); border-radius: 16px;
       box-shadow: 0 14px 40px rgba(0,0,0,.22); opacity: 0; pointer-events: none;
@@ -502,6 +512,8 @@
     .chip { white-space: nowrap; padding: .5rem .9rem; border-radius: 999px; background: #fff; color: var(--text);
       font-size: .82rem; font-weight: 600; cursor: pointer; box-shadow: var(--shadow-sm); border: 0; }
     .chip.active { background: var(--accent-grad); color: #fff; box-shadow: 0 6px 14px rgba(255,90,77,.3); }
+    .chip.chip-locked { opacity: .4; } /* plafond atteint : chips non sélectionnés grisés (un tap explique le max) */
+    .lbl-hint { color: var(--muted); font-weight: 400; font-size: .76rem; } /* règle de sélection affichée dans le label */
 
     /* ------------------------- Liste de lieux ----------------------- */
     /* Démo guidée automatique (barre de narration) */
@@ -619,7 +631,8 @@
     .onb-step.left { transform: translateX(-34px); }
     .onb-emoji { font-size: 72px; margin-bottom: .8rem; filter: drop-shadow(0 10px 18px rgba(0,0,0,.4)); animation: floaty 3s ease-in-out infinite; }
     .onb-step h2 { font-size: 1.6rem; margin: 0 0 .6rem; color: #fff; }
-    .onb-step h2 span { background: linear-gradient(90deg,#ffd15c,#ff7e5f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    /* Dégradé limité au prénom (.grad-name) : la virgule et « Salut »/« ! » restent en couleur normale. */
+    .onb-step h2 .grad-name { background: linear-gradient(90deg,#ffd15c,#ff7e5f); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .onb-step p { color: rgba(255,255,255,.85); font-size: .98rem; line-height: 1.5; max-width: 320px; }
     .onb-step p b { color: #fff; }
     .onb-dots { display: flex; gap: .5rem; justify-content: center; margin: 1rem 0; }
@@ -645,8 +658,9 @@
     .tour-pop p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
     .tour-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; }
     .tour-prog { font-size: .78rem; color: var(--muted); font-weight: 700; }
-    .tour-btns { display: flex; gap: .5rem; }
-    .tour-skip { background: none; border: 0; color: var(--muted); font-size: .82rem; cursor: pointer; }
+    .tour-btns { display: flex; align-items: center; gap: .5rem; }
+    .tour-prev { background: none; border: 0; color: var(--muted); font-size: .82rem; font-weight: 700; cursor: pointer; padding: .55rem .2rem; }
+    .tour-skip { background: none; border: 0; color: var(--muted); font-size: .82rem; cursor: pointer; padding: .55rem .4rem; }
     .tour-next { background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .55rem 1.1rem; font-weight: 800; cursor: pointer; }
     .homemap-legend { display: flex; flex-wrap: wrap; gap: .5rem .9rem; padding: .55rem .35rem .15rem; font-size: .74rem; color: var(--muted); }
     .homemap-legend span { display: inline-flex; align-items: center; gap: .3rem; }
@@ -706,9 +720,15 @@
     .person { display: flex; align-items: center; gap: .75rem; padding: .8rem 0; border-bottom: 1px solid var(--line); }
     .person:last-child { border-bottom: 0; }
     .person .info { flex: 1; min-width: 0; }
-    .person .info .name { font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .4rem; }
-    .person .info .meta { color: var(--muted); font-size: .82rem; }
+    .person .info .name { font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .4rem; min-width: 0; }
+    .person .info .meta { color: var(--muted); font-size: .82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .person button { padding: .5rem .9rem; font-size: .82rem; }
+    /* Carte profil : un pseudo très long se tronque ("pierreantoi…") au lieu de pousser
+       le ⚙️ (absolu, en haut à droite) et le badge de vérification. */
+    #profMain .person .info { padding-right: 2.6rem; } /* réserve la place du ⚙️ (40px + offset) */
+    #profMain .person .info .name { flex-wrap: nowrap; }
+    #profileName { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #verifBadge { flex-shrink: 0; }
 
     .msg { margin-top: .7rem; font-size: .88rem; min-height: 1.1rem; font-weight: 500; }
     .hidden { display: none !important; }
@@ -951,7 +971,9 @@
     }
 
     /* --- Accueil : titre dégradé, vignettes en relief --- */
-    #homeHello { background: linear-gradient(90deg, #FF5A4D, #ff9f6b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    /* Le dégradé ne s'applique QU'AU prénom (.hello-name), pas au « Bonjour » ni à la ponctuation. */
+    #homeHello { color: var(--ink); }
+    #homeHello .hello-name { background: linear-gradient(90deg, #FF5A4D, #ff9f6b); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .search input { border: 1px solid rgba(255,90,77,.10); }
     .tile .thumb { box-shadow: inset 0 -12px 26px rgba(0,0,0,.10); }
 
@@ -1499,6 +1521,9 @@
     body.gold-free .gold-feature { opacity: .5; filter: grayscale(.4); pointer-events: none; }
     .gold-only-note { display: none; }
     body.gold-free .gold-only-note { display: block; background: rgba(255,201,60,.18); border: 1px dashed #C98A1E; color: #8a5a00; border-radius: 10px; padding: .5rem .7rem; font-size: .8rem; margin: .5rem 0; text-align: center; font-weight: 600; }
+    /* Sécurité : jamais monnayée. Note rassurante « inclus pour tous » (toujours visible, vert). */
+    .safe-free-note { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.28); color: #15803d; border-radius: 10px; padding: .5rem .7rem; font-size: .8rem; margin: .5rem 0; text-align: center; font-weight: 600; }
+    body.theme-dusk .safe-free-note { background: rgba(34,197,94,.16); color: #5fe0a0; border-color: rgba(34,197,94,.32); }
     #goldPreviewBanner { display: none; }
     body.gold-free #goldPreviewBanner { display: block; background: linear-gradient(135deg,#FFD15C,#E89B2B); color: #5a3d00; text-align: center; font-weight: 700; font-size: .8rem; padding: .5rem; }
     /* Exclus Gold (lieu / quête) — lisibles en clair ET en sombre */
@@ -1548,7 +1573,7 @@
       <div class="onb-stage" id="onbStage">
         <section class="onb-step active" data-step="0">
           <div class="onb-emoji">🌍</div>
-          <h2>Salut<span id="onbName"></span> !</h2>
+          <h2>Salut<span id="onbComma"></span><span class="grad-name" id="onbName"></span> !</h2>
           <p>Rencontre des <b>voyageurs</b> du monde entier et vis des <b>aventures ensemble</b>. Fini de voyager seul·e ! ☀️</p>
         </section>
         <section class="onb-step" data-step="1">
@@ -1586,6 +1611,7 @@
       <div class="tour-foot">
         <span class="tour-prog" id="tourProg"></span>
         <div class="tour-btns">
+          <button id="tourPrev" class="tour-prev hidden">‹ Précédent</button>
           <button id="tourSkip" class="tour-skip">Quitter</button>
           <button id="tourNext" class="tour-next">Suivant →</button>
         </div>
@@ -1971,8 +1997,8 @@
           </div>
 
           <div class="section-head"><h3>Accès rapides</h3></div>
-          <div class="gold-only-note">👑 Ces accès rapides sont réservés à Gold. En Gratuit : l'appel au 112 (via « J'ai besoin d'aide »).</div>
-          <div class="grid2 gold-feature">
+          <div class="safe-free-note">🛡️ La sécurité est <b>incluse pour tous</b>, gratuitement — toujours.</div>
+          <div class="grid2">
             <div class="tile" data-secuquick="position"><div class="thumb">📍</div><div class="t-name">Partager ma position</div><div class="t-meta">À mon cercle</div></div>
             <div class="tile" data-secuquick="emergency"><div class="thumb">🚨</div><div class="t-name">Alerte d'urgence</div><div class="t-meta">Diffuser ma position</div></div>
             <div class="tile" data-secuquick="circle"><div class="thumb green">🛟</div><div class="t-name">Mon cercle</div><div class="t-meta">Positions partagées</div></div>
@@ -1987,8 +2013,8 @@
           <h1>Besoin d'aide</h1>
           <div class="card" style="border:1px solid rgba(239,68,68,.22)">
             <a class="btn-danger btn-block" href="tel:112" style="text-decoration:none;text-align:center;display:block;font-size:1.05rem">☎️ Appeler les secours (112)</a>
-            <div class="gold-only-note">👑 En Gratuit : seul l'appel au 112. Partage de position, alerte et cercle sont réservés à Gold.</div>
-            <div class="row gold-feature" style="margin-top:.7rem">
+            <div class="safe-free-note">🛡️ Position, alerte et cercle de confiance : <b>inclus pour tous</b>, gratuitement.</div>
+            <div class="row" style="margin-top:.7rem">
               <button class="btn-accent" id="shareLocBtn">📍 Ma position</button>
               <button class="btn-danger" id="emergencyBtn">🚨 Alerte</button>
             </div>
@@ -2000,7 +2026,7 @@
             </div>
           </div>
 
-          <div class="card gold-feature" id="circleCard">
+          <div class="card" id="circleCard">
             <div class="section-head">
               <h3 style="margin:0">🛟 Cercle de confiance</h3>
               <button class="btn-ghost" id="refreshCircleBtn" style="padding:.4rem .8rem;font-size:.8rem">↻ Rafraîchir</button>
@@ -2010,7 +2036,7 @@
           </div>
 
           <div class="section-head" id="helpAround"><h3 style="margin-top:.4rem">Trouver de l'aide autour de moi</h3></div>
-          <div class="grid2 gold-feature">
+          <div class="grid2">
             <div class="tile" data-help="police"><div class="thumb blue">🚓</div><div class="t-name">Trouver un commissariat</div><div class="t-meta">À proximité</div></div>
             <div class="tile" data-help="hopital"><div class="thumb green">🏥</div><div class="t-name">Trouver un hôpital</div><div class="t-meta">À proximité</div></div>
             <div class="tile" data-help="lieux"><div class="thumb purp">🛟</div><div class="t-name">Lieux publics sûrs</div><div class="t-meta">Validés</div></div>
@@ -2019,13 +2045,13 @@
             <div class="tile" data-help="numeros"><div class="thumb green">📞</div><div class="t-name">Numéros utiles</div><div class="t-meta">Urgences Europe</div></div>
           </div>
 
-          <div class="card gold-feature" style="margin-top:1.4rem">
+          <div class="card" style="margin-top:1.4rem">
             <h3 style="margin-top:0">Sécurité &amp; confidentialité</h3>
             <div class="qrow" data-secu="signaler"><div class="qico">🚩</div><div class="qname">Signaler un voyageur</div><div class="qarrow">›</div></div>
             <div class="qrow" data-secu="historique"><div class="qico">🗂️</div><div class="qname">Historique de rencontres</div><div class="qarrow">›</div></div>
           </div>
 
-          <div class="card gold-feature">
+          <div class="card">
             <h3 style="margin-top:0">Préférences</h3>
             <div class="qrow" data-secu="contact"><div class="qico">📢</div><div class="qname">Qui peut me contacter</div><div class="qarrow" id="contactPrefVal">›</div></div>
             <div class="qrow" data-secu="assistance"><div class="qico">🔁</div><div class="qname">Assistance</div><div class="qarrow">›</div></div>
@@ -2059,7 +2085,6 @@
             <div class="completion-bar"><span id="completionFill"></span></div>
             <div class="completion-txt" id="completionTxt">Profil complété à 0%</div>
           </div>
-          <button class="btn-ghost btn-block" id="replayOnbBtn2" style="margin-top:.9rem" data-i18n="profile.replay">🚀 Revoir la présentation</button>
         </div>
 
         <details class="card spot-card" id="spotCard">
@@ -2103,13 +2128,14 @@
                 </div>
               </div>
               <label>Pseudo</label>
-              <input id="pUsername" placeholder="Chloé" />
+              <input id="pUsername" placeholder="Chloé" maxlength="22" />
               <div class="row" style="margin-top:0">
                 <div style="flex:1"><label>Prénom</label><input id="pFirstName" placeholder="Chloé" /></div>
                 <div style="flex:1"><label>Nom</label><input id="pLastName" placeholder="Martin" /></div>
               </div>
-              <label>Téléphone <span class="muted" style="font-weight:400">(privé, visible que par toi)</span></label>
+              <label>Téléphone <span class="muted" style="font-weight:400">(privé · jamais affiché)</span></label>
               <input id="pPhone" type="tel" placeholder="+33 6 12 34 56 78" />
+              <div class="muted" style="font-size:.74rem;margin:.15rem 0 .2rem;line-height:1.4">Sert uniquement à l'<b>alerte d'urgence</b> et à la vérification de ton compte. Jamais visible par les autres voyageurs.</div>
               <label>Ville actuelle</label>
               <input id="pCity" placeholder="Lisbonne" />
               <label>Bio</label>
@@ -2122,13 +2148,13 @@
           <div class="pf-section">
             <div class="pf-head">🧭 Voyage &amp; affinités<span class="chev">›</span></div>
             <div class="pf-body">
-              <label>Je suis ici pour</label>
+              <label>Je suis ici pour <span class="lbl-hint">· 3 max</span></label>
               <div class="chips wrap" id="intentChips"></div>
-              <label>Centres d'intérêt</label>
+              <label>Centres d'intérêt <span class="lbl-hint">· 5 max</span></label>
               <div class="chips wrap" id="interestChips"></div>
-              <label>Langues parlées</label>
+              <label>Langues parlées <span class="lbl-hint">· autant que tu veux</span></label>
               <div class="chips wrap" id="languageChips"></div>
-              <label>Style de voyage</label>
+              <label>Style de voyage <span class="lbl-hint">· choisis-en un seul</span></label>
               <div class="chips wrap" id="styleChips"></div>
             </div>
           </div>
@@ -2375,6 +2401,7 @@
             <button class="btn-accent" id="showQrBtn" data-i18n="set.myQr">🪪 Mon QR</button>
             <button class="btn-ghost" id="scanQrBtn" data-i18n="set.scanQr">📷 Scanner</button>
           </div>
+          <button class="btn-ghost btn-block" id="installAppBtn" style="margin-top:.5rem">📲 Installer l'app sur mon téléphone</button>
           <hr>
 
           <label data-i18n="set.newEmail">Nouvel email</label>
@@ -2383,7 +2410,7 @@
           <label style="margin-top:1rem">Nouveau mot de passe</label>
           <input id="setPassword" type="password" placeholder="Au moins 6 caractères" />
           <button class="btn-accent btn-block" id="savePasswordBtn" style="margin-top:.4rem">Changer le mot de passe</button>
-          <button class="btn-ghost btn-block" id="replayOnbBtn" style="margin-top:1rem">🚀 Revoir la présentation</button>
+          <button class="btn-ghost btn-block" id="replayOnbBtn" style="margin-top:1rem" data-i18n="profile.replay">🚀 Revoir la présentation</button>
           <div class="msg" id="settingsMsg"></div>
         </div>
       </div>
@@ -2831,19 +2858,31 @@
     let   iAmGold = true;   // tout débloqué par défaut (Gold = aperçu admin, ne pénalise personne)
 
     // Construit des chips cliquables dans un conteneur (single = choix unique)
-    function buildChips(containerId, options, selectedSet, single) {
+    // single = choix unique (radio) ; cap = plafond pour le multi-sélection (ex. 3 max).
+    function buildChips(containerId, options, selectedSet, single, cap) {
       const c = $(containerId);
       c.innerHTML = options.map((o) =>
         `<button type="button" class="chip" data-val="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join("");
-      const sync = () => c.querySelectorAll(".chip").forEach((b) => {
-        const on = single ? (selStyle === b.dataset.val) : selectedSet.has(b.dataset.val);
-        b.classList.toggle("active", on);
-      });
+      const sync = () => {
+        const atCap = !single && cap && selectedSet.size >= cap;
+        c.querySelectorAll(".chip").forEach((b) => {
+          const on = single ? (selStyle === b.dataset.val) : selectedSet.has(b.dataset.val);
+          b.classList.toggle("active", on);
+          b.classList.toggle("chip-locked", !!atCap && !on); // au plafond : on grise les non-sélectionnés
+        });
+      };
       c.querySelectorAll(".chip").forEach((b) =>
         b.addEventListener("click", () => {
           const v = b.dataset.val;
           if (single) { selStyle = (selStyle === v) ? null : v; }
-          else { selectedSet.has(v) ? selectedSet.delete(v) : selectedSet.add(v); }
+          else if (selectedSet.has(v)) { selectedSet.delete(v); }
+          else {
+            if (cap && selectedSet.size >= cap) { // plafond atteint -> on bloque proprement
+              if (typeof toast === "function") toast("✋", "Tu peux en choisir " + cap + " au maximum ici.");
+              return;
+            }
+            selectedSet.add(v);
+          }
           sync(); updateCompletion();
         }));
       sync();
@@ -2935,10 +2974,10 @@
       selPets.clear(); (data.pets || []).forEach((x) => selPets.add(x));
       selMusic.clear(); (data.music || []).forEach((x) => selMusic.add(x));
       selStyle = data.travel_style || null;
-      buildChips("interestChips", INTEREST_OPTS, selInterests, false);
+      buildChips("interestChips", INTEREST_OPTS, selInterests, false, 5);
       buildChips("languageChips", LANGUAGE_OPTS, selLanguages, false);
       buildChips("styleChips", STYLE_OPTS, null, true);
-      buildChips("intentChips", INTENT_OPTS, selIntent, false);
+      buildChips("intentChips", INTENT_OPTS, selIntent, false, 3);
       buildChips("petsChips", PETS_OPTS, selPets, false);
       buildChips("musicChips", MUSIC_OPTS, selMusic, false);
       buildPrompts();
@@ -2949,7 +2988,8 @@
       $("profileName").textContent = uname + (data.is_admin ? " 👑" : "");
       setAvatarEl($("profileAvatar"), data.avatar_url, uname[0] || "😎");
       setAvatarEl($("pAvatarPreview"), data.avatar_url, uname[0] || "😎");
-      $("homeHello").textContent = "Bonjour " + uname;
+      // Accueil : « Bonjour {pseudo} ». Seul le pseudo reçoit le dégradé ; « Bonjour » reste en texte normal.
+      $("homeHello").innerHTML = 'Bonjour <span class="hello-name">' + escapeHtml(uname) + "</span>";
       const badge = $("verifBadge");
       badge.textContent = data.is_verified ? "✅ Vérifié" : "Non vérifié";
       badge.className = "badge " + (data.is_verified ? "ok" : "no");
@@ -5328,8 +5368,9 @@
       try { homeLeaf.fitBounds(L.featureGroup(homeAllMarkers).getBounds().pad(0.25)); } catch (e) {}
     }
 
-    // Plein écran de la carte d'accueil — utilise le plein écran NATIF du navigateur
-    // (tout le contenu s'affiche normalement) ; repli en CSS fixe si l'API est absente.
+    // Plein écran de la carte d'accueil — 100 % CSS (.homemap-card.fs en position:fixed).
+    // Plus fiable cross-OS que l'API Fullscreen native (KO/instable sur iOS Safari). Après le
+    // changement de taille, on force Leaflet à recalculer (invalidateSize + setView + refreshClusters).
     let homeFsFallback = false;
     function applyHomeFsClass() {
       const card = document.querySelector(".homemap-card"); if (!card) return;
@@ -5530,7 +5571,8 @@
     function openOnboarding() {
       const ov = $("onboarding"); if (!ov) return;
       const who = myProfile && (myProfile.first_name || myProfile.username);
-      $("onbName").textContent = who ? ", " + who : "";
+      $("onbComma").textContent = who ? ", " : ""; // virgule HORS dégradé
+      $("onbName").textContent = who || "";
       buildOnbDots(); showOnbStep(0);
       ov.classList.remove("hidden"); ov.classList.add("show");
     }
@@ -5562,8 +5604,8 @@
     const TOUR_STEPS = [
       { tab: "accueil",    sel: '[data-tab="accueil"]',    emoji: "🗺️", title: "Ta carte vivante",   text: "Vois qui est autour, les spots sympas et les activités du moment. Clique une pastille pour foncer !" },
       { tab: "lieux",      sel: '[data-tab="lieux"]',      emoji: "📍", title: "Des spots à découvrir", text: "Cafés, co-livings et lieux cools. Fais un check-in quand tu y es, ça te fait gagner des points." },
-      { tab: "connexions", sel: '[data-tab="connexions"]', emoji: "🤝", title: "Tes Mates",          text: "Rencontre des voyageurs, discute et trouve des compagnons d'aventure." },
       { tab: "jeux",       sel: '[data-tab="jeux"]',       emoji: "🎉", title: "Activités & défis",   text: "Lance des activités, relève des défis, gagne des badges et des coupons." },
+      { tab: "connexions", sel: '[data-tab="connexions"]', emoji: "🤝", title: "Tes Mates",          text: "Rencontre des voyageurs, discute et trouve des compagnons d'aventure." },
       { tab: "securite",   sel: '[data-tab="securite"]',   emoji: "🛡️", title: "Toujours serein·e",   text: "SOS et partage de position à portée de main, pour t'amuser l'esprit tranquille." },
       { tab: "profil",     sel: '[data-tab="profil"]',     emoji: "👤", title: "Ton profil",         text: "Ton score de confiance, tes badges et tes réglages. Tu peux revoir ce tuto ici quand tu veux !" },
     ];
@@ -5583,6 +5625,7 @@
       $("tourText").textContent = st.text;
       $("tourProg").textContent = (i + 1) + " / " + TOUR_STEPS.length;
       $("tourNext").textContent = i === TOUR_STEPS.length - 1 ? "Terminer 🎉" : "Suivant →";
+      show($("tourPrev"), i > 0); // « Précédent » caché à la 1re étape
       setTimeout(() => positionTour(st), 280);
     }
     function positionTour(st) {
@@ -5610,6 +5653,7 @@
     }
     (function () {
       const nx = $("tourNext"); if (nx) nx.addEventListener("click", () => showTourStep(tourIdx + 1));
+      const pv = $("tourPrev"); if (pv) pv.addEventListener("click", () => { if (tourIdx > 0) showTourStep(tourIdx - 1); });
       const sk = $("tourSkip"); if (sk) sk.addEventListener("click", endTour);
       window.addEventListener("resize", () => { const t = $("tour"); if (t && !t.classList.contains("hidden")) positionTour(TOUR_STEPS[tourIdx]); });
     })();
@@ -5720,7 +5764,7 @@
     (function buildGoldCompare() {
       const el = $("goldCompare"); if (!el) return;
       const rows = [
-        ["Sécurité", "112 seul", "Complète"],
+        ["🛡️ Sécurité (SOS, position, alerte)", "✓ Incluse", "✓ Incluse"],
         ["Mates ajoutés / jour", "1", "Illimité"],
         ["Nombre de Mates max", "3", "Illimité"],
         ["Check-ins / jour", "1", "Illimités"],
@@ -5810,7 +5854,7 @@
       show($("settingsCard"), false); show($("profMain"), true);
     });
     $("replayOnbBtn").addEventListener("click", () => { if (typeof openOnboarding === "function") openOnboarding(); });
-    if ($("replayOnbBtn2")) $("replayOnbBtn2").addEventListener("click", () => { if (typeof openOnboarding === "function") openOnboarding(); });
+    { const ia = $("installAppBtn"); if (ia) ia.addEventListener("click", () => { if (typeof window.openInstallHelp === "function") window.openInstallHelp(); }); }
     $("saveEmailBtn").addEventListener("click", async () => {
       const m = $("settingsMsg"); const email = $("setEmail").value.trim();
       if (!email) { m.style.color = "var(--danger)"; m.textContent = "Entre un nouvel email."; return; }
@@ -6682,41 +6726,54 @@
     (function setupInstallBanner() {
       const banner = $("pwaBanner"); if (!banner) return;
       const sub = $("pwaSub"), installBtn = $("pwaInstall"), closeBtn = $("pwaClose");
-      const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-      const dismissed = localStorage.getItem("sm_pwa_dismissed") === "1";
+      const isStandalone = () => window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
       let deferredPrompt = null;
 
-      const showBanner = () => { if (!dismissed && !isStandalone) banner.classList.add("show"); };
-      const hideBanner = () => banner.classList.remove("show");
-      const remember = () => { try { localStorage.setItem("sm_pwa_dismissed", "1"); } catch (e) {} };
+      // « Fermer » ne masque plus la bannière POUR TOUJOURS : on la met en veille 5 jours,
+      // puis elle revient tant que l'app n'est pas installée. Re-déclenchable depuis les Réglages.
+      const SNOOZE_MS = 5 * 24 * 3600 * 1000;
+      const isSnoozed = () => Date.now() < (+localStorage.getItem("sm_pwa_snooze") || 0);
+      const snooze = () => { try { localStorage.setItem("sm_pwa_snooze", String(Date.now() + SNOOZE_MS)); } catch (e) {} };
 
-      closeBtn.addEventListener("click", () => { hideBanner(); remember(); });
+      // Instructions manuelles selon la plateforme (toujours dispo, même sans invite native).
+      const manualHint = () => isIOS
+        ? "Appuie sur Partager ⬆️ puis « Sur l'écran d'accueil »."
+        : "Menu ⋮ du navigateur → « Installer l'application » / « Ajouter à l'écran d'accueil ».";
+
+      const hideBanner = () => banner.classList.remove("show");
+      // force = ignore la mise en veille (re-déclenchement manuel)
+      const showBanner = (force) => {
+        if (isStandalone()) return;
+        if (!force && isSnoozed()) return;
+        installBtn.style.display = deferredPrompt ? "" : "none"; // pas de bouton 1-clic sans invite native (ex. iOS)
+        sub.textContent = deferredPrompt ? "Accès direct depuis ton écran d'accueil, comme une vraie app." : manualHint();
+        banner.classList.add("show");
+      };
+
+      closeBtn.addEventListener("click", () => { hideBanner(); snooze(); });
 
       // Android / Chrome / Edge : on intercepte l'invite native pour la déclencher nous-mêmes.
-      window.addEventListener("beforeinstallprompt", (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        sub.textContent = "Accès direct depuis ton écran d'accueil, comme une vraie app.";
-        installBtn.style.display = "";
-        showBanner();
-      });
-      window.addEventListener("appinstalled", () => { hideBanner(); remember(); });
+      window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredPrompt = e; showBanner(); });
+      window.addEventListener("appinstalled", () => { hideBanner(); try { localStorage.removeItem("sm_pwa_snooze"); } catch (e) {} });
 
       installBtn.addEventListener("click", () => once("pwa-install", async () => {
-        if (!deferredPrompt) { hideBanner(); return; }
+        if (!deferredPrompt) { sub.textContent = manualHint(); return; }
         deferredPrompt.prompt();
         try { await deferredPrompt.userChoice; } catch (e) {}
         deferredPrompt = null;
         hideBanner();
       }));
 
-      // iPhone / iPad : Safari ne supporte pas beforeinstallprompt → on guide l'utilisateur.
-      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-      if (isIOS && !isStandalone && !dismissed) {
-        sub.textContent = "Appuie sur Partager ⬆️ puis « Sur l'écran d'accueil ».";
-        installBtn.style.display = "none"; // pas de bouton sur iOS : juste l'instruction
-        setTimeout(showBanner, 1800);
-      }
+      // Re-déclenchement manuel : bouton « Installer l'app » dans les Réglages.
+      window.openInstallHelp = () => {
+        if (isStandalone()) { if (typeof toast === "function") toast("✅", "SunMates est déjà installée sur cet appareil 🎉"); return; }
+        showBanner(true);
+      };
+
+      // Au démarrage : si pas installée et pas en veille, on affiche la bannière (invite native
+      // si dispo, sinon instructions manuelles). Elle reste affichée jusqu'à fermeture/installation.
+      if (!isStandalone() && !isSnoozed()) setTimeout(() => showBanner(), 1800);
     })();
 
     // Au chargement : vérifie s'il y a déjà une session
