@@ -827,6 +827,13 @@
     .gcard .ghead.blue  { background: linear-gradient(135deg,#8ed0ff,#3aa0f0); }
     .gcard .ghead.purp  { background: linear-gradient(135deg,#b9a6ff,#7c5cff); }
     /* Emoji en BADGE dans le coin (plus au milieu de la photo) */
+    /* Bandeau XP (onglet Jeux) */
+    .xp-banner { display: flex; align-items: center; gap: .4rem; background: linear-gradient(135deg,rgba(255,201,60,.2),rgba(255,138,61,.16)); border: 1px solid rgba(232,155,43,.3); border-radius: 12px; padding: .5rem .8rem; margin: .5rem 0 .2rem; font-size: .9rem; flex-wrap: wrap; }
+    .xp-banner .xp-ic { font-size: 1.1rem; }
+    .xp-banner b { color: #B5740E; font-size: 1.05rem; }
+    .xp-banner .xp-sub { color: var(--muted); font-size: .76rem; }
+    body.theme-dusk .xp-banner { background: linear-gradient(135deg,rgba(255,201,60,.14),rgba(255,138,61,.12)); }
+    body.theme-dusk .xp-banner b { color: #ffce8a; }
     .gcard .gemoji { position: absolute; left: .5rem; bottom: .5rem; width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,.94); display: grid; place-items: center; font-size: 19px; box-shadow: var(--shadow-sm); z-index: 2; }
     .gcard .grate { position: absolute; top: .5rem; right: .5rem; background: #fff; color: var(--accent); font-size: .7rem; font-weight: 800; padding: .15rem .45rem; border-radius: 999px; z-index: 2; }
     .gcard .gdone { position: absolute; top: .5rem; left: .5rem; background: rgba(255,177,60,.95); color: #6b4a00; font-size: .68rem; font-weight: 800; padding: .12rem .45rem; border-radius: 999px; z-index: 2; }
@@ -857,6 +864,20 @@
     .ci-name { font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ci-meta { font-size: .78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ci-count { flex-shrink: 0; font-weight: 800; font-size: .82rem; color: #B5740E; background: rgba(255,177,60,.18); padding: .2rem .55rem; border-radius: 999px; }
+    /* Classement (onglet Lieux) */
+    .lb-segs { display: flex; gap: .4rem; overflow-x: auto; padding-bottom: .4rem; margin-bottom: .6rem; scrollbar-width: none; }
+    .lb-segs::-webkit-scrollbar { display: none; }
+    .lb-segs button { flex-shrink: 0; background: var(--cream); border: 1.5px solid var(--line); color: var(--text); border-radius: 999px; padding: .4rem .8rem; font-weight: 700; font-size: .8rem; cursor: pointer; white-space: nowrap; }
+    .lb-segs button.active { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 14px rgba(255,90,77,.3); }
+    .lb-row { display: flex; align-items: center; gap: .7rem; padding: .6rem .7rem; border-radius: 14px; margin-bottom: .4rem; background: var(--card); border: 1px solid var(--line); }
+    .lb-row .avatar { width: 38px; height: 38px; }
+    .lb-rank { width: 26px; text-align: center; font-weight: 800; font-size: 1rem; color: var(--muted); flex-shrink: 0; }
+    .lb-info { flex: 1; min-width: 0; }
+    .lb-name { font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lb-val { flex-shrink: 0; font-weight: 800; color: var(--accent); }
+    .lb-val span { font-size: .7rem; font-weight: 700; color: var(--muted); }
+    .lb-me { border: 1.5px solid var(--accent); background: var(--accent-soft); }
+    .lb-you { font-size: .62rem; font-weight: 800; background: var(--accent); color: #fff; padding: .04rem .35rem; border-radius: 999px; vertical-align: middle; }
     .bitem { text-align: center; }
     .hex { width: 62px; height: 62px; margin: 0 auto .4rem; background: var(--accent-grad);
       clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
@@ -1891,23 +1912,44 @@
       <!-- ---------------- Onglet LIEUX SÛRS ---------------- -->
       <div class="tab-panel hidden" data-panel="lieux">
         <h1 data-i18n="places.title">Lieux sûrs</h1>
-        <p class="muted" style="margin-top:0">Les meilleurs spots pour se retrouver ☕ Check-in et grimpe au classement 🏆</p>
-        <div class="search" style="margin-top:.2rem"><span class="ico">🔍</span><input id="cafeSearch" type="text" placeholder="Rechercher un lieu ou une ville…" /></div>
-        <!-- Catégories en tuiles colorées (déclenchent les filtres ci-dessous) -->
-        <div class="cat-row" id="lieuxCats">
-          <div class="cat-tile active" data-catcf="all"><div class="cic c-sun">☕</div><div class="clbl">Tous</div></div>
-          <div class="cat-tile" data-catcf="eco"><div class="cic c-green">🌱</div><div class="clbl">Éco</div></div>
-          <div class="cat-tile" data-catcf="near"><div class="cic c-blue">📍</div><div class="clbl">Près de moi</div></div>
+
+        <div class="mseg">
+          <button data-lieuxseg="places" class="active">☕ Lieux</button>
+          <button data-lieuxseg="rank">🏆 Classement</button>
         </div>
-        <div class="chips wrap" id="cafeFilters" style="display:none">
-          <button class="chip active" data-cf="all">Tous</button>
-          <button class="chip" data-cf="eco">🌱 Éco-responsables</button>
-          <button class="chip" data-cf="near">📍 Près de moi</button>
+
+        <!-- Sous-onglet : Lieux -->
+        <div class="lieux-seg" data-lieuxsegpanel="places">
+          <p class="muted" style="margin-top:0">Les meilleurs spots pour se retrouver ☕ Fais un check-in pour grimper au classement 🏆</p>
+          <div class="search" style="margin-top:.2rem"><span class="ico">🔍</span><input id="cafeSearch" type="text" placeholder="Rechercher un lieu ou une ville…" /></div>
+          <!-- Catégories en tuiles colorées (déclenchent les filtres ci-dessous) -->
+          <div class="cat-row" id="lieuxCats">
+            <div class="cat-tile active" data-catcf="all"><div class="cic c-sun">☕</div><div class="clbl">Tous</div></div>
+            <div class="cat-tile" data-catcf="eco"><div class="cic c-green">🌱</div><div class="clbl">Éco</div></div>
+            <div class="cat-tile" data-catcf="near"><div class="cic c-blue">📍</div><div class="clbl">Près de moi</div></div>
+          </div>
+          <div class="chips wrap" id="cafeFilters" style="display:none">
+            <button class="chip active" data-cf="all">Tous</button>
+            <button class="chip" data-cf="eco">🌱 Éco-responsables</button>
+            <button class="chip" data-cf="near">📍 Près de moi</button>
+          </div>
+          <div id="cafesCount" class="muted" style="font-size:.8rem;margin-bottom:.5rem"></div>
+          <div class="gold-only-note" style="margin-bottom:.7rem">👑 Gratuit : 1 check-in par jour. Gold : check-ins illimités + bonus de points.</div>
+          <div id="cafesList"><p class="muted">Chargement…</p></div>
+          <div class="msg" id="cafesMsg"></div>
         </div>
-        <div id="cafesCount" class="muted" style="font-size:.8rem;margin-bottom:.5rem"></div>
-        <div class="gold-only-note" style="margin-bottom:.7rem">👑 Gratuit : 1 check-in par jour. Gold : check-ins illimités + bonus de points.</div>
-        <div id="cafesList"><p class="muted">Chargement…</p></div>
-        <div class="msg" id="cafesMsg"></div>
+
+        <!-- Sous-onglet : Classement -->
+        <div class="lieux-seg hidden" data-lieuxsegpanel="rank">
+          <p class="muted" style="margin-top:0">Grimpe le classement de la communauté SunMates 🏆</p>
+          <div class="lb-segs" id="lbSegs">
+            <button data-lb="xp" class="active">⭐ XP</button>
+            <button data-lb="checkins">📍 Check-ins</button>
+            <button data-lb="trust">🛡️ Confiance</button>
+            <button data-lb="badges">🏅 Badges</button>
+          </div>
+          <div id="leaderboardList"><p class="muted">Chargement…</p></div>
+        </div>
       </div>
 
       <!-- ---------------- Onglet MATES (connexions + messagerie) ---------------- -->
@@ -2550,7 +2592,8 @@
         <!-- Vue principale : Jeux & Quêtes -->
         <div id="jeuxHome" class="jeux-view">
           <h1 data-i18n="games.title">Jeux &amp; Quêtes</h1>
-          <p class="muted" style="margin-top:0">Relève des défis, gagne des badges et débloque des coupons.</p>
+          <p class="muted" style="margin-top:0">Relève des défis, gagne de l'XP et débloque des coupons.</p>
+          <div class="xp-banner" id="xpBanner"></div>
           <!-- Navigation rapide en tuiles colorées -->
           <div class="cat-row" id="jeuxNav">
             <div class="cat-tile" data-jeuxnav="quests"><div class="cic c-sun">🎯</div><div class="clbl">Quêtes</div></div>
@@ -3095,8 +3138,7 @@
         ${row("🛟", "Lieux sûrs différents visités", myDistinctPlaces, myDistinctPlaces > 0)}
         ${row("🤝", "Mates qui te font confiance", mates, mates > 0)}
         ${row("👍", "Mates qui te recommandent (vouch)", (window.myVouchCount || 0), (window.myVouchCount || 0) > 0)}
-        ${row("🎮", "Quêtes accomplies", "+ points", true)}
-        <p class="te-note">Un check-in se valide avec un <b>code affiché sur place</b> : impossible à tricher à distance. Plus tu te montres dans des lieux sûrs et tisses des liens, plus les autres peuvent te faire confiance. 🌍</p>`;
+        <p class="te-note">Un check-in se valide avec un <b>code affiché sur place</b> : impossible à tricher à distance. Plus tu te montres dans des lieux sûrs et tisses des liens, plus les autres peuvent te faire confiance. 🌍<br><br><b>Les quêtes</b>, elles, rapportent de l'<b>XP ⭐</b> (monnaie de jeu) — pas de la confiance — pour éviter toute triche.</p>`;
     }
 
     async function loadProfile() {
@@ -3805,6 +3847,38 @@
     if ($("apSave")) $("apSave").addEventListener("click", adminSavePlace);
     if ($("apReset")) $("apReset").addEventListener("click", adminResetPlace);
 
+    // ====================== CLASSEMENT (onglet Lieux) ======================
+    let lbMetric = "xp";
+    async function renderLeaderboard(metric) {
+      lbMetric = metric || lbMetric;
+      const box = $("leaderboardList"); if (!box) return;
+      box.innerHTML = '<p class="muted">Chargement…</p>';
+      const { data, error } = await db.rpc("leaderboard", { p_metric: lbMetric, p_limit: 30 });
+      if (error) { box.innerHTML = '<p class="muted">Classement indisponible pour l\'instant.</p>'; return; }
+      const rows = data || [];
+      const unit = ({ xp: "XP", checkins: "check-ins", trust: "pts", badges: "🏅" })[lbMetric] || "";
+      box.innerHTML = rows.length ? rows.map((r, i) => {
+        const me = r.id === myUserId;
+        const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i + 1);
+        return `<div class="lb-row${me ? " lb-me" : ""}">
+          <div class="lb-rank">${medal}</div>
+          ${avatarMarkup(r.username, r.avatar_url)}
+          <div class="lb-info"><div class="lb-name">${escapeHtml(r.username || "Voyageur")}${r.is_verified ? ' <span class="badge ok" style="padding:.02rem .3rem;font-size:.62rem">✓</span>' : ""}${me ? ' <span class="lb-you">toi</span>' : ""}</div><div class="lb-city muted" style="font-size:.76rem">${escapeHtml(r.city || "")}</div></div>
+          <div class="lb-val">${r.value}<span> ${unit}</span></div>
+        </div>`;
+      }).join("") : '<p class="muted">Personne au classement pour l\'instant — sois le premier 🌟</p>';
+    }
+    document.querySelectorAll("[data-lb]").forEach((b) => b.addEventListener("click", () => {
+      document.querySelectorAll("[data-lb]").forEach((x) => x.classList.toggle("active", x === b));
+      renderLeaderboard(b.dataset.lb);
+    }));
+    function showLieuxSeg(seg) {
+      document.querySelectorAll("[data-lieuxseg]").forEach((b) => b.classList.toggle("active", b.dataset.lieuxseg === seg));
+      document.querySelectorAll("[data-lieuxsegpanel]").forEach((p) => show(p, p.dataset.lieuxsegpanel === seg));
+      if (seg === "rank") renderLeaderboard();
+    }
+    document.querySelectorAll("[data-lieuxseg]").forEach((b) => b.addEventListener("click", () => showLieuxSeg(b.dataset.lieuxseg)));
+
     // ====================== SÉCURITÉ ======================
     $("shareLocBtn").addEventListener("click", () => sendLocation(false, $("locMsg"), "Position partagée avec ton cercle ✅"));
     $("emergencyBtn").addEventListener("click", () => {
@@ -4277,12 +4351,16 @@
       const games = allQuests.filter((q) => q.kind === "game");
       const quests = allQuests.filter((q) => q.kind === "quest");
 
+      // Bandeau XP (monnaie de jeu, séparée du score de confiance)
+      const xpb = $("xpBanner");
+      if (xpb) xpb.innerHTML = `<span class="xp-ic">⭐</span><b>${(myProfile && myProfile.xp) || 0} XP</b><span class="xp-sub">· monnaie de jeu · grimpe au classement 🏆</span>`;
+
       // Jeux populaires (avec ambiance photo)
       $("gamesGrid").innerHTML = games.map((g, i) => `
         <div class="gcard" data-qkey="${g.key}">
           <div class="ghead ${headColors[i % 4]}" style="background-image:url('${questImage(g)}')">
             <span class="gemoji">${g.emoji}</span>
-            <span class="grate">+${g.points || 0} pts</span>
+            <span class="grate">+${g.points || 0} XP</span>
             ${myQuestStatus[g.key] === "completed" ? '<span class="gdone">✅ Fait</span>' : ""}
           </div>
           <div class="gbody"><div class="gname">${escapeHtml(g.title)}</div><div class="gcity">${escapeHtml(g.city || "")}</div></div>
@@ -4381,7 +4459,7 @@
       $("detailCity").textContent = (linkedCafe && linkedCafe.address) ? "📍 " + linkedCafe.address : (q.city || "");
       $("detailDesc").textContent = q.description || "";
       $("detailStats").innerHTML = `
-        <div class="dstat"><b>+${q.points || 0}</b><span>Points</span></div>
+        <div class="dstat"><b>+${q.points || 0}</b><span>XP</span></div>
         <div class="dstat"><b>${q.badge_emoji || "🏅"}</b><span>Badge</span></div>
         <div class="dstat"><b>${status === "completed" ? "✅" : (status === "joined" ? "⏳" : "—")}</b><span>Statut</span></div>`;
       // Récompense badge
