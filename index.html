@@ -754,10 +754,10 @@
 
     /* ----------------------------- Stats ---------------------------- */
     .stat { font-size: 2.2rem; font-weight: 800; color: var(--accent); line-height: 1; }
-    .stat-row { display: flex; gap: 1rem; }
-    .stat-box { flex: 1; background: var(--accent-soft); border-radius: var(--radius-sm); padding: .9rem; text-align: center; }
-    .stat-box .stat { font-size: 1.8rem; }
-    .stat-box .lbl { color: var(--muted); font-size: .78rem; margin-top: .2rem; }
+    .stat-row { display: flex; gap: .6rem; }
+    .stat-box { flex: 1; min-width: 0; background: var(--accent-soft); border-radius: var(--radius-sm); padding: .9rem .5rem; text-align: center; }
+    .stat-box .stat { font-size: 1.55rem; } /* compact : tient à 4 stats (Confiance/XP/Mates/Check-ins) */
+    .stat-box .lbl { color: var(--muted); font-size: .72rem; margin-top: .2rem; white-space: nowrap; }
 
     /* ----------------------------- Avatars -------------------------- */
     .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--accent-grad); display: grid; place-items: center; color: #fff; font-weight: 700; flex-shrink: 0; }
@@ -895,6 +895,7 @@
     .rate-chip { display: inline-flex; align-items: center; gap: .15rem; font-size: .76rem; font-weight: 800; color: #B5740E; background: rgba(255,177,60,.18); padding: .05rem .4rem; border-radius: 999px; white-space: nowrap; }
     .rate-chip.empty { color: var(--muted); background: var(--cream); font-weight: 600; }
     .rate-chip b { font-weight: 700; opacity: .7; }
+    .rate-top { display: inline-flex; align-items: center; font-size: .7rem; font-weight: 800; color: #fff; background: linear-gradient(135deg,#FFC93C,#FF8A3D); padding: .05rem .4rem; border-radius: 999px; white-space: nowrap; }
     .reviews-avg { text-align: center; padding: .3rem 0 .2rem; }
     .star-input { display: flex; gap: .25rem; font-size: 1.9rem; line-height: 1; cursor: pointer; }
     .star-input span { color: #d8d2cc; transition: color .1s, transform .1s; }
@@ -2292,6 +2293,7 @@
           </div>
           <div class="stat-row" style="margin-top:1rem">
             <div class="stat-box stat-click" data-stat="trust"><div class="stat" id="trustScore">0</div><div class="lbl">Confiance ⓘ</div></div>
+            <div class="stat-box stat-click" data-stat="xp"><div class="stat" id="xpScore">0</div><div class="lbl">XP ⭐</div></div>
             <div class="stat-box stat-click" data-stat="mates"><div class="stat" id="matesCountSelf">0</div><div class="lbl">Mates</div></div>
             <div class="stat-box stat-click" data-stat="checkins"><div class="stat" id="checkinCount">0</div><div class="lbl">Check-ins</div></div>
           </div>
@@ -3232,6 +3234,7 @@
       setV("pChildren", data.children); setV("pReligion", data.religion); setV("pPolitics", data.politics);
       setV("pFavPlaces", (data.favorite_places || []).join(", ")); setV("pBucket", data.bucket_list); setV("pInstagram", data.instagram);
       $("trustScore").textContent = data.trust_score ?? 0;
+      { const xs = $("xpScore"); if (xs) xs.textContent = data.xp ?? 0; }
       if (typeof renderTrustExplain === "function") renderTrustExplain();
       // Sélections multiples (chips)
       selInterests.clear(); (data.interests || []).forEach((x) => selInterests.add(x));
@@ -3481,7 +3484,8 @@
     function ratingChip(cafeId) {
       const r = cafeRatings[cafeId];
       if (!r || !r.cnt) return '<span class="rate-chip empty">⭐ Pas d\'avis</span>';
-      return `<span class="rate-chip">⭐ ${r.avg.toFixed(1)} <b>(${r.cnt})</b></span>`;
+      const top = (r.avg >= 4.5 && r.cnt >= 3) ? ' <span class="rate-top">🏆 Top noté</span>' : "";
+      return `<span class="rate-chip">⭐ ${r.avg.toFixed(1)} <b>(${r.cnt})</b></span>${top}`;
     }
 
     // ---- Avis sur les lieux (note ⭐ + commentaires) ----
@@ -6269,6 +6273,7 @@
     document.querySelectorAll("[data-stat]").forEach((b) => b.addEventListener("click", () => {
       const s = b.dataset.stat;
       if (s === "trust") openTrustModal();
+      else if (s === "xp") { goToTab("lieux"); if (typeof showLieuxSeg === "function") showLieuxSeg("rank"); }
       else if (s === "mates") { goToTab("connexions"); if (typeof showMatesView === "function") showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("messages"); }
       else if (s === "checkins") showProfileSegment("checkins");
     }));
