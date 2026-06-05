@@ -98,8 +98,14 @@ Smoke test OK : tables (`badges_catalog`, `quest_group_runs`), colonnes (`profil
 `reports.status`), RPC (`leaderboard` x4 métriques renvoie des données, `report_user`, `my_reports`,
 `request_group_quest`, `confirm_group_quest`, `complete_quest`). **Tout est opérationnel.**
 
-> Roadmap peaufinage : **TERMINÉE** (14 lots, SW v49). Reste seulement du polish cosmétique optionnel
-> (Lieux scroll, etc.) à voir au feeling après tests mobile.
+> Roadmap peaufinage : **TERMINÉE** (14 lots, SW v49).
+
+## ✅ Passe de peaufinage continue (lots 15-18, SW v53)
+- **#11 carte d'accueil allégée** : chips colorés = légende intégrée, légende du bas supprimée.
+- **Confirmations en toast** partout (position/alerte, email, mdp, vérif, photo, connexion, quête) — fini les messages invisibles en bas de page.
+- **Classement** : encart d'encouragement si hors top 30 (valeur solo).
+- **Profil 100 %** : toast + confettis à la complétion (en éditant).
+- Vérifs : 0 doublon d'ID, syntaxe OK à chaque lot, migrations confirmées en live.
 
 ## ✅ Déjà fait (session 15, commit 3734ec8)
 safe-area, pseudo long tronqué, doublon replay, dégradé prénom, visite guidée (Précédent + ordre), bannière PWA persistante + bouton Réglages, arrondi bouton 112, plafonds chips, sécurité « gratuite pour tous » (à restyler DA), téléphone clarifié.
