@@ -706,9 +706,9 @@
     /* « Passer » en haut à droite, comme dans les slides d'onboarding (uniformité) */
     .tour-pass { position: absolute; top: .6rem; right: .8rem; background: none; border: 0; color: var(--muted); font-size: .8rem; font-weight: 600; cursor: pointer; padding: .2rem .3rem; }
     .tour-next { background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .55rem 1.1rem; font-weight: 800; cursor: pointer; }
-    .homemap-legend { display: flex; flex-wrap: wrap; gap: .5rem .9rem; padding: .55rem .35rem .15rem; font-size: .74rem; color: var(--muted); }
-    .homemap-legend span { display: inline-flex; align-items: center; gap: .3rem; }
-    .homemap-legend i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+    /* Pastille de couleur dans les chips-filtres = légende intégrée (couleur des marqueurs) */
+    .homemap-filters .chip .lc { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: .35rem; vertical-align: middle; }
+    .homemap-filters .chip:not(.active) .lc { filter: grayscale(1); opacity: .6; }
     /* Marqueurs personnalisés (pastilles emoji colorées) */
     .epin { width: 36px; height: 36px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
       display: grid; place-items: center; box-shadow: 0 4px 10px rgba(0,0,0,.4); border: 2.5px solid #fff; transition: transform .15s ease; }
@@ -1872,11 +1872,12 @@
         <div class="section-head"><h3 style="margin-top:.4rem">Explore autour de toi 🗺️</h3><a id="hmFull" style="cursor:pointer">⛶ Plein écran</a></div>
         <p class="muted" style="margin:-.2rem 0 .6rem;font-size:.84rem">Filtre, puis <b>touche une pastille</b> pour agir 👇</p>
         <div class="card homemap-card">
+          <!-- Les chips portent la COULEUR des marqueurs (= légende intégrée, un seul repère par item) -->
           <div class="chips wrap homemap-filters" id="homeMapFilters">
-            <button class="chip active" data-layer="places">📍 Lieux <b data-cnt></b></button>
-            <button class="chip active" data-layer="mates">🧑 Mates <b data-cnt></b></button>
-            <button class="chip active" data-layer="activities">🎉 Activités <b data-cnt></b></button>
-            <button class="chip active" data-layer="checkins">✅ Check-ins <b data-cnt></b></button>
+            <button class="chip active" data-layer="places"><i class="lc" style="background:#FF5A4D"></i>Lieux <b data-cnt></b></button>
+            <button class="chip active" data-layer="mates"><i class="lc" style="background:#7a5cff"></i>Mates <b data-cnt></b></button>
+            <button class="chip active" data-layer="activities"><i class="lc" style="background:#ff9f1c"></i>Activités <b data-cnt></b></button>
+            <button class="chip active" data-layer="checkins"><i class="lc" style="background:#19b36b"></i>Check-ins <b data-cnt></b></button>
           </div>
           <div class="homemap-wrap">
             <div id="homeMap" class="homemap"></div>
@@ -1889,7 +1890,7 @@
               <button id="hmFit" title="Tout afficher">🔄 Tout voir</button>
             </div>
           </div>
-          <div class="homemap-legend" id="homeMapLegend"></div>
+          <!-- Légende supprimée : les chips colorés au-dessus font office de légende (anti-surcharge). -->
           <!-- Fenêtre de création (DANS la carte pour rester visible en plein écran) -->
           <div id="actCreate" class="act-overlay hidden">
             <div class="act-card">
