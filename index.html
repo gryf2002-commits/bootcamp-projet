@@ -627,7 +627,7 @@
       border: 0; border-radius: 16px; cursor: pointer; color: #fff; text-decoration: none; padding: .8rem .5rem; text-align: center; }
     .su-btn .su-e { font-size: 1.7rem; line-height: 1; }
     .su-btn .su-l { font-size: .86rem; font-weight: 700; line-height: 1.2; }
-    .su-call { background: linear-gradient(135deg,#3a3a44,#1f1f27); box-shadow: 0 8px 20px rgba(0,0,0,.25); }
+    .su-call { background: linear-gradient(135deg,#FF8A3D,#FF5A4D); box-shadow: 0 8px 20px rgba(255,90,77,.36); }
     .su-sos { background: linear-gradient(135deg,#FF6A6A,#E11D2E); box-shadow: 0 8px 22px rgba(225,29,46,.4), 0 0 0 0 rgba(225,29,46,.5); animation: sosPulse 2.2s ease-out infinite; }
     .su-btn:active { transform: scale(.97); }
     .secu-explain { margin-top: .8rem; background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .85rem; font-size: .78rem; line-height: 1.5; color: var(--muted); }
@@ -2361,15 +2361,15 @@
 
           <div class="section-head"><h3>Accès rapides</h3></div>
           <div class="grid2">
+            <div class="tile" data-secuquick="fakecall"><div class="thumb">📞</div><div class="t-name">Faux appel</div><div class="t-meta">Sortie de secours</div></div>
+            <div class="tile" data-secuquick="signal"><div class="thumb">🔦</div><div class="t-name">Signal d'aide</div><div class="t-meta">Se signaler</div></div>
             <div class="tile" data-secuquick="position"><div class="thumb">📍</div><div class="t-name">Partager ma position</div><div class="t-meta">À mon cercle</div></div>
             <div class="tile" data-secuquick="emergency"><div class="thumb">🚨</div><div class="t-name">Alerte d'urgence</div><div class="t-meta">Diffuser ma position</div></div>
             <div class="tile" data-secuquick="circle"><div class="thumb green">🛟</div><div class="t-name">Mon cercle</div><div class="t-meta">Positions partagées</div></div>
             <div class="tile" data-secuquick="lieux"><div class="thumb blue">🏛️</div><div class="t-name">Aide à proximité</div><div class="t-meta">Police · hôpital</div></div>
           </div>
-          <div class="row" style="margin-top:.7rem">
-            <button class="btn-ghost" id="fakeCallBtn">📞 Faux appel</button>
-            <button class="btn-ghost" id="signalBtn">🔦 Signal d'aide</button>
-          </div>
+          <button class="btn-ghost btn-block" id="fakeCallBtn" style="display:none"></button>
+          <button class="btn-ghost btn-block" id="signalBtn" style="display:none"></button>
           <div class="msg" id="secuMsg" style="text-align:center"></div>
         </div>
 
@@ -7140,6 +7140,9 @@
     document.querySelectorAll("[data-secuquick]").forEach((el) =>
       el.addEventListener("click", () => {
         const a = el.dataset.secuquick;
+        // Faux appel / signal : pas besoin d'aller dans « Besoin d'aide »
+        if (a === "fakecall") { $("fakeCallBtn").click(); return; }
+        if (a === "signal") { $("signalBtn").click(); return; }
         showSecuView("secuHelp");
         if (a === "position") $("shareLocBtn").click();
         else if (a === "emergency") $("emergencyBtn").click();
