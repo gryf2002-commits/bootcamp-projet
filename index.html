@@ -3901,9 +3901,10 @@
     const SM_CHANGELOG = [
       { v: "Migrations Supabase à lancer (dans l'ordre)", body: "17 (XP+classement), 18 (badges_catalog), 19 (signalements antispam), 20 (quêtes de groupe), 21 (avis lieux), 22 (badges jalons), 23 (profil public/privé)." },
       { v: "Règles produit", body: "Sécurité jamais payante · quêtes = XP (jamais de confiance), 3/jour + cooldown, groupe confirmé par un mate (+bonus) · badges secrets cachés (admin voit la condition) · DA sunset (pas de vert criard) · profil privé = hors classement." },
-      { v: "Features", body: "Avis sur les lieux (⭐ + commentaires, tri, top noté) · Mon parcours (récap journée/quêtes partageable) · Faux appel (sortie de secours) · Classement multi-onglets · Check-in de sécurité « Tout va bien » + FAQ premiers secours · Faux appel · XP/badges sur le profil." },
-      { v: "Fait récemment", body: "Cartes de lieux remaniées · page 2 Sécurité (urgence) réagencée · profil public/privé · Mon parcours · faux appel · badges jalons + secrets cachés · onglet Pro de connexion (sans identifiants)." },
-      { v: "À surveiller", body: "Lancer les migrations 21/22/23 · garder ce changelog à jour à chaque session." },
+      { v: "Features", body: "Avis sur les lieux (⭐ + commentaires, tri, top noté) · Mon parcours (récap journée/quêtes) + carte souvenir partageable · Classement multi-onglets · Check-in « Tout va bien » + FAQ premiers secours · Faux appel · Numéros d'urgence par pays (~30) · Contacts d'urgence (ICE, local) · XP/badges sur le profil." },
+      { v: "Sécurité (boîte à outils solo)", body: "112/SOS + alerte cercle · faux appel · numéros par pays · contacts ICE · FAQ premiers secours & voyage · cercle de confiance (alertes 24 h) · pastille « tout va bien »." },
+      { v: "Migrations lancées", body: "17→23 toutes lancées et vérifiées en live (XP, badges, signalements, quêtes groupe, avis, badges jalons, profil privé)." },
+      { v: "À surveiller", body: "Garder ce changelog à jour à chaque session · vérifier les nouvelles features sur mobile." },
     ];
     function renderAdminKb() {
       const el = $("adminKb"); if (!el) return;
