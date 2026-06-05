@@ -437,6 +437,12 @@
     .auth-lang { display: flex; gap: .3rem; justify-content: flex-end; margin-bottom: .6rem; }
     .auth-lang button { background: var(--cream); border: 1.5px solid var(--line); color: var(--muted); border-radius: 999px; padding: .3rem .7rem; font-size: .76rem; font-weight: 700; cursor: pointer; }
     .auth-lang button.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+    /* Bloc Pro / B2B sur la page de connexion */
+    .auth-pro-card { background: var(--cream); border: 1px solid var(--line); border-radius: 16px; padding: 1rem; }
+    .auth-pro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+    .auth-pro-grid > div { text-align: center; }
+    .auth-pro-grid .ap-ic { font-size: 1.7rem; }
+    .auth-pro-grid .ap-l { font-size: .8rem; font-weight: 700; color: var(--ink-warm); margin-top: .2rem; }
     .lang-seg button.active { background: var(--accent-grad); color: #fff; border-color: transparent; }
     body.theme-dusk .lang-seg button:not(.active) { background: #2b2240; color: #ede6f2; }
     body.theme-dusk .spot-emoji-pick button:not(.active) { background: rgba(255,255,255,.08); }
@@ -1895,23 +1901,41 @@
         <button type="button" data-lang="en">🇬🇧 EN</button>
       </div>
       <div class="auth-title">
-        <h1>Pars solo, trouve ta bande 🌍</h1>
-        <p class="muted">Repère les voyageurs autour de toi, propose un café ou une virée, et repars avec des potes.</p>
+        <h1 id="authTitleH">Pars solo, trouve ta bande 🌍</h1>
+        <p class="muted" id="authTitleP">Repère les voyageurs autour de toi, propose un café ou une virée, et repars avec des potes.</p>
       </div>
       <div class="seg">
         <button id="tabLogin" class="active">Connexion</button>
         <button id="tabSignup">Inscription</button>
         <button id="tabPro">💼 Pro</button>
       </div>
-      <label>Email</label>
-      <input id="authEmail" type="email" placeholder="chloe@exemple.com" />
-      <label>Mot de passe</label>
-      <div style="position:relative">
-        <input id="authPassword" type="password" placeholder="••••••••" style="padding-right:2.8rem" />
-        <button type="button" id="authPwToggle" class="pw-eye" title="Afficher / masquer le mot de passe"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.7 9.7 0 0 1 12 6c5 0 9 6 9 6a14 14 0 0 1-2.3 2.7"/><path d="M6.6 6.6A14 14 0 0 0 3 12s4 6 9 6c1.3 0 2.5-.4 3.6-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
+
+      <!-- Formulaire voyageur (Connexion / Inscription) -->
+      <div id="authForm">
+        <label>Email</label>
+        <input id="authEmail" type="email" placeholder="chloe@exemple.com" />
+        <label>Mot de passe</label>
+        <div style="position:relative">
+          <input id="authPassword" type="password" placeholder="••••••••" style="padding-right:2.8rem" />
+          <button type="button" id="authPwToggle" class="pw-eye" title="Afficher / masquer le mot de passe"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.7 9.7 0 0 1 12 6c5 0 9 6 9 6a14 14 0 0 1-2.3 2.7"/><path d="M6.6 6.6A14 14 0 0 0 3 12s4 6 9 6c1.3 0 2.5-.4 3.6-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
+        </div>
+        <div class="auth-play"><button id="authPlay" title="Valider">▶</button></div>
+        <div class="msg" id="authMsg" style="text-align:center"></div>
       </div>
-      <div class="auth-play"><button id="authPlay" title="Valider">▶</button></div>
-      <div class="msg" id="authMsg" style="text-align:center"></div>
+
+      <!-- Bloc Pro / B2B : pas d'identifiants, juste un bouton pour entrer dans l'espace Pro -->
+      <div id="authProBlock" class="hidden">
+        <div class="auth-pro-card">
+          <div class="auth-pro-grid">
+            <div><div class="ap-ic">📈</div><div class="ap-l">Visibilité</div></div>
+            <div><div class="ap-ic">🛟</div><div class="ap-l">Badge « Lieu sûr »</div></div>
+            <div><div class="ap-ic">🎟️</div><div class="ap-l">Plus de trafic</div></div>
+            <div><div class="ap-ic">📊</div><div class="ap-l">Statistiques</div></div>
+          </div>
+        </div>
+        <button class="btn-primary btn-block" id="authProStart" style="margin-top:1rem;font-size:1.05rem;padding:1rem">🚀 Démarrer — Espace Pro</button>
+        <p class="muted" style="text-align:center;font-size:.78rem;margin-top:.6rem">Aucun compte requis : découvre l'offre et envoie ta demande de partenariat.</p>
+      </div>
     </div>
   </section>
 
@@ -2812,7 +2836,7 @@
   <!-- ============ ESPACE PRO / B2B ============ -->
   <section id="b2bView" class="app-shell hidden">
     <header class="topbar">
-      <div class="brand"><span class="mark mark-pro"><svg viewBox="0 0 64 64" width="20" height="20"><circle cx="32" cy="32" r="12" fill="#fff"/><g stroke="#fff" stroke-width="3.4" stroke-linecap="round"><line x1="32" y1="9" x2="32" y2="15"/><line x1="32" y1="49" x2="32" y2="55"/><line x1="9" y1="32" x2="15" y2="32"/><line x1="49" y1="32" x2="55" y2="32"/></g></svg></span><b><span class="sun">Sun</span>Mates <span class="pro-tag">PRO</span></b></div>
+      <div class="brand"><span class="mark"><svg viewBox="0 0 64 64" width="20" height="20"><circle cx="32" cy="32" r="12" fill="#fff"/><g stroke="#fff" stroke-width="3.4" stroke-linecap="round"><line x1="32" y1="9" x2="32" y2="15"/><line x1="32" y1="49" x2="32" y2="55"/><line x1="9" y1="32" x2="15" y2="32"/><line x1="49" y1="32" x2="55" y2="32"/></g></svg></span><b><span class="sun">Sun</span>Mates <span style="font-weight:500;color:var(--muted)">Pro</span></b></div>
       <button class="btn-ghost" id="b2bBack" style="padding:.5rem .8rem;font-size:.82rem">‹ Retour</button>
     </header>
     <main>
@@ -2939,7 +2963,20 @@
       authMode = mode;
       $("tabLogin").classList.toggle("active", mode === "login");
       $("tabSignup").classList.toggle("active", mode === "signup");
+      const proBtn = $("tabPro"); if (proBtn) proBtn.classList.toggle("active", mode === "pro");
       $("authMsg").textContent = "";
+      // Onglet Pro : la page de connexion change DU TOUT AU TOUT (pas d'identifiants, juste « Démarrer »).
+      const isPro = mode === "pro";
+      show($("authForm"), !isPro);
+      show($("authProBlock"), isPro);
+      const h = $("authTitleH"), p = $("authTitleP");
+      if (isPro) {
+        if (h) h.textContent = "SunMates Pro 💼";
+        if (p) p.textContent = "Fais de ton établissement un lieu sûr repéré par les voyageurs solo.";
+      } else {
+        if (h) h.textContent = "Pars solo, trouve ta bande 🌍";
+        if (p) p.textContent = "Repère les voyageurs autour de toi, propose un café ou une virée, et repars avec des potes.";
+      }
     }
 
     async function submitAuth() {
@@ -6470,7 +6507,8 @@
     function openB2B(origin) { b2bOrigin = origin; show($("appView"), false); show($("authView"), false); show($("b2bView"), true); window.scrollTo({ top: 0 }); }
     function closeB2B() { show($("b2bView"), false); if (b2bOrigin === "auth") show($("authView"), true); else show($("appView"), true); }
     $("openB2BBtn").addEventListener("click", () => openB2B("app"));
-    $("tabPro").addEventListener("click", () => openB2B("auth"));
+    $("tabPro").addEventListener("click", () => setAuthMode("pro"));
+    { const ps = $("authProStart"); if (ps) ps.addEventListener("click", () => openB2B("auth")); }
     $("b2bBack").addEventListener("click", closeB2B);
     const b2bScrollToForm = () => { const f = $("b2bForm"); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => { const c = $("b2bCompany"); if (c) c.focus(); }, 450); };
     document.querySelectorAll("#b2bProPreview .qrow").forEach((r) => { r.style.cursor = "pointer"; r.addEventListener("click", () => toast("🔭", "Fonctionnalité Pro — bientôt disponible")); });
