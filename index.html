@@ -1734,6 +1734,14 @@
     .num-chip b { color: #e11d2e; font-size: .92rem; }
     body.theme-dusk .num-chip { background: rgba(239,68,68,.16); }
     body.theme-dusk .num-chip b { color: #ff9b9b; }
+    /* Contacts d'urgence (ICE) */
+    .ice-row { display: flex; align-items: center; gap: .5rem; margin-bottom: .4rem; }
+    .ice-call { flex: 1; display: flex; align-items: center; gap: .6rem; text-decoration: none; background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: .55rem .7rem; }
+    .ice-ic { width: 36px; height: 36px; border-radius: 10px; background: rgba(34,197,94,.14); display: grid; place-items: center; font-size: 17px; }
+    .ice-info { min-width: 0; }
+    .ice-name { font-weight: 700; color: var(--ink); }
+    .ice-num { font-size: .8rem; }
+    .ice-del { flex-shrink: 0; background: none; border: 0; color: var(--muted); font-size: 1rem; cursor: pointer; padding: .4rem .5rem; }
     #goldPreviewBanner { display: none; }
     body.gold-free #goldPreviewBanner { display: block; background: linear-gradient(135deg,#FFD15C,#E89B2B); color: #5a3d00; text-align: center; font-weight: 700; font-size: .8rem; padding: .5rem; }
     /* Exclus Gold (lieu / quête) — lisibles en clair ET en sombre */
@@ -2384,6 +2392,13 @@
               <div><b style="color:var(--accent)">📍 Ma position</b> : partagée avec ton <b>cercle de confiance</b> (connexions acceptées), visible 24 h.</div>
               <div style="margin-top:.35rem"><b style="color:var(--danger)">🚨 Alerte</b> : diffuse aussitôt ta position à ton cercle en cas d'urgence.</div>
             </div>
+          </div>
+
+          <div class="card" id="iceCard">
+            <h3 style="margin-top:0">📇 Mes contacts d'urgence</h3>
+            <p class="muted" style="font-size:.8rem;margin-top:0">Tes proches à joindre en un geste. Stockés sur ton appareil (privé).</p>
+            <div id="iceList"></div>
+            <button class="btn-ghost btn-block" id="iceAddBtn" style="margin-top:.4rem">+ Ajouter un contact</button>
           </div>
 
           <div class="card" id="circleCard">
@@ -4333,6 +4348,29 @@
     { const ag = $("allGoodBtn"); if (ag) ag.addEventListener("click", () => markSafetyOk(false)); }
     { const sl = $("sosLogo"); if (sl) sl.addEventListener("click", () => showSecuView("secuHelp")); }
 
+    // ---- Mes contacts d'urgence (ICE) : stockés sur l'appareil (privé), appel en 1 geste. ----
+    function loadIce() { try { return JSON.parse(localStorage.getItem("sm_ice") || "[]"); } catch (e) { return []; } }
+    function saveIce(a) { try { localStorage.setItem("sm_ice", JSON.stringify(a)); } catch (e) {} }
+    function renderIce() {
+      const el = $("iceList"); if (!el) return;
+      const arr = loadIce();
+      el.innerHTML = arr.length
+        ? arr.map((c, i) => `<div class="ice-row">
+            <a href="tel:${encodeURIComponent(c.phone)}" class="ice-call"><span class="ice-ic">📞</span><div class="ice-info"><div class="ice-name">${escapeHtml(c.name)}</div><div class="ice-num muted">${escapeHtml(c.phone)}</div></div></a>
+            <button class="ice-del" data-ice="${i}" aria-label="Supprimer">✕</button>
+          </div>`).join("")
+        : '<p class="muted" style="font-size:.82rem">Aucun contact. Ajoute un proche à prévenir en cas de besoin.</p>';
+      el.querySelectorAll("[data-ice]").forEach((b) => b.addEventListener("click", () => { const a = loadIce(); a.splice(Number(b.dataset.ice), 1); saveIce(a); renderIce(); toast("🗑️", "Contact supprimé"); }));
+      const add = $("iceAddBtn"); if (add) add.style.display = arr.length >= 3 ? "none" : "";
+    }
+    { const add = $("iceAddBtn"); if (add) add.addEventListener("click", () => {
+      const name = (prompt("Nom du contact (ex : Maman, Léa…)") || "").trim();
+      if (!name) return;
+      const phone = (prompt("Son numéro de téléphone (avec l'indicatif, ex : +33 6 12 34 56 78)") || "").trim();
+      if (!phone) return;
+      const a = loadIce(); a.push({ name, phone }); saveIce(a); renderIce(); toast("📇", "Contact d'urgence ajouté");
+    }); }
+
     // ---- Faux appel : sortie de secours discrète (voyageur solo). 100 % local, aucune donnée. ----
     let fcRingTick = null, fcCallTimer = null, fcSeconds = 0, fcStartTimeout = null;
     function startFakeCall(name) {
@@ -5745,6 +5783,7 @@
     // ====================== CENTRE DE SÉCURITÉ ======================
     function showSecuView(id) {
       ["secuHome", "secuHelp"].forEach((v) => show($(v), v === id));
+      if (id === "secuHelp" && typeof renderIce === "function") renderIce();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     $("needHelpBtn").addEventListener("click", () => showSecuView("secuHelp"));
