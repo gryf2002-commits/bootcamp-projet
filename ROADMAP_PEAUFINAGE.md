@@ -1,6 +1,18 @@
 # SunMates — Roadmap « grosse session peaufinage »
 
-## 🌙 BATCH NUIT (retours du 2026-06-06) — à traiter
+## 🌙 BATCH NUIT (retours du 2026-06-06)
+
+### ✅ FAIT cette nuit (lots 45-52, SW v87) :
+Pro (retrait raccourci B2B + titre Espace Pro) · « Bonjour » rouge · mot « triche » retiré · nav→écran
+principal + Lieux ouvre sur Lieux · support/nous contacter sans mailto (grisés) · **âme de la carte**
+(emojis+couleurs chips) · Tout voir 🌍 · **XP en ligne discrète** · intérêts illimités · avis encart
+descendu · **classement déplacé dans JEUX** · Lieux tri en tuiles (Top notés/Populaires) · **« Mes
+récompenses » retiré** (anti-doublon) · emoji jeux dans le titre · **Mon parcours = bandeau fin** +
+segment check-ins retiré + stat XP → fenêtre · **segment KB admin retiré** · signal tap-to-close ·
+**numéros : Europe 112 + populaires par défaut** · faux appel/signal en tuiles visibles · 112 moins morose ·
+**défi violet vs blocage rouge** · why-match en tuile cliquable + trust cliquable · **fin onboarding = CTA**.
+
+### ⏳ RESTE pour demain :
 **Pro/Accueil** : retirer raccourci B2B dans Premium · retirer titre « Espace Pro » (ressortir 1ʳᵉ carte) ·
 accueil connexion remonter (on voit pas Bonjour) · **« Bonjour » en rouge** (revert) · carte plein écran
 encore buggée · **rebosser tuiles accès rapides + carte** (trop sobre/pastilles = perte d'âme) · « Tout voir » = 🌍.
