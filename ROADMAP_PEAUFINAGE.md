@@ -68,5 +68,27 @@
 - [ ] **Onboarding** : mieux gérer Suivant/Précédent ; mettre **« Passer » en haut** (à la place de « Quitter ») pour uniformiser.
 - [ ] **Message pop-up en haut en fin d'onboarding** pas intuitif → autre façon de finir (CTA in-page).
 
+## ✅ FAIT — session peaufinage (lots 1→9, commits 8ddab10 → v44)
+- **Bugs** : flicker login corrigé ; **plein écran carte = ResizeObserver** (vrai fix) ; profil enregistré → confirmation **toast** visible.
+- **DA sunset** : indicateurs verts → ambre (présence « En ligne », badges validé/vérifié, point avatar, filtre « En ligne », check « validé ») ; barre de défilement thémée ; note sécu corail ; molette filtres corail ; « Mates de confiance » sans bouclier redondant.
+- **Sécurité** : alertes cercle expirent 24 h + urgences qui dénotent ; carte urgence page 2 réagencée (alerte pleine largeur pulsante) ; **FAQ premiers secours + voyage** (au lieu du mail) ; mail → « Nous contacter » ; **check-in « Tout va bien »** + pastille onglet + logo SOS cliquable.
+- **Réglages** réorganisés (sections + toggle mode sombre) ; **langue choisissable sur la page de connexion**.
+- **Profil** : **% par catégorie** (live) ; filtres avancés complétés (intérêts, études, enfants, religion) ; « Je suis ici pour » 1 choix ; email retiré sous le pseudo → ville.
+- **B2B** : logo Pro doré distinct. **Onboarding** : « Passer » en haut (uniforme) ; fin via bannière in-page (plus de pop-up).
+- **PWA** : carte explicative d'installation (étapes par plateforme).
+- **Jeux** : emoji en badge (plus au milieu de la photo) ; état « accompli » ambre ; défis reçus mis en avant.
+- **Check-ins** : cartes uniformisées.
+
+## ⏳ RESTE (nécessite migration Supabase — `.sql` à écrire & lancer)
+- **Classement** multi-onglets (badges/XP/confiance/check-ins).
+- **Système XP des quêtes** (3/jour + cooldown ; quêtes de groupe = confirmation mate + bonus XP) + **retrait du trust score** des quêtes.
+- **Badges** étoffés : grisés/**secrets** (fonction cachée) + **admin voit le caché**.
+- **Signalements** antispam (1/compte, auto-blocage auteur jusqu'à modération, statut visible).
+
+## ⏳ RESTE (front-end, plus petit)
+- Messages en bas de page restants (`.msg` sécu/auth…) → toasts.
+- Récompenses (onglet Jeux) : polish visuel.
+- Lieux : réduire encore le scroll, agencement global.
+
 ## ✅ Déjà fait (session 15, commit 3734ec8)
 safe-area, pseudo long tronqué, doublon replay, dégradé prénom, visite guidée (Précédent + ordre), bannière PWA persistante + bouton Réglages, arrondi bouton 112, plafonds chips, sécurité « gratuite pour tous » (à restyler DA), téléphone clarifié.
