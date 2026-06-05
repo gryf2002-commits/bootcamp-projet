@@ -1988,6 +1988,15 @@
             <button class="chip" data-cf="eco">🌱 Éco-responsables</button>
             <button class="chip" data-cf="near">📍 Près de moi</button>
           </div>
+          <div style="display:flex;align-items:center;gap:.5rem;margin:.2rem 0 .5rem">
+            <span class="muted" style="font-size:.8rem;white-space:nowrap">Trier</span>
+            <select id="cafeSort" style="flex:1">
+              <option value="default">Pertinence</option>
+              <option value="rating">⭐ Mieux notés</option>
+              <option value="checkins">✅ Plus de check-ins</option>
+              <option value="name">A→Z</option>
+            </select>
+          </div>
           <div id="cafesCount" class="muted" style="font-size:.8rem;margin-bottom:.5rem"></div>
           <div class="gold-only-note" style="margin-bottom:.7rem">👑 Gratuit : 1 check-in par jour. Gold : check-ins illimités + bonus de points.</div>
           <div id="cafesList"><p class="muted">Chargement…</p></div>
@@ -3379,6 +3388,7 @@
 
     // ====================== LIEUX SÛRS ======================
     let cafeFilter = { q: "", mode: "all" }; // recherche + filtre actif de l'onglet Lieux
+    let cafeSortKey = "default";             // tri : default | rating | checkins | name
     let cafeCheckins = {};                   // cafe_id -> nombre de check-ins
     let cafeRatings = {};                    // cafe_id -> { avg, cnt } (avis)
     let myGeo = null;                        // ma position GPS (pour « Près de moi »)
@@ -3429,6 +3439,11 @@
           .map((c) => Object.assign({ _km: haversineKm(myGeo, { lat: c.lat, lng: c.lng }) }, c))
           .sort((a, b) => a._km - b._km);
       }
+      // Tri choisi (override la pertinence ; en mode « près de moi », default = distance)
+      const rval = (id) => { const r = cafeRatings[id]; return r && r.cnt ? r.avg : 0; };
+      if (cafeSortKey === "rating") arr = arr.slice().sort((a, b) => rval(b.id) - rval(a.id) || (cafeCheckins[b.id] || 0) - (cafeCheckins[a.id] || 0));
+      else if (cafeSortKey === "checkins") arr = arr.slice().sort((a, b) => (cafeCheckins[b.id] || 0) - (cafeCheckins[a.id] || 0));
+      else if (cafeSortKey === "name") arr = arr.slice().sort((a, b) => (a.name || "").localeCompare(b.name || ""));
       const gq = (cafeFilter.q || "").toLowerCase();
       const goldMatch = !gq || "rooftop club sunmates".includes(gq) || "lisbonne".includes(gq);
       const goldPlace = (goldView() && cafeFilter.mode === "all" && goldMatch) ? `
@@ -3542,6 +3557,7 @@
     // Recherche + filtres de l'onglet Lieux
     (function () {
       const s = $("cafeSearch"); if (s) s.addEventListener("input", () => { cafeFilter.q = s.value.trim(); renderCafesList(); });
+      const sort = $("cafeSort"); if (sort) sort.addEventListener("change", () => { cafeSortKey = sort.value; renderCafesList(); });
       const f = $("cafeFilters"); if (!f) return;
       f.querySelectorAll(".chip").forEach((b) => b.addEventListener("click", () => {
         const mode = b.dataset.cf;
