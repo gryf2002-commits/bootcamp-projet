@@ -1028,6 +1028,20 @@
     .ptl-ic { width: 26px; text-align: center; font-size: 1rem; flex-shrink: 0; }
     .ptl-tx { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
     .ptl-d { font-size: .72rem; flex-shrink: 0; }
+    /* Carte souvenir partageable (story) */
+    .souvenir-card { background: linear-gradient(160deg,#FF8A3D 0%,#FF5A4D 45%,#7A2E5E 100%); color: #fff; text-align: center; padding: 1.6rem 1.2rem 1.3rem; position: relative; overflow: hidden; }
+    .souvenir-card::after { content: ""; position: absolute; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.28), transparent 70%); top: -90px; right: -60px; }
+    .souvenir-card > * { position: relative; z-index: 1; }
+    .sv-brand { font-weight: 800; letter-spacing: .04em; font-size: .95rem; opacity: .95; }
+    .sv-avatar { width: 76px; height: 76px; border-radius: 50%; background: rgba(255,255,255,.25); display: grid; place-items: center; font-size: 30px; font-weight: 800; margin: .9rem auto .5rem; border: 3px solid rgba(255,255,255,.7); background-size: cover; background-position: center; }
+    .sv-name { font-size: 1.35rem; font-weight: 800; font-family: "Fraunces", serif; }
+    .sv-tag { font-size: .82rem; opacity: .9; margin-top: .1rem; }
+    .sv-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; margin: 1.1rem 0 .6rem; }
+    .sv-stat { background: rgba(255,255,255,.16); border-radius: 14px; padding: .6rem .3rem; backdrop-filter: blur(4px); }
+    .sv-stat .sv-n { font-size: 1.1rem; font-weight: 800; white-space: nowrap; }
+    .sv-stat .sv-l { font-size: .68rem; opacity: .85; }
+    .sv-badges { display: flex; flex-wrap: wrap; gap: .2rem; justify-content: center; font-size: 1.3rem; min-height: 1.4rem; }
+    .sv-foot { margin-top: .8rem; font-size: .8rem; font-weight: 700; opacity: .92; }
 
     /* ------------------------ Compatibilité ------------------------- */
     .compat { display: inline-block; padding: .28rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 800; }
@@ -1776,6 +1790,26 @@
       <div class="fc-actions hidden" id="fcInCall">
         <button class="fc-btn decline" id="fcHangup"><span>📵</span>Raccrocher</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ===== Carte souvenir « Mon parcours » (partageable / screenshot story) ===== -->
+  <div id="souvenirModal" class="act-overlay hidden">
+    <div class="act-card" style="max-width:340px;padding:0;overflow:hidden">
+      <div class="souvenir-card" id="souvenirCard">
+        <div class="sv-brand">☀️ SunMates</div>
+        <div class="sv-avatar" id="svAvatar">😎</div>
+        <div class="sv-name" id="svName">—</div>
+        <div class="sv-tag">Mon parcours de voyageur·se</div>
+        <div class="sv-stats" id="svStats"></div>
+        <div class="sv-badges" id="svBadges"></div>
+        <div class="sv-foot">Pars solo, trouve ta bande 🌍</div>
+      </div>
+      <div style="padding:.7rem;display:flex;gap:.5rem">
+        <button class="btn-ghost" id="souvenirClose" style="flex:1">Fermer</button>
+        <button class="btn-primary" id="souvenirShare" style="flex:1">📤 Partager</button>
+      </div>
+      <div class="muted" style="text-align:center;font-size:.72rem;padding:0 .7rem .7rem">📸 Capture cette carte pour la poster en story !</div>
     </div>
   </div>
 
@@ -4679,15 +4713,34 @@
         ? '<div class="ptl">' + events.slice(0, 12).map((e) => `<div class="ptl-row"><span class="ptl-ic">${e.ic}</span><span class="ptl-tx">${escapeHtml(e.txt)}</span><span class="ptl-d muted">${timeAgo(e.t)}</span></div>`).join("") + "</div>"
         : "";
     }
+    function parcoursStats() {
+      return { ck: myCheckinsRaw.length, q: myQuestRows.filter((r) => r.status === "completed").length, b: myBadges.length, xp: (myProfile && myProfile.xp) || 0 };
+    }
+    function openSouvenir() {
+      const m = $("souvenirModal"); if (!m) return;
+      const s = parcoursStats();
+      const uname = (myProfile && myProfile.username) || "Voyageur";
+      const av = $("svAvatar");
+      if (myProfile && myProfile.avatar_url) { av.style.backgroundImage = `url('${myProfile.avatar_url}')`; av.textContent = ""; av.classList.add("has-img"); }
+      else { av.style.backgroundImage = ""; av.textContent = (uname[0] || "😎").toUpperCase(); av.classList.remove("has-img"); }
+      $("svName").textContent = uname;
+      $("svStats").innerHTML = [["📍", s.ck, "check-ins"], ["🎯", s.q, "quêtes"], ["🏅", s.b, "badges"], ["⭐", s.xp, "XP"]]
+        .map(([e, n, l]) => `<div class="sv-stat"><div class="sv-n">${e} ${n}</div><div class="sv-l">${l}</div></div>`).join("");
+      $("svBadges").innerHTML = myBadges.slice(0, 10).map((b) => `<span>${b.emoji || "🏅"}</span>`).join("");
+      m.classList.remove("hidden");
+    }
     function shareParcours() {
-      const ck = myCheckinsRaw.length, q = myQuestRows.filter((r) => r.status === "completed").length, b = myBadges.length, xp = (myProfile && myProfile.xp) || 0;
+      const s = parcoursStats();
       const name = (myProfile && myProfile.username) || "Moi";
-      const text = `🧭 Mon parcours SunMates — ${name}\n📍 ${ck} check-ins · 🎯 ${q} quêtes · 🏅 ${b} badges · ⭐ ${xp} XP\nRejoins-moi sur SunMates ☀️`;
+      const text = `🧭 Mon parcours SunMates — ${name}\n📍 ${s.ck} check-ins · 🎯 ${s.q} quêtes · 🏅 ${s.b} badges · ⭐ ${s.xp} XP\nRejoins-moi sur SunMates ☀️`;
       if (navigator.share) { navigator.share({ title: "Mon parcours SunMates", text }).catch(() => {}); }
       else if (navigator.clipboard) { navigator.clipboard.writeText(text).then(() => toast("📋", "Parcours copié — colle-le où tu veux !"), () => {}); }
       else toast("🧭", text);
     }
-    { const sp = $("shareParcoursBtn"); if (sp) sp.addEventListener("click", shareParcours); }
+    { const sp = $("shareParcoursBtn"); if (sp) sp.addEventListener("click", openSouvenir); }
+    { const sc = $("souvenirClose"); if (sc) sc.addEventListener("click", () => $("souvenirModal").classList.add("hidden")); }
+    { const ss = $("souvenirShare"); if (ss) ss.addEventListener("click", shareParcours); }
+    { const sm = $("souvenirModal"); if (sm) sm.addEventListener("click", (e) => { if (e.target.id === "souvenirModal") sm.classList.add("hidden"); }); }
 
     let _badgeKeysInit = false;  // false au tout 1er chargement (évite de fêter les badges déjà acquis)
     let myCoupons = [];          // coupons gagnés
