@@ -296,6 +296,10 @@
     .pwa-txt span { font-size: .76rem; color: var(--muted); }
     .pwa-cta { background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .55rem .95rem; font-weight: 800; font-size: .85rem; cursor: pointer; flex-shrink: 0; box-shadow: 0 6px 14px rgba(255,90,77,.35); }
     .pwa-x { background: transparent; border: 0; color: var(--muted); font-size: 1rem; cursor: pointer; padding: .2rem .35rem; flex-shrink: 0; }
+    /* Étapes d'installation (carte explicative) */
+    .install-steps { margin: 0 0 .4rem; padding-left: 1.2rem; }
+    .install-steps li { font-size: .87rem; line-height: 1.6; color: var(--text); margin-bottom: .3rem; }
+    .install-steps li::marker { color: var(--accent); font-weight: 800; }
 
     /* ---- Skeletons de chargement (perception de rapidité) ---- */
     .skel { position: relative; overflow: hidden; background: #ece7e3; border-radius: 12px; }
@@ -1614,6 +1618,17 @@
     </div>
     <button id="pwaInstall" class="pwa-cta">Installer</button>
     <button id="pwaClose" class="pwa-x" aria-label="Fermer">✕</button>
+  </div>
+
+  <!-- ===== Carte explicative d'installation (depuis Réglages) ===== -->
+  <div id="installModal" class="act-overlay hidden">
+    <div class="act-card" style="max-width:360px">
+      <div class="picker-head"><h3 style="margin:0">📲 Installer SunMates</h3><button id="installModalClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
+      <p class="muted" style="font-size:.85rem;margin:.2rem 0 .8rem">Ajoute SunMates à ton écran d'accueil : accès direct, plein écran, et même hors-ligne. Voici comment :</p>
+      <ol class="install-steps" id="installSteps"></ol>
+      <button class="btn-primary btn-block" id="installNowBtn" style="margin-top:.4rem">Installer maintenant</button>
+      <div class="muted" id="installNote" style="font-size:.76rem;margin-top:.6rem;text-align:center"></div>
+    </div>
   </div>
 
   <!-- ===== Onboarding « du futur » (nouveaux comptes + existants pas encore guidés) ===== -->
@@ -6969,10 +6984,37 @@
         hideBanner();
       }));
 
-      // Re-déclenchement manuel : bouton « Installer l'app » dans les Réglages.
+      // Re-déclenchement manuel (Réglages) : carte explicative + bouton d'installation.
+      const isAndroidChrome = /android/i.test(navigator.userAgent);
+      function fillInstallSteps() {
+        const steps = $("installSteps"), note = $("installNote"), btn = $("installNowBtn"); if (!steps) return;
+        if (deferredPrompt) {
+          steps.innerHTML = "<li>Touche <b>« Installer maintenant »</b> ci-dessous.</li><li>Confirme dans la fenêtre du navigateur.</li><li>SunMates apparaît sur ton écran d'accueil 🎉</li>";
+          btn.style.display = ""; note.textContent = "";
+        } else if (isIOS) {
+          steps.innerHTML = "<li>Touche le bouton <b>Partager</b> ⬆️ (en bas de Safari).</li><li>Choisis <b>« Sur l'écran d'accueil »</b>.</li><li>Touche <b>Ajouter</b> ✓</li>";
+          btn.style.display = "none"; note.textContent = "Sur iPhone/iPad, l'installation se fait via le menu Partager de Safari.";
+        } else {
+          steps.innerHTML = "<li>Ouvre le menu <b>⋮</b> du navigateur (en haut à droite).</li><li>Choisis <b>« Installer l'application »</b> ou <b>« Ajouter à l'écran d'accueil »</b>.</li><li>Valide 🎉</li>";
+          btn.style.display = isAndroidChrome ? "" : "none"; note.textContent = isAndroidChrome ? "Si le bouton ne fait rien, utilise le menu ⋮." : "";
+        }
+      }
+      function openInstallModal() {
+        const m = $("installModal"); if (!m) return;
+        fillInstallSteps(); m.classList.remove("hidden");
+      }
+      function closeInstallModal() { const m = $("installModal"); if (m) m.classList.add("hidden"); }
+      { const c = $("installModalClose"); if (c) c.addEventListener("click", closeInstallModal); }
+      { const m = $("installModal"); if (m) m.addEventListener("click", (e) => { if (e.target === m) closeInstallModal(); }); }
+      { const nb = $("installNowBtn"); if (nb) nb.addEventListener("click", () => once("pwa-install-modal", async () => {
+        if (!deferredPrompt) { fillInstallSteps(); return; }
+        deferredPrompt.prompt();
+        try { await deferredPrompt.userChoice; } catch (e) {}
+        deferredPrompt = null; closeInstallModal(); hideBanner();
+      })); }
       window.openInstallHelp = () => {
         if (isStandalone()) { if (typeof toast === "function") toast("✅", "SunMates est déjà installée sur cet appareil 🎉"); return; }
-        showBanner(true);
+        openInstallModal();
       };
 
       // Au démarrage : si pas installée et pas en veille, on affiche la bannière (invite native
