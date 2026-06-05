@@ -1326,8 +1326,9 @@
     /* --- Overlay sélecteur générique --- */
     #pickerOverlay { position: fixed; inset: 0; z-index: var(--z-picker); background: rgba(40,25,20,.45); display: flex; align-items: flex-end; justify-content: center; }
     #pickerOverlay.hidden { display: none; }
-    .picker-card { background: var(--paper); width: 100%; max-width: 460px; border-radius: 22px 22px 0 0; padding: 1.2rem 1.1rem 1.6rem; max-height: 80vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,.25); }
-    .picker-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+    .picker-card { background: var(--paper); width: 100%; max-width: 460px; border-radius: 22px 22px 0 0; padding: 1.2rem 1.1rem 1.6rem; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,.25); }
+    .picker-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; flex-shrink: 0; }
+    #pickerBody { overflow-y: auto; flex: 1; }
 
     /* ===================================================================
        SESSION 3 — Notifications, toasts, feed d'accueil, accordéon profil
@@ -1380,7 +1381,10 @@
     .mseg button.active { background: var(--accent-grad); color: #fff; }
     .mseg .segb { position: absolute; top: 2px; right: 5px; background: var(--accent); color: #fff; font-size: .56rem; min-width: 15px; height: 15px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
     .mseg button.active .segb { background: #fff; color: var(--accent); }
-    .mates-stat { display: flex; align-items: baseline; gap: .45rem; margin: .2rem 0 .2rem; }
+    .mates-stat { display: inline-flex; align-items: center; gap: .5rem; margin: .3rem 0 .6rem; background: var(--accent-soft); border: 1px solid rgba(255,90,77,.22); border-radius: 999px; padding: .4rem .95rem; cursor: pointer; transition: transform .1s; }
+    .mates-stat:active { transform: scale(.97); }
+    .mates-stat b { font-size: 1.35rem; color: var(--accent); line-height: 1; }
+    .mates-stat span { font-size: .85rem; color: var(--ink-warm); font-weight: 700; }
     .mates-stat b { font-family: "Fraunces", serif; font-size: 1.5rem; color: var(--accent); }
     .mates-stat span { color: var(--muted); font-size: .85rem; }
 
@@ -2173,7 +2177,7 @@
         <!-- Vue principale (sous-onglets) -->
         <div id="matesHome" class="mates-view">
           <h1 data-i18n="mates.title">Mes Mates</h1>
-          <div class="mates-stat stat-click" id="matesStatBtn" title="Voir mes connexions"><b id="matesCount">0</b><span data-i18n="mates.trusted">Mates de confiance ›</span></div>
+          <div class="mates-stat stat-click" id="matesStatBtn" title="Voir mes connexions">🤝 <b id="matesCount">0</b><span id="matesStatLbl">Mates de confiance ›</span></div>
 
           <div class="mseg">
             <button data-mseg="messages" class="active"><span data-i18n="mates.messages">💬 Messages</span><span class="segb hidden" id="segMsg"></span></button>
@@ -4475,6 +4479,7 @@
       travelersCache = all.filter((p) => p.id !== myId && !related.has(p.id) && !blockedIds.has(p.id));
       renderTravelers($("travSearch") ? $("travSearch").value : "");
       const mc = $("matesCount"); if (mc) mc.textContent = connectedIds.size;
+      { const ml = $("matesStatLbl"); if (ml) ml.textContent = connectedIds.size ? "Mates de confiance ›" : "Trouve tes premiers Mates 🌍 ›"; }
       const ms = $("matesCountSelf"); if (ms) ms.textContent = connectedIds.size;
       if (typeof renderTrustExplain === "function") renderTrustExplain();
       if (typeof updateNotifBadges === "function") updateNotifBadges();
@@ -5824,9 +5829,9 @@
         const { error } = await db.from("profiles").update({ allow_contact: next }).eq("id", myUserId);
         if (!error && myProfile) myProfile.allow_contact = next;
         const cp = $("contactPrefVal"); if (cp) cp.textContent = (next === "connections" ? "Connexions ›" : "Tout le monde ›");
-        m.style.color = error ? "var(--danger)" : "var(--ok)";
-        m.textContent = error ? "Erreur : " + error.message
-          : "Préférence enregistrée : " + (next === "connections" ? "seules tes connexions peuvent te contacter" : "tout le monde peut te contacter") + " ✅";
+        m.textContent = "";
+        if (error) toast("⚠️", "Erreur : " + escapeHtml(error.message));
+        else toast("📢", next === "connections" ? "Seules tes connexions peuvent te contacter" : "Tout le monde peut te contacter");
       } else if (action === "secours") {
         showInfo("Premiers secours · l'essentiel 🩺", `<div class="faq-secu">
           <p class="muted" style="font-size:.8rem;margin:0 0 .7rem">En cas de doute, appelle d'abord le <b>112</b>. Voici les gestes clés en attendant les secours.</p>
