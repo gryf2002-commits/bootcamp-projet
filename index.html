@@ -2622,6 +2622,7 @@
             <button data-aseg="places">📍</button>
             <button data-aseg="reports">🚩</button>
             <button data-aseg="quotes">💼</button>
+            <button data-aseg="kb">📒</button>
           </div>
 
           <div class="aseg" data-asegpanel="demo">
@@ -2685,6 +2686,14 @@
 
           <div class="aseg hidden" data-asegpanel="quotes">
             <div class="card"><h3 style="margin-top:0">💼 Demandes de devis B2B</h3><div id="adminQuotes"><p class="muted">Chargement…</p></div></div>
+          </div>
+
+          <div class="aseg hidden" data-asegpanel="kb">
+            <div class="card">
+              <h3 style="margin-top:0">📒 Knowledge base / Changelog</h3>
+              <p class="muted" style="font-size:.8rem;margin-top:0">Tenu à jour à chaque session. Visible uniquement par l'admin.</p>
+              <div id="adminKb"></div>
+            </div>
           </div>
         </div><!-- /prof-seg admin -->
         </div><!-- /profMain -->
@@ -3793,8 +3802,21 @@
       else if (seg === "places") loadAdminPlaces();
       else if (seg === "reports") loadReports();
       else if (seg === "quotes") loadAdminQuotes();
+      else if (seg === "kb") renderAdminKb();
     }
     document.querySelectorAll("[data-aseg]").forEach((b) => b.addEventListener("click", () => showAdminSegment(b.dataset.aseg)));
+
+    // 📒 Knowledge base / changelog — tenu à jour à chaque session (visible admin uniquement).
+    const SM_CHANGELOG = [
+      { v: "Migrations Supabase à lancer (dans l'ordre)", body: "17 (XP+classement), 18 (badges_catalog), 19 (signalements antispam), 20 (quêtes de groupe), 21 (avis lieux), 22 (badges jalons), 23 (profil public/privé)." },
+      { v: "Règles produit", body: "Sécurité jamais payante · quêtes = XP (jamais de confiance), 3/jour + cooldown, groupe confirmé par un mate (+bonus) · badges secrets cachés (admin voit la condition) · DA sunset (pas de vert criard) · profil privé = hors classement." },
+      { v: "Features", body: "Avis sur les lieux (⭐ + commentaires, tri, top noté) · Mon parcours (récap journée/quêtes partageable) · Faux appel (sortie de secours) · Classement multi-onglets · Check-in de sécurité « Tout va bien » + FAQ premiers secours · Faux appel · XP/badges sur le profil." },
+      { v: "À faire (passes en cours)", body: "Remanier les cartes de lieux · réagencer la page 2 Sécurité (urgence) · garder ce changelog à jour." },
+    ];
+    function renderAdminKb() {
+      const el = $("adminKb"); if (!el) return;
+      el.innerHTML = SM_CHANGELOG.map((e) => `<div class="qrow" style="cursor:default;align-items:flex-start"><div class="qico">•</div><div class="qname" style="white-space:normal"><b>${escapeHtml(e.v)}</b><div class="meta muted" style="font-size:.78rem;white-space:normal;line-height:1.5;margin-top:.2rem">${escapeHtml(e.body)}</div></div></div>`).join("");
+    }
 
     // ---- Knowledge base : l'aperçu complet de TOUT ce que l'app permet (onglet 🎤) ----
     // La liste est générée depuis le scénario de la démo, donc toujours à jour et exhaustive.
