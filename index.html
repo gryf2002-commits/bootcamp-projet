@@ -350,10 +350,12 @@
     .match-emoji { font-size: 3.2rem; animation: floaty 2.6s ease-in-out infinite; }
     .match-card h3 { font-family: "Fraunces", serif; font-size: 1.7rem; margin: .3rem 0 .2rem; background: var(--accent-grad);
       -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .match-avs { display: flex; align-items: center; justify-content: center; gap: -10px; margin: .9rem 0; }
-    .match-avs .avatar { width: 72px; height: 72px; font-size: 1.5rem; border: 3px solid #fff; box-shadow: var(--shadow); }
-    .match-avs .avatar:nth-child(2) { margin-left: -16px; }
-    .match-avs .mlink { margin: 0 -10px; z-index: 2; font-size: 1.6rem; }
+    .match-avs { display: flex; align-items: center; justify-content: center; margin: .9rem 0; }
+    .match-avs .avatar { width: 68px; height: 68px; font-size: 1.5rem; border: 3px solid #fff; box-shadow: var(--shadow); }
+    .match-avs .mlink { margin: 0 -10px; z-index: 2; font-size: 1.45rem; width: 38px; height: 38px; border-radius: 50%;
+      background: #fff; display: grid; place-items: center; box-shadow: var(--shadow-sm); }
+    body.theme-dusk .match-avs .avatar { border-color: #241b35; }
+    body.theme-dusk .match-avs .mlink { background: #241b35; }
 
     /* ---- Pull-to-refresh ---- */
     .ptr { position: fixed; top: 0; left: 50%; transform: translateX(-50%) translateY(-44px); z-index: var(--z-toast);
@@ -387,7 +389,9 @@
     .lang-seg { display: flex; gap: .5rem; }
     .lang-seg button { flex: 1; border: 1.5px solid var(--line); background: #fff; color: var(--text); border-radius: var(--radius-sm); padding: .7rem; font-weight: 700; }
     .lang-seg button.active { background: var(--accent-grad); color: #fff; border-color: transparent; }
-    body.theme-dusk .lang-seg button { background: #2b2240; color: #ede6f2; }
+    body.theme-dusk .lang-seg button:not(.active) { background: #2b2240; color: #ede6f2; }
+    body.theme-dusk .spot-emoji-pick button:not(.active) { background: rgba(255,255,255,.08); }
+    body.theme-dusk .spot-chip { color: #f3e9f3; }
     .set-toggle { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .7rem 0; }
     .set-toggle .st-lbl { font-weight: 600; color: var(--ink); }
     .set-toggle .st-sub { font-size: .76rem; color: var(--muted); }
@@ -3267,7 +3271,9 @@
     const adFirstCafe = () => (allCafes || []).find((c) => c.lat != null && c.lng != null);
     // Ferme tout ce qui pourrait rester ouvert entre deux scènes
     function adCleanup() {
-      ["trustModal", "actCreate", "matesListModal", "onboarding", "tour", "notifPanel"].forEach((id) => { const e = $(id); if (e) e.classList.add("hidden"); });
+      ["trustModal", "actCreate", "matesListModal", "onboarding", "tour", "notifPanel", "qrModal", "qrScanModal"].forEach((id) => { const e = $(id); if (e) e.classList.add("hidden"); });
+      if (typeof closeQrScan === "function") A(closeQrScan); // coupe la caméra si un scan tournait
+      document.querySelectorAll(".act-overlay").forEach((o) => { if (o.querySelector(".match-card")) o.remove(); }); // retire l'overlay « match » dynamique
       // Revenir à l'app si une scène avait affiché la connexion ou l'espace Pro
       const b2b = $("b2bView"), auth = $("authView"), app = $("appView");
       if (b2b) A(() => show(b2b, false));
@@ -3322,6 +3328,10 @@
         run: () => { if (typeof ensureIaPersonas === "function") A(ensureIaPersonas); A(() => goToTab("connexions")); setTimeout(() => { const m = adDemoProfile(); if (m && typeof openTravelerProfile === "function") openTravelerProfile(m); }, 500); } },
       { title: "📨 Les demandes reçues", text: "Dans l'onglet Demandes, on accepte ou non les voyageurs qui veulent se connecter avec toi.", ms: 6000,
         run: () => { A(() => goToTab("connexions")); A(() => { if (typeof showMatesView === "function") showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("requests"); }); } },
+      { title: "🎉 « C'est un match ! »", text: "Quand une connexion devient mutuelle, l'app fête ça : une pluie de confettis et une carte « C'est un match ! » pour lancer la conversation aussitôt.", ms: 7000,
+        run: () => { adCleanup(); A(() => goToTab("connexions")); setTimeout(() => { const m = (typeof adDemoProfile === "function" && adDemoProfile()) || travelerMap["ia-lina"]; if (typeof onNewMatch === "function") onNewMatch(m && m.id); }, 700); setTimeout(() => { document.querySelectorAll(".act-overlay").forEach((o) => { if (o.querySelector(".match-card")) o.remove(); }); }, 5800); } },
+      { title: "🪪 Ton QR de profil", text: "Croisé·e en vrai ? Montre ton QR : un scan et vous êtes connectés. Anti-faux profil et ultra pratique en voyage. (Le scan caméra est dispo aussi.)", ms: 6500,
+        run: () => { adCleanup(); A(() => goToTab("profil")); setTimeout(() => { if (typeof openQr === "function") openQr(); }, 700); setTimeout(() => { const m = $("qrModal"); if (m) m.classList.add("hidden"); }, 5400); } },
       { title: "🛡️ Voir tous tes Mates", text: "Le compteur « X Mates » est cliquable : il ouvre la liste de toutes tes connexions de confiance.", ms: 6000,
         run: () => { A(() => goToTab("connexions")); A(() => { if (typeof showMatesView === "function") showMatesView("matesHome"); }); setTimeout(() => { const m = $("matesListModal"); if (m) m.classList.remove("hidden"); }, 500); } },
       { title: "💬 Discuter en direct", text: "On écrit à un voyageur en un clic. La messagerie est en temps réel, horodatée, et on peut supprimer une conversation.", ms: 8500,
@@ -3352,6 +3362,8 @@
         run: () => { adCleanup(); A(() => goToTab("profil")); setTimeout(() => adClick("profileSettingsBtn"), 500); } },
       { title: "🔔 Notifications", text: "Cloche, panneau, pastilles et toasts en temps réel : on ne rate rien.", ms: 5500,
         run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => adClick("notifBell"), 500); } },
+      { title: "🌍 SunMates en anglais", text: "Un simple réglage bascule toute l'interface en anglais — pratique pour les voyageurs du monde entier. Regarde la navigation et les filtres changer en direct.", ms: 7500,
+        run: () => { adCleanup(); A(() => goToTab("connexions")); A(() => { if (typeof showMatesView === "function") showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); }); setTimeout(() => { if (typeof setLang === "function") setLang("en", { persist: false }); }, 700); setTimeout(() => { if (typeof setLang === "function") setLang(localStorage.getItem("sm_lang") || "fr", { persist: false }); }, 6400); } },
       { title: "🌙 Le mode sombre", text: "Un thème « nuit tropicale » repose les yeux le soir.", ms: 5500,
         run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => { if (!document.body.classList.contains("theme-dusk")) adClick("themeToggle"); }, 500); } },
       { title: "☀️ …et le retour au jour", text: "Un simple bouton bascule entre nuit tropicale et mode jour ensoleillé.", ms: 5500,
@@ -3394,6 +3406,7 @@
       clearTimeout(adTimer); clearTimeout(adHideTimer); adCleanup();
       const bar = $("autoDemo"); if (bar) { bar.classList.add("hidden"); bar.classList.remove("dim"); }
       if (document.body.classList.contains("theme-dusk") !== adThemeWasDusk) adClick("themeToggle"); // restaure le thème
+      if (typeof setLang === "function") A(() => setLang(localStorage.getItem("sm_lang") || "fr", { persist: false })); // restaure la langue
       A(() => goToTab("accueil"));
     }
     A(() => {
@@ -6136,9 +6149,9 @@
       document.querySelectorAll("[data-i18n]").forEach((el) => { const k = el.getAttribute("data-i18n"); const v = t(k); if (v) el.textContent = v; });
       document.querySelectorAll("[data-i18n-ph]").forEach((el) => { const v = t(el.getAttribute("data-i18n-ph")); if (v) el.setAttribute("placeholder", v); });
     }
-    function setLang(lang) {
+    function setLang(lang, opts) {
       currentLang = (lang === "en") ? "en" : "fr";
-      localStorage.setItem("sm_lang", currentLang);
+      if (!opts || opts.persist !== false) localStorage.setItem("sm_lang", currentLang);
       document.documentElement.lang = currentLang;
       applyI18n();
       document.querySelectorAll("#langSeg [data-lang]").forEach((b) => b.classList.toggle("active", b.dataset.lang === currentLang));
