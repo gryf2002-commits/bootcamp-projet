@@ -24,6 +24,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <!-- QR du profil : génération 100% locale (qrcodejs) + scan caméra (jsQR). Aucune donnée n'est envoyée. -->
+  <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -309,6 +312,91 @@
     .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: var(--z-confetti); overflow: hidden; }
     .confetti-wrap i { position: absolute; top: -20px; border-radius: 2px; opacity: .95; animation: confettiFall linear forwards; }
     @keyframes confettiFall { to { transform: translateY(108vh) rotate(600deg); opacity: .85; } }
+
+    /* ====================================================================
+       NOUVEAUTÉS sociales (session 14) — présence, vouch, traduction,
+       match, QR, statut éphémère. Tout reste dans la DA corail/sable.
+       ==================================================================== */
+    /* ---- Présence « actif récemment » : pastille verte sur l'avatar ---- */
+    .avatar { position: relative; }
+    .pdot { position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px; border-radius: 50%;
+      background: var(--ok); border: 2.5px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.04); }
+    body.theme-dusk .pdot { border-color: #241b35; }
+    .pdot.lg { width: 16px; height: 16px; border-width: 3px; }
+    @keyframes presencePulse { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,.5); } 70% { box-shadow: 0 0 0 7px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
+    .pdot { animation: presencePulse 2.4s ease-out infinite; }
+
+    /* ---- Vouch « Recommandé par X Mates » : rangée d'avatars ---- */
+    .vouch-head { display: flex; align-items: center; gap: .5rem; }
+    .vouch-row { display: flex; align-items: center; margin-top: .6rem; min-height: 36px; }
+    .vouch-row .avatar { width: 34px; height: 34px; font-size: .82rem; margin-left: -8px; border: 2px solid #fff; box-shadow: var(--shadow-sm); }
+    .vouch-row .avatar:first-child { margin-left: 0; }
+    body.theme-dusk .vouch-row .avatar { border-color: #241b35; }
+    .vouch-more { margin-left: -8px; width: 34px; height: 34px; border-radius: 50%; background: var(--accent-soft); color: var(--accent);
+      display: grid; place-items: center; font-weight: 800; font-size: .78rem; border: 2px solid #fff; z-index: 1; }
+    .te-row.te-vouch { cursor: default; }
+
+    /* ---- Traduction d'un message (sous la bulle, style des méta) ---- */
+    .bubble-translate { display: inline-flex; align-items: center; gap: .25rem; margin-top: .25rem; font-size: .68rem;
+      font-weight: 700; opacity: .7; cursor: pointer; background: none; border: 0; padding: 0; color: inherit; }
+    .bubble.them .bubble-translate { color: var(--accent); opacity: .85; }
+    .bubble-translate:hover { opacity: 1; }
+    .bubble-tr { margin-top: .35rem; padding-top: .35rem; border-top: 1px dashed rgba(0,0,0,.12); font-size: .86rem; line-height: 1.35; opacity: .92; }
+    .bubble.me .bubble-tr { border-top-color: rgba(255,255,255,.35); }
+    .bubble-tr .tr-flag { font-size: .66rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; opacity: .7; display: block; margin-bottom: .1rem; }
+
+    /* ---- « C'est un match ! » : carte festive (réutilise .act-overlay/.act-card) ---- */
+    .match-card { text-align: center; max-width: 340px; overflow: hidden; position: relative; }
+    .match-emoji { font-size: 3.2rem; animation: floaty 2.6s ease-in-out infinite; }
+    .match-card h3 { font-family: "Fraunces", serif; font-size: 1.7rem; margin: .3rem 0 .2rem; background: var(--accent-grad);
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .match-avs { display: flex; align-items: center; justify-content: center; gap: -10px; margin: .9rem 0; }
+    .match-avs .avatar { width: 72px; height: 72px; font-size: 1.5rem; border: 3px solid #fff; box-shadow: var(--shadow); }
+    .match-avs .avatar:nth-child(2) { margin-left: -16px; }
+    .match-avs .mlink { margin: 0 -10px; z-index: 2; font-size: 1.6rem; }
+
+    /* ---- Pull-to-refresh ---- */
+    .ptr { position: fixed; top: 0; left: 50%; transform: translateX(-50%) translateY(-44px); z-index: var(--z-toast);
+      width: 38px; height: 38px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow);
+      display: grid; place-items: center; font-size: 1.1rem; transition: transform .12s ease, opacity .2s ease; opacity: 0; pointer-events: none; }
+    .ptr.show { opacity: 1; }
+    .ptr.spin span { display: inline-block; animation: ptrSpin .7s linear infinite; }
+    @keyframes ptrSpin { to { transform: rotate(360deg); } }
+
+    /* ---- QR de profil (overlay réutilise .act-overlay/.act-card) ---- */
+    .qr-box { display: grid; place-items: center; padding: 1rem; background: #fff; border-radius: 16px; margin: .6rem auto; width: max-content; box-shadow: var(--shadow-sm); }
+    .qr-box img, .qr-box canvas, .qr-box table { display: block; }
+    #qrScanVideo { width: 100%; border-radius: 14px; background: #000; aspect-ratio: 1/1; object-fit: cover; }
+    .qr-scanline { position: absolute; left: 8%; right: 8%; height: 2px; background: var(--accent); box-shadow: 0 0 12px var(--accent); animation: qrScan 2s ease-in-out infinite; }
+    @keyframes qrScan { 0%,100% { top: 18%; } 50% { top: 82%; } }
+
+    /* ---- Statut éphémère « mon spot du jour » (story légère) ---- */
+    .spot-chip { display: inline-flex; align-items: center; gap: .4rem; max-width: 100%; padding: .4rem .7rem; border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255,201,60,.18), rgba(255,90,77,.16)); border: 1px solid rgba(255,90,77,.25);
+      color: var(--ink); font-size: .8rem; font-weight: 600; }
+    .spot-chip .se { font-size: 1rem; }
+    .spot-chip .stxt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .spot-ring { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5.5px var(--accent) !important; }
+    .spot-compose { display: flex; gap: .5rem; align-items: center; }
+    .spot-compose input[type="text"] { flex: 1; }
+    .spot-emoji-pick { display: flex; gap: .3rem; flex-wrap: wrap; margin: .5rem 0; }
+    .spot-emoji-pick button { background: var(--accent-soft); border: 1.5px solid transparent; border-radius: 10px; padding: .3rem .5rem; font-size: 1.1rem; cursor: pointer; }
+    .spot-emoji-pick button.active { border-color: var(--accent); background: #fff; }
+
+    /* ---- Sélecteur de langue (réglages) ---- */
+    .lang-seg { display: flex; gap: .5rem; }
+    .lang-seg button { flex: 1; border: 1.5px solid var(--line); background: #fff; color: var(--text); border-radius: var(--radius-sm); padding: .7rem; font-weight: 700; }
+    .lang-seg button.active { background: var(--accent-grad); color: #fff; border-color: transparent; }
+    body.theme-dusk .lang-seg button { background: #2b2240; color: #ede6f2; }
+    .set-toggle { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .7rem 0; }
+    .set-toggle .st-lbl { font-weight: 600; color: var(--ink); }
+    .set-toggle .st-sub { font-size: .76rem; color: var(--muted); }
+    .switch { position: relative; width: 46px; height: 27px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch .sl { position: absolute; inset: 0; background: var(--line); border-radius: 999px; transition: background .2s; cursor: pointer; }
+    .switch .sl::before { content: ""; position: absolute; left: 3px; top: 3px; width: 21px; height: 21px; background: #fff; border-radius: 50%; transition: transform .2s; box-shadow: 0 2px 5px rgba(0,0,0,.2); }
+    .switch input:checked + .sl { background: var(--accent); }
+    .switch input:checked + .sl::before { transform: translateX(19px); }
 
     /* ---- Bouton « effacer » (✕) dans les champs de recherche ---- */
     .search input { padding-right: 2.4rem; }
@@ -1507,6 +1595,26 @@
     </div>
   </div>
 
+  <!-- ===== Pop-up : mon QR de profil (généré localement) ===== -->
+  <div id="qrModal" class="act-overlay hidden">
+    <div class="act-card" style="text-align:center;max-width:340px">
+      <div class="picker-head"><h3 style="margin:0" data-i18n="qr.title">🪪 Mon QR SunMates</h3><button id="qrClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
+      <p class="muted" style="font-size:.84rem;margin:.4rem 0" data-i18n="qr.sub">Fais-le scanner à un voyageur rencontré en vrai pour vous connecter en un instant.</p>
+      <div class="qr-box" id="qrBox"></div>
+      <div class="muted" style="font-size:.78rem" id="qrName">—</div>
+    </div>
+  </div>
+
+  <!-- ===== Pop-up : scanner un QR de profil ===== -->
+  <div id="qrScanModal" class="act-overlay hidden">
+    <div class="act-card" style="max-width:340px">
+      <div class="picker-head"><h3 style="margin:0" data-i18n="qr.scanTitle">📷 Scanner un QR</h3><button id="qrScanClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
+      <p class="muted" style="font-size:.84rem;margin:.4rem 0" data-i18n="qr.scanSub">Vise le QR SunMates d'un autre voyageur.</p>
+      <div style="position:relative"><video id="qrScanVideo" playsinline muted></video><div class="qr-scanline"></div></div>
+      <div class="msg" id="qrScanMsg" style="text-align:center"></div>
+    </div>
+  </div>
+
   <!-- Panneau de notifications (ouvert par la cloche) -->
   <div id="notifPanel" class="hidden">
     <div class="notif-card">
@@ -1640,7 +1748,7 @@
 
       <!-- ---------------- Onglet LIEUX SÛRS ---------------- -->
       <div class="tab-panel hidden" data-panel="lieux">
-        <h1>Lieux sûrs</h1>
+        <h1 data-i18n="places.title">Lieux sûrs</h1>
         <p class="muted" style="margin-top:0">Les meilleurs spots pour se retrouver ☕ Check-in et grimpe au classement 🏆</p>
         <div class="search" style="margin-top:.2rem"><span class="ico">🔍</span><input id="cafeSearch" type="text" placeholder="Rechercher un lieu ou une ville…" /></div>
         <!-- Catégories en tuiles colorées (déclenchent les filtres ci-dessous) -->
@@ -1665,13 +1773,13 @@
 
         <!-- Vue principale (sous-onglets) -->
         <div id="matesHome" class="mates-view">
-          <h1>Mes Mates</h1>
-          <div class="mates-stat stat-click" id="matesStatBtn" title="Voir mes connexions"><b id="matesCount">0</b><span>Mates de confiance 🛡️ ›</span></div>
+          <h1 data-i18n="mates.title">Mes Mates</h1>
+          <div class="mates-stat stat-click" id="matesStatBtn" title="Voir mes connexions"><b id="matesCount">0</b><span data-i18n="mates.trusted">Mates de confiance 🛡️ ›</span></div>
 
           <div class="mseg">
-            <button data-mseg="messages" class="active">💬 Messages<span class="segb hidden" id="segMsg"></span></button>
-            <button data-mseg="discover">🔍 Découvrir</button>
-            <button data-mseg="requests">📨 Demandes<span class="segb hidden" id="segReq"></span></button>
+            <button data-mseg="messages" class="active"><span data-i18n="mates.messages">💬 Messages</span><span class="segb hidden" id="segMsg"></span></button>
+            <button data-mseg="discover" data-i18n="mates.discover">🔍 Découvrir</button>
+            <button data-mseg="requests"><span data-i18n="mates.requests">📨 Demandes</span><span class="segb hidden" id="segReq"></span></button>
           </div>
 
           <!-- Sous-onglet : Messages -->
@@ -1684,9 +1792,10 @@
             <div class="card">
               <div class="search"><span class="ico">🔍</span><input id="travSearch" type="text" placeholder="Rechercher par pseudo ou ville…" /></div>
               <div class="chips wrap" id="travFilters" style="margin-bottom:.5rem">
-                <button class="chip" data-filter="verified">Vérifiés</button>
-                <button class="chip" data-filter="city">Même ville</button>
-                <button class="chip" data-filter="affinity">Affinité 50%+</button>
+                <button class="chip" data-filter="verified" data-i18n="filter.verified">Vérifiés</button>
+                <button class="chip" data-filter="active" data-i18n="filter.active">🟢 Actifs</button>
+                <button class="chip" data-filter="city" data-i18n="filter.city">Même ville</button>
+                <button class="chip" data-filter="affinity" data-i18n="filter.affinity">Affinité 50%+</button>
               </div>
               <details id="advFilters" style="margin-bottom:.7rem">
                 <summary style="cursor:pointer;font-size:.85rem;font-weight:700;color:var(--retro-teal)">🔎 Filtres avancés</summary>
@@ -1751,6 +1860,7 @@
             <div class="dh-body"><div class="dh-name" id="tpName">—</div><div class="dh-city" id="tpCity">📍 —</div></div>
           </div>
           <div id="tpDemoBanner" class="demo-banner" style="display:none">🤖 Profil de <b>démonstration</b> (compte IA) — pour découvrir l'app, ce n'est pas un vrai voyageur.</div>
+          <div id="tpSpot" style="margin:-.2rem 0 .8rem;display:none"></div>
           <div class="dstats" style="margin-bottom:.8rem">
             <div class="dstat"><b id="tpCompat">—</b><span>Compatibilité ❤️</span></div>
             <div class="dstat"><b id="tpMates">0</b><span>Mates 🛡️</span></div>
@@ -1766,6 +1876,13 @@
             <div class="section-head" style="margin-bottom:.4rem"><h3 style="margin:0">À propos</h3><span class="badge no" id="tpVerif">Non vérifié</span></div>
             <p class="muted" id="tpBio" style="line-height:1.5">—</p>
             <div class="hashtags" id="tpTags"></div>
+          </div>
+          <div class="card" id="tpVouchCard" style="display:none">
+            <div class="vouch-head"><h3 style="margin:0" data-i18n="vouch.title">🟢 Recommandé par des Mates</h3><b id="tpVouchCount" style="color:var(--ok)">0</b></div>
+            <p class="te-sub" style="margin:.3rem 0 0" id="tpVouchSub" data-i18n="vouch.sub">Des voyageurs de confiance se portent garants de cette personne.</p>
+            <div class="vouch-row" id="tpVouchRow"></div>
+            <button class="btn-accent btn-block" id="tpVouchBtn" style="margin-top:.7rem" data-i18n="vouch.cta">🟢 Recommander ce Mate</button>
+            <div class="msg" id="tpVouchMsg" style="text-align:center"></div>
           </div>
           <div class="card" id="tpCompatCard" style="display:none">
             <div class="section-head" style="margin-bottom:.5rem"><h3 style="margin:0">Pourquoi vous matchez ❤️</h3><b id="tpCompatPct" style="color:var(--accent)">—%</b></div>
@@ -1813,7 +1930,7 @@
 
         <!-- Vue principale : SOS bien visible + quelques accès rapides -->
         <div id="secuHome" class="secu-view">
-          <h1>Sécurité</h1>
+          <h1 data-i18n="safety.title">Sécurité</h1>
           <p class="muted" style="margin-top:0">En cas de besoin, un seul geste. On est là pour toi.</p>
 
           <div class="card" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:2rem 1.2rem">
@@ -1891,7 +2008,7 @@
 
       <!-- ---------------- Onglet PROFIL ---------------- -->
       <div class="tab-panel hidden" data-panel="profil">
-        <h1>Mon profil</h1>
+        <h1 data-i18n="profile.title">Mon profil</h1>
 
         <div id="profMain">
         <div class="card" style="position:relative">
@@ -1914,10 +2031,22 @@
           </div>
         </div>
 
+        <div class="card" id="spotCard">
+          <div class="section-head" style="margin-bottom:.3rem"><h3 style="margin:0" data-i18n="spot.title">☀️ Mon spot du jour</h3><a id="spotClear" style="cursor:pointer;display:none" data-i18n="spot.clear">Effacer</a></div>
+          <p class="muted" style="font-size:.82rem;margin:0 0 .5rem" data-i18n="spot.sub">Dis où tu traînes aujourd'hui — visible 24 h, façon story.</p>
+          <div id="spotCurrent" style="display:none;margin-bottom:.6rem"></div>
+          <div class="spot-emoji-pick" id="spotEmojiPick"></div>
+          <div class="spot-compose">
+            <input id="spotInput" type="text" maxlength="60" placeholder="Ex : Café cosy à Lisbonne ☕" data-i18n-ph="spot.ph" />
+            <button class="btn-primary" id="spotSave" data-i18n="spot.save">Publier</button>
+          </div>
+          <div class="msg" id="spotMsg" style="text-align:center"></div>
+        </div>
+
         <div class="card" id="bffCard" style="display:none"></div>
 
         <div class="mseg">
-          <button data-pseg="edit" class="active">Mon profil</button>
+          <button data-pseg="edit" class="active" data-i18n="prof.seg.edit">Mon profil</button>
           <button data-pseg="checkins">Check-ins</button>
           <button data-pseg="premium">Premium ✨</button>
           <button data-pseg="admin" id="adminSegBtn" style="display:none">Admin 🛡️</button>
@@ -2193,9 +2322,30 @@
         </div><!-- /profMain -->
 
         <div class="card hidden" id="settingsCard">
-          <button class="backbtn" id="settingsBack" style="margin-bottom:.6rem">‹ Retour</button>
-          <h3 style="margin-top:0">⚙️ Paramètres du compte</h3>
-          <label>Nouvel email</label>
+          <button class="backbtn" id="settingsBack" style="margin-bottom:.6rem" data-i18n="back">‹ Retour</button>
+          <h3 style="margin-top:0" data-i18n="set.title">⚙️ Paramètres du compte</h3>
+
+          <label style="margin-top:.2rem" data-i18n="set.lang">🌍 Langue / Language</label>
+          <div class="lang-seg" id="langSeg">
+            <button type="button" data-lang="fr">🇫🇷 Français</button>
+            <button type="button" data-lang="en">🇬🇧 English</button>
+          </div>
+
+          <div class="set-toggle" style="margin-top:.6rem">
+            <div><div class="st-lbl" data-i18n="set.haptics">Vibrations (haptique)</div><div class="st-sub" data-i18n="set.hapticsSub">Petit retour vibrant sur les actions clés</div></div>
+            <label class="switch"><input type="checkbox" id="hapticsToggle"><span class="sl"></span></label>
+          </div>
+          <div class="set-toggle">
+            <div><div class="st-lbl" data-i18n="set.presence">Afficher ma présence</div><div class="st-sub" data-i18n="set.presenceSub">« Actif récemment » sur ton avatar</div></div>
+            <label class="switch"><input type="checkbox" id="presenceToggle" checked><span class="sl"></span></label>
+          </div>
+          <div class="row" style="margin-top:.5rem">
+            <button class="btn-accent" id="showQrBtn" data-i18n="set.myQr">🪪 Mon QR</button>
+            <button class="btn-ghost" id="scanQrBtn" data-i18n="set.scanQr">📷 Scanner</button>
+          </div>
+          <hr>
+
+          <label data-i18n="set.newEmail">Nouvel email</label>
           <input id="setEmail" type="email" placeholder="nouvel@email.com" />
           <button class="btn-accent btn-block" id="saveEmailBtn" style="margin-top:.4rem">Changer l'email</button>
           <label style="margin-top:1rem">Nouveau mot de passe</label>
@@ -2211,7 +2361,7 @@
 
         <!-- Vue principale : Jeux & Quêtes -->
         <div id="jeuxHome" class="jeux-view">
-          <h1>Jeux &amp; Quêtes</h1>
+          <h1 data-i18n="games.title">Jeux &amp; Quêtes</h1>
           <p class="muted" style="margin-top:0">Relève des défis, gagne des badges et débloque des coupons.</p>
           <!-- Navigation rapide en tuiles colorées -->
           <div class="cat-row" id="jeuxNav">
@@ -2305,12 +2455,12 @@
 
     <!-- ---------------- Barre de navigation (bas) ---------------- -->
     <nav class="bottom-nav">
-      <button data-tab="accueil" class="active"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span class="nav-lbl">Accueil</span></button>
-      <button data-tab="lieux"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg><span class="nav-lbl">Lieux</span></button>
-      <button data-tab="jeux"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z"/></svg><span class="nav-lbl">Jeux</span><span class="navbadge hidden" id="navJeux"></span></button>
-      <button data-tab="connexions"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2"/><path d="M3.6 19a5.5 5.5 0 0 1 10.8 0"/><path d="M16 7.6a3 3 0 0 1 0 5.6"/><path d="M17.8 19a5 5 0 0 0-3-4.7"/></svg><span class="nav-lbl">Mates</span><span class="navbadge hidden" id="navMates"></span></button>
-      <button data-tab="securite"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/></svg><span class="nav-lbl">Sécurité</span></button>
-      <button data-tab="profil"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg><span class="nav-lbl">Profil</span></button>
+      <button data-tab="accueil" class="active"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span class="nav-lbl" data-i18n="nav.home">Accueil</span></button>
+      <button data-tab="lieux"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg><span class="nav-lbl" data-i18n="nav.places">Lieux</span></button>
+      <button data-tab="jeux"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z"/></svg><span class="nav-lbl" data-i18n="nav.games">Jeux</span><span class="navbadge hidden" id="navJeux"></span></button>
+      <button data-tab="connexions"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2"/><path d="M3.6 19a5.5 5.5 0 0 1 10.8 0"/><path d="M16 7.6a3 3 0 0 1 0 5.6"/><path d="M17.8 19a5 5 0 0 0-3-4.7"/></svg><span class="nav-lbl" data-i18n="nav.mates">Mates</span><span class="navbadge hidden" id="navMates"></span></button>
+      <button data-tab="securite"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/></svg><span class="nav-lbl" data-i18n="nav.safety">Sécurité</span></button>
+      <button data-tab="profil"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg><span class="nav-lbl" data-i18n="nav.profile">Profil</span></button>
     </nav>
   </section>
 
@@ -2718,6 +2868,7 @@
         ${row("📍", "Check-ins dans des lieux validés", ck, ck > 0)}
         ${row("🛟", "Lieux sûrs différents visités", myDistinctPlaces, myDistinctPlaces > 0)}
         ${row("🤝", "Mates qui te font confiance", mates, mates > 0)}
+        ${row("🟢", "Mates qui te recommandent (vouch)", (window.myVouchCount || 0), (window.myVouchCount || 0) > 0)}
         ${row("🎮", "Quêtes accomplies", "+ points", true)}
         <p class="te-note">Un check-in se valide avec un <b>code affiché sur place</b> : impossible à tricher à distance. Plus tu te montres dans des lieux sûrs et tisses des liens, plus les autres peuvent te faire confiance. 🌍</p>`;
     }
@@ -2779,6 +2930,7 @@
       const cp = $("contactPrefVal"); if (cp) cp.textContent = (data.allow_contact === "connections") ? "Connexions ›" : "Tout le monde ›";
       myBffId = data.bff_id || null;
       renderBff();
+      if (typeof renderSpotComposer === "function") renderSpotComposer();
       if (typeof applyGoldGating === "function") applyGoldGating();
       const goldToggle = $("goldToggleBtn");
       if (goldToggle) { goldToggle.style.display = data.is_admin ? "" : "none"; goldToggle.textContent = iAmGold ? "👁️ Aperçu : mode Gratuit" : "👑 Revenir en vue Gold"; }
@@ -2850,11 +3002,12 @@
       else { el.style.backgroundImage = "none"; el.textContent = (fallbackChar || "?").toUpperCase(); }
     }
     // Markup d'avatar pour les listes (photo si dispo, sinon initiale)
-    function avatarMarkup(name, url, cls) {
+    function avatarMarkup(name, url, cls, online) {
       const c = "avatar" + (cls ? " " + cls : "");
+      const dot = online ? '<span class="pdot" title="Actif récemment"></span>' : "";
       return url
-        ? `<div class="${c}" style="background-image:url('${escapeHtml(url)}')"></div>`
-        : `<div class="${c}">${(name?.[0] || "?").toUpperCase()}</div>`;
+        ? `<div class="${c}" style="background-image:url('${escapeHtml(url)}')">${dot}</div>`
+        : `<div class="${c}">${(name?.[0] || "?").toUpperCase()}${dot}</div>`;
     }
 
     // ---- Upload de la photo de profil vers Supabase Storage ----
@@ -3511,7 +3664,7 @@
       // « Mes connexions » : on ouvre le PROFIL du Mate (compat + trust + bouton message)
       $("myConnectionsList").innerHTML = connectedIds.size
         ? [...connectedIds].map((other) => `<div class="person trav-open" data-profile="${other}" style="cursor:pointer">
-              ${avatarMarkup(nameOf(other), avatarOf(other))}
+              ${avatarMarkup(nameOf(other), avatarOf(other), null, isActive(travelerMap[other]))}
               <div class="info"><div class="name">${escapeHtml(nameOf(other))}</div><div class="meta">Voir le profil ›</div></div>
               <span class="badge ok">✅</span></div>`).join("")
         : emptyState("🛡️", "Aucune connexion pour l'instant", "Trouve des voyageurs de confiance et envoie une demande de connexion.", "Découvrir des Mates", "discover");
@@ -3528,7 +3681,7 @@
               const preview = lm ? ((lm.sender_id === myId ? "Toi : " : "") + lm.content) : "Toucher pour discuter 💬";
               const t = lm ? timeAgo(lm.created_at) : "";
               return `<div class="person conv-open" data-chat="${other}" style="cursor:pointer">
-                ${avatarMarkup(nameOf(other), avatarOf(other))}
+                ${avatarMarkup(nameOf(other), avatarOf(other), null, isActive(travelerMap[other]))}
                 <div class="info"><div class="name">${escapeHtml(nameOf(other))}</div><div class="conv-preview">${escapeHtml(preview)}</div></div>
                 <div style="text-align:right;white-space:nowrap"><div class="muted" style="font-size:.7rem">${t}</div><div class="qarrow">›</div></div></div>`;
             }).join("")
@@ -3625,7 +3778,7 @@
 
     // Liste des voyageurs : recherche + filtres + tri
     let travelersCache = [];
-    const travFilters = { verified: false, city: false, affinity: false };
+    const travFilters = { verified: false, active: false, city: false, affinity: false };
     let travSortKey = "compat";
     function renderTravelers(query) {
       const q = (query || "").trim().toLowerCase();
@@ -3640,6 +3793,7 @@
         })
         .map((p) => ({ p, pct: compatibility(myMatchProfile, p), reasons: matchReasons(myMatchProfile, p) }));
       if (travFilters.verified) list = list.filter((o) => o.p.is_verified);
+      if (travFilters.active) list = list.filter((o) => isActive(o.p));
       if (travFilters.city) list = list.filter((o) => sameCityAs(myMatchProfile, o.p));
       if (travFilters.affinity) list = list.filter((o) => o.pct >= 50);
       // Filtres avancés (âge / intention / langue / style) — réservés à Gold 👑
@@ -3674,14 +3828,15 @@
         : y.pct - x.pct);
       $("travelersList").innerHTML = list.length
         ? list.map(({ p, pct, reasons }) => `<div class="person trav-open" data-profile="${p.id}" style="cursor:pointer">
-            ${avatarMarkup(p.username, p.avatar_url)}
+            ${avatarMarkup(p.username, p.avatar_url, null, isActive(p))}
             <div class="info">
               <div class="name">${escapeHtml(p.username || 'Voyageur')} ${p.is_verified ? '<span class="badge ok">vérifié</span>' : ''}</div>
-              <div class="meta">${escapeHtml(p.city || '')} · score ${p.trust_score ?? 0}</div>
+              <div class="meta">${escapeHtml(p.city || '')} · score ${p.trust_score ?? 0}${isActive(p) ? ' · <span style="color:var(--ok);font-weight:700">'+ t('presence.active') +'</span>' : ''}</div>
+              ${spotChipHtml(p)}
               ${reasons.length ? `<div>${reasons.map((rr) => `<span class="afn">${escapeHtml(rr)}</span>`).join("")}</div>` : ""}
             </div>
             <span class="compat ${compatTier(pct)}">❤️ ${pct}%</span></div>`).join("")
-        : (q || travFilters.verified || travFilters.city || travFilters.affinity || advActive
+        : (q || travFilters.verified || travFilters.active || travFilters.city || travFilters.affinity || advActive
             ? emptyState("🔍", "Aucun voyageur trouvé", "Essaie d'élargir tes filtres ou de modifier ta recherche.")
             : '<p class="muted">Découvre nos voyageurs ci-dessus 🌍 Pour trouver une vraie personne, tape son pseudo dans la recherche.</p>');
       $("travelersList").querySelectorAll("[data-profile]").forEach((el) =>
@@ -3737,6 +3892,10 @@
           msg.style.color = error ? "var(--danger)" : "var(--ok)";
           msg.textContent = error ? "Erreur : " + error.message : "Connexion acceptée ✅";
           if (!error) flashOk(msg);
+        }
+        if (!error) {
+          const reqItem = (pendingRequestsList || []).find((r) => r.connId === connId);
+          if (typeof onNewMatch === "function") onNewMatch(reqItem && reqItem.fromId);
         }
         await loadConnections();
       });
@@ -4207,7 +4366,9 @@
         const q = allQuests.find((x) => (x.title || "") === title);
         if (q) questBtn = `<button class="msg-quest" data-qview="${escapeHtml(q.key)}">▶ Voir la quête</button>`;
       }
-      return `<div class="bubble ${mine ? "me" : "them"}" data-mid="${m.id}"><span class="bubble-txt">${escapeHtml(m.content)}</span>${questBtn}<span class="bubble-time">${msgTime(m.created_at)}</span>${act}</div>`;
+      const trLbl = (typeof t === "function") ? t("chat.translate") : "Traduire";
+      const trBtn = (m.content || "").trim() ? `<button class="bubble-translate" data-tr="1">🌐 ${trLbl}</button>` : "";
+      return `<div class="bubble ${mine ? "me" : "them"}" data-mid="${m.id}"><span class="bubble-txt">${escapeHtml(m.content)}</span>${questBtn}<span class="bubble-time">${msgTime(m.created_at)}</span>${trBtn}${act}</div>`;
     }
     // Étiquette de jour pour les séparateurs du chat (« Aujourd'hui », « Hier », sinon la date).
     function chatDayLabel(iso) {
@@ -4230,6 +4391,8 @@
     }
     // Éditer / supprimer ses propres messages (délégation sur le conteneur)
     $("chatBody").addEventListener("click", async (e) => {
+      const tr = e.target.closest(".bubble-translate");
+      if (tr) { if (typeof translateBubble === "function") translateBubble(tr.closest(".bubble"), tr); return; }
       const qv = e.target.closest(".msg-quest");
       if (qv) {
         goToTab("jeux");
@@ -4299,7 +4462,10 @@
       const name = p.username || "Voyageur";
       $("chatName").textContent = name + ((p.is_demo || String(otherUserId).startsWith("ia-")) ? " 🤖" : "");
       setAvatarEl($("chatAvatar"), p.avatar_url, name[0] || "?");
-      $("chatStatus").textContent = (p.is_demo || String(otherUserId).startsWith("ia-")) ? "🤖 Compte démo (IA) · Voir le profil ›" : "Voir le profil ›";
+      const chOnline = typeof isActive === "function" && isActive(p);
+      $("chatAvatar").querySelectorAll(".pdot").forEach((d) => d.remove());
+      if (chOnline) $("chatAvatar").insertAdjacentHTML("beforeend", '<span class="pdot"></span>');
+      $("chatStatus").textContent = (p.is_demo || String(otherUserId).startsWith("ia-")) ? "🤖 Compte démo (IA) · Voir le profil ›" : (chOnline ? (t("presence.active") + " · " + t("chat.seeProfile")) : t("chat.seeProfile"));
       $("chatStatus").dataset.base = $("chatStatus").textContent; // base pour l'indicateur « écrit… »
       $("chatBody").innerHTML = '<p class="muted" style="text-align:center">Chargement…</p>';
       showMatesView("matesChat");
@@ -4556,6 +4722,7 @@
       } else { bffBtn.style.display = "none"; }
       $("tpMsg").textContent = "";
       $("tpBadgesCard").style.display = "none"; $("tpBadges").innerHTML = "";
+      if (typeof renderTravelerExtras === "function") renderTravelerExtras(p);
       showMatesView("matesProfile");
       // Badges du voyageur (chargés en arrière-plan)
       const { data: badges } = await db.from("user_badges").select("badge_key,name,emoji").eq("user_id", p.id);
@@ -5918,6 +6085,406 @@
       const next = document.body.classList.contains("theme-dusk") ? "day" : "dusk";
       localStorage.setItem("sm_theme", next); applyTheme(next);
     });
+
+    /* ====================================================================
+       NOUVEAUTÉS sociales (session 14)
+       i18n FR/EN · présence · vouch · traduction · match · haptique ·
+       pull-to-refresh · QR de profil · statut éphémère « spot du jour ».
+       Tout est additif : aucune fonction existante n'est remplacée.
+       ==================================================================== */
+
+    // -------------------- 1) i18n FR / EN --------------------
+    const I18N = {
+      fr: {
+        "back": "‹ Retour",
+        "nav.home": "Accueil", "nav.places": "Lieux", "nav.games": "Jeux", "nav.mates": "Mates", "nav.safety": "Sécurité", "nav.profile": "Profil",
+        "mates.title": "Mes Mates", "mates.trusted": "Mates de confiance 🛡️ ›", "mates.messages": "💬 Messages", "mates.discover": "🔍 Découvrir", "mates.requests": "📨 Demandes",
+        "places.title": "Lieux sûrs", "profile.title": "Mon profil", "safety.title": "Sécurité", "games.title": "Jeux & Quêtes",
+        "prof.seg.edit": "Mon profil",
+        "filter.verified": "Vérifiés", "filter.active": "🟢 Actifs", "filter.city": "Même ville", "filter.affinity": "Affinité 50%+",
+        "set.title": "⚙️ Paramètres du compte", "set.lang": "🌍 Langue / Language", "set.haptics": "Vibrations (haptique)", "set.hapticsSub": "Petit retour vibrant sur les actions clés",
+        "set.presence": "Afficher ma présence", "set.presenceSub": "« Actif récemment » sur ton avatar", "set.myQr": "🪪 Mon QR", "set.scanQr": "📷 Scanner", "set.newEmail": "Nouvel email",
+        "presence.active": "Actif récemment",
+        "chat.translate": "Traduire", "chat.seeProfile": "Voir le profil ›", "tr.loading": "Traduction…", "tr.error": "Traduction indisponible", "tr.from": "Traduit",
+        "vouch.title": "🟢 Recommandé par des Mates", "vouch.sub": "Des voyageurs de confiance se portent garants de cette personne.", "vouch.subEmpty": "Sois le premier à recommander ce Mate de confiance.", "vouch.cta": "🟢 Recommander ce Mate", "vouch.done": "✅ Recommandé", "vouch.needConnect": "Connecte-toi d'abord pour recommander", "vouch.none": "Aucune recommandation pour l'instant", "vouch.added": "Recommandation ajoutée 🟢", "vouch.removed": "Recommandation retirée",
+        "match.title": "C'est un match !", "match.sub": "Toi et {name} êtes connectés 🎉", "match.message": "💬 Envoyer un message", "match.later": "Plus tard",
+        "spot.title": "☀️ Mon spot du jour", "spot.clear": "Effacer", "spot.sub": "Dis où tu traînes aujourd'hui — visible 24 h, façon story.", "spot.ph": "Ex : Café cosy à Lisbonne ☕", "spot.save": "Publier", "spot.saved": "Spot du jour publié ☀️", "spot.cleared": "Spot du jour effacé", "spot.need": "Écris d'abord ton spot du jour.", "spot.live": "En ligne 24 h",
+        "qr.title": "🪪 Mon QR SunMates", "qr.sub": "Fais-le scanner à un voyageur rencontré en vrai pour vous connecter en un instant.", "qr.scanTitle": "📷 Scanner un QR", "qr.scanSub": "Vise le QR SunMates d'un autre voyageur.", "qr.self": "C'est ton propre QR 🙂", "qr.notfound": "Profil introuvable.", "qr.found": "Profil de {name} ouvert 🪪", "qr.noCam": "Scanner indisponible sur cet appareil.", "qr.camErr": "Accès caméra refusé.",
+        "ptr.pull": "↓", "ptr.release": "↑"
+      },
+      en: {
+        "back": "‹ Back",
+        "nav.home": "Home", "nav.places": "Places", "nav.games": "Games", "nav.mates": "Mates", "nav.safety": "Safety", "nav.profile": "Profile",
+        "mates.title": "My Mates", "mates.trusted": "Trusted Mates 🛡️ ›", "mates.messages": "💬 Messages", "mates.discover": "🔍 Discover", "mates.requests": "📨 Requests",
+        "places.title": "Safe places", "profile.title": "My profile", "safety.title": "Safety", "games.title": "Games & Quests",
+        "prof.seg.edit": "My profile",
+        "filter.verified": "Verified", "filter.active": "🟢 Active", "filter.city": "Same city", "filter.affinity": "Affinity 50%+",
+        "set.title": "⚙️ Account settings", "set.lang": "🌍 Language / Langue", "set.haptics": "Vibrations (haptics)", "set.hapticsSub": "A little buzz on key actions",
+        "set.presence": "Show my presence", "set.presenceSub": "“Active recently” on your avatar", "set.myQr": "🪪 My QR", "set.scanQr": "📷 Scan", "set.newEmail": "New email",
+        "presence.active": "Active recently",
+        "chat.translate": "Translate", "chat.seeProfile": "See profile ›", "tr.loading": "Translating…", "tr.error": "Translation unavailable", "tr.from": "Translated",
+        "vouch.title": "🟢 Vouched by Mates", "vouch.sub": "Trusted travellers vouch for this person.", "vouch.subEmpty": "Be the first to vouch for this trusted Mate.", "vouch.cta": "🟢 Vouch for this Mate", "vouch.done": "✅ Vouched", "vouch.needConnect": "Connect first to vouch", "vouch.none": "No recommendations yet", "vouch.added": "Vouch added 🟢", "vouch.removed": "Vouch removed",
+        "match.title": "It's a match!", "match.sub": "You and {name} are connected 🎉", "match.message": "💬 Send a message", "match.later": "Later",
+        "spot.title": "☀️ My spot of the day", "spot.clear": "Clear", "spot.sub": "Share where you're hanging out today — visible for 24h, like a story.", "spot.ph": "e.g. Cosy café in Lisbon ☕", "spot.save": "Post", "spot.saved": "Spot of the day posted ☀️", "spot.cleared": "Spot of the day cleared", "spot.need": "Write your spot of the day first.", "spot.live": "Live for 24h",
+        "qr.title": "🪪 My SunMates QR", "qr.sub": "Let a traveller you meet in person scan it to connect instantly.", "qr.scanTitle": "📷 Scan a QR", "qr.scanSub": "Point at another traveller's SunMates QR.", "qr.self": "That's your own QR 🙂", "qr.notfound": "Profile not found.", "qr.found": "Opened {name}'s profile 🪪", "qr.noCam": "Scanner not available on this device.", "qr.camErr": "Camera access denied.",
+        "ptr.pull": "↓", "ptr.release": "↑"
+      }
+    };
+    let currentLang = localStorage.getItem("sm_lang") || "fr";
+    function t(key) { return (I18N[currentLang] && I18N[currentLang][key]) || I18N.fr[key] || key; }
+    function applyI18n() {
+      document.querySelectorAll("[data-i18n]").forEach((el) => { const k = el.getAttribute("data-i18n"); const v = t(k); if (v) el.textContent = v; });
+      document.querySelectorAll("[data-i18n-ph]").forEach((el) => { const v = t(el.getAttribute("data-i18n-ph")); if (v) el.setAttribute("placeholder", v); });
+    }
+    function setLang(lang) {
+      currentLang = (lang === "en") ? "en" : "fr";
+      localStorage.setItem("sm_lang", currentLang);
+      document.documentElement.lang = currentLang;
+      applyI18n();
+      document.querySelectorAll("#langSeg [data-lang]").forEach((b) => b.classList.toggle("active", b.dataset.lang === currentLang));
+      // Re-rendu des vues dynamiques pour appliquer la langue sans recharger
+      try { if (typeof renderTravelers === "function") renderTravelers($("travSearch") ? $("travSearch").value : ""); } catch (e) {}
+      try { if (typeof renderTrustExplain === "function") renderTrustExplain(); } catch (e) {}
+      try { if (currentTravelerId && typeof renderTravelerExtras === "function" && travelerMap[currentTravelerId]) renderTravelerExtras(travelerMap[currentTravelerId]); } catch (e) {}
+      try { renderSpotComposer(); } catch (e) {}
+    }
+    document.querySelectorAll("#langSeg [data-lang]").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
+
+    // -------------------- 2) Présence « actif récemment » --------------------
+    const PRESENCE_WINDOW = 10 * 60 * 1000; // actif si vu il y a moins de 10 min
+    function isActive(p) {
+      if (!p || !p.last_seen_at) return false;
+      const d = new Date(p.last_seen_at); if (isNaN(d)) return false;
+      return (Date.now() - d.getTime()) < PRESENCE_WINDOW;
+    }
+    let _presenceTimer = null;
+    function presenceEnabled() { return localStorage.getItem("sm_presence") !== "0"; }
+    async function touchPresence() { try { if (presenceEnabled()) await db.rpc("touch_presence"); } catch (e) {} }
+    function startPresence() {
+      stopPresence();
+      touchPresence();
+      _presenceTimer = setInterval(touchPresence, 60 * 1000);
+    }
+    function stopPresence() { if (_presenceTimer) { clearInterval(_presenceTimer); _presenceTimer = null; } }
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) touchPresence(); });
+
+    // -------------------- 3) Statut éphémère « spot du jour » --------------------
+    const SPOT_WINDOW = 24 * 60 * 60 * 1000;
+    const SPOT_EMOJIS = ["☀️", "☕", "🏖️", "🍻", "🥾", "🎉", "🍕", "🌿", "🎒", "📸", "🌅", "🛶"];
+    let selectedSpotEmoji = "☀️";
+    function isSpotActive(p) {
+      if (!p || !p.status_text || !p.status_at) return false;
+      const d = new Date(p.status_at); if (isNaN(d)) return false;
+      return (Date.now() - d.getTime()) < SPOT_WINDOW;
+    }
+    function spotChipHtml(p) {
+      if (!isSpotActive(p)) return "";
+      return `<div style="margin-top:.3rem"><span class="spot-chip"><span class="se">${escapeHtml(p.status_emoji || "☀️")}</span><span class="stxt">${escapeHtml(p.status_text)}</span></span></div>`;
+    }
+    function renderSpotComposer() {
+      const pick = $("spotEmojiPick"); if (!pick) return;
+      pick.innerHTML = SPOT_EMOJIS.map((e) => `<button type="button" data-spotemoji="${e}" class="${e === selectedSpotEmoji ? "active" : ""}">${e}</button>`).join("");
+      pick.querySelectorAll("[data-spotemoji]").forEach((b) => b.addEventListener("click", () => { selectedSpotEmoji = b.dataset.spotemoji; pick.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b)); }));
+      const cur = $("spotCurrent"), clr = $("spotClear");
+      if (myProfile && isSpotActive(myProfile)) {
+        selectedSpotEmoji = myProfile.status_emoji || selectedSpotEmoji;
+        pick.querySelectorAll("[data-spotemoji]").forEach((x) => x.classList.toggle("active", x.dataset.spotemoji === selectedSpotEmoji));
+        if (cur) { cur.style.display = ""; cur.innerHTML = `<span class="spot-chip"><span class="se">${escapeHtml(myProfile.status_emoji || "☀️")}</span><span class="stxt">${escapeHtml(myProfile.status_text)}</span></span> <span class="muted" style="font-size:.72rem">· ${t("spot.live")}</span>`; }
+        if ($("spotInput") && !$("spotInput").value) $("spotInput").value = myProfile.status_text;
+        if (clr) clr.style.display = "";
+      } else {
+        if (cur) cur.style.display = "none";
+        if (clr) clr.style.display = "none";
+      }
+    }
+    async function saveSpot() {
+      const inp = $("spotInput"), msg = $("spotMsg"); if (!inp) return;
+      const text = inp.value.trim();
+      if (!text) { msg.style.color = "var(--danger)"; msg.textContent = t("spot.need"); return; }
+      await once("spot:save", async () => {
+        const at = new Date().toISOString();
+        const { error } = await db.from("profiles").update({ status_text: text, status_emoji: selectedSpotEmoji, status_at: at }).eq("id", myUserId);
+        if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; return; }
+        if (myProfile) { myProfile.status_text = text; myProfile.status_emoji = selectedSpotEmoji; myProfile.status_at = at; }
+        if (travelerMap[myUserId]) Object.assign(travelerMap[myUserId], { status_text: text, status_emoji: selectedSpotEmoji, status_at: at });
+        msg.style.color = "var(--ok)"; msg.textContent = t("spot.saved"); vibrate(25);
+        renderSpotComposer();
+      });
+    }
+    async function clearSpot() {
+      await once("spot:clear", async () => {
+        const { error } = await db.from("profiles").update({ status_text: null, status_emoji: null, status_at: null }).eq("id", myUserId);
+        if (error) return;
+        if (myProfile) { myProfile.status_text = null; myProfile.status_emoji = null; myProfile.status_at = null; }
+        if ($("spotInput")) $("spotInput").value = "";
+        const msg = $("spotMsg"); if (msg) { msg.style.color = "var(--muted)"; msg.textContent = t("spot.cleared"); }
+        renderSpotComposer();
+      });
+    }
+    if ($("spotSave")) $("spotSave").addEventListener("click", saveSpot);
+    if ($("spotClear")) $("spotClear").addEventListener("click", clearSpot);
+
+    // -------------------- 4) Vouch « Recommandé par X Mates » --------------------
+    async function renderTravelerExtras(p) {
+      if (!p) return;
+      // Présence + spot (chips sous le bandeau)
+      const sp = $("tpSpot");
+      let chips = "";
+      if (isActive(p)) chips += `<span class="spot-chip" style="background:rgba(34,197,94,.14);border-color:rgba(34,197,94,.3)"><span class="se">🟢</span><span class="stxt">${t("presence.active")}</span></span> `;
+      if (isSpotActive(p)) chips += `<span class="spot-chip"><span class="se">${escapeHtml(p.status_emoji || "☀️")}</span><span class="stxt">${escapeHtml(p.status_text)}</span></span>`;
+      if (sp) { sp.innerHTML = chips; sp.style.display = chips ? "" : "none"; }
+      // Présence sur le bandeau (anneau)
+      const hero = $("tpHero"); if (hero) hero.classList.toggle("spot-ring", isSpotActive(p));
+      // Vouch
+      const card = $("tpVouchCard"); if (!card) return;
+      if (String(p.id).startsWith("ia-")) { card.style.display = "none"; return; }
+      card.style.display = "";
+      const btn = $("tpVouchBtn"), msgEl = $("tpVouchMsg");
+      if (msgEl) msgEl.textContent = "";
+      const isSelf = p.id === myUserId, connected = connectedIds.has(p.id);
+      if (isSelf) { btn.style.display = "none"; }
+      else { btn.style.display = ""; if (!connected) { btn.disabled = true; btn.style.opacity = ".6"; btn.textContent = t("vouch.needConnect"); } else { btn.disabled = false; btn.style.opacity = "1"; btn.textContent = t("vouch.cta"); } }
+      $("tpVouchRow").innerHTML = '<span class="muted" style="font-size:.82rem">…</span>';
+      try {
+        const { data } = await db.from("vouches").select("voucher").eq("vouchee", p.id);
+        const rows = data || [];
+        $("tpVouchCount").textContent = rows.length;
+        if (!isSelf && connected) btn.textContent = rows.some((r) => r.voucher === myUserId) ? t("vouch.done") : t("vouch.cta");
+        const vs = rows.slice(0, 6).map((r) => travelerMap[r.voucher]).filter(Boolean);
+        let html = vs.map((v) => avatarMarkup(v.username, v.avatar_url, null, isActive(v))).join("");
+        const more = rows.length - vs.length;
+        if (more > 0) html += `<span class="vouch-more">+${more}</span>`;
+        if (!rows.length) html = `<span class="muted" style="font-size:.82rem">${t("vouch.none")}</span>`;
+        $("tpVouchRow").innerHTML = html;
+        if ($("tpVouchSub")) $("tpVouchSub").textContent = rows.length ? t("vouch.sub") : t("vouch.subEmpty");
+      } catch (e) { $("tpVouchRow").innerHTML = ""; }
+    }
+    async function toggleVouch() {
+      const id = currentTravelerId; if (!id || id === myUserId || !connectedIds.has(id)) return;
+      await once("vouch:" + id, async () => {
+        const { data } = await db.from("vouches").select("id").eq("voucher", myUserId).eq("vouchee", id).maybeSingle();
+        if (data) { await db.from("vouches").delete().eq("id", data.id); toast("🟢", t("vouch.removed")); }
+        else { const { error } = await db.from("vouches").insert({ voucher: myUserId, vouchee: id }); if (!error) { vibrate(30); toast("🟢", t("vouch.added")); } else { const m = $("tpVouchMsg"); if (m) { m.style.color = "var(--danger)"; m.textContent = "Erreur : " + error.message; } } }
+        if (travelerMap[id]) renderTravelerExtras(travelerMap[id]);
+        loadMyVouchCount();
+      });
+    }
+    if ($("tpVouchBtn")) $("tpVouchBtn").addEventListener("click", toggleVouch);
+    async function loadMyVouchCount() {
+      if (!myUserId) return;
+      try { const { data } = await db.rpc("vouch_count", { p_uid: myUserId }); window.myVouchCount = data ?? 0; if (typeof renderTrustExplain === "function") renderTrustExplain(); } catch (e) {}
+    }
+
+    // -------------------- 5) Traduction d'un message (MyMemory) --------------------
+    function guessLang(s) {
+      const x = (s || "").toLowerCase();
+      const fr = (x.match(/\b(le|la|les|un|une|des|et|est|je|tu|vous|nous|bonjour|salut|merci|oui|non|avec|pour|ça|où|quoi|demain|café)\b/g) || []).length + (x.match(/[àâçéèêëîïôûùü]/g) || []).length;
+      const en = (x.match(/\b(the|a|an|and|is|are|you|i|hello|hi|thanks|yes|no|with|for|what|where|this|that|tomorrow|coffee)\b/g) || []).length;
+      return fr >= en ? "fr" : "en";
+    }
+    async function translateBubble(bubble, btn) {
+      if (!bubble) return;
+      const existing = bubble.querySelector(".bubble-tr");
+      if (existing) { existing.remove(); return; } // 2e clic = masque la traduction
+      const txtEl = bubble.querySelector(".bubble-txt"); if (!txtEl) return;
+      const text = txtEl.textContent.trim(); if (!text) return;
+      const src = guessLang(text), tgt = src === "fr" ? "en" : "fr";
+      const tr = document.createElement("div"); tr.className = "bubble-tr";
+      tr.innerHTML = `<span class="tr-flag">${t("tr.loading")}</span>`;
+      bubble.appendChild(tr);
+      try {
+        const r = await fetch("https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text) + "&langpair=" + src + "|" + tgt);
+        const j = await r.json();
+        const out = j && j.responseData && j.responseData.translatedText;
+        if (out) tr.innerHTML = `<span class="tr-flag">${t("tr.from")} · ${src.toUpperCase()}→${tgt.toUpperCase()}</span>${escapeHtml(out)}`;
+        else tr.innerHTML = `<span class="tr-flag">${t("tr.error")}</span>`;
+      } catch (e) { tr.innerHTML = `<span class="tr-flag">${t("tr.error")}</span>`; }
+    }
+
+    // -------------------- 6) « C'est un match ! » --------------------
+    function showMatchOverlay(other) {
+      const me = myProfile || {};
+      const ov = document.createElement("div");
+      ov.className = "act-overlay";
+      ov.innerHTML = `<div class="act-card match-card">
+        <span class="confetti-anchor"></span>
+        <div class="match-emoji">🎉</div>
+        <h3>${t("match.title")}</h3>
+        <p class="muted" style="margin:.2rem 0 0">${t("match.sub").replace("{name}", escapeHtml(other.username || "ton Mate"))}</p>
+        <div class="match-avs">
+          ${avatarMarkup(me.username, me.avatar_url)}
+          <span class="mlink">🤝</span>
+          ${avatarMarkup(other.username, other.avatar_url)}
+        </div>
+        <div class="row">
+          <button class="btn-primary" id="matchMsgBtn">${t("match.message")}</button>
+          <button class="btn-ghost" id="matchLaterBtn">${t("match.later")}</button>
+        </div>
+      </div>`;
+      document.body.appendChild(ov);
+      const close = () => ov.remove();
+      ov.addEventListener("click", (e) => { if (e.target === ov) close(); });
+      ov.querySelector("#matchLaterBtn").addEventListener("click", close);
+      ov.querySelector("#matchMsgBtn").addEventListener("click", () => { close(); if (other.id) { goToTab("connexions"); openChat(other.id); } });
+    }
+    async function onNewMatch(otherId) {
+      vibrate([0, 45, 50, 90]);
+      if (typeof celebrate === "function") celebrate();
+      let other = otherId ? travelerMap[otherId] : null;
+      if (otherId && !other) { try { const { data } = await db.from("profiles").select("*").eq("id", otherId).maybeSingle(); if (data) { other = data; travelerMap[otherId] = data; } } catch (e) {} }
+      showMatchOverlay(other || {});
+    }
+    let _matchChannel = null;
+    function subscribeMatches() {
+      if (_matchChannel || !myUserId) return;
+      _matchChannel = db.channel("matches-rt")
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "matches_connections" }, (payload) => {
+          const m = payload.new;
+          // Je suis le demandeur (user_a) et l'autre vient d'accepter → c'est un match pour moi aussi.
+          if (m && m.status === "accepted" && m.user_a === myUserId && notifyOnce("match:" + m.id)) {
+            onNewMatch(m.user_b);
+            if (typeof loadConnections === "function") loadConnections();
+          }
+        }).subscribe();
+    }
+    function unsubscribeMatches() { if (_matchChannel) { db.removeChannel(_matchChannel); _matchChannel = null; } }
+
+    // -------------------- 7) Haptique + pull-to-refresh --------------------
+    function hapticsOn() { return localStorage.getItem("sm_haptics") !== "0"; }
+    function vibrate(pattern) { try { if (hapticsOn() && navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} }
+    if ($("chatSend")) $("chatSend").addEventListener("click", () => vibrate(12));
+
+    // Pull-to-refresh sur le défilement principal (mobile)
+    function refreshCurrentTab() {
+      const tab = (document.querySelector(".bottom-nav button.active") || {}).dataset && document.querySelector(".bottom-nav button.active").dataset.tab;
+      try {
+        if (tab === "connexions" && typeof loadConnections === "function") loadConnections();
+        else if (tab === "lieux" && typeof loadCafes === "function") loadCafes();
+        else if (tab === "jeux" && typeof loadGameData === "function") loadGameData();
+        else if (tab === "profil" && typeof loadProfile === "function") loadProfile();
+        else { if (typeof loadConnections === "function") loadConnections(); if (typeof buildHomeFeed === "function") buildHomeFeed(); if (typeof loadCheckins === "function") loadCheckins(); }
+      } catch (e) {}
+      vibrate(15);
+    }
+    (function setupPTR() {
+      let ptr = document.createElement("div"); ptr.className = "ptr"; ptr.innerHTML = "<span>↻</span>"; document.body.appendChild(ptr);
+      let startY = 0, pulling = false, dist = 0; const THRESH = 70;
+      window.addEventListener("touchstart", (e) => {
+        if (window.scrollY > 4 || document.querySelector(".homemap-card.fs") || document.querySelector(".act-overlay:not(.hidden)")) { pulling = false; return; }
+        if ($("appView") && $("appView").classList.contains("hidden")) { pulling = false; return; }
+        startY = e.touches[0].clientY; pulling = true; dist = 0;
+      }, { passive: true });
+      window.addEventListener("touchmove", (e) => {
+        if (!pulling) return;
+        dist = e.touches[0].clientY - startY;
+        if (dist > 0 && window.scrollY <= 0) {
+          const d = Math.min(dist, 110);
+          ptr.classList.add("show");
+          ptr.style.transform = "translateX(-50%) translateY(" + (Math.min(d, THRESH) - 44) + "px)";
+        }
+      }, { passive: true });
+      window.addEventListener("touchend", () => {
+        if (!pulling) return; pulling = false;
+        if (dist > THRESH) { ptr.classList.add("spin"); ptr.style.transform = "translateX(-50%) translateY(14px)"; refreshCurrentTab(); setTimeout(() => { ptr.classList.remove("show", "spin"); ptr.style.transform = ""; }, 850); }
+        else { ptr.classList.remove("show"); ptr.style.transform = ""; }
+      });
+    })();
+
+    // -------------------- 8) QR de profil (afficher + scanner) --------------------
+    function mateUrl(id) { return location.origin + location.pathname + "?mate=" + id; }
+    function openQr() {
+      if (!myUserId) return;
+      const box = $("qrBox"); if (!box) return; box.innerHTML = "";
+      if (window.QRCode) { try { new QRCode(box, { text: mateUrl(myUserId), width: 208, height: 208, colorDark: "#1d2230", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); } catch (e) { box.textContent = "QR indisponible"; } }
+      else { box.textContent = "QR indisponible"; }
+      $("qrName").textContent = (myProfile && myProfile.username) || "";
+      $("qrModal").classList.remove("hidden");
+    }
+    if ($("showQrBtn")) $("showQrBtn").addEventListener("click", openQr);
+    if ($("qrClose")) $("qrClose").addEventListener("click", () => $("qrModal").classList.add("hidden"));
+    if ($("qrModal")) $("qrModal").addEventListener("click", (e) => { if (e.target === $("qrModal")) $("qrModal").classList.add("hidden"); });
+
+    let _qrStream = null, _qrRAF = null;
+    function closeQrScan() {
+      if (_qrRAF) { cancelAnimationFrame(_qrRAF); _qrRAF = null; }
+      if (_qrStream) { _qrStream.getTracks().forEach((tr) => tr.stop()); _qrStream = null; }
+      const v = $("qrScanVideo"); if (v) v.srcObject = null;
+      $("qrScanModal").classList.add("hidden");
+    }
+    async function openQrScan() {
+      const msg = $("qrScanMsg"); if (msg) msg.textContent = "";
+      $("qrScanModal").classList.remove("hidden");
+      const v = $("qrScanVideo");
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.jsQR) { if (msg) { msg.style.color = "var(--danger)"; msg.textContent = t("qr.noCam"); } return; }
+      try {
+        _qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        v.srcObject = _qrStream; await v.play();
+        const cv = document.createElement("canvas"); const ctx = cv.getContext("2d", { willReadFrequently: true });
+        const tick = () => {
+          if (!_qrStream) return;
+          if (v.readyState === v.HAVE_ENOUGH_DATA) {
+            cv.width = v.videoWidth; cv.height = v.videoHeight;
+            ctx.drawImage(v, 0, 0, cv.width, cv.height);
+            try {
+              const img = ctx.getImageData(0, 0, cv.width, cv.height);
+              const code = window.jsQR(img.data, img.width, img.height);
+              if (code && code.data) {
+                const mm = code.data.match(/[?&]mate=([0-9a-fA-F-]{10,})/);
+                if (mm) { vibrate(40); closeQrScan(); handleMateLink(mm[1]); return; }
+              }
+            } catch (e) {}
+          }
+          _qrRAF = requestAnimationFrame(tick);
+        };
+        _qrRAF = requestAnimationFrame(tick);
+      } catch (e) { if (msg) { msg.style.color = "var(--danger)"; msg.textContent = t("qr.camErr"); } }
+    }
+    if ($("scanQrBtn")) $("scanQrBtn").addEventListener("click", openQrScan);
+    if ($("qrScanClose")) $("qrScanClose").addEventListener("click", closeQrScan);
+    if ($("qrScanModal")) $("qrScanModal").addEventListener("click", (e) => { if (e.target === $("qrScanModal")) closeQrScan(); });
+
+    async function handleMateLink(id) {
+      if (!id || !myUserId) return;
+      if (id === myUserId) { toast("🪪", t("qr.self")); goToTab("profil"); return; }
+      let p = travelerMap[id];
+      if (!p) { try { const { data } = await db.from("profiles").select("*").eq("id", id).maybeSingle(); if (data) { p = data; travelerMap[id] = data; } } catch (e) {} }
+      if (!p) { toast("🪪", t("qr.notfound")); return; }
+      goToTab("connexions");
+      setTimeout(() => { if (typeof openTravelerProfile === "function") openTravelerProfile(p); }, 120);
+      toast("🪪", t("qr.found").replace("{name}", escapeHtml(p.username || "")));
+    }
+
+    // -------------------- Réglages : haptique + présence --------------------
+    (function initToggles() {
+      const h = $("hapticsToggle"); if (h) { h.checked = hapticsOn(); h.addEventListener("change", () => { localStorage.setItem("sm_haptics", h.checked ? "1" : "0"); if (h.checked) vibrate(20); }); }
+      const pr = $("presenceToggle"); if (pr) { pr.checked = presenceEnabled(); pr.addEventListener("change", () => { localStorage.setItem("sm_presence", pr.checked ? "1" : "0"); if (pr.checked) startPresence(); else stopPresence(); }); }
+    })();
+
+    // -------------------- Initialisation à la connexion --------------------
+    let _smSessUid = null;
+    async function initSessionFeatures(uid) {
+      if (!uid || _smSessUid === uid) return;
+      _smSessUid = uid;
+      startPresence();
+      subscribeMatches();
+      loadMyVouchCount();
+      renderSpotComposer();
+      // Lien profond ?mate=<id> (QR scanné depuis un autre appareil / partagé)
+      try {
+        const mate = new URLSearchParams(location.search).get("mate");
+        if (mate) { history.replaceState(null, "", location.pathname); setTimeout(() => handleMateLink(mate), 900); }
+      } catch (e) {}
+    }
+    function stopSessionFeatures() { _smSessUid = null; stopPresence(); unsubscribeMatches(); }
+    db.auth.onAuthStateChange((_e, session) => {
+      if (session && session.user) setTimeout(() => initSessionFeatures(session.user.id), 700);
+      else stopSessionFeatures();
+    });
+    // Au cas où une session existe déjà au chargement
+    db.auth.getSession().then(({ data }) => { if (data && data.session) setTimeout(() => initSessionFeatures(data.session.user.id), 900); });
+
+    // Applique la langue choisie dès le départ (et rafraîchit le composer du spot)
+    setLang(currentLang);
 
     // ---- Masquer / afficher le fil d'actualité ----
     if (localStorage.getItem("sm_feed_hidden") === "1") { $("homeFeed").classList.add("hidden"); $("feedToggle").textContent = "Afficher"; }
