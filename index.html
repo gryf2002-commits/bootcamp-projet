@@ -2450,7 +2450,7 @@
         <div id="profMain">
         <!-- Bannière de fin d'onboarding (in-page, au lieu d'un pop-up éphémère) -->
         <div class="onb-done hidden" id="onbDoneBanner">
-          <div style="flex:1"><b>🎯 Dernière étape !</b><div style="font-size:.82rem;opacity:.95">Complète ton profil : de meilleurs matchs et plus de points de confiance.</div></div>
+          <div style="flex:1;cursor:pointer" id="onbDoneCta"><b>🎯 Dernière étape !</b><div style="font-size:.82rem;opacity:.95">Choisis ton pseudo et complète ton profil → <b>commencer ›</b></div></div>
           <button id="onbDoneClose" aria-label="Fermer">✕</button>
         </div>
         <div class="card" style="position:relative">
@@ -6656,6 +6656,13 @@
       }, 450);
     }
     { const c = $("onbDoneClose"); if (c) c.addEventListener("click", () => { const b = $("onbDoneBanner"); if (b) show(b, false); }); }
+    // CTA cliquable : emmène direct remplir le pseudo
+    { const cta = $("onbDoneCta"); if (cta) cta.addEventListener("click", () => {
+      const b = $("onbDoneBanner"); if (b) show(b, false);
+      goToTab("profil");
+      if (typeof showProfileSegment === "function") showProfileSegment("edit");
+      setTimeout(() => { const u = $("pUsername"); if (u) { u.scrollIntoView({ behavior: "smooth", block: "center" }); u.focus(); } }, 350);
+    }); }
     (function () {
       const nx = $("tourNext"); if (nx) nx.addEventListener("click", () => showTourStep(tourIdx + 1));
       const pv = $("tourPrev"); if (pv) pv.addEventListener("click", () => { if (tourIdx > 0) showTourStep(tourIdx - 1); });
