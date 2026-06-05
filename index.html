@@ -910,6 +910,20 @@
     .review-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
     .review-stars { color: #FFB52E; font-size: .82rem; letter-spacing: 1px; flex-shrink: 0; }
     .review-txt { font-size: .85rem; color: var(--text); line-height: 1.4; margin-top: .15rem; }
+    /* Faux appel (sortie de secours) — plein écran façon appel entrant */
+    .fakecall { position: fixed; inset: 0; z-index: 99999; background: linear-gradient(180deg,#1b1b24,#0b0b11); color: #fff; display: flex; align-items: center; justify-content: center; }
+    .fakecall.hidden { display: none; }
+    .fc-inner { width: 100%; max-width: 420px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: calc(3.5rem + env(safe-area-inset-top)) 2rem calc(3.5rem + env(safe-area-inset-bottom)); }
+    .fc-top { text-align: center; margin-top: 1.5rem; }
+    .fc-avatar { width: 116px; height: 116px; border-radius: 50%; background: linear-gradient(135deg,#5a5a6e,#33333f); display: grid; place-items: center; font-size: 50px; margin: 0 auto 1.3rem; box-shadow: 0 0 0 6px rgba(255,255,255,.08); }
+    .fc-name { font-size: 2rem; font-weight: 700; }
+    .fc-status { color: rgba(255,255,255,.6); margin-top: .5rem; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+    .fc-actions { display: flex; gap: 3.5rem; }
+    .fc-btn { display: flex; flex-direction: column; align-items: center; gap: .5rem; background: none; border: 0; color: #fff; font-size: .85rem; cursor: pointer; }
+    .fc-btn span { width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; box-shadow: 0 8px 20px rgba(0,0,0,.4); }
+    .fc-btn.accept span { background: #34c759; animation: fcShake 1s ease-in-out infinite; }
+    .fc-btn.decline span { background: #ff3b30; }
+    @keyframes fcShake { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
     .bitem { text-align: center; }
     .hex { width: 62px; height: 62px; margin: 0 auto .4rem; background: var(--accent-grad);
       clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
@@ -1709,6 +1723,24 @@
     </div>
   </div>
 
+  <!-- ===== Faux appel (sortie de secours pour voyageur solo) ===== -->
+  <div id="fakeCall" class="fakecall hidden">
+    <div class="fc-inner">
+      <div class="fc-top">
+        <div class="fc-avatar">📞</div>
+        <div class="fc-name" id="fcName">Maman</div>
+        <div class="fc-status" id="fcStatus">Appel entrant…</div>
+      </div>
+      <div class="fc-actions" id="fcRinging">
+        <button class="fc-btn decline" id="fcDecline"><span>✕</span>Refuser</button>
+        <button class="fc-btn accept" id="fcAccept"><span>📞</span>Répondre</button>
+      </div>
+      <div class="fc-actions hidden" id="fcInCall">
+        <button class="fc-btn decline" id="fcHangup"><span>📵</span>Raccrocher</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== Avis sur un lieu (note ⭐ + commentaires) ===== -->
   <div id="reviewsModal" class="act-overlay hidden">
     <div class="act-card" style="max-width:380px;max-height:86vh;display:flex;flex-direction:column">
@@ -2220,6 +2252,7 @@
             <div class="tile" data-secuquick="circle"><div class="thumb green">🛟</div><div class="t-name">Mon cercle</div><div class="t-meta">Positions partagées</div></div>
             <div class="tile" data-secuquick="lieux"><div class="thumb blue">🏛️</div><div class="t-name">Aide à proximité</div><div class="t-meta">Police · hôpital</div></div>
           </div>
+          <button class="btn-ghost btn-block" id="fakeCallBtn" style="margin-top:.7rem">📞 Simuler un appel — sortie de secours discrète</button>
           <div class="msg" id="secuMsg" style="text-align:center"></div>
         </div>
 
@@ -4118,6 +4151,37 @@
     }
     { const ag = $("allGoodBtn"); if (ag) ag.addEventListener("click", () => markSafetyOk(false)); }
     { const sl = $("sosLogo"); if (sl) sl.addEventListener("click", () => showSecuView("secuHelp")); }
+
+    // ---- Faux appel : sortie de secours discrète (voyageur solo). 100 % local, aucune donnée. ----
+    let fcRingTick = null, fcCallTimer = null, fcSeconds = 0, fcStartTimeout = null;
+    function startFakeCall(name) {
+      $("fcName").textContent = name || "Maman";
+      $("fcStatus").textContent = "Appel entrant…";
+      show($("fcRinging"), true); show($("fcInCall"), false);
+      $("fakeCall").classList.remove("hidden");
+      if (navigator.vibrate) { try { navigator.vibrate([500, 250, 500]); } catch (e) {} fcRingTick = setInterval(() => { try { navigator.vibrate([500, 250, 500]); } catch (e) {} }, 1600); }
+    }
+    function fcStop() {
+      clearInterval(fcRingTick); clearInterval(fcCallTimer); clearTimeout(fcStartTimeout);
+      if (navigator.vibrate) { try { navigator.vibrate(0); } catch (e) {} }
+      $("fakeCall").classList.add("hidden");
+    }
+    { const a = $("fcAccept"); if (a) a.addEventListener("click", () => {
+      clearInterval(fcRingTick); if (navigator.vibrate) { try { navigator.vibrate(0); } catch (e) {} }
+      show($("fcRinging"), false); show($("fcInCall"), true);
+      fcSeconds = 0; $("fcStatus").textContent = "00:00";
+      fcCallTimer = setInterval(() => { fcSeconds++; const m = String(Math.floor(fcSeconds / 60)).padStart(2, "0"); const s = String(fcSeconds % 60).padStart(2, "0"); $("fcStatus").textContent = m + ":" + s; }, 1000);
+    }); }
+    { const d = $("fcDecline"); if (d) d.addEventListener("click", fcStop); }
+    { const h = $("fcHangup"); if (h) h.addEventListener("click", fcStop); }
+    { const b = $("fakeCallBtn"); if (b) b.addEventListener("click", () => {
+      const names = ["Maman", "Papa", "Léa", "Le boulot", "Numéro inconnu"];
+      openPicker("📞 Faux appel — qui t'appelle ?", names.map((n, i) => ({ label: n, id: String(i), avatar: null })), (it) => {
+        closePicker();
+        toast("📞", "Appel simulé dans 5 s… range ton téléphone 😉");
+        fcStartTimeout = setTimeout(() => startFakeCall(it.label), 5000);
+      });
+    }); }
 
     // ====================== CONNEXIONS ENTRE VOYAGEURS ======================
     let connectedIds = new Set(); // ids des Mates déjà connectés (statut accepté)
