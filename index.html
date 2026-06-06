@@ -757,11 +757,14 @@
     .tile:active { transform: scale(.98); }
     .tile .thumb {
       height: 84px; border-radius: 12px; margin-bottom: .55rem;
-      background: var(--accent-grad); display: grid; place-items: center; font-size: 28px;
+      background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), var(--accent-grad);
+      display: grid; place-items: center; font-size: 30px; box-shadow: 0 6px 16px rgba(255,90,77,.22);
+      transition: transform .15s ease;
     }
-    .tile .thumb.green { background: linear-gradient(135deg,#8fe6a6,#34c77b); }
-    .tile .thumb.blue  { background: linear-gradient(135deg,#8ed0ff,#3aa0f0); }
-    .tile .thumb.purp  { background: linear-gradient(135deg,#b9a6ff,#7c5cff); }
+    .tile:hover .thumb { transform: translateY(-2px) scale(1.02); }
+    .tile .thumb.green { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#8fe6a6,#34c77b); box-shadow: 0 6px 16px rgba(52,199,123,.24); }
+    .tile .thumb.blue  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#8ed0ff,#3aa0f0); box-shadow: 0 6px 16px rgba(58,160,240,.24); }
+    .tile .thumb.purp  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#b9a6ff,#7c5cff); box-shadow: 0 6px 16px rgba(124,92,255,.24); }
     .tile .t-name { font-weight: 700; color: var(--ink); font-size: .92rem; }
     .tile .t-meta { color: var(--muted); font-size: .78rem; }
 
@@ -3139,6 +3142,7 @@
       show($("authView"), !loggedIn);
       show($("appView"), loggedIn);
       show($("userBox"), loggedIn);
+      if (loggedIn) window.scrollTo(0, 0); // arrive en haut (on voit le « Bonjour »)
       if (loggedIn) {
         if (_renderedUserId === session.user.id) return; // déjà initialisé pour cet utilisateur -> aucun rechargement (plus de flash)
         _renderedUserId = session.user.id;
