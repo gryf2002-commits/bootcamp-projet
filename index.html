@@ -7804,10 +7804,27 @@
     $("matesListModal").addEventListener("click", (e) => { if (e.target.id === "matesListModal") $("matesListModal").classList.add("hidden"); });
     $("premiumBtn").addEventListener("click", () => { const m = $("premiumMsg"); m.textContent = "Génial ! On te préviendra dès le lancement de Gold 🎉"; });
     // Aperçu de mon profil public (ce que voient les autres)
+    // Profil « live » construit depuis le formulaire → l'aperçu reflète les modifs EN COURS (même non enregistrées).
+    function livePreviewProfile() {
+      const txt = (id) => { const e = $(id); return e && (e.value || "").trim() ? e.value.trim() : null; };
+      const num = (id) => { const v = parseInt(($(id) || {}).value, 10); return isNaN(v) ? null : v; };
+      const arr = (id) => { const v = txt(id); return v ? v.split(",").map((s) => s.trim()).filter(Boolean) : []; };
+      const pr = (typeof getPrompts === "function") ? getPrompts() : [];
+      return Object.assign({}, myProfile, {
+        username: txt("pUsername") || (myProfile && myProfile.username), first_name: txt("pFirstName"), last_name: txt("pLastName"),
+        city: txt("pCity"), bio: txt("pBio"), interests: [...selInterests], languages: [...selLanguages],
+        travel_style: [...selStyles][0] || null, travel_styles: [...selStyles], intent: [...selIntent], pets: [...selPets], music: [...selMusic],
+        birthdate: txt("pBirthdate"), height_cm: num("pHeight"), gender: txt("pGender"), pronouns: txt("pPronouns"), orientation: txt("pOrientation"),
+        relationship_status: txt("pRelationship"), hometown: txt("pHometown"), job_title: txt("pJob"), company: txt("pCompany"), school: txt("pSchool"), education_level: txt("pEducation"),
+        drinking: txt("pDrinking"), smoking: txt("pSmoking"), cannabis: txt("pCannabis"), diet: txt("pDiet"), fitness: txt("pFitness"), zodiac: txt("pZodiac"), personality: txt("pPersonality"),
+        children: txt("pChildren"), religion: txt("pReligion"), favorite_places: arr("pFavPlaces"), bucket_list: txt("pBucket"), instagram: txt("pInstagram"),
+        prompt1_q: pr[0] && pr[0].q, prompt1_a: pr[0] && pr[0].a, prompt2_q: pr[1] && pr[1].q, prompt2_a: pr[1] && pr[1].a, prompt3_q: pr[2] && pr[2].q, prompt3_a: pr[2] && pr[2].a,
+      });
+    }
     $("previewProfileBtn").addEventListener("click", () => {
       if (!myProfile) return;
       goToTab("connexions");              // sinon la fiche s'ouvre dans un onglet caché
-      openTravelerProfile(myProfile);     // = exactement la fiche que voient les autres
+      openTravelerProfile(livePreviewProfile()); // reflète tes modifs en cours (pas seulement le dernier enregistrement)
       ["tpMsgBtn", "tpConnectBtn", "tpChallengeBtn", "tpBffBtn", "tpBlockBtn"].forEach((id) => { const e = $(id); if (e) e.style.display = "none"; });
       const m = $("tpMsg"); m.style.color = "var(--accent)"; m.textContent = "🪪 Aperçu : voici ton profil tel que les autres voyageurs le voient";
       mateProfileBack = () => goToTab("profil");
