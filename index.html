@@ -4007,7 +4007,8 @@
       const pct = Math.min(100, Math.round((filled / total) * 100));
       _lastCompletionPct = pct;
       $("completionFill").style.width = pct + "%";
-      $("completionTxt").textContent = pct >= 100 ? "Profil complété à 100 % 🎉" : ("Profil complété à " + pct + "%");
+      { const enC = (typeof currentLang !== "undefined" && currentLang === "en");
+        $("completionTxt").textContent = pct >= 100 ? (enC ? "Profile 100% complete 🎉" : "Profil complété à 100 % 🎉") : (enC ? ("Profile " + pct + "% complete") : ("Profil complété à " + pct + "%")); }
       // Petite fête quand on ATTEINT 100 % en éditant (pas au chargement).
       if (_completionInit && pct === 100 && !_wasComplete) { if (typeof toast === "function") toast("🎉", "Profil complété à 100 %, bravo !"); if (typeof celebrate === "function") celebrate(); }
       _wasComplete = pct === 100; _completionInit = true;
@@ -8426,6 +8427,15 @@
       "Trouver de l'aide autour de moi": "Find help around me",
       // — Onboarding slide « spots » (reformulée fun) —
       "Tes spots préférés": "Your favourite spots", "Découvre les": "Discover the", "meilleurs spots": "best spots", "de la communauté (cafés, co-livings, bars), avis et notes à l'appui, pour retrouver du monde 🎉": "from the community (cafés, co-livings, bars), backed by reviews and ratings, to meet up with people 🎉",
+      // — Batch 6 : onglet Profil (labels + textes) —
+      "Non vérifié": "Not verified", "Confiance ⓘ": "Trust ⓘ", "Confiance": "Trust", "📤 Partager": "📤 Share",
+      "Touche une section pour la déplier. Pense à": "Tap a section to expand. Remember to", "en bas.": "at the bottom.", "Enregistrer": "Save",
+      "Demander la vérification": "Request verification", "Aperçu de mon profil public": "Preview of my public profile",
+      "Prénom": "First name", "Nom": "Last name", "Pronoms": "Pronouns", "Ville actuelle": "Current city", "Ville d'origine": "Hometown",
+      "Photo de profil": "Profile photo", "📷 Choisir une photo": "📷 Choose a photo", "Téléphone": "Phone", "Niveau d'études": "Education level",
+      "Nom de l'établissement": "Place name", "Nom du contact": "Contact name", "Taille (cm)": "Height (cm)", "Langue parlée": "Spoken language",
+      "Langues parlées": "Spoken languages", "Enfants": "Children", "Avec photo": "With photo", "Métier": "Job", "Emploi": "Job", "Entreprise": "Company",
+      "Centres d'intérêt": "Interests", "Intention": "Intent", "Je suis ici pour": "I'm here to", "Animaux": "Pets", "Musique": "Music",
     };
     const I18N = {
       fr: {
@@ -8533,6 +8543,7 @@
       try { renderSpotComposer(); } catch (e) {}
       try { if (typeof renderSafetyTip === "function") renderSafetyTip(); } catch (e) {}
       try { if (typeof updateStreak === "function") updateStreak(); } catch (e) {}
+      try { if (typeof updateCompletion === "function" && myUserId) updateCompletion(); } catch (e) {}
     }
     document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
 
