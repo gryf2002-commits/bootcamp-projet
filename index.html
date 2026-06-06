@@ -2565,7 +2565,7 @@
               <div class="chips wrap" id="interestChips"></div>
               <label>Langues parlées <span class="lbl-hint">· autant que tu veux</span></label>
               <div class="chips wrap" id="languageChips"></div>
-              <label>Style de voyage <span class="lbl-hint">· choisis-en un seul</span></label>
+              <label>Style de voyage <span class="lbl-hint">· plusieurs possibles</span></label>
               <div class="chips wrap" id="styleChips"></div>
             </div>
           </div>
@@ -3305,7 +3305,8 @@
     const selIntent    = new Set();
     const selPets      = new Set();
     const selMusic     = new Set();
-    let   selStyle = null;
+    let   selStyle = null;          // (déprécié, gardé pour la compat des chips single)
+    const selStyles = new Set();    // style de voyage = multi-choix
     let   myProfile = null; // mon profil complet (utilisé pour le matchmaking)
     let   myBffId = null;   // « BFF du moment » choisi
     let   iAmGold = true;   // tout débloqué par défaut (Gold = aperçu admin, ne pénalise personne)
@@ -3369,7 +3370,7 @@
       if (selInterests.size) filled++;
       if (selLanguages.size) filled++;
       if (selIntent.size) filled++;
-      if (selStyle) filled++;
+      if (selStyles.size) filled++;
       if (getPrompts().some((p) => p.a)) filled++;
       const total = COMPLETION_FIELDS.length + 5;
       const pct = Math.min(100, Math.round((filled / total) * 100));
@@ -3454,10 +3455,10 @@
       selIntent.clear(); (data.intent || []).forEach((x) => selIntent.add(x));
       selPets.clear(); (data.pets || []).forEach((x) => selPets.add(x));
       selMusic.clear(); (data.music || []).forEach((x) => selMusic.add(x));
-      selStyle = data.travel_style || null;
+      selStyles.clear(); (data.travel_styles && data.travel_styles.length ? data.travel_styles : (data.travel_style ? [data.travel_style] : [])).forEach((x) => selStyles.add(x));
       buildChips("interestChips", INTEREST_OPTS, selInterests, false);
       buildChips("languageChips", LANGUAGE_OPTS, selLanguages, false);
-      buildChips("styleChips", STYLE_OPTS, null, true);
+      buildChips("styleChips", STYLE_OPTS, selStyles, false);
       buildChips("intentChips", INTENT_OPTS, selIntent, false, 1);
       buildChips("petsChips", PETS_OPTS, selPets, false);
       buildChips("musicChips", MUSIC_OPTS, selMusic, false);
@@ -3505,7 +3506,7 @@
         id: myUserId,
         username: txt("pUsername"), first_name: txt("pFirstName"), last_name: txt("pLastName"),
         city: txt("pCity"), bio: txt("pBio"),
-        interests: [...selInterests], languages: [...selLanguages], travel_style: selStyle,
+        interests: [...selInterests], languages: [...selLanguages], travel_style: [...selStyles][0] || null,
         intent: [...selIntent], pets: [...selPets], music: [...selMusic],
         birthdate: txt("pBirthdate"), height_cm: num("pHeight"),
         gender: txt("pGender"), pronouns: txt("pPronouns"), orientation: txt("pOrientation"),
@@ -3519,6 +3520,8 @@
         prompt2_q: pr[1].q || null, prompt2_a: pr[1].a || null,
         prompt3_q: pr[2].q || null, prompt3_a: pr[2].a || null,
       });
+      // Style de voyage multi (best-effort : n'échoue pas si la migration 25 n'est pas lancée)
+      try { await db.from("profiles").update({ travel_styles: [...selStyles] }).eq("id", myUserId); } catch (e) {}
       // Téléphone : stocké à part dans profiles_private (privé, RLS propriétaire)
       const { error: errPhone } = await db.from("profiles_private").upsert({
         id: myUserId, phone: $("pPhone").value.trim(), updated_at: new Date().toISOString(),
