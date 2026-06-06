@@ -5351,7 +5351,8 @@
       el.textContent = bits.length ? "· aujourd'hui : " + bits.join(" · ") : "· prêt·e pour de nouvelles aventures 🌞";
     }
     function parcoursStats() {
-      return { ck: myCheckinsRaw.length, q: myQuestRows.filter((r) => r.status === "completed").length, b: myBadges.length, xp: (myProfile && myProfile.xp) || 0 };
+      const trips = (typeof loadTripsDone === "function") ? loadTripsDone().length : 0;
+      return { ck: myCheckinsRaw.length, q: myQuestRows.filter((r) => r.status === "completed").length, b: myBadges.length, xp: (myProfile && myProfile.xp) || 0, trips };
     }
     function openSouvenir() {
       const m = $("souvenirModal"); if (!m) return;
@@ -5361,15 +5362,16 @@
       if (myProfile && myProfile.avatar_url) { av.style.backgroundImage = `url('${myProfile.avatar_url}')`; av.textContent = ""; av.classList.add("has-img"); }
       else { av.style.backgroundImage = ""; av.textContent = (uname[0] || "😎").toUpperCase(); av.classList.remove("has-img"); }
       $("svName").textContent = uname;
-      $("svStats").innerHTML = [["📍", s.ck, "check-ins"], ["🎯", s.q, "quêtes"], ["🏅", s.b, "badges"], ["⭐", s.xp, "XP"]]
-        .map(([e, n, l]) => `<div class="sv-stat"><div class="sv-n">${e} ${n}</div><div class="sv-l">${l}</div></div>`).join("");
+      const svRows = [["📍", s.ck, "check-ins"], ["🎯", s.q, "quêtes"], ["🏅", s.b, "badges"], ["⭐", s.xp, "XP"]];
+      if (s.trips > 0) svRows.push(["🧳", s.trips, s.trips > 1 ? "voyages" : "voyage"]);
+      $("svStats").innerHTML = svRows.map(([e, n, l]) => `<div class="sv-stat"><div class="sv-n">${e} ${n}</div><div class="sv-l">${l}</div></div>`).join("");
       $("svBadges").innerHTML = myBadges.slice(0, 10).map((b) => `<span>${b.emoji || "🏅"}</span>`).join("");
       m.classList.remove("hidden");
     }
     function shareParcours() {
       const s = parcoursStats();
       const name = (myProfile && myProfile.username) || "Moi";
-      const text = `🧭 Mon parcours SunMates — ${name}\n📍 ${s.ck} check-ins · 🎯 ${s.q} quêtes · 🏅 ${s.b} badges · ⭐ ${s.xp} XP\nRejoins-moi sur SunMates ☀️`;
+      const text = `🧭 Mon parcours SunMates — ${name}\n📍 ${s.ck} check-ins · 🎯 ${s.q} quêtes · 🏅 ${s.b} badges · ⭐ ${s.xp} XP${s.trips > 0 ? ` · 🧳 ${s.trips} voyage${s.trips > 1 ? "s" : ""}` : ""}\nRejoins-moi sur SunMates ☀️`;
       if (navigator.share) { navigator.share({ title: "Mon parcours SunMates", text }).catch(() => {}); }
       else if (navigator.clipboard) { navigator.clipboard.writeText(text).then(() => toast("📋", "Parcours copié — colle-le où tu veux !"), () => {}); }
       else toast("🧭", text);
