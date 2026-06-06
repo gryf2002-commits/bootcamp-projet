@@ -1000,7 +1000,15 @@
     .feat-desc { font-size: .78rem; color: var(--muted); margin-top: .12rem; line-height: 1.35; }
     /* Objectifs de la semaine (Jeux) */
     .wg-card { padding: .8rem .9rem; }
-    .wg-head { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: .88rem; margin-bottom: .6rem; }
+    /* Objectifs de la semaine : même DA que la tuile de niveau XP, repliable */
+    .wg-card { background: linear-gradient(135deg, rgba(255,201,60,.13), rgba(255,138,61,.1)); border: 1px solid rgba(201,138,30,.2); }
+    body.theme-dusk .wg-card { background: linear-gradient(135deg, rgba(255,201,60,.11), rgba(255,138,61,.08)); border-color: rgba(255,201,60,.18); }
+    .wg-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; font-weight: 800; font-size: .88rem; margin-bottom: .6rem; cursor: pointer; list-style: none; }
+    .wg-head::-webkit-details-marker { display: none; }
+    .wg-head .wg-count { margin-left: auto; }
+    .wg-chev { color: var(--muted); font-size: .9rem; transition: transform .2s; }
+    details.wg-card[open] .wg-chev { transform: rotate(180deg); }
+    details.wg-card:not([open]) .wg-head { margin-bottom: 0; }
     .wg-count { font-size: .76rem; color: var(--accent); background: var(--accent-soft, rgba(255,170,90,.16)); border-radius: 999px; padding: .1rem .5rem; }
     .wg-goal { display: flex; align-items: center; gap: .6rem; margin-bottom: .55rem; }
     .wg-goal:last-of-type { margin-bottom: 0; }
@@ -5378,8 +5386,8 @@
         const wkKey = "sm_wg_done_" + _weekStart();
         try { if (!localStorage.getItem(wkKey)) { localStorage.setItem(wkKey, "1"); if (typeof toast === "function") toast("🎉", "Objectifs de la semaine bouclés — bravo !"); if (typeof celebrate === "function") celebrate(); } } catch (e) {}
       }
-      box.innerHTML = `<div class="card wg-card">
-        <div class="wg-head"><span>🗓️ Objectifs de la semaine</span><span class="wg-count">${doneCount}/${goals.length}</span></div>
+      box.innerHTML = `<details class="card wg-card" ${doneCount < goals.length ? "open" : ""}>
+        <summary class="wg-head"><span>🗓️ Objectifs de la semaine</span><span class="wg-count">${doneCount}/${goals.length}</span><span class="wg-chev">▾</span></summary>
         ${goals.map((g) => {
           const done = g.cur >= g.max, pct = Math.round((g.cur / g.max) * 100);
           return `<div class="wg-goal${done ? " done" : ""}"${done ? "" : ` data-wggo="${g.go}" style="cursor:pointer"`}>
@@ -5390,7 +5398,7 @@
           </div>`;
         }).join("")}
         ${doneCount === goals.length ? '<div class="wg-alldone">🎉 Semaine parfaite ! Reviens lundi pour de nouveaux objectifs.</div>' : ""}
-      </div>`;
+      </details>`;
       box.querySelectorAll("[data-wggo]").forEach((el) => el.addEventListener("click", () => {
         const g = el.dataset.wggo;
         if (g === "quests") { goToTab("jeux"); if (typeof openJeuxSheet === "function") setTimeout(() => openJeuxSheet("quests"), 80); }
@@ -5576,10 +5584,11 @@
       $("gamesGrid").innerHTML = games.map((g, i) => `
         <div class="gcard" data-qkey="${g.key}">
           <div class="ghead ${headColors[i % 4]}" style="background-image:url('${questImage(g)}')">
+            <span class="gemoji">${g.emoji || "🎮"}</span>
             <span class="grate">+${g.points || 0} XP</span>
             ${myQuestStatus[g.key] === "completed" ? '<span class="gdone">✅ Fait</span>' : ""}
           </div>
-          <div class="gbody"><div class="gname">${g.emoji} ${escapeHtml(g.title)}</div><div class="gcity">${escapeHtml(g.city || "")}</div></div>
+          <div class="gbody"><div class="gname">${escapeHtml(g.title)}</div><div class="gcity">${escapeHtml(g.city || "")}</div></div>
         </div>`).join("");
 
       // Quêtes du jour
