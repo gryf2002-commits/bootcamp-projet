@@ -1043,13 +1043,16 @@
     body.theme-dusk .profile-title { color: #ffce8a; }
     /* Boutique XP */
     .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; }
-    .shop-item { display: flex; flex-direction: column; align-items: center; gap: .3rem; text-align: center;
-      padding: .8rem .5rem; border: 1.5px solid var(--line); border-radius: 14px; background: var(--card);
-      cursor: pointer; transition: border-color .15s, transform .1s; }
+    .shop-item { position: relative; display: flex; flex-direction: column; align-items: center; gap: .35rem; text-align: center;
+      padding: .9rem .55rem; border: 1.5px solid var(--line); border-radius: 16px;
+      background: linear-gradient(180deg, var(--card), var(--cream)); box-shadow: var(--shadow-sm);
+      cursor: pointer; transition: transform .14s cubic-bezier(.2,.8,.3,1), box-shadow .15s, border-color .15s; }
+    .shop-item:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
     .shop-item:active { transform: scale(.97); }
-    .shop-item.on { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(255,126,95,.18); }
+    .shop-item.on { border-color: var(--accent); background: linear-gradient(180deg, rgba(255,201,60,.12), rgba(255,126,95,.1)); box-shadow: 0 0 0 2px rgba(255,126,95,.2), var(--shadow-sm); }
+    .shop-item.on::after { content: "✓"; position: absolute; top: .45rem; right: .55rem; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font-size: .72rem; font-weight: 800; display: grid; place-items: center; }
     .shop-item.locked { opacity: .55; }
-    .shop-ic { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-size: 22px;
+    .shop-ic { width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; font-size: 24px;
       background: var(--accent-soft, rgba(255,170,90,.16)); }
     .shop-name { font-size: .82rem; font-weight: 700; line-height: 1.2; }
     .shop-meta { font-size: .72rem; color: var(--muted); }
