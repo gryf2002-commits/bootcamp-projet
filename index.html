@@ -768,6 +768,9 @@
     .tile .thumb.green { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#8fe6a6,#34c77b); box-shadow: 0 6px 16px rgba(52,199,123,.24); }
     .tile .thumb.blue  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#8ed0ff,#3aa0f0); box-shadow: 0 6px 16px rgba(58,160,240,.24); }
     .tile .thumb.purp  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#b9a6ff,#7c5cff); box-shadow: 0 6px 16px rgba(124,92,255,.24); }
+    .tile .thumb.gold  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.45), rgba(255,255,255,0) 55%), linear-gradient(135deg,#ffd98a,#f0a93a); box-shadow: 0 6px 16px rgba(240,169,58,.26); }
+    .tile .thumb.red   { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#ff8a6b,#e23b2e); box-shadow: 0 6px 16px rgba(226,59,46,.26); }
+    .tile .thumb.teal  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#7fe3d3,#17a99b); box-shadow: 0 6px 16px rgba(23,169,155,.24); }
     .tile .t-name { font-weight: 700; color: var(--ink); font-size: .92rem; }
     .tile .t-meta { color: var(--muted); font-size: .78rem; }
 
@@ -2599,16 +2602,17 @@
             <button class="btn-danger" id="needHelpBtn" style="font-size:1.15rem;padding:1.1rem 1rem;width:100%;max-width:320px">🆘 J'ai besoin d'aide</button>
           </div>
 
-          <!-- Check-in de sécurité : la pastille reste sur l'onglet tant qu'on n'a pas confirmé. -->
-          <div class="card safety-check" id="safetyCheckCard">
+          <!-- « Tout va bien » : masqué par défaut, n'apparaît qu'APRÈS une alerte d'urgence
+               (pour rassurer ses Mates une fois le danger passé). -->
+          <div class="card safety-check" id="safetyCheckCard" style="display:none">
             <div style="flex:1">
-              <div style="font-weight:800;color:var(--ink)">Tout va bien aujourd'hui ?</div>
-              <div class="muted" style="font-size:.8rem">Confirme que tu vas bien — sinon, un geste suffit pour alerter ton cercle.</div>
+              <div style="font-weight:800;color:var(--ink)">Une alerte est en cours</div>
+              <div class="muted" style="font-size:.8rem">Quand tu es en sécurité, préviens ton cercle d'un geste.</div>
             </div>
-            <button class="btn-accent" id="allGoodBtn" style="flex-shrink:0;white-space:nowrap">✅ Tout va bien</button>
+            <button class="btn-accent" id="allGoodBtn" style="flex-shrink:0;white-space:nowrap">✅ Je vais bien</button>
           </div>
 
-          <!-- Conseil sécurité du jour (rotatif) — on-brand, ajoute de la profondeur -->
+          <!-- Conseil sécurité du jour (rotatif, adapté au pays via géoloc) -->
           <div class="card tip-card" id="safetyTip">
             <div class="tip-ic">💡</div>
             <div><div class="tip-title">Conseil sécurité du jour</div><div class="tip-text" id="safetyTipText">—</div></div>
@@ -2616,12 +2620,12 @@
 
           <div class="section-head"><h3>Accès rapides</h3></div>
           <div class="grid2">
-            <div class="tile" data-secuquick="fakecall"><div class="thumb">📞</div><div class="t-name">Faux appel</div><div class="t-meta">Sortie de secours</div></div>
-            <div class="tile" data-secuquick="signal"><div class="thumb">🔦</div><div class="t-name">Signal d'aide</div><div class="t-meta">Se signaler</div></div>
-            <div class="tile" data-secuquick="position"><div class="thumb">📍</div><div class="t-name">Partager ma position</div><div class="t-meta">À mon cercle</div></div>
-            <div class="tile" data-secuquick="emergency"><div class="thumb">🚨</div><div class="t-name">Alerte d'urgence</div><div class="t-meta">Diffuser ma position</div></div>
+            <div class="tile" data-secuquick="fakecall"><div class="thumb purp">📞</div><div class="t-name">Faux appel</div><div class="t-meta">Sortie de secours</div></div>
+            <div class="tile" data-secuquick="signal"><div class="thumb gold">🔦</div><div class="t-name">Signal d'aide</div><div class="t-meta">Se signaler</div></div>
+            <div class="tile" data-secuquick="position"><div class="thumb blue">📍</div><div class="t-name">Partager ma position</div><div class="t-meta">À mon cercle</div></div>
+            <div class="tile" data-secuquick="emergency"><div class="thumb red">🚨</div><div class="t-name">Alerte d'urgence</div><div class="t-meta">Diffuser ma position</div></div>
             <div class="tile" data-secuquick="circle"><div class="thumb green">🛟</div><div class="t-name">Mon cercle</div><div class="t-meta">Positions partagées</div></div>
-            <div class="tile" data-secuquick="lieux"><div class="thumb blue">🏛️</div><div class="t-name">Aide à proximité</div><div class="t-meta">Police · hôpital</div></div>
+            <div class="tile" data-secuquick="lieux"><div class="thumb teal">🏛️</div><div class="t-name">Aide à proximité</div><div class="t-meta">Police · hôpital</div></div>
           </div>
           <button class="btn-ghost btn-block" id="fakeCallBtn" style="display:none"></button>
           <button class="btn-ghost btn-block" id="signalBtn" style="display:none"></button>
@@ -4871,7 +4875,7 @@
             toast(isEmergency ? "🚨" : "📍", okText + " (visible 1 h sur la carte)");
             await loadCircleLocations();
             if (typeof renderHomeMap === "function" && homeLeaf) renderHomeMap();
-            if (!isEmergency && typeof markSafetyOk === "function") markSafetyOk(true); // partager sa position = check-in OK (silencieux)
+            if (isEmergency && typeof setAlertActive === "function") setAlertActive(true); // alerte → carte « Je vais bien » + pastille onglet
             // Badge "Veilleur" au 1er partage de position
             if (typeof allBadgeDefs !== "undefined" && allBadgeDefs.some((b) => b.key === "badge_guardian_helper") && !myBadgeKeys.has("badge_guardian_helper")) {
               const def = allBadgeDefs.find((b) => b.key === "badge_guardian_helper") || {};
@@ -4910,19 +4914,19 @@
 
     $("refreshCircleBtn").addEventListener("click", loadCircleLocations);
 
-    // ---- Check-in de sécurité : pastille sur l'onglet Sécurité tant que l'utilisateur
-    //      n'a pas confirmé « tout va bien » aujourd'hui. Se réarme chaque jour. ----
-    function safetyTodayKey() { const d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
-    function isSafetyOk() { try { return localStorage.getItem("sm_safety_ok") === safetyTodayKey(); } catch (e) { return true; } }
+    // ---- Alerte en cours : après avoir déclenché une alerte d'urgence, la carte
+    //      « Je vais bien » apparaît (+ pastille onglet) pour rassurer son cercle une
+    //      fois en sécurité. Elle disparaît au clic. ----
+    function isAlertActive() { try { return localStorage.getItem("sm_alert_active") === "1"; } catch (e) { return false; } }
     function updateSafetyBadge() {
-      const ok = isSafetyOk();
-      const b = $("navSecu"); if (b) show(b, !ok);
-      const card = $("safetyCheckCard"); if (card) card.style.display = ok ? "none" : "flex";
+      const active = isAlertActive();
+      const b = $("navSecu"); if (b) show(b, active);
+      const card = $("safetyCheckCard"); if (card) card.style.display = active ? "flex" : "none";
     }
+    function setAlertActive(on) { try { localStorage.setItem("sm_alert_active", on ? "1" : "0"); } catch (e) {} updateSafetyBadge(); }
     function markSafetyOk(silent) {
-      try { localStorage.setItem("sm_safety_ok", safetyTodayKey()); } catch (e) {}
-      updateSafetyBadge();
-      if (!silent && typeof toast === "function") toast("✅", "Content de te savoir en sécurité 🌞");
+      setAlertActive(false);
+      if (!silent && typeof toast === "function") toast("✅", "Ton cercle est rassuré — content de te savoir en sécurité 🌞");
     }
     { const ag = $("allGoodBtn"); if (ag) ag.addEventListener("click", () => markSafetyOk(false)); }
     { const sl = $("sosLogo"); if (sl) sl.addEventListener("click", () => showSecuView("secuHelp")); }
@@ -8571,6 +8575,8 @@
         cafeSortKey = t.dataset.catsort;
         renderCafesList();
       }
+      // Redirige direct vers les résultats filtrés (sinon on ne voit pas l'effet).
+      setTimeout(() => { const lst = $("cafesList"); if (lst) lst.scrollIntoView({ behavior: "smooth", block: "start" }); }, 120);
     }));
 
     // Tuiles de navigation rapide de l'onglet Jeux (Quêtes / Jeux / Badges / Coupons).
