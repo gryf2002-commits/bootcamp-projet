@@ -2245,8 +2245,8 @@
           <!-- Devenir hôte / ambassadeur -->
           <div class="card hm-host">
             <div class="hm-host-ic">🛟</div>
-            <div style="flex:1"><div style="font-weight:800">Deviens hôte SunMates</div>
-              <div class="muted" style="font-size:.82rem">Aide les voyageurs à se sentir en sécurité dans ta ville : conseils, bons spots, café d'accueil.</div></div>
+            <div style="flex:1"><div style="font-weight:800" id="hostTitle">Deviens hôte SunMates</div>
+              <div class="muted" style="font-size:.82rem" id="hostDesc">Aide les voyageurs à se sentir en sécurité dans ta ville : conseils, bons spots, café d'accueil.</div></div>
             <button class="btn-accent" id="hostBtn" style="flex-shrink:0;align-self:center">Je veux aider</button>
           </div>
         </div>
@@ -3611,7 +3611,7 @@
         const c = (myProfile && myProfile.city) || "";
         const cn = $("hmCityName"); if (cn) cn.textContent = c || "ta ville";
         const hc = $("hmHomeCity"); if (hc) hc.textContent = c ? ("De retour à " + c) : "De retour chez toi";
-        renderNextTrip(); renderWishlist(); renderVisitors();
+        renderNextTrip(); renderWishlist(); renderVisitors(); renderHost();
       } else if (typeof renderHomeMap === "function" && homeLeaf) { setTimeout(renderHomeMap, 60); } // resync la carte au retour
     }
     // Bucket-list de destinations de rêve (locale)
@@ -3678,10 +3678,27 @@
       }
     }
     document.querySelectorAll("#homeModeSwitch button").forEach((b) => b.addEventListener("click", () => setHomeMode(b.dataset.mode)));
-    { const hb = $("hostBtn"); if (hb) hb.addEventListener("click", () => showInfo("🛟 Devenir hôte SunMates", `<div style="line-height:1.6;font-size:.9rem">
-        <p style="margin:.2rem 0">En tant qu'<b>hôte</b>, tu aides les voyageurs de passage à se sentir <b>en sécurité</b> dans ta ville :</p>
-        <p style="margin:.2rem 0">☕ partage tes <b>bons spots</b> validés · 🗺️ donne des <b>conseils locaux</b> · 🤝 propose un <b>café d'accueil</b>.</p>
-        <p class="muted" style="font-size:.82rem;margin-top:.5rem">Le programme hôte arrive bientôt — on te préviendra ! En attendant, ton profil complété et tes check-ins font déjà de toi un repère de confiance 🛟</p></div>`)); }
+    // Statut « hôte » (local) : devenir repère de confiance dans sa ville.
+    function isHost() { try { return localStorage.getItem("sm_host") === "1"; } catch (e) { return false; } }
+    function renderHost() {
+      const host = isHost();
+      const t = $("hostTitle"), d = $("hostDesc"), b = $("hostBtn");
+      if (t) t.textContent = host ? "🛟 Tu es hôte SunMates" : "Deviens hôte SunMates";
+      if (d) d.textContent = host ? "Merci ! Les voyageurs de passage savent qu'ils peuvent compter sur toi dans ta ville 💛" : "Aide les voyageurs à se sentir en sécurité dans ta ville : conseils, bons spots, café d'accueil.";
+      if (b) b.textContent = host ? "✓ Hôte actif" : "Je veux aider";
+    }
+    { const hb = $("hostBtn"); if (hb) hb.addEventListener("click", () => {
+      const becoming = !isHost();
+      if (becoming) {
+        showInfo("🛟 Devenir hôte SunMates", `<div style="line-height:1.6;font-size:.9rem">
+          <p style="margin:.2rem 0">En tant qu'<b>hôte</b>, tu aides les voyageurs de passage à se sentir <b>en sécurité</b> dans ta ville :</p>
+          <p style="margin:.2rem 0">☕ partage tes <b>bons spots</b> validés · 🗺️ donne des <b>conseils locaux</b> · 🤝 propose un <b>café d'accueil</b>.</p>
+          <p class="muted" style="font-size:.82rem;margin-top:.5rem">Le programme hôte complet arrive bientôt. Tu es maintenant marqué·e comme hôte 🛟</p></div>`);
+      }
+      try { localStorage.setItem("sm_host", becoming ? "1" : "0"); } catch (e) {}
+      renderHost();
+      if (typeof toast === "function") toast(becoming ? "🛟" : "👋", becoming ? "Tu es hôte ! Merci 💛" : "Tu n'es plus hôte.");
+    }); }
 
     function updateCompletion() {
       let filled = COMPLETION_FIELDS.filter((id) => $(id) && ($(id).value || "").trim()).length;
@@ -5219,6 +5236,11 @@
         { ic: "🪪", label: "Profil complété à 80 %", cur: Math.min(prof, 80), max: 80, unit: "%" },
       ];
       const doneCount = goals.filter((g) => g.cur >= g.max).length;
+      // Fête la semaine parfaite, une seule fois par semaine.
+      if (doneCount === goals.length) {
+        const wkKey = "sm_wg_done_" + _weekStart();
+        try { if (!localStorage.getItem(wkKey)) { localStorage.setItem(wkKey, "1"); if (typeof toast === "function") toast("🎉", "Objectifs de la semaine bouclés — bravo !"); if (typeof celebrate === "function") celebrate(); } } catch (e) {}
+      }
       box.innerHTML = `<div class="card wg-card">
         <div class="wg-head"><span>🗓️ Objectifs de la semaine</span><span class="wg-count">${doneCount}/${goals.length}</span></div>
         ${goals.map((g) => {
