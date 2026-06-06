@@ -3654,11 +3654,14 @@
       if (trip.dest && trip.date) {
         const days = Math.ceil((new Date(trip.date + "T00:00:00").getTime() - Date.now()) / 86400000);
         const when = days > 0 ? ("J-" + days) : (days === 0 ? "Aujourd'hui !" : "En cours");
+        const started = days <= 0;
         box.innerHTML = `<div class="nt-set"><div class="nt-ic">🌍</div>
             <div style="flex:1"><div style="font-weight:800">${escapeHtml(trip.dest)}</div>
               <div class="muted" style="font-size:.8rem">${new Date(trip.date + "T00:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</div></div>
             <div class="nt-count">${when}</div></div>
-          <button class="btn-ghost btn-block" id="ntClear" style="margin-top:.7rem">Modifier / annuler</button>`;
+          ${started ? '<button class="btn-primary btn-block" id="ntGo" style="margin-top:.7rem">✈️ Mon voyage commence — passer en mode Voyage</button>' : ""}
+          <button class="btn-ghost btn-block" id="ntClear" style="margin-top:.5rem">Modifier / annuler</button>`;
+        const g = $("ntGo"); if (g) g.addEventListener("click", () => setHomeMode("travel"));
         const c = $("ntClear"); if (c) c.addEventListener("click", () => { try { localStorage.removeItem("sm_next_trip"); } catch (e) {} renderNextTrip(); });
       } else {
         const wl = (typeof loadWishlist === "function") ? loadWishlist() : [];
