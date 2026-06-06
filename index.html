@@ -981,6 +981,22 @@
       font-size: 18px; background: var(--accent-soft, rgba(255,170,90,.16)); }
     .feat-name { font-weight: 700; font-size: .85rem; }
     .feat-desc { font-size: .78rem; color: var(--muted); margin-top: .12rem; line-height: 1.35; }
+    /* Conseil sécurité du jour */
+    .tip-card { display: flex; gap: .8rem; align-items: flex-start;
+      background: linear-gradient(135deg, rgba(255,201,60,.14), rgba(255,138,61,.10)); border: 1px solid rgba(201,138,30,.22); }
+    body.theme-dusk .tip-card { background: linear-gradient(135deg, rgba(255,201,60,.12), rgba(255,138,61,.08)); border-color: rgba(255,201,60,.2); }
+    .tip-ic { font-size: 1.5rem; flex-shrink: 0; line-height: 1.2; }
+    .tip-title { font-weight: 800; font-size: .82rem; color: #B5740E; }
+    body.theme-dusk .tip-title { color: #ffce8a; }
+    .tip-text { font-size: .84rem; color: var(--ink); line-height: 1.4; margin-top: .1rem; }
+    /* Skeletons de chargement (shimmer) — plus premium que « Chargement… » */
+    @keyframes skShimmer { 0% { background-position: -340px 0; } 100% { background-position: 340px 0; } }
+    .sk { background: linear-gradient(90deg, var(--line) 25%, rgba(255,180,120,.18) 50%, var(--line) 75%);
+      background-size: 680px 100%; animation: skShimmer 1.25s infinite linear; border-radius: 8px; }
+    .sk-card { display: flex; gap: .7rem; align-items: center; padding: .7rem; border: 1px solid var(--line); border-radius: 14px; margin-bottom: .5rem; }
+    .sk-av { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; }
+    .sk-lines { flex: 1; min-width: 0; }
+    .sk-line { height: 11px; margin-bottom: .45rem; }
     /* Titre de profil (boutique XP) */
     .profile-title { font-size: .78rem; font-weight: 700; color: #B5740E; margin-top: .12rem; }
     body.theme-dusk .profile-title { color: #ffce8a; }
@@ -2217,7 +2233,7 @@
             <a id="feedToggle" style="cursor:pointer">Masquer</a>
           </div>
         </div>
-        <div id="homeFeed"><p class="muted">Chargement…</p></div>
+        <div id="homeFeed"><div class="sk-card"><div class="sk sk-av"></div><div class="sk-lines"><div class="sk sk-line" style="width:60%"></div><div class="sk sk-line" style="width:40%;margin-bottom:0"></div></div></div></div>
 
         <div class="section-head"><h3>Accès rapide</h3></div>
         <div class="grid2">
@@ -2264,7 +2280,7 @@
         </div>
         <div id="cafesCount" class="muted" style="font-size:.8rem;margin-bottom:.5rem"></div>
         <div class="gold-only-note" style="margin-bottom:.7rem">👑 Gratuit : 1 check-in par jour. Gold : check-ins illimités + bonus de points.</div>
-        <div id="cafesList"><p class="muted">Chargement…</p></div>
+        <div id="cafesList"><div class="sk-card"><div class="sk sk-av"></div><div class="sk-lines"><div class="sk sk-line" style="width:58%"></div><div class="sk sk-line" style="width:40%;margin-bottom:0"></div></div></div></div>
         <div class="msg" id="cafesMsg"></div>
       </div>
 
@@ -2347,7 +2363,7 @@
                   <option value="trust">Score de confiance 🛡️</option>
                 </select>
               </div>
-              <div id="travelersList"><p class="muted">Chargement…</p></div>
+              <div id="travelersList"><div class="sk-card"><div class="sk sk-av"></div><div class="sk-lines"><div class="sk sk-line" style="width:55%"></div><div class="sk sk-line" style="width:38%;margin-bottom:0"></div></div></div><div class="sk-card"><div class="sk sk-av"></div><div class="sk-lines"><div class="sk sk-line" style="width:62%"></div><div class="sk sk-line" style="width:42%;margin-bottom:0"></div></div></div></div>
               <div class="msg" id="connMsg"></div>
             </div>
           </div>
@@ -2459,6 +2475,12 @@
               <div class="muted" style="font-size:.8rem">Confirme que tu vas bien — sinon, un geste suffit pour alerter ton cercle.</div>
             </div>
             <button class="btn-accent" id="allGoodBtn" style="flex-shrink:0;white-space:nowrap">✅ Tout va bien</button>
+          </div>
+
+          <!-- Conseil sécurité du jour (rotatif) — on-brand, ajoute de la profondeur -->
+          <div class="card tip-card" id="safetyTip">
+            <div class="tip-ic">💡</div>
+            <div><div class="tip-title">Conseil sécurité du jour</div><div class="tip-text" id="safetyTipText">—</div></div>
           </div>
 
           <div class="section-head"><h3>Accès rapides</h3></div>
@@ -3862,7 +3884,7 @@
       await loadReviews(cafeId);
     }
     async function loadReviews(cafeId) {
-      const box = $("reviewsList"); box.innerHTML = '<p class="muted">Chargement…</p>';
+      const box = $("reviewsList"); box.innerHTML = skelCards(2);
       const { data, error } = await db.from("place_reviews").select("rating,comment,created_at,user_id").eq("cafe_id", cafeId).order("created_at", { ascending: false });
       if (error) { box.innerHTML = '<p class="muted" style="text-align:center;padding:.6rem">Avis indisponibles pour l\'instant.</p>'; $("reviewsAvg").textContent = ""; return; }
       const rows = data || [];
@@ -4475,7 +4497,7 @@
     async function renderLeaderboard(metric) {
       lbMetric = metric || lbMetric;
       const box = $("leaderboardList"); if (!box) return;
-      box.innerHTML = '<p class="muted">Chargement…</p>';
+      box.innerHTML = skelCards(5);
       const { data, error } = await db.rpc("leaderboard", { p_metric: lbMetric, p_limit: 30 });
       if (error) { box.innerHTML = '<p class="muted">Classement indisponible pour l\'instant.</p>'; return; }
       const rows = data || [];
@@ -4979,6 +5001,13 @@
     function escapeHtml(s) {
       return String(s).replace(/[&<>"']/g, (c) =>
         ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+    // Skeleton de chargement (n cartes shimmer) — remplace les « Chargement… »
+    function skelCards(n) {
+      let h = ""; for (let i = 0; i < (n || 3); i++) {
+        h += '<div class="sk-card"><div class="sk sk-av"></div><div class="sk-lines"><div class="sk sk-line" style="width:' + (55 + (i % 3) * 12) + '%"></div><div class="sk sk-line" style="width:35%;margin-bottom:0"></div></div></div>';
+      }
+      return h;
     }
 
     // ====================== JEUX / QUÊTES / BADGES / COUPONS (réels via Supabase) ======================
@@ -6146,11 +6175,37 @@
       }));
 
     // ====================== CENTRE DE SÉCURITÉ ======================
+    // Conseils sécurité (voyageur·se solo) — rotation quotidienne stable.
+    const SAFETY_TIPS = [
+      "Partage ton itinéraire et l'adresse de ton logement avec un proche avant de partir.",
+      "À l'arrivée dans une ville, repère le commissariat et l'hôpital les plus proches.",
+      "Garde une copie numérique (et papier) de ton passeport, séparée de l'original.",
+      "Fais confiance à ton intuition : si une situation te met mal à l'aise, pars.",
+      "En soirée, ne laisse jamais ton verre sans surveillance et garde de quoi rentrer.",
+      "Active le partage de position avec ton cercle de confiance quand tu sors seul·e.",
+      "Privilégie les lieux validés par la communauté pour tes premières rencontres.",
+      "Note le 112 (urgences UE) et ajoute tes contacts d'urgence (ICE) dans l'app.",
+      "Préviens quelqu'un de l'heure prévue de ton retour, et confirme « tout va bien ».",
+      "Évite d'afficher ta localisation en temps réel publiquement sur les réseaux.",
+      "Garde un peu d'argent liquide caché, séparé de ton portefeuille principal.",
+      "Pour un rendez-vous avec un Mate, choisis un lieu public et fréquenté.",
+      "Charge ton téléphone : une batterie pleine, c'est ta meilleure sécurité.",
+      "Renseigne-toi sur les arnaques courantes de ta destination avant d'arriver.",
+      "Le faux appel SunMates t'aide à quitter poliment une situation inconfortable.",
+    ];
+    function renderSafetyTip() {
+      const el = $("safetyTipText"); if (!el) return;
+      const now = new Date();
+      const day = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000); // jour de l'année
+      el.textContent = SAFETY_TIPS[day % SAFETY_TIPS.length];
+    }
     function showSecuView(id) {
       ["secuHome", "secuHelp"].forEach((v) => show($(v), v === id));
+      if (id === "secuHome" && typeof renderSafetyTip === "function") renderSafetyTip();
       if (id === "secuHelp" && typeof renderIce === "function") renderIce();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+    renderSafetyTip();
     $("needHelpBtn").addEventListener("click", () => showSecuView("secuHelp"));
     document.querySelectorAll("[data-sback]").forEach((b) =>
       b.addEventListener("click", () => showSecuView("secuHome")));
