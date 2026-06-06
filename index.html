@@ -6362,7 +6362,7 @@
       if (mm < 0 || (mm === 0 && now.getDate() < d.getDate())) a--;
       return (a > 0 && a < 120) ? a : null;
     }
-    const tpCell = (k, v) => v ? `<div class="pcell"><div class="k">${escapeHtml(k)}</div><div class="v">${escapeHtml(String(v))}</div></div>` : "";
+    const tpCell = (k, v, e) => v ? `<div class="pcell"><div class="k">${e ? e + " " : ""}${escapeHtml(k)}</div><div class="v">${escapeHtml(String(v))}</div></div>` : "";
 
     async function openTravelerProfile(p) {
       if (!p) return;
@@ -6427,28 +6427,28 @@
       // Grille d'infos riche (n'affiche que les champs renseignés)
       const age = ageFrom(p.birthdate);
       const cells = [
-        tpCell("Âge", age ? age + " ans" : ""),
-        tpCell("Genre", [p.gender, p.pronouns].filter(Boolean).join(" · ")),
-        tpCell("Orientation", p.orientation),
-        tpCell("Recherche", (p.intent || []).join(", ")),
-        tpCell("Métier", [p.job_title, p.company].filter(Boolean).join(" · ")),
-        tpCell("Études", [p.education_level, p.school].filter(Boolean).join(" · ")),
-        tpCell("Origine", p.hometown),
-        tpCell("Taille", p.height_cm ? p.height_cm + " cm" : ""),
-        tpCell("Langues", (p.languages || []).join(", ")),
-        tpCell("Style de voyage", p.travel_style),
-        tpCell("Alcool", p.drinking),
-        tpCell("Tabac", p.smoking),
-        tpCell("Régime", p.diet),
-        tpCell("Sport", p.fitness),
-        tpCell("Signe astro", p.zodiac),
-        tpCell("Personnalité", p.personality),
-        tpCell("Enfants", p.children),
-        tpCell("Animaux", (p.pets || []).join(", ")),
-        tpCell("Musique", (p.music || []).join(", ")),
-        tpCell("Instagram", p.instagram ? "@" + p.instagram : ""),
-        tpCell("Destinations de rêve", (p.favorite_places || []).join(", ")),
-        tpCell("Bucket list", p.bucket_list),
+        tpCell("Âge", age ? age + " ans" : "", "🎂"),
+        tpCell("Genre", [p.gender, p.pronouns].filter(Boolean).join(" · "), "🧑"),
+        tpCell("Orientation", p.orientation, "🌈"),
+        tpCell("Recherche", (p.intent || []).join(", "), "🎯"),
+        tpCell("Métier", [p.job_title, p.company].filter(Boolean).join(" · "), "💼"),
+        tpCell("Études", [p.education_level, p.school].filter(Boolean).join(" · "), "🎓"),
+        tpCell("Origine", p.hometown, "🏡"),
+        tpCell("Taille", p.height_cm ? p.height_cm + " cm" : "", "📏"),
+        tpCell("Langues", (p.languages || []).join(", "), "🗣️"),
+        tpCell("Style de voyage", p.travel_style, "🧭"),
+        tpCell("Alcool", p.drinking, "🍷"),
+        tpCell("Tabac", p.smoking, "🚬"),
+        tpCell("Régime", p.diet, "🥗"),
+        tpCell("Sport", p.fitness, "🏃"),
+        tpCell("Signe astro", p.zodiac, "✨"),
+        tpCell("Personnalité", p.personality, "🧠"),
+        tpCell("Enfants", p.children, "👶"),
+        tpCell("Animaux", (p.pets || []).join(", "), "🐾"),
+        tpCell("Musique", (p.music || []).join(", "), "🎵"),
+        tpCell("Instagram", p.instagram ? "@" + p.instagram : "", "📸"),
+        tpCell("Destinations de rêve", (p.favorite_places || []).join(", "), "🌍"),
+        tpCell("Bucket list", p.bucket_list, "🪣"),
       ].filter(Boolean).join("");
       $("tpGrid").innerHTML = cells || '<p class="muted">Profil encore peu rempli.</p>';
       // Prompts (seulement ceux qui ont une réponse)
