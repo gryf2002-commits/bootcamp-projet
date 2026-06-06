@@ -990,8 +990,10 @@
     .fc-btn.decline span { background: #ff3b30; }
     @keyframes fcShake { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
     /* Catalogue des fonctionnalités (knowledge base admin) */
-    .feat-zone { font-weight: 800; font-size: .9rem; margin: 1rem 0 .5rem; padding-bottom: .35rem;
+    .feat-zone { display: flex; align-items: center; gap: .5rem; font-weight: 800; font-size: .9rem; margin: 1rem 0 .5rem; padding-bottom: .35rem;
       border-bottom: 1px solid var(--line); color: var(--ink); }
+    .feat-go { margin-left: auto; border: 0; background: var(--accent-soft, rgba(255,170,90,.16)); color: var(--accent); font-weight: 800; font-size: .72rem; border-radius: 999px; padding: .25rem .6rem; cursor: pointer; }
+    .feat-go:active { transform: scale(.96); }
     .feat-item { display: flex; gap: .7rem; align-items: flex-start; padding: .55rem .65rem; margin-bottom: .4rem;
       background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
     .feat-ic { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
@@ -2981,7 +2983,8 @@
             <p class="muted" style="font-size:.8rem;margin:.1rem 0 .6rem">La liste des scènes de la démo. Touche « ▶ Jouer depuis ici » pour lancer la démo à partir d'une étape précise.</p>
             <div id="demoSteps"></div>
             <div class="section-head"><h3 style="margin:1rem 0 .2rem">📋 Catalogue des fonctionnalités</h3></div>
-            <p class="muted" style="font-size:.8rem;margin:.1rem 0 .6rem">Tout ce que fait SunMates, par zone. Mis à jour à chaque évolution.</p>
+            <p class="muted" style="font-size:.8rem;margin:.1rem 0 .6rem">Tout ce que fait SunMates, par zone. Touche « ▶ Voir » pour aller dans l'onglet concerné.</p>
+            <div class="search" style="margin-bottom:.6rem"><span class="ico">🔍</span><input id="featSearch" type="text" placeholder="Rechercher une fonctionnalité…" /></div>
             <div id="featureCatalog"></div>
           </div>
 
@@ -4498,13 +4501,34 @@
         ["👁️", "Aperçu mode gratuit", "Voir l'app comme un compte non-Gold."],
       ]],
     ];
-    function renderFeatureCatalog() {
-      const box = $("featureCatalog"); if (!box) return;
-      box.innerHTML = SM_FEATURES.map(([zone, items]) => `
-        <div class="feat-zone">${escapeHtml(zone)}</div>
-        ${items.map(([ic, name, desc]) => `<div class="feat-item"><div class="feat-ic">${ic}</div><div><div class="feat-name">${escapeHtml(name)}</div><div class="feat-desc">${escapeHtml(desc)}</div></div></div>`).join("")}
-      `).join("");
+    // Mappe une zone du catalogue vers l'onglet correspondant (pour la démo « ▶ Voir »).
+    function zoneTab(zone) {
+      const z = zone.toLowerCase();
+      if (z.includes("accueil") || z.includes("carte")) return "accueil";
+      if (z.includes("lieux")) return "lieux";
+      if (z.includes("jeux") || z.includes("badge")) return "jeux";
+      if (z.includes("mates")) return "connexions";
+      if (z.includes("sécurité") || z.includes("securite")) return "securite";
+      if (z.includes("profil") || z.includes("réglages")) return "profil";
+      return null; // connexion/PWA/admin : pas de redirection
     }
+    function renderFeatureCatalog(q) {
+      const box = $("featureCatalog"); if (!box) return;
+      q = (q || "").trim().toLowerCase();
+      let any = false;
+      box.innerHTML = SM_FEATURES.map(([zone, items]) => {
+        const matched = items.filter(([ic, name, desc]) => !q || (name + " " + desc + " " + zone).toLowerCase().includes(q));
+        if (!matched.length) return "";
+        any = true;
+        const tab = zoneTab(zone);
+        const goBtn = tab ? `<button class="feat-go" data-feattab="${tab}">▶ Voir</button>` : "";
+        return `<div class="feat-zone">${escapeHtml(zone)}${goBtn}</div>
+          ${matched.map(([ic, name, desc]) => `<div class="feat-item"><div class="feat-ic">${ic}</div><div><div class="feat-name">${escapeHtml(name)}</div><div class="feat-desc">${escapeHtml(desc)}</div></div></div>`).join("")}`;
+      }).join("") || "";
+      if (!any) box.innerHTML = '<p class="muted" style="text-align:center;padding:1rem">Aucune fonctionnalité ne correspond à « ' + escapeHtml(q) + ' ».</p>';
+      box.querySelectorAll("[data-feattab]").forEach((b) => b.addEventListener("click", () => { goToTab(b.dataset.feattab); }));
+    }
+    { const fs2 = $("featSearch"); if (fs2) fs2.addEventListener("input", (e) => renderFeatureCatalog(e.target.value)); }
     // ====================== DÉMO GUIDÉE AUTOMATIQUE (clé en main, A à Z) ======================
     let adIdx = 0, adTimer = null, adPaused = false, adHideTimer = null, adThemeWasDusk = false;
     const A = (fn) => { try { fn(); } catch (e) {} };
