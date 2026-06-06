@@ -3436,7 +3436,20 @@
         const { data, error } = authMode === "login"
           ? await db.auth.signInWithPassword({ email, password })
           : await db.auth.signUp({ email, password });
-        if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; }
+        if (error) {
+          const notConfirmed = error.code === "email_not_confirmed" || /email not confirmed/i.test(error.message || "");
+          if (authMode === "login" && notConfirmed) {
+            msg.style.color = "var(--danger)";
+            msg.innerHTML = '📧 Tu dois confirmer ton email avant de te connecter.<br><button id="authResendBtn" class="btn-ghost" style="margin-top:.45rem;padding:.45rem .8rem;font-size:.82rem">Renvoyer le mail de confirmation</button>';
+            const rb = $("authResendBtn");
+            if (rb) rb.addEventListener("click", async () => {
+              rb.disabled = true; rb.textContent = "Envoi…";
+              const { error: rerr } = await db.auth.resend({ type: "signup", email });
+              if (rerr) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + rerr.message; }
+              else { msg.style.color = "var(--ok)"; msg.textContent = "📧 Mail de confirmation renvoyé ! Vérifie ta boîte (et les spams)."; }
+            });
+          } else { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; }
+        }
         else if (authMode === "signup") {
           // Si « Confirm email » est activé côté Supabase, signUp ne crée pas de session :
           // l'utilisateur doit confirmer via le mail (envoyé par notre SMTP custom).
