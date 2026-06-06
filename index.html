@@ -8552,13 +8552,52 @@
           acceptNode: (n) => {
             const p = n.parentNode; if (!p) return NodeFilter.FILTER_REJECT;
             if (_TR_SKIP.has(p.nodeName)) return NodeFilter.FILTER_REJECT;
-            if (p.closest && p.closest("#homeMap, .leaflet-container, [data-no-tr]")) return NodeFilter.FILTER_REJECT;
+            if (p.closest && p.closest("#homeMap, .leaflet-container, .chat-body, [data-no-tr]")) return NodeFilter.FILTER_REJECT;
             return NodeFilter.FILTER_ACCEPT;
           },
         });
         const nodes = []; let cur; while ((cur = walker.nextNode())) nodes.push(cur);
         nodes.forEach(translateNodeText);
+        if (currentLang === "en") nodes.forEach(queueAuto); // filet : traduit via API ce que le dico ne couvre pas
       } catch (e) {}
+    }
+    // ---- Filet de traduction AUTO (API MyMemory) : tout texte FR non couvert par le dico ----
+    // Heuristique : on ne traduit que ce qui "ressemble" à du français (phrase / accents),
+    // pour ne PAS toucher les noms propres (pseudos, noms de lieux). Résultats mis en cache.
+    let _autoTrCache = {}; try { _autoTrCache = JSON.parse(localStorage.getItem("sm_autotr") || "{}") || {}; } catch (e) {}
+    let _autoSaveT; function _saveAutoTr() { clearTimeout(_autoSaveT); _autoSaveT = setTimeout(() => { try { localStorage.setItem("sm_autotr", JSON.stringify(_autoTrCache)); } catch (e) {} }, 1200); }
+    const _FR_STOP = /(^|[\s'’])(le|la|les|un|une|des|du|de|et|ou|pour|avec|dans|sur|ton|ta|tes|ce|cette|qui|que|qu|est|sont|plus|sans|tout|tous|toute|son|sa|ses|mes|mon|ma|au|aux|vous|nous|je|tu|ne|pas|déjà|chez|leur|aussi|comme|mais|donc|alors|quand|chaque|vos|nos)([\s'’,.!?:;]|$)/i;
+    function _looksFr(s) {
+      const w = s.trim(); if (w.length < 4) return false;
+      if (!/[a-zà-ÿ]/i.test(w)) return false;
+      const words = w.split(/\s+/).filter((x) => /[a-zà-ÿ]/i.test(x));
+      if (words.length <= 1 && !/[àâçéèêëîïôûùü]/i.test(w)) return false; // 1 mot sans accent = nom propre probable
+      return _FR_STOP.test(w) || /[àâçéèêëîïôûùü]/i.test(w) || words.length >= 3;
+    }
+    function _applyAuto(n, v, key, en) { if (currentLang === "en" && n.nodeValue === v) { if (!_trMap.has(n)) _trMap.set(n, v); n.nodeValue = v.replace(key, en); } }
+    const _autoQueue = []; const _autoSeen = new Set(); let _autoRunning = false;
+    function queueAuto(n) {
+      if (currentLang !== "en") return;
+      const v = n.nodeValue; if (!v) return; const key = v.trim();
+      if (!key || _trMap.has(n) || !_looksFr(key)) return;
+      if (_autoTrCache[key]) { _applyAuto(n, v, key, _autoTrCache[key]); return; }
+      _autoQueue.push({ n, v, key }); _drainAuto();
+    }
+    async function _drainAuto() {
+      if (_autoRunning) return; _autoRunning = true;
+      while (_autoQueue.length && currentLang === "en") {
+        const job = _autoQueue.shift();
+        if (_autoTrCache[job.key]) { _applyAuto(job.n, job.v, job.key, _autoTrCache[job.key]); continue; }
+        if (_autoSeen.has(job.key)) continue; _autoSeen.add(job.key);
+        try {
+          const r = await fetch("https://api.mymemory.translated.net/get?q=" + encodeURIComponent(job.key) + "&langpair=fr|en&de=app@sunmates.app");
+          const j = await r.json();
+          const out = j && j.responseData && j.responseData.translatedText;
+          if (out && out.trim() && out.toLowerCase() !== job.key.toLowerCase() && !/MYMEMORY WARNING|QUERY LENGTH|INVALID/i.test(out)) { _autoTrCache[job.key] = out; _saveAutoTr(); _applyAuto(job.n, job.v, job.key, out); }
+        } catch (e) {}
+        await new Promise((res) => setTimeout(res, 220)); // throttle (respecte les quotas API)
+      }
+      _autoRunning = false;
     }
     function restoreFr() {
       _trMap.forEach((val, node) => {
@@ -8573,7 +8612,7 @@
       _trObserver = new MutationObserver((muts) => {
         if (currentLang !== "en") return;
         const roots = [];
-        muts.forEach((m) => m.addedNodes && m.addedNodes.forEach((n) => { if (n.nodeType === 1) roots.push(n); else if (n.nodeType === 3) translateNodeText(n); }));
+        muts.forEach((m) => m.addedNodes && m.addedNodes.forEach((n) => { if (n.nodeType === 1) roots.push(n); else if (n.nodeType === 3) { translateNodeText(n); queueAuto(n); } }));
         if (!roots.length) return;
         clearTimeout(_trPending);
         _trPending = setTimeout(() => roots.forEach((r) => translateTree(r)), 50);
