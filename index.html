@@ -1180,7 +1180,6 @@
     /* Cartes « Découvrir » premium (refonte Mates) */
     .tcard { position: relative; overflow: hidden; background: var(--card); border: 1px solid var(--line); border-radius: 18px;
       padding: .9rem; margin-bottom: .7rem; cursor: pointer; box-shadow: var(--shadow-sm); transition: transform .16s cubic-bezier(.2,.8,.3,1), box-shadow .16s; }
-    .tcard::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent-grad); opacity: .85; }
     .tcard:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
     .tcard:active { transform: scale(.99); }
     .tcard-top { display: flex; align-items: center; gap: .75rem; }
@@ -1547,7 +1546,7 @@
     .mseg button.active { background: var(--accent-grad); color: #fff; }
     .mseg .segb { position: absolute; top: 2px; right: 5px; background: var(--accent); color: #fff; font-size: .56rem; min-width: 15px; height: 15px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
     .mseg button.active .segb { background: #fff; color: var(--accent); }
-    .mates-stat { display: inline-flex; align-items: center; gap: .5rem; margin: .3rem 0 .6rem; background: var(--accent-soft); border: 1px solid rgba(255,90,77,.22); border-radius: 999px; padding: .4rem .95rem; cursor: pointer; transition: transform .1s; }
+    .mates-stat { display: flex; width: fit-content; align-items: center; gap: .5rem; margin: .3rem auto .8rem; background: var(--accent-soft); border: 1px solid rgba(255,90,77,.22); border-radius: 999px; padding: .4rem .95rem; cursor: pointer; transition: transform .1s; }
     .mates-stat:active { transform: scale(.97); }
     .mates-stat b { font-size: 1.35rem; color: var(--accent); line-height: 1; }
     /* Cartes « Découvrir » plus riches */
@@ -3040,7 +3039,7 @@
           </div>
           <div class="set-toggle">
             <div><div class="st-lbl">Profil public</div><div class="st-sub">Apparaître dans le <b>classement</b>. Désactive pour rester discret·ète.</div></div>
-            <label class="switch"><input type="checkbox" id="publicToggle" checked><span class="sl"></span></label>
+            <label class="switch"><input type="checkbox" id="publicToggle"><span class="sl"></span></label>
           </div>
 
           <!-- Mon profil partageable -->
@@ -3908,7 +3907,7 @@
       setV("pFavPlaces", (data.favorite_places || []).join(", ")); setV("pBucket", data.bucket_list); setV("pInstagram", data.instagram);
       $("trustScore").textContent = data.trust_score ?? 0;
       { const xs = $("xpScore"); if (xs) xs.textContent = data.xp ?? 0; }
-      { const pub = $("publicToggle"); if (pub) pub.checked = data.is_public !== false; }
+      { const pub = $("publicToggle"); if (pub) pub.checked = data.is_public === true; } // privé par défaut (null/false = privé)
       if (typeof renderTrustExplain === "function") renderTrustExplain();
       // Sélections multiples (chips)
       selInterests.clear(); (data.interests || []).forEach((x) => selInterests.add(x));
@@ -6425,10 +6424,11 @@
       verif.textContent = p.is_verified ? "✅ Vérifié" : "Non vérifié";
       verif.className = "badge " + (p.is_verified ? "ok" : "no");
       // Compatibilité + score de confiance
+      const isSelf = p.id === myUserId;
       const pct = compatibility(myMatchProfile, p);
       const tpc = $("tpCompat");
-      tpc.textContent = pct + "%";
-      tpc.style.color = pct >= 70 ? "var(--ok)" : (pct >= 40 ? "var(--accent)" : "var(--muted)");
+      tpc.textContent = isSelf ? "—" : pct + "%"; // pas d'auto-match à 100 % sur son propre aperçu
+      tpc.style.color = isSelf ? "var(--muted)" : (pct >= 70 ? "var(--accent)" : (pct >= 40 ? "var(--accent)" : "var(--muted)")); // DA sunset, plus de vert
       // Transparence : détail de ce qui compose le score (sauf sur son propre profil)
       const compatCard = $("tpCompatCard");
       const bd = (p.id === myUserId) ? [] : compatBreakdown(myMatchProfile, p);
