@@ -1907,6 +1907,8 @@
     .faq-secu p { margin: 0; font-size: .84rem; line-height: 1.55; color: var(--text); }
     /* Numéros d'urgence par pays */
     .num-row { padding: .55rem 0; border-bottom: 1px solid var(--line); }
+    .num-row.num-here { background: linear-gradient(135deg, rgba(255,201,60,.14), rgba(255,138,61,.1)); border: 1px solid rgba(201,138,30,.22); border-radius: 12px; padding: .55rem .7rem; margin-bottom: .4rem; }
+    .num-badge { margin-left: auto; font-size: .68rem; font-weight: 800; color: #B5740E; background: rgba(255,201,60,.3); border-radius: 999px; padding: .15rem .5rem; }
     .num-row:last-child { border-bottom: 0; }
     .num-head { display: flex; align-items: center; gap: .5rem; font-size: .92rem; color: var(--ink); margin-bottom: .4rem; }
     .num-flag { font-size: 1.2rem; }
@@ -6739,19 +6741,34 @@
       { c: "Turquie", f: "🇹🇷", n: "112", pop: 1 },
       { c: "Émirats (Dubaï)", f: "🇦🇪", n: "999", a: "998" },
     ];
+    let detectedCountryName = null; // pays courant détecté par géoloc (reverse-géocodage)
+    function detectCountryForNumbers() {
+      const use = (g) => {
+        fetch("https://nominatim.openstreetmap.org/reverse?format=json&zoom=3&lat=" + g.lat + "&lon=" + g.lng, { headers: { "Accept-Language": "fr" } })
+          .then((r) => r.json()).then((d) => { const c = d && d.address && d.address.country; if (c) { detectedCountryName = c; const s = $("numbersSearch"); renderNumbers(s ? s.value : ""); } }).catch(() => {});
+      };
+      if (typeof lastKnownGeo !== "undefined" && lastKnownGeo) use(lastKnownGeo);
+      else if (typeof getGeo === "function") getGeo(use, () => {});
+    }
     function renderNumbers(q) {
       const box = $("numbersList"); if (!box) return;
       q = (q || "").trim().toLowerCase();
-      const list = EMERGENCY_NUMBERS.filter((e) => q ? e.c.toLowerCase().includes(q) : e.pop);
+      let list = EMERGENCY_NUMBERS.filter((e) => q ? e.c.toLowerCase().includes(q) : e.pop);
+      // Sans recherche : le pays détecté passe EN PREMIER (badge « ici »).
+      let here = null;
+      if (!q && detectedCountryName) {
+        here = EMERGENCY_NUMBERS.find((e) => e.c.toLowerCase() === detectedCountryName.toLowerCase());
+        if (here) list = [here, ...list.filter((e) => e !== here)];
+      }
       const chip = (label, num) => num ? `<a href="tel:${num}" class="num-chip"><span>${label}</span><b>${num}</b></a>` : "";
-      box.innerHTML = (list.length ? list.map((e) => `<div class="num-row">
-          <div class="num-head"><span class="num-flag">${e.f}</span><b>${escapeHtml(e.c)}</b></div>
+      box.innerHTML = (list.length ? list.map((e) => `<div class="num-row${e === here ? " num-here" : ""}">
+          <div class="num-head"><span class="num-flag">${e.f}</span><b>${escapeHtml(e.c)}</b>${e === here ? '<span class="num-badge">📍 Ta position</span>' : ""}</div>
           <div class="num-chips">${chip("Urgences", e.n)}${e.p && e.p !== e.n ? chip("Police", e.p) : ""}${e.a && e.a !== e.n ? chip("Ambulance", e.a) : ""}</div>
           ${e.note ? `<div class="muted" style="font-size:.72rem;margin-top:.2rem">${escapeHtml(e.note)}</div>` : ""}
-        </div>`).join("") : '<p class="muted" style="text-align:center;padding:1rem">Pays non listé — en cas de doute, essaie le <b>112</b>.</p>')
+        </div>`).join("") : '<p class="muted" style="text-align:center;padding:1rem">Pays non listé. En cas de doute, essaie le <b>112</b>.</p>')
         + (!q ? '<p class="muted" style="text-align:center;font-size:.78rem;padding:.6rem">🔍 Cherche un autre pays ci-dessus pour ses numéros.</p>' : "");
     }
-    function openNumbers() { const m = $("numbersModal"); if (!m) return; $("numbersSearch").value = ""; renderNumbers(""); m.classList.remove("hidden"); }
+    function openNumbers() { const m = $("numbersModal"); if (!m) return; $("numbersSearch").value = ""; renderNumbers(""); if (typeof detectCountryForNumbers === "function") detectCountryForNumbers(); m.classList.remove("hidden"); }
     { const c = $("numbersClose"); if (c) c.addEventListener("click", () => $("numbersModal").classList.add("hidden")); }
     { const m = $("numbersModal"); if (m) m.addEventListener("click", (e) => { if (e.target.id === "numbersModal") m.classList.add("hidden"); }); }
     { const s = $("numbersSearch"); if (s) s.addEventListener("input", () => renderNumbers(s.value)); }
