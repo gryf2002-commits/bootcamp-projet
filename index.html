@@ -5233,9 +5233,9 @@
       const qWeek = (myQuestRows || []).filter((r) => r.status === "completed" && _isThisWeek(r.completed_at)).length;
       const prof = _lastCompletionPct || 0;
       const goals = [
-        { ic: "🎯", label: "Accomplir 2 quêtes", cur: Math.min(qWeek, 2), max: 2 },
-        { ic: "📍", label: "Faire 1 check-in", cur: Math.min(ckWeek, 1), max: 1 },
-        { ic: "🪪", label: "Profil complété à 80 %", cur: Math.min(prof, 80), max: 80, unit: "%" },
+        { ic: "🎯", label: "Accomplir 2 quêtes", cur: Math.min(qWeek, 2), max: 2, go: "quests" },
+        { ic: "📍", label: "Faire 1 check-in", cur: Math.min(ckWeek, 1), max: 1, go: "lieux" },
+        { ic: "🪪", label: "Profil complété à 80 %", cur: Math.min(prof, 80), max: 80, unit: "%", go: "profil" },
       ];
       const doneCount = goals.filter((g) => g.cur >= g.max).length;
       // Fête la semaine parfaite, une seule fois par semaine.
@@ -5247,15 +5247,21 @@
         <div class="wg-head"><span>🗓️ Objectifs de la semaine</span><span class="wg-count">${doneCount}/${goals.length}</span></div>
         ${goals.map((g) => {
           const done = g.cur >= g.max, pct = Math.round((g.cur / g.max) * 100);
-          return `<div class="wg-goal${done ? " done" : ""}">
+          return `<div class="wg-goal${done ? " done" : ""}"${done ? "" : ` data-wggo="${g.go}" style="cursor:pointer"`}>
             <div class="wg-ic">${done ? "✅" : g.ic}</div>
             <div class="wg-body"><div class="wg-label">${escapeHtml(g.label)}</div>
               <div class="wg-bar"><span style="width:${pct}%"></span></div></div>
-            <div class="wg-val">${g.cur}${g.unit || ""}/${g.max}${g.unit || ""}</div>
+            <div class="wg-val">${g.cur}${g.unit || ""}/${g.max}${g.unit || ""}${done ? "" : " ›"}</div>
           </div>`;
         }).join("")}
         ${doneCount === goals.length ? '<div class="wg-alldone">🎉 Semaine parfaite ! Reviens lundi pour de nouveaux objectifs.</div>' : ""}
       </div>`;
+      box.querySelectorAll("[data-wggo]").forEach((el) => el.addEventListener("click", () => {
+        const g = el.dataset.wggo;
+        if (g === "quests") { goToTab("jeux"); if (typeof openJeuxSheet === "function") setTimeout(() => openJeuxSheet("quests"), 80); }
+        else if (g === "lieux") { goToTab("lieux"); }
+        else if (g === "profil") { goToTab("profil"); if (typeof showProfileSegment === "function") showProfileSegment("edit"); }
+      }));
     }
     function renderParcours() {
       const el = $("parcoursToday"); if (!el) return;
