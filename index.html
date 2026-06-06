@@ -1408,6 +1408,12 @@
     .mates-stat { display: inline-flex; align-items: center; gap: .5rem; margin: .3rem 0 .6rem; background: var(--accent-soft); border: 1px solid rgba(255,90,77,.22); border-radius: 999px; padding: .4rem .95rem; cursor: pointer; transition: transform .1s; }
     .mates-stat:active { transform: scale(.97); }
     .mates-stat b { font-size: 1.35rem; color: var(--accent); line-height: 1; }
+    /* Cartes « Découvrir » plus riches */
+    .trav-open { border-bottom: 0 !important; border: 1px solid var(--line); border-radius: 14px; margin-bottom: .55rem; padding: .7rem .8rem !important; transition: transform .12s, box-shadow .15s; }
+    .trav-open:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .trav-open .avatar { width: 50px; height: 50px; }
+    .trav-tags { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .3rem; }
+    .trav-tags span { font-size: .68rem; font-weight: 700; color: var(--accent); background: var(--accent-soft); padding: .08rem .45rem; border-radius: 999px; }
     .mates-stat span { font-size: .85rem; color: var(--ink-warm); font-weight: 700; }
     .mates-stat b { font-family: "Fraunces", serif; font-size: 1.5rem; color: var(--accent); }
     .mates-stat span { color: var(--muted); font-size: .85rem; }
@@ -2214,6 +2220,7 @@
         <!-- Vue principale (sous-onglets) -->
         <div id="matesHome" class="mates-view">
           <h1 data-i18n="mates.title">Mes Mates</h1>
+          <p class="muted" style="margin-top:-.2rem">Rencontre des voyageurs, discute et pars à l'aventure ensemble 🌍</p>
           <div class="mates-stat stat-click" id="matesStatBtn" title="Voir mes connexions">🤝 <b id="matesCount">0</b><span id="matesStatLbl">Mates de confiance ›</span></div>
 
           <div class="mseg">
@@ -4708,6 +4715,7 @@
               <div class="meta">${escapeHtml(p.city || '')} · score ${p.trust_score ?? 0}</div>
               ${isActive(p) ? '<div style="margin-top:.28rem"><span class="presence-pill">' + t('presence.active') + '</span></div>' : ''}
               ${spotChipHtml(p)}
+              ${(() => { const tg = [...(p.intent || []).slice(0, 1), ...(p.interests || []).slice(0, 2)]; return tg.length ? `<div class="trav-tags">${tg.map((x) => `<span>${escapeHtml(x)}</span>`).join("")}</div>` : ""; })()}
               ${reasons.length ? `<div>${reasons.map((rr) => `<span class="afn">${escapeHtml(rr)}</span>`).join("")}</div>` : ""}
             </div>
             <span class="compat ${compatTier(pct)}">❤️ ${pct}%</span></div>`).join("")
