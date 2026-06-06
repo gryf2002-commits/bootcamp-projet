@@ -1067,7 +1067,7 @@
     .shop-frame-prev { background: var(--accent-grad); color: #fff; }
     .bitem { text-align: center; }
     .hex { width: 62px; height: 62px; margin: 0 auto .4rem; background: var(--accent-grad);
-      clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+      border-radius: 50%; /* tous ronds (1er pas) */
       display: grid; place-items: center; font-size: 26px; color: #fff; box-shadow: var(--shadow-sm); }
     /* Formes variées (collection) */
     .hex.shape-circle { clip-path: none; border-radius: 50%; }
@@ -1146,7 +1146,7 @@
     .completion-txt { font-size: .78rem; color: var(--muted); margin-top: .35rem; }
     /* Rangée de badges sur la carte profil */
     .prof-badges { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; margin-top: .8rem; cursor: pointer; }
-    .prof-badges .pb-badge { width: 30px; height: 30px; border-radius: 9px; background: var(--accent-soft); display: grid; place-items: center; font-size: 16px; box-shadow: var(--shadow-sm); }
+    .prof-badges .pb-badge { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-grad); color: #fff; display: grid; place-items: center; font-size: 16px; box-shadow: var(--shadow-sm); }
     .prof-badges .pb-more { font-size: .76rem; font-weight: 800; color: var(--accent); }
     .prof-badges .pb-lbl { font-size: .78rem; font-weight: 700; color: var(--muted); }
     .prof-badges .pb-edit { margin-left: auto; font-size: .76rem; font-weight: 700; color: var(--accent); }
