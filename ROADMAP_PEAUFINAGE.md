@@ -12,7 +12,24 @@ segment check-ins retiré + stat XP → fenêtre · **segment KB admin retiré**
 **numéros : Europe 112 + populaires par défaut** · faux appel/signal en tuiles visibles · 112 moins morose ·
 **défi violet vs blocage rouge** · why-match en tuile cliquable + trust cliquable · **fin onboarding = CTA**.
 
-### ⏳ RESTE pour demain :
+### ✅ FAIT aussi (lots 53-61, SW v96) :
+fenêtres scrollables (croix fixe) · « qui peut me contacter » toast · mates-stat vivant · **badges
+épinglables 3 max** + **formes/couleurs variées** · barre complétion cliquable · **signalements admin**
+(profil cliquable + traité→supprimer, migration 24) · **anonymat : opt-in classement + nouveaux
+profils privés** · spot du jour→Lieux · détail quête allégé · accueil remonte au login · tuiles plus
+vivantes · **style de voyage multi** (migration 25) · fiche membre admin enrichie.
+
+### ⏳ RESTE (gros morceaux, pour une prochaine session) :
+- **Carte plein écran** (à tester sur mobile — ResizeObserver + outils + safe-area déjà en place).
+- **Refonte complète de l'onglet Mates** (gros).
+- **Quêtes/Jeux en overlay** (anti-scroll, gros).
+- **~70 tuiles explicatives** dans la démo guidée (gros contenu).
+- **Onboarding bug 4→6 cartes** (à investiguer en live).
+- **Aperçu mode gratuit** (admin) à remettre à jour avec les changements.
+- **XP boutique** (titres/cosmétiques) — à designer.
+- ⚠️ Migrations à lancer : **24** (admin delete reports) et **25** (travel_styles).
+
+### ⏳ Anciens (déjà repris) :
 **Pro/Accueil** : retirer raccourci B2B dans Premium · retirer titre « Espace Pro » (ressortir 1ʳᵉ carte) ·
 accueil connexion remonter (on voit pas Bonjour) · **« Bonjour » en rouge** (revert) · carte plein écran
 encore buggée · **rebosser tuiles accès rapides + carte** (trop sobre/pastilles = perte d'âme) · « Tout voir » = 🌍.
