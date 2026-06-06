@@ -3421,11 +3421,16 @@
       if (!email || !password) { msg.style.color = "var(--danger)"; msg.textContent = "Remplis l'email et le mot de passe."; return; }
       await once("auth:" + authMode, async () => {
         msg.style.color = "var(--muted)"; msg.textContent = "Un instant…";
-        const { error } = authMode === "login"
+        const { data, error } = authMode === "login"
           ? await db.auth.signInWithPassword({ email, password })
           : await db.auth.signUp({ email, password });
         if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; }
-        else if (authMode === "signup") { msg.style.color = "var(--ok)"; msg.textContent = "Compte créé ! Tu peux te connecter."; }
+        else if (authMode === "signup") {
+          // Si « Confirm email » est activé côté Supabase, signUp ne crée pas de session :
+          // l'utilisateur doit confirmer via le mail (envoyé par notre SMTP custom).
+          if (data && data.session) { msg.style.color = "var(--ok)"; msg.textContent = "Compte créé ! Bienvenue 🌞"; }
+          else { msg.style.color = "var(--ok)"; msg.textContent = "📧 Compte créé ! Ouvre ta boîte mail pour confirmer ton adresse, puis connecte-toi."; }
+        }
       });
     }
     $("authPlay").addEventListener("click", submitAuth);
