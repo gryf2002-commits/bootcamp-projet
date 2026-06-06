@@ -650,10 +650,13 @@
     .homemap-card.fs .homemap { height: 100% !important; border-radius: 12px; }
     .homemap-card.fs .homemap-fsclose { display: inline-flex; position: absolute; top: calc(.7rem + env(safe-area-inset-top, 0px)); right: .7rem; z-index: 1400;
       background: var(--card); color: var(--ink); border: 0; border-radius: 999px; padding: .5rem .9rem; font-weight: 800; font-size: .82rem; box-shadow: var(--shadow); cursor: pointer; }
-    /* En plein écran : les outils (Tout voir / Autour de moi / Partager) restent visibles,
-       au-dessus des tuiles Leaflet et de la barre gestuelle (safe-area). */
-    .homemap-card.fs .homemap-tools { bottom: calc(.7rem + env(safe-area-inset-bottom, 0px)); right: .7rem; z-index: 1400; }
-    .homemap-tools { position: absolute; right: .55rem; bottom: .55rem; z-index: 1100; display: flex; flex-direction: column; gap: .4rem; align-items: flex-end; }
+    /* En plein écran : les outils passent EN HAUT à gauche (la zone basse mobile = barre
+       gestuelle du navigateur, qui « mangeait » les taps). Top-gauche = toujours cliquable,
+       et on ne chevauche ni la croix (top-droite) ni le zoom (déplacé en bas-droite). */
+    .homemap-card.fs .homemap-tools { top: calc(.7rem + env(safe-area-inset-top, 0px)); left: .7rem;
+      right: auto; bottom: auto; align-items: flex-start; z-index: 1500; max-width: calc(100% - 7.5rem); }
+    .homemap-card.fs .homemap-fsclose { z-index: 1600; }
+    .homemap-tools { position: absolute; right: .55rem; bottom: .55rem; z-index: 1100; display: flex; flex-direction: column; gap: .4rem; align-items: flex-end; pointer-events: auto; }
     .homemap-tools button { background: var(--card); color: var(--ink); border: 1px solid rgba(0,0,0,.08); border-radius: 999px; padding: .4rem .7rem; font-size: .76rem; font-weight: 700; box-shadow: var(--shadow-sm); cursor: pointer; }
     .homemap-tools button:hover { background: var(--accent-grad); color: #fff; }
     .homemap-tools #hmAdd { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 16px rgba(255,90,77,.4); }
@@ -4034,7 +4037,7 @@
       ]],
       ["📍 Lieux sûrs", [
         ["☕", "Catalogue de lieux", "Cartes photo : éco, check-ins, note, top noté."],
-        ["🔒", "Check-in par code", "Anti-triche : code affiché sur place (RPC serveur)."],
+        ["🔒", "Check-in par code", "Code affiché sur place, validé côté serveur (RPC)."],
         ["🧭", "Filtres & tris en tuiles", "Tous / Éco / Près de moi / Top notés / Populaires."],
         ["⭐", "Avis sur les lieux", "Note + commentaires, 1 avis/personne, top noté ≥4.5."],
         ["☀️", "Spot du jour", "Statut éphémère 24 h façon story."],
@@ -4156,7 +4159,7 @@
         run: () => { A(() => goToTab("lieux")); A(() => { cafeFilter.q = "a"; const s = $("cafeSearch"); if (s) s.value = "a"; if (typeof renderCafesList === "function") renderCafesList(); }); } },
       { title: "🌱 Filtre éco-responsable", text: "Un filtre met en avant les lieux éco-responsables. Un autre trie par distance autour de toi.", ms: 6000,
         run: () => { A(() => { cafeFilter = { q: "", mode: "eco" }; const s = $("cafeSearch"); if (s) s.value = ""; if (typeof setCafeChipActive === "function") setCafeChipActive("eco"); if (typeof renderCafesList === "function") renderCafesList(); }); } },
-      { title: "🔒 Le check-in anti-triche", text: "Pour valider un lieu, il faut le code affiché sur place. Les points sont attribués côté serveur : impossible de tricher à distance.", ms: 7500,
+      { title: "🔒 Le check-in par code", text: "Pour valider un lieu, il faut le code affiché sur place. Les points sont attribués côté serveur : on est sûr que tu y étais vraiment.", ms: 7500,
         run: () => { A(() => { cafeFilter = { q: "", mode: "all" }; if (typeof setCafeChipActive === "function") setCafeChipActive("all"); if (typeof renderCafesList === "function") renderCafesList(); }); setTimeout(() => { const c = document.querySelector("#cafesList [data-cafecard]"); if (c) { c.scrollIntoView({ block: "center", behavior: "smooth" }); c.classList.add("flash"); setTimeout(() => c.classList.remove("flash"), 1800); } }, 250); } },
       { title: "🤝 Rencontrer des voyageurs", text: "L'onglet Mates propose des voyageurs vérifiés autour de toi, triés par compatibilité ou par confiance.", ms: 6500,
         run: () => { A(() => goToTab("connexions")); A(() => { if (typeof showMatesView === "function") showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); }); } },
@@ -6438,6 +6441,7 @@
         homeLeaf = L.map(el, { scrollWheelZoom: false, zoomSnap: 0.5, wheelPxPerZoomLevel: 140, zoomControl: true }).setView([46.6, 2.3], 4);
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap", maxZoom: 19 }).addTo(homeLeaf);
         homeLeaf.attributionControl.setPrefix(false).setPosition("bottomleft"); // retire le logo Leaflet, déplace à gauche
+        try { if (homeLeaf.zoomControl) homeLeaf.zoomControl.setPosition("bottomright"); } catch (e) {} // libère le haut-gauche pour les outils en plein écran
         // ★ Correctif plein écran DÉFINITIF : un ResizeObserver resynchronise Leaflet avec la
         // taille RÉELLE du conteneur à chaque changement (plein écran, rotation, clavier).
         // C'est ce qui élimine les tuiles coupées / le zoom faux, quelle que soit la plateforme.
