@@ -1039,10 +1039,12 @@
     .shop-meta { font-size: .72rem; color: var(--muted); }
     .shop-item.on .shop-meta { color: var(--accent); font-weight: 700; }
     /* Cadres d'avatar (appliqués à .avatar) */
-    .avatar.frame-gold { box-shadow: 0 0 0 3px #ffce6b, 0 0 10px rgba(255,180,60,.45); }
-    .avatar.frame-coral { box-shadow: 0 0 0 3px #ff8a6b, 0 0 10px rgba(255,120,90,.4); }
-    .avatar.frame-sunset { box-shadow: 0 0 0 3px #ffce6b, 0 0 0 6px #ff7e5f; }
-    .avatar.frame-aurora { box-shadow: 0 0 0 3px #7ee8c9, 0 0 0 6px #8a7bff; }
+    /* Cadres d'avatar (s'appliquent à l'avatar ET à l'aperçu boutique) — distincts + glow */
+    .avatar.frame-gold, .shop-frame-prev.frame-gold { box-shadow: 0 0 0 3px #f5c451, 0 0 12px rgba(245,196,81,.55); }
+    .avatar.frame-coral, .shop-frame-prev.frame-coral { box-shadow: 0 0 0 3px #ff7e5f, 0 0 12px rgba(255,126,95,.5); }
+    .avatar.frame-sunset, .shop-frame-prev.frame-sunset { box-shadow: 0 0 0 3px #ffce6b, 0 0 0 6px #ff5a4d, 0 0 14px rgba(255,90,77,.4); }
+    .avatar.frame-aurora, .shop-frame-prev.frame-aurora { animation: auroraGlow 3s ease-in-out infinite; }
+    @keyframes auroraGlow { 0%,100% { box-shadow: 0 0 0 3px #7ee8c9, 0 0 0 6px #8a7bff, 0 0 14px rgba(138,123,255,.5); } 50% { box-shadow: 0 0 0 3px #ffb0e0, 0 0 0 6px #7ee8c9, 0 0 18px rgba(126,232,201,.6); } }
     .shop-frame-prev { background: var(--accent-grad); color: #fff; }
     .bitem { text-align: center; }
     .hex { width: 62px; height: 62px; margin: 0 auto .4rem; background: var(--accent-grad);
@@ -5626,8 +5628,8 @@
       const hiddenSecrets = isAdmin ? 0 : defs.filter((b) => b.is_secret && !myBadgeKeys.has(b.key)).length;
       const earned = shown.filter((d) => myBadgeKeys.has(d.key)).length;
       { const bc = $("badgeCollCount"); if (bc) bc.textContent = earned + " / " + shown.length; } // vrai compteur (fini le 36/44 codé en dur)
-      // Formes/couleurs variées (façon collection) : déterministes par clé de badge.
-      const SHAPES = ["shape-hex", "shape-circle", "shape-shield", "shape-star"];
+      // Tous ronds pour l'instant (1er pas) ; on garde la variété de COULEURS (déterministe par clé).
+      const SHAPES = ["shape-circle"];
       const GRADS = ["grad-sun", "grad-violet", "grad-gold", "grad-teal"];
       const badgeStyle = (k) => { let h = 0; for (let i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) >>> 0; return SHAPES[h % SHAPES.length] + " " + GRADS[(h >> 3) % GRADS.length]; };
       $("badgeGrid").innerHTML = shown.map((b) => {
@@ -5720,14 +5722,15 @@
     // ====================== BOUTIQUE XP (cosmétiques par paliers, 100% local) ======================
     // Aucune migration : l'XP n'est PAS dépensé (anti-triche préservé). Chaque item se débloque
     // à un palier d'XP atteint. Le choix actif est mémorisé en localStorage par utilisateur.
+    // Titres = FLAIR/vibe affiché sous le pseudo (différent des badges = accomplissements).
     const SHOP_TITLES = [
       { id: "none", name: "Aucun titre", xp: 0, label: "" },
-      { id: "globe", name: "Globe-trotteur·euse 🌍", xp: 0, label: "🌍 Globe-trotteur·euse" },
-      { id: "explorer", name: "Explorateur·rice 🧭", xp: 50, label: "🧭 Explorateur·rice" },
-      { id: "nomad", name: "Âme nomade 🪶", xp: 120, label: "🪶 Âme nomade" },
-      { id: "adventurer", name: "Aventurier·e 🏔️", xp: 250, label: "🏔️ Aventurier·e" },
-      { id: "legend", name: "Légende du voyage 🌟", xp: 500, label: "🌟 Légende du voyage" },
-      { id: "citizen", name: "Citoyen·ne du monde 👑", xp: 1000, label: "👑 Citoyen·ne du monde" },
+      { id: "freebird", name: "Esprit libre 🦋", xp: 0, label: "🦋 Esprit libre" },
+      { id: "sunheart", name: "Cœur nomade 🧡", xp: 50, label: "🧡 Cœur nomade" },
+      { id: "sunchaser", name: "Chasseur·euse de soleil 🌅", xp: 120, label: "🌅 Chasseur·euse de soleil" },
+      { id: "wildsoul", name: "Âme aventurière 🔥", xp: 250, label: "🔥 Âme aventurière" },
+      { id: "shootingstar", name: "Étoile filante 🌠", xp: 500, label: "🌠 Étoile filante" },
+      { id: "sunlegend", name: "Légende SunMates 👑", xp: 1000, label: "👑 Légende SunMates" },
     ];
     const SHOP_FRAMES = [
       { id: "none", name: "Classique", xp: 0, cls: "" },
@@ -5776,7 +5779,13 @@
     function renderShop() {
       const xp = myXp();
       const xb = $("shopXpBanner");
-      if (xb) xb.innerHTML = `<span class="xp-ic">⭐</span><b>${xp}</b><span class="xp-sub">XP disponible</span>`;
+      if (xb) {
+        const lvl = Math.floor(xp / 100) + 1, inLvl = xp % 100;
+        xb.classList.add("xpl-card");
+        xb.innerHTML = `<div class="xpl-top"><span class="xpl-lvl">⭐ Niveau ${lvl}</span><span class="xpl-xp">${xp} XP dispo</span></div>
+          <div class="xpl-bar"><span style="width:${inLvl}%"></span></div>
+          <div class="xpl-next">Gagne de l'XP en quête pour débloquer plus de cosmétiques 🎨</div>`;
+      }
       const state = getShopState();
       const card = (kind, it, selected) => {
         const locked = xp < it.xp;
