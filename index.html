@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- PWA : app installable sur le téléphone -->
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#FF5A4D" />
+  <meta name="theme-color" content="#fbeee9" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="icon" type="image/svg+xml" href="icon.svg" />
   <link rel="apple-touch-icon" href="icon-180.png" />
@@ -4108,7 +4108,7 @@
       // Accueil : « Bonjour {pseudo} ». Seul le pseudo reçoit le dégradé ; « Bonjour » reste en texte normal.
       $("homeHello").innerHTML = 'Bonjour <span class="hello-name">' + escapeHtml(uname) + "</span>";
       if (typeof updateStreak === "function") updateStreak();
-      if (typeof setHomeMode === "function") setHomeMode(getHomeMode(), false); // restaure le mode Voyage/Maison
+      if (typeof setHomeMode === "function") setHomeMode("travel", false); // on arrive TOUJOURS sur la carte (mode Voyage), le mode Maison reste accessible via la bascule
       if (typeof renderHost === "function") renderHost(); // badge hôte sur la carte profil
       const badge = $("verifBadge");
       badge.textContent = data.is_verified ? "✅ Vérifié" : "Non vérifié";
@@ -7809,7 +7809,7 @@
       goToTab("connexions");              // sinon la fiche s'ouvre dans un onglet caché
       openTravelerProfile(myProfile);     // = exactement la fiche que voient les autres
       ["tpMsgBtn", "tpConnectBtn", "tpChallengeBtn", "tpBffBtn", "tpBlockBtn"].forEach((id) => { const e = $(id); if (e) e.style.display = "none"; });
-      const m = $("tpMsg"); m.style.color = "var(--retro-teal)"; m.textContent = "🪪 Aperçu, voici votre profil tel que les autres voyageurs le voient";
+      const m = $("tpMsg"); m.style.color = "var(--accent)"; m.textContent = "🪪 Aperçu : voici ton profil tel que les autres voyageurs le voient";
       mateProfileBack = () => goToTab("profil");
     });
     // Verrouillage des fonctionnalités Gold (ce qui se grise pour un compte gratuit)
@@ -8289,7 +8289,7 @@
       document.body.classList.toggle("theme-dusk", dusk);
       const tt = $("themeToggle"); if (tt) tt.textContent = dusk ? "☀️" : "🌙";
       const st = $("setThemeToggle"); if (st) st.checked = dusk; // garde le toggle des Réglages synchro
-      const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", dusk ? "#20182f" : "#FF5A4D");
+      const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", dusk ? "#171026" : "#fbeee9");
     }
     applyTheme(localStorage.getItem("sm_theme") || "day");
     $("themeToggle").addEventListener("click", () => {
