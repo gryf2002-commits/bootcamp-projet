@@ -4433,12 +4433,14 @@
       const rows = data || [];
       const unit = ({ xp: "XP", checkins: "check-ins", trust: "pts", badges: "🏅" })[lbMetric] || "";
       const inTop = rows.some((r) => r.id === myUserId);
-      // Profil privé : on n'apparaît pas. Opt-in clair (avec avertissement).
-      const isPrivate = !!(myProfile && myProfile.is_public === false);
+      // Consentement explicite : tant que le partage n'est pas ACTIVÉ (is_public === true),
+      // on demande l'accord avant d'exposer le pseudo. (null/false = pas encore consenti.)
+      const optedIn = !!(myProfile && myProfile.is_public === true);
+      const isPrivate = !optedIn;
       const optIn = isPrivate ? `<div class="lb-optin">
-          <b>🔒 Tu es en mode privé</b>
-          <div style="font-size:.82rem;margin:.2rem 0 .5rem">Tu n'apparais pas dans le classement. En participant, ton <b>pseudo et ta ville</b> deviennent visibles et les autres pourront te <b>rechercher</b>.</div>
-          <button class="btn-primary btn-block" id="lbJoinBtn">🏆 Participer au classement</button>
+          <b>🔒 Ton classement est privé</b>
+          <div style="font-size:.82rem;margin:.2rem 0 .5rem">Tu n'apparais <b>pas</b> dans le classement public. En participant, ton <b>pseudo et ta ville</b> deviennent visibles et les autres pourront te <b>rechercher</b>. Tu peux te retirer à tout moment dans les Réglages.</div>
+          <button class="btn-primary btn-block" id="lbJoinBtn">🏆 Je veux participer au classement</button>
         </div>` : "";
       box.innerHTML = optIn + (rows.length ? rows.map((r, i) => {
         const me = r.id === myUserId;
@@ -7053,7 +7055,9 @@
       else if (s === "xp") { showInfo("⭐ Ton XP", `<div style="line-height:1.6;font-size:.9rem;text-align:center">
         <div style="font-size:2.4rem;font-weight:800;color:#B5740E">${(myProfile && myProfile.xp) || 0} XP</div>
         <p style="margin:.4rem 0">L'XP est ta <b>monnaie de jeu</b> : tu en gagnes en accomplissant des quêtes. Elle te fait grimper au <b>classement</b> 🏆</p>
-        <p class="muted" style="font-size:.8rem">Bientôt : débloque des <b>titres</b> et de la <b>personnalisation</b> avec ton XP 🎨</p></div>`); }
+        <p class="muted" style="font-size:.8rem;margin-bottom:.6rem">Ton XP débloque des <b>titres</b> et des <b>cadres d'avatar</b> dans la boutique 🎨</p>
+        <button class="btn-primary btn-block" id="xpShopBtn">🛍️ Ouvrir la boutique XP</button></div>`);
+        const sb = $("xpShopBtn"); if (sb) sb.addEventListener("click", () => { closePicker(); goToTab("jeux"); showJeuxView("jeuxShop"); if (typeof renderShop === "function") renderShop(); }); }
       else if (s === "mates") { goToTab("connexions"); if (typeof showMatesView === "function") showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("messages"); }
       else if (s === "checkins") showProfileSegment("checkins");
     }));
@@ -8074,15 +8078,20 @@
     });
 
     // Tuiles de catégories de l'onglet Lieux → déclenchent les filtres (logique existante réutilisée).
+    // Rangée Lieux = UN SEUL sélecteur (filtre OU tri) : une seule tuile active à la fois.
+    // Choisir un tri remet le filtre sur « Tous », et inversement → fini les 2 tuiles allumées.
     document.querySelectorAll("#lieuxCats .cat-tile").forEach((t) => t.addEventListener("click", () => {
+      if (t.classList.contains("active")) return; // déjà sélectionnée → rien à faire
+      document.querySelectorAll("#lieuxCats .cat-tile").forEach((x) => x.classList.toggle("active", x === t));
       if (t.dataset.catcf) {
-        document.querySelectorAll("#lieuxCats [data-catcf]").forEach((x) => x.classList.toggle("active", x === t));
-        const chip = document.querySelector('#cafeFilters [data-cf="' + t.dataset.catcf + '"]'); if (chip) chip.click();
+        cafeSortKey = "default"; // un filtre annule le tri en cours
+        const chip = document.querySelector('#cafeFilters [data-cf="' + t.dataset.catcf + '"]');
+        if (chip) chip.click();              // gère la géoloc (« near ») + renderCafesList
+        else { cafeFilter.mode = t.dataset.catcf; renderCafesList(); }
       } else if (t.dataset.catsort) {
-        const already = t.classList.contains("active");
-        document.querySelectorAll("#lieuxCats [data-catsort]").forEach((x) => x.classList.remove("active"));
-        cafeSortKey = already ? "default" : t.dataset.catsort;
-        if (!already) t.classList.add("active");
+        cafeFilter.mode = "all";             // un tri repart de tous les lieux
+        if (typeof setCafeChipActive === "function") setCafeChipActive("all");
+        cafeSortKey = t.dataset.catsort;
         renderCafesList();
       }
     }));
