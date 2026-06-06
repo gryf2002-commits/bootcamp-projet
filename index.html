@@ -5001,11 +5001,13 @@
     { const h = $("fcHangup"); if (h) h.addEventListener("click", fcStop); }
     { const b = $("fakeCallBtn"); if (b) b.addEventListener("click", () => {
       const names = ["Maman", "Papa", "Léa", "Le boulot", "Numéro inconnu"];
-      openPicker("📞 Faux appel, qui t'appelle ?", names.map((n, i) => ({ label: n, id: String(i), avatar: null })), (it) => {
-        closePicker();
+      // Chooser compact (petits boutons) au lieu d'un gros picker avec avatars.
+      showInfo("📞 Qui t'appelle ?", `<div style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center">${names.map((n, i) => `<button class="btn-ghost fc-pick" data-fcname="${escapeHtml(n)}" style="flex:0 0 auto">${escapeHtml(n)}</button>`).join("")}</div>`);
+      document.querySelectorAll(".fc-pick").forEach((bt) => bt.addEventListener("click", () => {
+        const name = bt.dataset.fcname; closePicker();
         toast("📞", "Appel simulé dans 5 s… range ton téléphone 😉");
-        fcStartTimeout = setTimeout(() => startFakeCall(it.label), 5000);
-      });
+        fcStartTimeout = setTimeout(() => startFakeCall(name), 5000);
+      }));
     }); }
 
     // ---- Signal lumineux d'aide : écran clair (pulsation LENTE, pas de strobe) + écran maintenu allumé. ----
