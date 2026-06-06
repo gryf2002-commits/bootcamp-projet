@@ -55,7 +55,7 @@
   </script>
   <style>
     /* ===================================================================
-       SUNMATES — Système de design (thème clair / corail)
+       SUNMATES, Système de design (thème clair / corail)
        Inspiré des maquettes UX/UI : fond clair, couleur corail, cartes
        blanches arrondies, barre de navigation en bas.
        =================================================================== */
@@ -347,7 +347,7 @@
     @keyframes confettiFall { to { transform: translateY(108vh) rotate(600deg); opacity: .85; } }
 
     /* ====================================================================
-       NOUVEAUTÉS sociales (session 14) — présence, vouch, traduction,
+       NOUVEAUTÉS sociales (session 14), présence, vouch, traduction,
        match, QR, statut éphémère. Tout reste dans la DA corail/sable.
        ==================================================================== */
     /* ---- Présence « actif récemment » : pastille verte sur l'avatar ---- */
@@ -514,7 +514,7 @@
     .char-count { display: block; text-align: right; font-size: .72rem; color: var(--muted); margin-top: .25rem; }
     .char-count.over { color: var(--danger); font-weight: 700; }
 
-    /* ---- Fondu entre les onglets (et les segments du profil) — bien visible ----
+    /* ---- Fondu entre les onglets (et les segments du profil), bien visible ----
        (la règle .tab-panel:not(.hidden) est définie une seule fois, plus bas) ---- */
     @keyframes tabFade { from { opacity: 0; transform: translateY(16px) scale(.985); } to { opacity: 1; transform: none; } }
     .prof-seg:not(.hidden) { animation: tabFade .3s cubic-bezier(.22,.8,.3,1); }
@@ -910,7 +910,7 @@
     .q-inprog { margin-left: .4rem; font-size: .68rem; font-weight: 700; color: #B5740E; background: rgba(255,177,60,.18); padding: .08rem .45rem; border-radius: 999px; }
     .quest-counter { font-size: .76rem; color: var(--muted); font-weight: 600; }
     .quest-counter b { color: var(--accent); }
-    /* Tuiles « ouvrir en feuille » (Quêtes / Jeux) — anti-scroll */
+    /* Tuiles « ouvrir en feuille » (Quêtes / Jeux), anti-scroll */
     .jeux-open { display: flex; align-items: center; gap: .8rem; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: .85rem 1rem; margin-bottom: .7rem; cursor: pointer; box-shadow: var(--shadow-sm); transition: transform .12s, box-shadow .15s; }
     .jeux-open:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
     .jeux-open .jo-ic { width: 44px; height: 44px; min-width: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; color: #fff; }
@@ -975,7 +975,7 @@
     .review-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
     .review-stars { color: #FFB52E; font-size: .82rem; letter-spacing: 1px; flex-shrink: 0; }
     .review-txt { font-size: .85rem; color: var(--text); line-height: 1.4; margin-top: .15rem; }
-    /* Faux appel (sortie de secours) — plein écran façon appel entrant */
+    /* Faux appel (sortie de secours), plein écran façon appel entrant */
     .fakecall { position: fixed; inset: 0; z-index: 99999; background: linear-gradient(180deg,#1b1b24,#0b0b11); color: #fff; display: flex; align-items: center; justify-content: center; }
     .fakecall.hidden { display: none; }
     .fc-inner { width: 100%; max-width: 420px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: calc(3.5rem + env(safe-area-inset-top)) 2rem calc(3.5rem + env(safe-area-inset-bottom)); }
@@ -1047,7 +1047,7 @@
     .shop-meta { font-size: .72rem; color: var(--muted); }
     .shop-item.on .shop-meta { color: var(--accent); font-weight: 700; }
     /* Cadres d'avatar (appliqués à .avatar) */
-    /* Cadres d'avatar (s'appliquent à l'avatar ET à l'aperçu boutique) — distincts + glow */
+    /* Cadres d'avatar (s'appliquent à l'avatar ET à l'aperçu boutique), distincts + glow */
     .avatar.frame-gold, .shop-frame-prev.frame-gold { box-shadow: 0 0 0 3px #f5c451, 0 0 12px rgba(245,196,81,.55); }
     .avatar.frame-coral, .shop-frame-prev.frame-coral { box-shadow: 0 0 0 3px #ff7e5f, 0 0 12px rgba(255,126,95,.5); }
     .avatar.frame-sunset, .shop-frame-prev.frame-sunset { box-shadow: 0 0 0 3px #ffce6b, 0 0 0 6px #ff5a4d, 0 0 14px rgba(255,90,77,.4); }
@@ -1224,7 +1224,7 @@
     #alertBanner button { background: #fff; color: #b91c1c; padding: .25rem .8rem; margin-left: .8rem; font-size: .85rem; }
     @keyframes pulse { from { background: #ef4444; } to { background: #dc2626; } }
     /* ===================================================================
-       POLISH — couche de finition visuelle (chargée en dernier)
+       POLISH, couche de finition visuelle (chargée en dernier)
        Dégradés coucher de soleil, effets verre, ombres douces,
        micro-animations. N'affecte que l'apparence.
        =================================================================== */
@@ -1289,7 +1289,7 @@
     /* Apparition des panneaux au changement d'onglet (keyframes tabFade défini plus haut) */
     .tab-panel:not(.hidden) { animation: tabFade .34s cubic-bezier(.22,.8,.3,1) both; }
     /* ===================================================================
-       POLISH v2 — finitions écran par écran
+       POLISH v2, finitions écran par écran
        =================================================================== */
 
     /* --- Écran de connexion : héros vivant --- */
@@ -1310,7 +1310,7 @@
     /* « Bonjour {pseudo} » en corail/rouge (l'âme SunMates). */
     #homeHello { color: var(--accent); }
     #homeHello .hello-name { color: var(--accent); }
-    /* Série de jours (streak) — gamification douce près du Bonjour */
+    /* Série de jours (streak), gamification douce près du Bonjour */
     .hello-row { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-top: .1rem; }
     .streak-chip { flex-shrink: 0; display: inline-flex; align-items: center; gap: .25rem; font-size: .76rem; font-weight: 800;
       color: #B5740E; background: linear-gradient(135deg, rgba(255,201,60,.22), rgba(255,138,61,.18));
@@ -1382,16 +1382,16 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
     /* ===================================================================
-       POLISH v3 — « VACATION × SUNMATES » : voyage rétro & réaliste
+       POLISH v3, « VACATION × SUNMATES » : voyage rétro & réaliste
        Inspiration : l'esthétique solaire rétro de la marque Vacation Inc.
        (crème solaire, années 80, loisir balnéaire), mais on garde l'âme
        corail « sécurité d'abord » de SunMates. On ajoute des MATIÈRES
        crédibles : grain photo, papier chaud, brillance « huile solaire »,
        tampons de passeport, cartes d'embarquement, rayons de soleil.
-       Couche ajoutée en dernier — n'affecte QUE l'apparence.
+       Couche ajoutée en dernier, n'affecte QUE l'apparence.
        =================================================================== */
     :root {
-      --retro-teal:   #1f9e92;   /* turquoise rétro — la touche « mer/voyage » */
+      --retro-teal:   #1f9e92;   /* turquoise rétro, la touche « mer/voyage » */
       --retro-teal-2: #36c3b4;
       --butter:       #ffd27a;   /* jaune beurre (soleil) */
       --cream:        #fff6e9;   /* crème solaire */
@@ -1411,7 +1411,7 @@
     .brand b { font-weight: 700; letter-spacing: -.01em; }
     .logo-text { font-weight: 900; letter-spacing: .03em; }
 
-    /* Petites étiquettes en capitales espacées — façon signalétique rétro */
+    /* Petites étiquettes en capitales espacées, façon signalétique rétro */
     .logo-tag, .t-meta, .section-head a, label {
       text-transform: uppercase; letter-spacing: .13em; font-size: .68rem; font-weight: 600;
     }
@@ -1509,7 +1509,7 @@
     #pickerBody { overflow-y: auto; flex: 1; }
 
     /* ===================================================================
-       SESSION 3 — Notifications, toasts, feed d'accueil, accordéon profil
+       SESSION 3, Notifications, toasts, feed d'accueil, accordéon profil
        =================================================================== */
     .topbar-actions { display: flex; align-items: center; gap: .5rem; }
     .iconbtn { background: rgba(255,255,255,.75); border: 1px solid rgba(255,90,77,.15); border-radius: 12px; padding: .45rem .6rem; font-size: 1.15rem; line-height: 1; box-shadow: var(--shadow-sm); cursor: pointer; position: relative; }
@@ -1552,7 +1552,7 @@
     .pf-body { max-height: 0; overflow: hidden; padding: 0 1rem; transition: max-height .32s ease; }
     .pf-section.open .pf-body { padding-bottom: 1rem; }
 
-    /* ===== SESSION 4 — sous-onglets Mates, feed "posts", recherche ===== */
+    /* ===== SESSION 4, sous-onglets Mates, feed "posts", recherche ===== */
     /* Sous-onglets (Mates) */
     .mseg { display: flex; gap: .35rem; background: var(--cream); border: 1px solid rgba(255,90,77,.12); border-radius: 14px; padding: .3rem; margin: .7rem 0 1rem; }
     .mseg button { flex: 1; background: transparent; color: var(--text); font-weight: 700; font-size: .8rem; padding: .55rem .2rem; border-radius: 10px; position: relative; }
@@ -1600,7 +1600,7 @@
     .bubble.me .bubble-act button:hover { background: rgba(255,255,255,.45); }
 
     /* ===================================================================
-       MODE SOMBRE — « crépuscule / plage de nuit » (parallèle de l'aube)
+       MODE SOMBRE, « crépuscule / plage de nuit » (parallèle de l'aube)
        Ciel violet-indigo + lueur de coucher de soleil. Activé par body.theme-dusk
        =================================================================== */
     body.theme-dusk {
@@ -1637,7 +1637,7 @@
        déjà géré plus haut ; rien d'animé n'est ajouté ici. */
 
     /* ===================================================================
-       SUNMATES — IDENTITÉ DE MARQUE v2  « Maison de voyage »
+       SUNMATES, IDENTITÉ DE MARQUE v2  « Maison de voyage »
        Inspiration : raffinement éditorial (Voyageurs du Monde) + chaleur
        rétro-premium (Vacation), pour une app de voyage gamifiée haut de gamme.
        Palette propre : ivoire · espresso · TERRACOTTA · PÉTROLE · OR.
@@ -1649,12 +1649,12 @@
       --card:      #FFFCF6;            /* blanc chaud */
       --paper:     #FFFCF6;
       --cream:     #F2E9D8;
-      --accent:    #BE5640;            /* TERRACOTTA — couleur signature */
+      --accent:    #BE5640;            /* TERRACOTTA, couleur signature */
       --accent-2:  #CF7355;
       --accent-3:  #D9A441;            /* OR / ambre */
       --accent-grad: linear-gradient(135deg, #D9A441 0%, #C76A49 48%, #BE5640 100%);
       --accent-soft: #F1E4D7;          /* terracotta très pâle */
-      --petrol:    #114C49;            /* BLEU PÉTROLE — secondaire voyage */
+      --petrol:    #114C49;            /* BLEU PÉTROLE, secondaire voyage */
       --gold:      #C79A43;
       --retro-teal:#16615C;            /* pétrole (liens d'action) */
       --ink:       #241C12;            /* espresso (titres) */
@@ -1757,17 +1757,17 @@
     body.theme-dusk .notif-card, body.theme-dusk .picker-card { background: #152A27; }
 
     /* ===================================================================
-       SUNMATES — IDENTITÉ v3  « VIBRANT VACANCES » 🌅🌴
+       SUNMATES, IDENTITÉ v3  « VIBRANT VACANCES » 🌅🌴
        App pour se faire des potes en voyage : ça doit RESPIRER la chaleur,
        le soleil et la convivialité. Couleurs vives (soleil/corail/turquoise/
        rose crépuscule), dégradés généreux, ambiances photo pour les jeux.
-       Couche finale — prime sur toutes les précédentes.
+       Couche finale, prime sur toutes les précédentes.
        =================================================================== */
     :root {
       --bg:        #FFF4E6;
       --bg-grad:   linear-gradient(168deg, #FFE6B0 0%, #FFCBA6 26%, #FFB8CE 54%, #B7E9EE 100%);
       --card:      #FFFFFF; --paper: #FFFDF8; --cream: #FFF1E0;
-      --accent:    #FF5A4D;            /* corail soleil — signature */
+      --accent:    #FF5A4D;            /* corail soleil, signature */
       --accent-2:  #FF8A3D;            /* mangue */
       --accent-3:  #FFC93C;            /* jaune soleil */
       --accent-grad: linear-gradient(135deg, #FFC93C 0%, #FF7A3D 46%, #FF4F6D 100%);
@@ -1852,7 +1852,7 @@
     .bottom-nav button.active { font-weight: 700; }
     .bottom-nav button.active::before { display: none; } /* on garde uniquement la pastille */
 
-    /* =================== DARK — « NUIT TROPICALE » =================== */
+    /* =================== DARK, « NUIT TROPICALE » =================== */
     body.theme-dusk {
       --bg: #190E2E; --card: #271641; --paper: #271641; --cream: #2E1B4C;
       --accent: #FF6A5D; --accent-2: #FF9248; --accent-3: #FFD15C;
@@ -1947,7 +1947,7 @@
     .signal-close { position: absolute; bottom: calc(1.4rem + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: #111; color: #fff; border: 0; border-radius: 999px; padding: .7rem 1.4rem; font-weight: 800; cursor: pointer; }
     #goldPreviewBanner { display: none; }
     body.gold-free #goldPreviewBanner { display: block; background: linear-gradient(135deg,#FFD15C,#E89B2B); color: #5a3d00; text-align: center; font-weight: 700; font-size: .8rem; padding: .5rem; }
-    /* Exclus Gold (lieu / quête) — lisibles en clair ET en sombre */
+    /* Exclus Gold (lieu / quête), lisibles en clair ET en sombre */
     .gold-place { background: transparent !important; border: 0 !important; }
     /* Tuile « à venir » (Gold) grisée et non cliquable */
     /* « Bientôt dispo » : volontairement grisé + non cliquable (fonction à venir) */
@@ -1973,7 +1973,7 @@
   <div id="toastWrap"></div>
 
   <!-- Bandeau d'état réseau (hors-ligne / Supabase injoignable) -->
-  <div id="netBanner" class="net-banner">📡 Hors-ligne — vérifie ta connexion</div>
+  <div id="netBanner" class="net-banner">📡 Hors-ligne, vérifie ta connexion</div>
 
   <!-- Bannière « Installer l'app » (PWA) -->
   <div id="pwaBanner" class="pwa-banner">
@@ -2251,7 +2251,7 @@
             <div><div class="ap-ic">📊</div><div class="ap-l">Statistiques</div></div>
           </div>
         </div>
-        <button class="btn-primary btn-block" id="authProStart" style="margin-top:1rem;font-size:1.05rem;padding:1rem">🚀 Démarrer — Espace Pro</button>
+        <button class="btn-primary btn-block" id="authProStart" style="margin-top:1rem;font-size:1.05rem;padding:1rem">🚀 Démarrer, Espace Pro</button>
         <p class="muted" style="text-align:center;font-size:.78rem;margin-top:.6rem">Aucun compte requis : découvre l'offre et envoie ta demande de partenariat.</p>
       </div>
     </div>
@@ -2397,7 +2397,7 @@
 
         <details class="card spot-card" id="spotCard">
           <summary><span data-i18n="spot.title">☀️ Mon spot du jour</span><span class="sp-right"><span class="sp-sum" id="spotSummary"></span><span class="sp-chev">▸</span></span></summary>
-          <p class="muted" style="font-size:.8rem;margin:.5rem 0" data-i18n="spot.sub">Dis où tu traînes aujourd'hui — visible 24 h, façon story.</p>
+          <p class="muted" style="font-size:.8rem;margin:.5rem 0" data-i18n="spot.sub">Dis où tu traînes aujourd'hui, visible 24 h, façon story.</p>
           <div id="spotCurrent" style="display:none;margin-bottom:.5rem"></div>
           <div class="spot-emoji-pick" id="spotEmojiPick"></div>
           <div class="spot-compose">
@@ -2530,7 +2530,7 @@
             <div class="tp-hero-badges" id="tpHeroBadges"></div>
             <div class="dh-body"><div class="dh-name" id="tpName">—</div><div class="dh-city" id="tpCity">📍 —</div></div>
           </div>
-          <div id="tpDemoBanner" class="demo-banner" style="display:none">🤖 Profil de <b>démonstration</b> (compte IA) — pour découvrir l'app, ce n'est pas un vrai voyageur.</div>
+          <div id="tpDemoBanner" class="demo-banner" style="display:none">🤖 Profil de <b>démonstration</b> (compte IA), pour découvrir l'app, ce n'est pas un vrai voyageur.</div>
           <div id="tpSpot" style="margin:-.2rem 0 .8rem;display:none"></div>
           <div class="dstats" style="margin-bottom:.8rem">
             <div class="dstat"><b id="tpCompat">—</b><span>Compatibilité ❤️</span></div>
@@ -2919,7 +2919,7 @@
             <button class="btn-primary" id="saveProfileBtn">Enregistrer</button>
             <button class="btn-accent" id="verifyBtn">Demander la vérification</button>
           </div>
-          <p class="muted" style="font-size:.74rem;margin:.5rem 0 0;text-align:center">🔎 Vérification <b>simulée</b> (démo MVP) — la vraie vérification d'identité arrivera avec le backend.</p>
+          <p class="muted" style="font-size:.74rem;margin:.5rem 0 0;text-align:center">🔎 Vérification <b>simulée</b> (démo MVP), la vraie vérification d'identité arrivera avec le backend.</p>
           <div class="msg" id="profileMsg"></div>
         </div>
         </div><!-- /prof-seg edit -->
@@ -3080,7 +3080,7 @@
         </div>
       </div>
 
-      <!-- ---------------- Onglet JEUX (gamification — visuel) ---------------- -->
+      <!-- ---------------- Onglet JEUX (gamification, visuel) ---------------- -->
       <div class="tab-panel hidden" data-panel="jeux">
 
         <!-- Vue principale : Jeux & Quêtes -->
@@ -3107,7 +3107,7 @@
 
           <div class="card sugg-card" id="groupConfirmSection" style="display:none">
             <h3 style="margin-top:0;display:flex;align-items:center;gap:.4rem">👥 Quêtes à confirmer <span class="sugg-count" id="groupCount"></span></h3>
-            <p class="muted" style="font-size:.8rem;margin:.2rem 0 .5rem">Un Mate t'a inclus·e dans une quête de groupe. Confirme pour valider — vous gagnez tous les deux l'XP <b>+ bonus</b> ✨</p>
+            <p class="muted" style="font-size:.8rem;margin:.2rem 0 .5rem">Un Mate t'a inclus·e dans une quête de groupe. Confirme pour valider, vous gagnez tous les deux l'XP <b>+ bonus</b> ✨</p>
             <div id="groupConfirmList"></div>
           </div>
 
@@ -3293,7 +3293,7 @@
   </section>
 
   <!-- ====================================================== -->
-  <!-- SUPABASE (client chargé via CDN — pas de serveur Node) -->
+  <!-- SUPABASE (client chargé via CDN, pas de serveur Node) -->
   <!-- ====================================================== -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -3639,7 +3639,7 @@
     // Calcule et affiche le taux de complétion du profil
     const COMPLETION_FIELDS = ["pUsername", "pCity", "pBio", "pFirstName", "pLastName", "pPhone",
       "pBirthdate", "pGender", "pJob", "pHometown", "pInstagram", "pBucket", "pFavPlaces", "pHeight"];
-    // Série de jours (streak) — 100% local. Compte les jours consécutifs d'ouverture.
+    // Série de jours (streak), 100% local. Compte les jours consécutifs d'ouverture.
     const ymd = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
     function updateStreak() {
       const chip = $("homeStreak"); if (!chip) return;
@@ -3661,7 +3661,7 @@
       if (st._celebrated !== n && MILESTONES.includes(n)) {
         st._celebrated = n;
         try { localStorage.setItem("sm_streak_" + (myUserId || "x"), JSON.stringify(st)); } catch (e) {}
-        if (typeof toast === "function") toast("🔥", n + " jours de série — tu es en feu ! Continue 🌟");
+        if (typeof toast === "function") toast("🔥", n + " jours de série, tu es en feu ! Continue 🌟");
         if (typeof celebrate === "function") celebrate();
       }
     }
@@ -3738,7 +3738,7 @@
             <div style="flex:1"><div style="font-weight:800">${escapeHtml(trip.dest)}</div>
               <div class="muted" style="font-size:.8rem">${new Date(trip.date + "T00:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</div></div>
             <div class="nt-count">${when}</div></div>
-          ${started ? '<button class="btn-primary btn-block" id="ntGo" style="margin-top:.7rem">✈️ Mon voyage commence — passer en mode Voyage</button><button class="btn-accent btn-block" id="ntDone" style="margin-top:.5rem">🏁 J\'en suis revenu·e — archiver</button>' : ""}
+          ${started ? '<button class="btn-primary btn-block" id="ntGo" style="margin-top:.7rem">✈️ Mon voyage commence, passer en mode Voyage</button><button class="btn-accent btn-block" id="ntDone" style="margin-top:.5rem">🏁 J\'en suis revenu·e, archiver</button>' : ""}
           <button class="btn-ghost btn-block" id="ntClear" style="margin-top:.5rem">Modifier / annuler</button>`;
         const g = $("ntGo"); if (g) g.addEventListener("click", () => setHomeMode("travel"));
         const dn = $("ntDone"); if (dn) dn.addEventListener("click", () => { if (typeof archiveTrip === "function") archiveTrip(); });
@@ -3796,7 +3796,7 @@
         else if (g === "profil") { goToTab("profil"); if (typeof showProfileSegment === "function") showProfileSegment("edit"); }
       }));
     }
-    // Carnet de voyages vécus (archive locale) — boucle de souvenir
+    // Carnet de voyages vécus (archive locale), boucle de souvenir
     function loadTripsDone() { try { return JSON.parse(localStorage.getItem("sm_trips_done") || "[]") || []; } catch (e) { return []; } }
     function renderTripsDone() {
       const sec = $("tripsDoneSection"); if (!sec) return;
@@ -3804,7 +3804,7 @@
       if (!list.length) { show(sec, false); return; }
       show(sec, true);
       const box = $("tripsDoneCard"); if (!box) return;
-      box.innerHTML = `<div class="muted" style="font-size:.82rem;margin-bottom:.5rem">🌍 ${list.length} voyage${list.length > 1 ? "s" : ""} à ton actif — quelle aventure !</div>
+      box.innerHTML = `<div class="muted" style="font-size:.82rem;margin-bottom:.5rem">🌍 ${list.length} voyage${list.length > 1 ? "s" : ""} à ton actif, quelle aventure !</div>
         <div class="wish-wrap">${list.slice().reverse().map((t) => `<span class="wish-chip" style="background:linear-gradient(135deg,rgba(255,201,60,.22),rgba(122,92,255,.14))">${escapeHtml(t.dest)}</span>`).join("")}</div>`;
     }
     function archiveTrip() {
@@ -3852,7 +3852,7 @@
       $("completionFill").style.width = pct + "%";
       $("completionTxt").textContent = pct >= 100 ? "Profil complété à 100 % 🎉" : ("Profil complété à " + pct + "%");
       // Petite fête quand on ATTEINT 100 % en éditant (pas au chargement).
-      if (_completionInit && pct === 100 && !_wasComplete) { if (typeof toast === "function") toast("🎉", "Profil complété à 100 % — bravo !"); if (typeof celebrate === "function") celebrate(); }
+      if (_completionInit && pct === 100 && !_wasComplete) { if (typeof toast === "function") toast("🎉", "Profil complété à 100 %, bravo !"); if (typeof celebrate === "function") celebrate(); }
       _wasComplete = pct === 100; _completionInit = true;
       updateSectionPercents();
     }
@@ -3895,7 +3895,7 @@
         ${row("🛟", "Lieux sûrs différents visités", myDistinctPlaces, myDistinctPlaces > 0)}
         ${row("🤝", "Mates qui te font confiance", mates, mates > 0)}
         ${row("👍", "Mates qui te recommandent (vouch)", (window.myVouchCount || 0), (window.myVouchCount || 0) > 0)}
-        <p class="te-note">Un check-in se valide avec un <b>code affiché sur place</b>. Plus tu te montres dans des lieux sûrs et tisses des liens, plus les autres peuvent te faire confiance. 🌍<br><br><b>Les quêtes</b>, elles, rapportent de l'<b>XP ⭐</b> (monnaie de jeu) — pas de la confiance.</p>`;
+        <p class="te-note">Un check-in se valide avec un <b>code affiché sur place</b>. Plus tu te montres dans des lieux sûrs et tisses des liens, plus les autres peuvent te faire confiance. 🌍<br><br><b>Les quêtes</b>, elles, rapportent de l'<b>XP ⭐</b> (monnaie de jeu), pas de la confiance.</p>`;
     }
 
     async function loadProfile() {
@@ -4034,7 +4034,7 @@
       const { error } = await db.from("profiles")
         .update({ is_verified: true, trust_score: base + 30 }).eq("id", myUserId);
       if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; }
-      else { msg.textContent = ""; toast("✅", "Profil vérifié — +30 points de confiance 🛡️"); await loadProfile(); if (typeof checkMilestoneBadges === "function") checkMilestoneBadges(); }
+      else { msg.textContent = ""; toast("✅", "Profil vérifié, +30 points de confiance 🛡️"); await loadProfile(); if (typeof checkMilestoneBadges === "function") checkMilestoneBadges(); }
     }));
 
     // ---- Avatar : applique une image OU une initiale dans un élément .avatar ----
@@ -4215,7 +4215,7 @@
       const avg = rows.length ? rows.reduce((s, r) => s + r.rating, 0) / rows.length : 0;
       $("reviewsAvg").innerHTML = rows.length
         ? `<b style="font-size:1.5rem;color:var(--accent)">⭐ ${avg.toFixed(1)}</b> <span class="muted">/5 · ${rows.length} avis</span>`
-        : '<span class="muted">Aucun avis — sois le·la premier·ère ! ✨</span>';
+        : '<span class="muted">Aucun avis, sois le·la premier·ère ! ✨</span>';
       const mine = rows.find((r) => r.user_id === myUserId);
       if (mine) { setStars(mine.rating); $("reviewComment").value = mine.comment || ""; $("reviewSubmit").textContent = "Modifier mon avis"; }
       box.innerHTML = rows.length ? rows.map((r) => {
@@ -4379,7 +4379,7 @@
       }));
     }
 
-    // ====================== ADMIN — back-office ======================
+    // ====================== ADMIN, back-office ======================
     function showAdminSegment(seg) {
       document.querySelectorAll("[data-aseg]").forEach((b) => b.classList.toggle("active", b.dataset.aseg === seg));
       document.querySelectorAll("[data-asegpanel]").forEach((p) => show(p, p.dataset.asegpanel === seg));
@@ -4594,7 +4594,7 @@
         run: () => { adCleanup(); A(() => goToTab("profil")); setTimeout(() => adClick("profileSettingsBtn"), 500); } },
       { title: "🔔 Notifications", text: "Cloche, panneau, pastilles et toasts en temps réel : on ne rate rien.", ms: 5500,
         run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => adClick("notifBell"), 500); } },
-      { title: "🌍 SunMates en anglais", text: "Un simple réglage bascule toute l'interface en anglais — pratique pour les voyageurs du monde entier. Regarde la navigation et les filtres changer en direct.", ms: 7500,
+      { title: "🌍 SunMates en anglais", text: "Un simple réglage bascule toute l'interface en anglais, pratique pour les voyageurs du monde entier. Regarde la navigation et les filtres changer en direct.", ms: 7500,
         run: () => { adCleanup(); A(() => goToTab("connexions")); A(() => { if (typeof showMatesView === "function") showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); }); setTimeout(() => { if (typeof setLang === "function") setLang("en", { persist: false }); }, 700); setTimeout(() => { if (typeof setLang === "function") setLang(localStorage.getItem("sm_lang") || "fr", { persist: false }); }, 6400); } },
       { title: "🌙 Le mode sombre", text: "Un thème « nuit tropicale » repose les yeux le soir.", ms: 5500,
         run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => { if (!document.body.classList.contains("theme-dusk")) adClick("themeToggle"); }, 500); } },
@@ -4750,7 +4750,7 @@
         $("apNote").value = c.safety_note || ""; $("apEco").value = c.is_eco ? "true" : "false"; $("apLat").value = c.lat ?? ""; $("apLng").value = c.lng ?? "";
         $("apCode").value = codeMap[c.id] || ""; // ← on PRÉ-REMPLIT le vrai code (au lieu de le cacher)
         $("apAddr").value = c.address || ""; $("apImg").value = c.image_url || "";
-        $("apMsg").style.color = "var(--muted)"; $("apMsg").textContent = "Édition de « " + (c.name || "") + " » — le code actuel est affiché, modifie-le si besoin.";
+        $("apMsg").style.color = "var(--muted)"; $("apMsg").textContent = "Édition de « " + (c.name || "") + " », le code actuel est affiché, modifie-le si besoin.";
         window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
       }));
       wrap.querySelectorAll("[data-ap-del]").forEach((b) => b.addEventListener("click", async () => {
@@ -4842,7 +4842,7 @@
           <div class="lb-info"><div class="lb-name">${escapeHtml(r.username || "Voyageur")}${r.is_verified ? ' <span class="badge ok" style="padding:.02rem .3rem;font-size:.62rem">✓</span>' : ""}${me ? ' <span class="lb-you">toi</span>' : ""}</div><div class="lb-city muted" style="font-size:.76rem">${escapeHtml(r.city || "")}</div></div>
           <div class="lb-val">${r.value}<span> ${unit}</span></div>
         </div>`;
-      }).join("") : '<p class="muted">Personne au classement pour l\'instant — sois le premier 🌟</p>');
+      }).join("") : '<p class="muted">Personne au classement pour l\'instant, sois le premier 🌟</p>');
       // Bouton « participer » (sort du mode privé)
       { const jb = $("lbJoinBtn"); if (jb) jb.addEventListener("click", async () => {
         if (myProfile) myProfile.is_public = true;
@@ -4936,7 +4936,7 @@
     function setAlertActive(on) { try { localStorage.setItem("sm_alert_active", on ? "1" : "0"); } catch (e) {} updateSafetyBadge(); }
     function markSafetyOk(silent) {
       setAlertActive(false);
-      if (!silent && typeof toast === "function") toast("✅", "Ton cercle est rassuré — content de te savoir en sécurité 🌞");
+      if (!silent && typeof toast === "function") toast("✅", "Ton cercle est rassuré, content de te savoir en sécurité 🌞");
     }
     { const ag = $("allGoodBtn"); if (ag) ag.addEventListener("click", () => markSafetyOk(false)); }
     { const sl = $("sosLogo"); if (sl) sl.addEventListener("click", () => showSecuView("secuHelp")); }
@@ -4990,7 +4990,7 @@
     { const h = $("fcHangup"); if (h) h.addEventListener("click", fcStop); }
     { const b = $("fakeCallBtn"); if (b) b.addEventListener("click", () => {
       const names = ["Maman", "Papa", "Léa", "Le boulot", "Numéro inconnu"];
-      openPicker("📞 Faux appel — qui t'appelle ?", names.map((n, i) => ({ label: n, id: String(i), avatar: null })), (it) => {
+      openPicker("📞 Faux appel, qui t'appelle ?", names.map((n, i) => ({ label: n, id: String(i), avatar: null })), (it) => {
         closePicker();
         toast("📞", "Appel simulé dans 5 s… range ton téléphone 😉");
         fcStartTimeout = setTimeout(() => startFakeCall(it.label), 5000);
@@ -5054,7 +5054,7 @@
       const accepted = list.filter((c) => c.status === "accepted" && (c.user_a === myId || c.user_b === myId));
       connectedIds = new Set(accepted.map((c) => (c.user_a === myId ? c.user_b : c.user_a)).filter((id) => !blockedIds.has(id)));
 
-      // Demandes reçues (je suis user_b, en attente) — JAMAIS quelqu'un déjà connecté
+      // Demandes reçues (je suis user_b, en attente), JAMAIS quelqu'un déjà connecté
       const received = list.filter((c) => c.user_b === myId && c.status === "pending" && !connectedIds.has(c.user_a));
       pendingRequestsList = received.map((c) => ({ connId: c.id, fromId: c.user_a }));
       $("requestsList").innerHTML = received.length
@@ -5207,7 +5207,7 @@
       if (travFilters.active) list = list.filter((o) => isActive(o.p));
       if (travFilters.city) list = list.filter((o) => sameCityAs(myMatchProfile, o.p));
       if (travFilters.affinity) list = list.filter((o) => o.pct >= 50);
-      // Filtres avancés (âge / intention / langue / style) — réservés à Gold 👑
+      // Filtres avancés (âge / intention / langue / style), réservés à Gold 👑
       let advActive = false;
       if (iAmGold) {
         const aMin = parseInt($("fAgeMin")?.value, 10);
@@ -5283,7 +5283,7 @@
       renderTravelers($("travSearch").value);
     });
 
-    // Renvoie { ok, already, error } — already = "pending"|"accepted" si une
+    // Renvoie { ok, already, error }, already = "pending"|"accepted" si une
     // demande/connexion existe déjà (on n'en crée PAS une deuxième).
     async function sendConnection(otherId) {
       if (!myUserId || !otherId) return { ok: false };
@@ -5369,7 +5369,7 @@
     // Début de la semaine en cours (lundi 00:00) pour les objectifs hebdo.
     function _weekStart() { const n = new Date(); const day = (n.getDay() + 6) % 7; n.setHours(0, 0, 0, 0); n.setDate(n.getDate() - day); return n.getTime(); }
     function _isThisWeek(iso) { if (!iso) return false; const t = new Date(iso).getTime(); return t >= _weekStart(); }
-    // Objectifs de la semaine — dérivés des données réelles (aucun stockage, reset auto le lundi).
+    // Objectifs de la semaine, dérivés des données réelles (aucun stockage, reset auto le lundi).
     function renderWeeklyGoals() {
       const box = $("weeklyGoals"); if (!box) return;
       const ckWeek = (myCheckinsRaw || []).filter((c) => _isThisWeek(c.created_at)).length;
@@ -5384,7 +5384,7 @@
       // Fête la semaine parfaite, une seule fois par semaine.
       if (doneCount === goals.length) {
         const wkKey = "sm_wg_done_" + _weekStart();
-        try { if (!localStorage.getItem(wkKey)) { localStorage.setItem(wkKey, "1"); if (typeof toast === "function") toast("🎉", "Objectifs de la semaine bouclés — bravo !"); if (typeof celebrate === "function") celebrate(); } } catch (e) {}
+        try { if (!localStorage.getItem(wkKey)) { localStorage.setItem(wkKey, "1"); if (typeof toast === "function") toast("🎉", "Objectifs de la semaine bouclés, bravo !"); if (typeof celebrate === "function") celebrate(); } } catch (e) {}
       }
       box.innerHTML = `<details class="card wg-card" ${doneCount < goals.length ? "open" : ""}>
         <summary class="wg-head"><span>🗓️ Objectifs de la semaine</span><span class="wg-count">${doneCount}/${goals.length}</span><span class="wg-chev">▾</span></summary>
@@ -5438,9 +5438,9 @@
     function shareParcours() {
       const s = parcoursStats();
       const name = (myProfile && myProfile.username) || "Moi";
-      const text = `🧭 Mon parcours SunMates — ${name}\n📍 ${s.ck} check-ins · 🎯 ${s.q} quêtes · 🏅 ${s.b} badges · ⭐ ${s.xp} XP${s.trips > 0 ? ` · 🧳 ${s.trips} voyage${s.trips > 1 ? "s" : ""}` : ""}\nRejoins-moi sur SunMates ☀️`;
+      const text = `🧭 Mon parcours SunMates, ${name}\n📍 ${s.ck} check-ins · 🎯 ${s.q} quêtes · 🏅 ${s.b} badges · ⭐ ${s.xp} XP${s.trips > 0 ? ` · 🧳 ${s.trips} voyage${s.trips > 1 ? "s" : ""}` : ""}\nRejoins-moi sur SunMates ☀️`;
       if (navigator.share) { navigator.share({ title: "Mon parcours SunMates", text }).catch(() => {}); }
-      else if (navigator.clipboard) { navigator.clipboard.writeText(text).then(() => toast("📋", "Parcours copié — colle-le où tu veux !"), () => {}); }
+      else if (navigator.clipboard) { navigator.clipboard.writeText(text).then(() => toast("📋", "Parcours copié, colle-le où tu veux !"), () => {}); }
       else toast("🧭", text);
     }
     { const sp = $("shareParcoursBtn"); if (sp) sp.addEventListener("click", openSouvenir); }
@@ -5455,7 +5455,7 @@
 
     // Vue Gold réservée à l'admin (les exclus Gold ne sont visibles que par lui)
     function goldView() { return !!(myProfile && myProfile.is_admin) && iAmGold; }
-    // Quête exclusive Gold (démo, côté client — pas en base)
+    // Quête exclusive Gold (démo, côté client, pas en base)
     const GOLD_QUEST = { key: "gold_vip", demo: true, kind: "quest", title: "Soirée VIP partenaires", emoji: "🥂",
       city: "Exclusif Gold 👑", points: 50, badge_emoji: "🥂", badge_name: "VIP partenaire",
       coupon_title: "Cocktail premium", coupon_desc: "offert chez nos partenaires",
@@ -5538,7 +5538,7 @@
       const games = allQuests.filter((q) => q.kind === "game");
       const quests = allQuests.filter((q) => q.kind === "quest");
 
-      // Bandeau XP (monnaie de jeu, séparée du score de confiance) — compact + explication
+      // Bandeau XP (monnaie de jeu, séparée du score de confiance), compact + explication
       const xpb = $("xpBanner");
       if (xpb) {
         const xp = (myProfile && myProfile.xp) || 0;
@@ -5548,7 +5548,7 @@
           const seen = parseInt(localStorage.getItem("sm_last_level") || "1", 10) || 1;
           if (lvl > seen) {
             localStorage.setItem("sm_last_level", String(lvl));
-            if (typeof toast === "function") toast("🆙", "Niveau " + lvl + " atteint — bravo !");
+            if (typeof toast === "function") toast("🆙", "Niveau " + lvl + " atteint, bravo !");
             if (typeof celebrate === "function") celebrate();
           } else if (lvl < seen) { localStorage.setItem("sm_last_level", String(lvl)); }
         } catch (e) {}
@@ -5651,7 +5651,7 @@
       }).join("")
         + (hiddenSecrets ? `<div class="bitem secret" id="secretTeaser" style="cursor:pointer"><div class="hex">❓</div><div class="bname">Badges secrets</div><div class="bprog">${hiddenSecrets} à découvrir 👀</div></div>` : "");
       $("badgeGrid").querySelectorAll("[data-badge]").forEach((el) => el.addEventListener("click", () => showBadgeInfo(el.dataset.badge)));
-      { const tz = $("secretTeaser"); if (tz) tz.addEventListener("click", () => showInfo("Badges secrets 🔒", `<p style="text-align:center;line-height:1.6">Il existe <b>${hiddenSecrets} badge(s) secret(s)</b> à débloquer en explorant SunMates… 👀<br><br>À toi de les découvrir — ils apparaîtront ici une fois obtenus !</p>`)); }
+      { const tz = $("secretTeaser"); if (tz) tz.addEventListener("click", () => showInfo("Badges secrets 🔒", `<p style="text-align:center;line-height:1.6">Il existe <b>${hiddenSecrets} badge(s) secret(s)</b> à débloquer en explorant SunMates… 👀<br><br>À toi de les découvrir, ils apparaîtront ici une fois obtenus !</p>`)); }
       // Compteurs remis à la réalité (0 si rien d'accompli)
       { const ob = $("openBadges"); const bm = ob && ob.querySelector(".t-meta"); if (bm) bm.textContent = earned + "/" + defs.length + " débloqués"; }
       { const oc = $("openCoupons"); const cm = oc && oc.querySelector(".t-meta"); if (cm) cm.textContent = myCoupons.length + " disponible" + (myCoupons.length > 1 ? "s" : ""); }
@@ -5933,7 +5933,7 @@
             const res = data || {};
             m.style.color = res.ok ? "var(--ok)" : "var(--danger)";
             m.textContent = res.message || (res.ok ? "Demande envoyée." : "Échec.");
-            if (res.ok && typeof toast === "function") toast("👥", "Demande envoyée à <b>" + escapeHtml(item.label) + "</b> — il doit confirmer 🤝");
+            if (res.ok && typeof toast === "function") toast("👥", "Demande envoyée à <b>" + escapeHtml(item.label) + "</b>, il doit confirmer 🤝");
           });
         });
     });
@@ -6006,7 +6006,7 @@
     }
     // Vignette explicative quand on touche un badge « Vérifié » (vérification simulée en MVP).
     function showVerifInfo() {
-      showInfo("Vérification ✅", '<p style="line-height:1.55;text-align:left">Sur cette démo (MVP), la vérification est <b>simulée</b> : elle attribue le badge ✅ et des points de confiance, pour montrer le principe.<br><br>La <b>vraie vérification d\'identité</b> (pièce + selfie) arrivera avec le backend — c\'est le cœur de la promesse « sécurité » de SunMates. 🛡️</p>');
+      showInfo("Vérification ✅", '<p style="line-height:1.55;text-align:left">Sur cette démo (MVP), la vérification est <b>simulée</b> : elle attribue le badge ✅ et des points de confiance, pour montrer le principe.<br><br>La <b>vraie vérification d\'identité</b> (pièce + selfie) arrivera avec le backend, c\'est le cœur de la promesse « sécurité » de SunMates. 🛡️</p>');
     }
     ["tpVerif", "verifBadge"].forEach((id) => {
       const e = $(id);
@@ -6018,7 +6018,7 @@
     function togglePinBadge(key) {
       let a = loadPinnedBadges();
       if (a.includes(key)) a = a.filter((k) => k !== key);
-      else { if (a.length >= 3) { toast("✋", "3 badges max sur ton profil — retires-en un d'abord."); return; } a.push(key); }
+      else { if (a.length >= 3) { toast("✋", "3 badges max sur ton profil, retires-en un d'abord."); return; } a.push(key); }
       savePinnedBadges(a);
       if (typeof renderJeux === "function") renderJeux(); // met à jour la rangée du profil
       toast("📌", "Badges du profil mis à jour");
@@ -6052,14 +6052,14 @@
             <p class="muted">🔒 À toi de le découvrir…</p>
             ${def.secret_hint ? `<p class="muted" style="font-style:italic">Indice : ${escapeHtml(def.secret_hint)}</p>` : ""}</div>`;
       } else {
-        // Badge public verrouillé — OU badge secret vu par l'ADMIN (condition révélée).
+        // Badge public verrouillé, OU badge secret vu par l'ADMIN (condition révélée).
         const cond = def.unlock_condition || (quest ? ("Accomplis « " + quest.title + " »") : "");
         html = `<div style="text-align:center;padding:.4rem 0">
             <div style="font-size:3.2rem;filter:grayscale(1);opacity:.55">${def.emoji || (quest && quest.badge_emoji) || "🏅"}</div>
             <h3 style="margin:.3rem 0">${escapeHtml(def.name || (quest && quest.badge_name) || "Badge")}${def.is_secret ? ' <span class="badge no" style="font-size:.6rem">SECRET</span>' : ""}</h3>
             <p class="muted">🔒 Pas encore débloqué.</p>
             ${def.description ? `<p class="muted">${escapeHtml(def.description)}</p>` : ""}
-            ${isAdmin && cond ? `<p class="muted" style="margin-top:.4rem"><b>🛡️ Admin — condition :</b> ${escapeHtml(cond)}</p>` : ""}</div>`;
+            ${isAdmin && cond ? `<p class="muted" style="margin-top:.4rem"><b>🛡️ Admin, condition :</b> ${escapeHtml(cond)}</p>` : ""}</div>`;
       }
       showInfo("Badge", html);
     }
@@ -6571,7 +6571,7 @@
       }));
 
     // ====================== CENTRE DE SÉCURITÉ ======================
-    // Conseils sécurité (voyageur·se solo) — rotation quotidienne stable.
+    // Conseils sécurité (voyageur·se solo), rotation quotidienne stable.
     const SAFETY_TIPS = [
       "Partage ton itinéraire et l'adresse de ton logement avec un proche avant de partir.",
       "À l'arrivée dans une ville, repère le commissariat et l'hôpital les plus proches.",
@@ -6606,7 +6606,7 @@
     document.querySelectorAll("[data-sback]").forEach((b) =>
       b.addEventListener("click", () => showSecuView("secuHome")));
 
-    // Lignes "Sécurité & confidentialité" / "Préférences" — fonctionnelles
+    // Lignes "Sécurité & confidentialité" / "Préférences", fonctionnelles
     document.querySelectorAll("[data-secu]").forEach((el) =>
       el.addEventListener("click", () => handleSecu(el.dataset.secu)));
 
@@ -6703,7 +6703,7 @@
           <p class="muted" style="font-size:.72rem;margin:.6rem 0 0">Ces tips ne remplacent pas une formation aux premiers secours (PSC1).</p>
         </div>`);
       } else if (action === "support2") {
-        showInfo("Nous contacter", '<p style="text-align:center;line-height:1.6;padding:.4rem">🛠️ Le support arrive bientôt.<br><br>Merci de ta patience — SunMates est en plein développement ☀️</p>');
+        showInfo("Nous contacter", '<p style="text-align:center;line-height:1.6;padding:.4rem">🛠️ Le support arrive bientôt.<br><br>Merci de ta patience, SunMates est en plein développement ☀️</p>');
       } else if (action === "voyage") {
         showInfo("Voyager en sécurité ✈️", `<div class="faq-secu">
           <details open><summary>📍 Avant de sortir</summary><p>Préviens un proche/ton cercle de ton plan, partage ta position, garde ton téléphone chargé (et une batterie externe).</p></details>
@@ -7063,7 +7063,7 @@
 
       // Position d'un marqueur rattaché à un lieu : COORDONNÉES EXACTES du lieu (plus de
       // décalage). Ainsi tout ce qui se passe au même endroit (lieu + mates + check-ins +
-      // quêtes) se regroupe en UN point unique qui s'ouvre en rosace au zoom max — au lieu
+      // quêtes) se regroupe en UN point unique qui s'ouvre en rosace au zoom max, au lieu
       // de pastilles éparpillées qui se séparaient quand on zoomait trop.
       function jitterAt(cafe) { return [cafe.lat, cafe.lng]; }
       // Lieu de référence d'un membre : son dernier check-in. Sinon, pour une IA, un vrai lieu
@@ -7079,7 +7079,7 @@
         return null;
       }
 
-      // 📍 Lieux sûrs — à leurs vraies coordonnées
+      // 📍 Lieux sûrs, à leurs vraies coordonnées
       places.forEach((c) => {
         const nCk = ckByCafe[c.id] || 0;
         const photo = c.image_url ? `<img src="${escapeHtml(c.image_url)}" style="width:100%;height:72px;object-fit:cover;border-radius:8px;margin-bottom:5px" alt="">` : "";
@@ -7091,7 +7091,7 @@
         mk.smType = "places"; homeMarkersByType.places.push(mk); allMarkers.push(mk); homeCafeMarkerById[c.id] = mk;
       });
 
-      // 🧑 Mates — placés à leur vrai lieu de check-in (IA : un vrai lieu), sinon absents
+      // 🧑 Mates, placés à leur vrai lieu de check-in (IA : un vrai lieu), sinon absents
       mates.forEach((p) => {
         const cafe = cafeForMember(p); if (!cafe) return;
         const co = jitterAt(cafe, "mate-" + p.id);
@@ -7106,7 +7106,7 @@
         mk.smType = "mates"; homeMarkersByType.mates.push(mk); allMarkers.push(mk);
       });
 
-      // ✅ Check-ins RÉCENTS (< 1 h) — AU lieu exact (léger décalage déterministe)
+      // ✅ Check-ins RÉCENTS (< 1 h), AU lieu exact (léger décalage déterministe)
       recentCks.slice(0, 25).forEach((ck, i) => {
         const cafe = cafeById[ck.cafe_id]; if (!cafe) return;
         const who = travelerMap[ck.user_id]?.username || (ck.user_id === myUserId ? "Toi" : "Un voyageur");
@@ -7118,7 +7118,7 @@
         mk.smType = "checkins"; homeMarkersByType.checkins.push(mk); allMarkers.push(mk);
       });
 
-      // ✅ Check-ins d'exemple des IA — au MÊME vrai lieu que l'IA (cohérent)
+      // ✅ Check-ins d'exemple des IA, au MÊME vrai lieu que l'IA (cohérent)
       mates.filter((p) => p.is_demo).slice(0, 6).forEach((p) => {
         const cafe = cafeForMember(p); if (!cafe) return;
         const mk = L.marker(jitterAt(cafe, "ckdemo-" + p.id), { icon: epinIcon("✅", "#19b36b") })
@@ -7126,7 +7126,7 @@
         mk.smType = "checkins"; homeMarkersByType.checkins.push(mk); allMarkers.push(mk);
       });
 
-      // 📣 Activités partagées par les membres — vraies coordonnées choisies
+      // 📣 Activités partagées par les membres, vraies coordonnées choisies
       userActs.forEach((a) => {
         const mine = a.creator === myUserId;
         const creator = travelerMap[a.creator];
@@ -7139,7 +7139,7 @@
         mk.smType = "activities"; homeMarkersByType.activities.push(mk); allMarkers.push(mk);
       });
 
-      // 🎉 Exemples d'activités IA — sur de vrais lieux (cohérent avec leur position)
+      // 🎉 Exemples d'activités IA, sur de vrais lieux (cohérent avec leur position)
       const DEMO_ACTIVITIES = ["☕ Café découverte", "🌅 Lever de soleil ensemble", "🥾 Balade nature", "🍷 Apéro voyageurs", "🏄 Spot surf & co", "📸 Walk photo"];
       mates.filter((p) => p.is_demo).slice(0, 6).forEach((p, idx) => {
         if (idx % 2 !== 0) return;
@@ -7150,7 +7150,7 @@
         am.smType = "activities"; homeMarkersByType.activities.push(am); allMarkers.push(am);
       });
 
-      // 🎮 Quêtes à faire (dans des lieux partenaires) — accès direct depuis la carte
+      // 🎮 Quêtes à faire (dans des lieux partenaires), accès direct depuis la carte
       if (typeof allQuests !== "undefined" && allQuests.length && places.length) {
         allQuests.filter((q) => q.kind === "quest").slice(0, 5).forEach((q) => {
           let h = 0; const s = String(q.key); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100000;
@@ -7161,7 +7161,7 @@
         });
       }
 
-      // 🛟 Positions partagées au cercle (GPS réel) — visibles 1 h puis expirées
+      // 🛟 Positions partagées au cercle (GPS réel), visibles 1 h puis expirées
       const recentShares = (circleLocs || []).filter((l) => l.lat != null && nowMs - new Date(l.created_at).getTime() < HOUR);
       let myShare = null; const seenShareUser = new Set();
       recentShares.forEach((l) => {
@@ -7174,7 +7174,7 @@
         mk.smType = "mates"; homeMarkersByType.mates.push(mk); allMarkers.push(mk);
       });
 
-      // 📌 Toi — position partagée récente (réelle) en priorité ; sinon ton dernier check-in
+      // 📌 Toi, position partagée récente (réelle) en priorité ; sinon ton dernier check-in
       let meLatLng = null, meLabel = "";
       if (myShare) {
         meLatLng = [myShare.lat, myShare.lng];
@@ -7246,7 +7246,7 @@
       try { homeLeaf.fitBounds(L.featureGroup(homeAllMarkers).getBounds().pad(0.25)); } catch (e) {}
     }
 
-    // Plein écran de la carte d'accueil — 100 % CSS (.homemap-card.fs en position:fixed).
+    // Plein écran de la carte d'accueil, 100 % CSS (.homemap-card.fs en position:fixed).
     // Plus fiable cross-OS que l'API Fullscreen native (KO/instable sur iOS Safari). Après le
     // changement de taille, on force Leaflet à recalculer (invalidateSize + setView + refreshClusters).
     let homeFsFallback = false;
@@ -7600,7 +7600,7 @@
       goToTab("connexions");              // sinon la fiche s'ouvre dans un onglet caché
       openTravelerProfile(myProfile);     // = exactement la fiche que voient les autres
       ["tpMsgBtn", "tpConnectBtn", "tpChallengeBtn", "tpBffBtn", "tpBlockBtn"].forEach((id) => { const e = $(id); if (e) e.style.display = "none"; });
-      const m = $("tpMsg"); m.style.color = "var(--retro-teal)"; m.textContent = "🪪 Aperçu — voici votre profil tel que les autres voyageurs le voient";
+      const m = $("tpMsg"); m.style.color = "var(--retro-teal)"; m.textContent = "🪪 Aperçu, voici votre profil tel que les autres voyageurs le voient";
       mateProfileBack = () => goToTab("profil");
     });
     // Verrouillage des fonctionnalités Gold (ce qui se grise pour un compte gratuit)
@@ -7686,7 +7686,7 @@
     { const ps = $("authProStart"); if (ps) ps.addEventListener("click", () => openB2B("auth")); }
     $("b2bBack").addEventListener("click", closeB2B);
     const b2bScrollToForm = () => { const f = $("b2bForm"); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => { const c = $("b2bCompany"); if (c) c.focus(); }, 450); };
-    document.querySelectorAll("#b2bProPreview .qrow").forEach((r) => { r.style.cursor = "pointer"; r.addEventListener("click", () => toast("🔭", "Fonctionnalité Pro — bientôt disponible")); });
+    document.querySelectorAll("#b2bProPreview .qrow").forEach((r) => { r.style.cursor = "pointer"; r.addEventListener("click", () => toast("🔭", "Fonctionnalité Pro, bientôt disponible")); });
     const ADV_INFO = {
       visibilite: { e: "📈", t: "Visibilité maximale", n: "~320 voyageurs / mois", d: "Votre établissement apparaît sur la carte et dans les suggestions des voyageurs solo de votre ville." },
       badge: { e: "🛟", t: "Badge « Lieu sûr »", n: "+18% de visites", d: "Le label rassure : les lieux badgés voient en moyenne +18% de fréquentation." },
@@ -7713,7 +7713,7 @@
     }
     $("b2bUnlockCta").addEventListener("click", async () => {
       if (myProfile && myProfile.is_admin) {
-        const pw = prompt("Accès aperçu Pro (admin) — confirme ton mot de passe :");
+        const pw = prompt("Accès aperçu Pro (admin), confirme ton mot de passe :");
         if (pw == null) return;
         const { error } = await db.auth.signInWithPassword({ email: myEmail, password: pw });
         if (error) { toast("🔒", "Mot de passe incorrect"); return; }
@@ -7789,7 +7789,7 @@
       if (!confirm("Marquer ce coupon comme utilisé ?")) return;
       const { error } = await db.from("user_coupons").update({ used: true }).eq("id", id);
       if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); return; }
-      toast("🎟️", "Coupon utilisé — bon plan !");
+      toast("🎟️", "Coupon utilisé, bon plan !");
       await loadGameData();
     }
     // ---- Bloquer un voyageur ----
@@ -8114,7 +8114,7 @@
         "chat.translate": "Traduire", "chat.seeProfile": "Voir le profil ›", "tr.loading": "Traduction…", "tr.error": "Traduction indisponible", "tr.from": "Traduit",
         "vouch.title": "👍 Recommandé par des Mates", "vouch.sub": "Des voyageurs de confiance se portent garants de cette personne.", "vouch.subEmpty": "Sois le premier à recommander ce Mate de confiance.", "vouch.cta": "Recommander", "vouch.done": "✅ Recommandé", "vouch.needConnect": "Connecte-toi d'abord pour recommander", "vouch.none": "Aucune recommandation pour l'instant", "vouch.added": "Recommandation ajoutée 🟢", "vouch.removed": "Recommandation retirée",
         "match.title": "C'est un match !", "match.sub": "Toi et {name} êtes connectés 🎉", "match.message": "💬 Envoyer un message", "match.later": "Plus tard",
-        "spot.title": "☀️ Mon spot du jour", "spot.clear": "Effacer", "spot.sub": "Dis où tu traînes aujourd'hui — visible 24 h, façon story.", "spot.ph": "Ex : Café cosy à Lisbonne ☕", "spot.save": "Publier", "spot.saved": "Spot du jour publié ☀️", "spot.cleared": "Spot du jour effacé", "spot.need": "Écris d'abord ton spot du jour.", "spot.live": "En ligne 24 h", "spot.add": "Ajouter le tien ›",
+        "spot.title": "☀️ Mon spot du jour", "spot.clear": "Effacer", "spot.sub": "Dis où tu traînes aujourd'hui, visible 24 h, façon story.", "spot.ph": "Ex : Café cosy à Lisbonne ☕", "spot.save": "Publier", "spot.saved": "Spot du jour publié ☀️", "spot.cleared": "Spot du jour effacé", "spot.need": "Écris d'abord ton spot du jour.", "spot.live": "En ligne 24 h", "spot.add": "Ajouter le tien ›",
         "qr.title": "🪪 Mon QR SunMates", "qr.sub": "Fais-le scanner à un voyageur rencontré en vrai pour vous connecter en un instant.", "qr.scanTitle": "📷 Scanner un QR", "qr.scanSub": "Vise le QR SunMates d'un autre voyageur.", "qr.self": "C'est ton propre QR 🙂", "qr.notfound": "Profil introuvable.", "qr.found": "Profil de {name} ouvert 🪪", "qr.noCam": "Scanner indisponible sur cet appareil.", "qr.camErr": "Accès caméra refusé.",
         "ptr.pull": "↓", "ptr.release": "↑"
       },
@@ -8131,7 +8131,7 @@
         "chat.translate": "Translate", "chat.seeProfile": "See profile ›", "tr.loading": "Translating…", "tr.error": "Translation unavailable", "tr.from": "Translated",
         "vouch.title": "👍 Vouched by Mates", "vouch.sub": "Trusted travellers vouch for this person.", "vouch.subEmpty": "Be the first to vouch for this trusted Mate.", "vouch.cta": "Vouch", "vouch.done": "✅ Vouched", "vouch.needConnect": "Connect first to vouch", "vouch.none": "No recommendations yet", "vouch.added": "Vouch added 🟢", "vouch.removed": "Vouch removed",
         "match.title": "It's a match!", "match.sub": "You and {name} are connected 🎉", "match.message": "💬 Send a message", "match.later": "Later",
-        "spot.title": "☀️ My spot of the day", "spot.clear": "Clear", "spot.sub": "Share where you're hanging out today — visible for 24h, like a story.", "spot.ph": "e.g. Cosy café in Lisbon ☕", "spot.save": "Post", "spot.saved": "Spot of the day posted ☀️", "spot.cleared": "Spot of the day cleared", "spot.need": "Write your spot of the day first.", "spot.live": "Live for 24h", "spot.add": "Add yours ›",
+        "spot.title": "☀️ My spot of the day", "spot.clear": "Clear", "spot.sub": "Share where you're hanging out today, visible for 24h, like a story.", "spot.ph": "e.g. Cosy café in Lisbon ☕", "spot.save": "Post", "spot.saved": "Spot of the day posted ☀️", "spot.cleared": "Spot of the day cleared", "spot.need": "Write your spot of the day first.", "spot.live": "Live for 24h", "spot.add": "Add yours ›",
         "qr.title": "🪪 My SunMates QR", "qr.sub": "Let a traveller you meet in person scan it to connect instantly.", "qr.scanTitle": "📷 Scan a QR", "qr.scanSub": "Point at another traveller's SunMates QR.", "qr.self": "That's your own QR 🙂", "qr.notfound": "Profile not found.", "qr.found": "Opened {name}'s profile 🪪", "qr.noCam": "Scanner not available on this device.", "qr.camErr": "Camera access denied.",
         "ptr.pull": "↓", "ptr.release": "↑"
       }
@@ -8472,7 +8472,7 @@
         if (myProfile) myProfile.is_public = v;
         const { error } = await db.from("profiles").update({ is_public: v }).eq("id", myUserId);
         if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); pub.checked = !v; if (myProfile) myProfile.is_public = !v; }
-        else toast(v ? "🌍" : "🔒", v ? "Profil public — tu apparais dans le classement" : "Profil privé — tu n'apparais plus dans le classement");
+        else toast(v ? "🌍" : "🔒", v ? "Profil public, tu apparais dans le classement" : "Profil privé, tu n'apparais plus dans le classement");
       });
     })();
 
@@ -8539,7 +8539,7 @@
           { user_id: myUserId, endpoint: sub.endpoint, subscription: sub.toJSON() },
           { onConflict: "endpoint" }
         );
-      } catch (e) { /* push indisponible (file://, iOS non installé, refus…) — silencieux */ }
+      } catch (e) { /* push indisponible (file://, iOS non installé, refus…), silencieux */ }
     }
     function sysNotify(title, body) {
       if (!("Notification" in window) || Notification.permission !== "granted") return;
