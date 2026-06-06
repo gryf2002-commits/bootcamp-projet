@@ -1176,6 +1176,7 @@
     .tcard-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .7rem; }
     .tcard-tags span { font-size: .72rem; font-weight: 600; background: var(--cream); border: 1px solid var(--line); color: var(--ink); border-radius: 999px; padding: .22rem .55rem; }
     .tcard-reasons { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .45rem; }
+    .trav-count { font-size: .8rem; font-weight: 700; color: var(--muted); margin-bottom: .6rem; }
 
     /* ------------------------ Bannière d'alerte --------------------- */
     #alertBanner {
@@ -5204,7 +5205,7 @@
         ? (y.p.trust_score || 0) - (x.p.trust_score || 0)
         : y.pct - x.pct);
       $("travelersList").innerHTML = list.length
-        ? list.map(({ p, pct, reasons }) => {
+        ? `<div class="trav-count">🌍 ${list.length} voyageur${list.length > 1 ? "s" : ""} ${q ? ("trouvé" + (list.length > 1 ? "s" : "")) : "à découvrir"}</div>` + list.map(({ p, pct, reasons }) => {
             const tg = [...(p.intent || []).slice(0, 1), ...(p.interests || []).slice(0, 3)];
             return `<div class="tcard trav-open" data-profile="${p.id}">
               <div class="tcard-top">
