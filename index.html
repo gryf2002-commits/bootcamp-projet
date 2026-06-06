@@ -366,7 +366,7 @@
     .vouch-card { padding: .85rem 1rem; }
     .vouch-head { display: flex; align-items: center; justify-content: space-between; gap: .6rem; }
     .vouch-title { font-weight: 800; color: var(--ink); font-size: .92rem; display: flex; align-items: center; gap: .35rem; }
-    .vouch-title b { color: var(--ok); }
+    .vouch-title b { color: var(--accent); }
     .vouch-btn { padding: .5rem .8rem; font-size: .82rem; white-space: nowrap; flex-shrink: 0; }
     .vouch-row { display: flex; align-items: center; margin-top: .5rem; }
     .vouch-row:empty { display: none; }
@@ -640,7 +640,7 @@
     .homemap-filters .chip { font-size: .78rem; padding: .35rem .7rem; opacity: .5; }
     .homemap-filters .chip.active { opacity: 1; }
     .homemap-filters .chip b { font-weight: 800; opacity: .85; }
-    .homemap-wrap { position: relative; }
+    .homemap-wrap { position: relative; isolation: isolate; } /* contient les outils carte (z-index) -> ne débordent plus sur la nav du bas */
     .homemap { height: 340px; border-radius: 14px; overflow: hidden; background: var(--cream); position: relative; z-index: 0; isolation: isolate; }
     /* Plein écran : TOUTE la carte (filtres + carte + légende) passe en plein écran */
     .homemap-fsclose { display: none; }
@@ -1179,7 +1179,7 @@
 
     /* ------------------------ Compatibilité ------------------------- */
     .compat { display: inline-block; padding: .28rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 800; }
-    .compat.high { background: rgba(34,197,94,.14); color: var(--ok); }
+    .compat.high { background: var(--accent-soft); color: var(--accent); }
     .compat.mid  { background: var(--accent-soft); color: var(--accent); }
     .compat.low  { background: #f1f2f5; color: var(--muted); }
 
@@ -2735,6 +2735,7 @@
             <div class="tile" data-help="lieux"><div class="thumb purp">🛟</div><div class="t-name">Lieux publics sûrs</div><div class="t-meta">Validés</div></div>
             <div class="tile" data-help="mate"><div class="thumb blue">🤝</div><div class="t-name">Trouver un Mate sûr·e</div><div class="t-meta">Cercle de confiance</div></div>
             <div class="tile" data-help="numeros"><div class="thumb green">📞</div><div class="t-name">Numéros d'urgence</div><div class="t-meta">Par pays 🌍</div></div>
+            <div class="tile" style="opacity:.5;pointer-events:none"><div class="thumb">💬</div><div class="t-name">Support SunMates</div><div class="t-meta">Bientôt</div></div>
           </div>
 
           <div class="card" style="margin-top:1.4rem">
