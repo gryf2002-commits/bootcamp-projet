@@ -2648,7 +2648,7 @@
           <div class="person" style="border:0;padding:0">
             <div class="avatar" id="profileAvatar">😎</div>
             <div class="info">
-              <div class="name"><span id="profileName">Voyageur</span> <span id="verifBadge" class="badge no">Non vérifié</span></div>
+              <div class="name"><span id="profileName">Voyageur</span> <span id="verifBadge" class="badge no">Non vérifié</span> <span id="profileHostBadge" class="badge ok hidden">🛟 Hôte</span></div>
               <div class="profile-title" id="profileTitle"></div>
               <div class="meta" id="profileCity"></div>
             </div>
@@ -3686,6 +3686,7 @@
       if (t) t.textContent = host ? "🛟 Tu es hôte SunMates" : "Deviens hôte SunMates";
       if (d) d.textContent = host ? "Merci ! Les voyageurs de passage savent qu'ils peuvent compter sur toi dans ta ville 💛" : "Aide les voyageurs à se sentir en sécurité dans ta ville : conseils, bons spots, café d'accueil.";
       if (b) b.textContent = host ? "✓ Hôte actif" : "Je veux aider";
+      const pb = $("profileHostBadge"); if (pb) show(pb, host); // visible aussi sur la carte profil
     }
     { const hb = $("hostBtn"); if (hb) hb.addEventListener("click", () => {
       const becoming = !isHost();
@@ -3812,6 +3813,7 @@
       $("homeHello").innerHTML = 'Bonjour <span class="hello-name">' + escapeHtml(uname) + "</span>";
       if (typeof updateStreak === "function") updateStreak();
       if (typeof setHomeMode === "function") setHomeMode(getHomeMode(), false); // restaure le mode Voyage/Maison
+      if (typeof renderHost === "function") renderHost(); // badge hôte sur la carte profil
       const badge = $("verifBadge");
       badge.textContent = data.is_verified ? "✅ Vérifié" : "Non vérifié";
       badge.className = "badge " + (data.is_verified ? "ok" : "no");
