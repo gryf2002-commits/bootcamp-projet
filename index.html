@@ -1065,6 +1065,16 @@
     .dstat { flex: 1; background: var(--card); border-radius: var(--radius-sm); padding: .7rem .4rem; text-align: center; box-shadow: var(--shadow-sm); }
     .dstat b { display: block; color: var(--ink); font-size: 1rem; }
     .dstat span { color: var(--muted); font-size: .72rem; }
+    /* Hero de la fiche profil (premium) */
+    .tp-hero { height: 232px; }
+    .tp-hero-badges { position: absolute; top: .7rem; left: .7rem; right: .7rem; display: flex; flex-wrap: wrap; gap: .4rem; z-index: 2; }
+    .tph-chip { font-size: .72rem; font-weight: 800; padding: .28rem .6rem; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+    .tph-match { background: rgba(255,90,77,.94); color: #fff; }
+    .tph-verif { background: rgba(255,255,255,.94); color: #B5740E; }
+    .tph-online { background: rgba(255,201,60,.96); color: #6b4a00; }
+    .tp-hero .dh-name { font-size: 1.6rem; }
+    /* Stats de la fiche profil : chiffre en accent */
+    #matesProfile .dstat b { color: var(--accent); font-size: 1.15rem; font-weight: 800; }
 
     /* --------------------------- CHAT ------------------------------- */
     .chat-header { display: flex; align-items: center; gap: .7rem; padding: .2rem 0 1rem; border-bottom: 1px solid var(--line); margin-bottom: 1rem; flex-shrink: 0; }
@@ -2487,8 +2497,9 @@
         <!-- Vue profil voyageur détaillé -->
         <div id="matesProfile" class="mates-view hidden">
           <button class="backbtn" data-mback>‹ Retour</button>
-          <div class="detail-hero" id="tpHero">
+          <div class="detail-hero tp-hero" id="tpHero">
             <div class="dh-emoji" id="tpEmoji">🧑</div>
+            <div class="tp-hero-badges" id="tpHeroBadges"></div>
             <div class="dh-body"><div class="dh-name" id="tpName">—</div><div class="dh-city" id="tpCity">📍 —</div></div>
           </div>
           <div id="tpDemoBanner" class="demo-banner" style="display:none">🤖 Profil de <b>démonstration</b> (compte IA) — pour découvrir l'app, ce n'est pas un vrai voyageur.</div>
@@ -6370,6 +6381,15 @@
       const hero = $("tpHero");
       if (p.avatar_url) { hero.classList.add("has-photo"); hero.style.backgroundImage = "url('" + p.avatar_url + "')"; }
       else { hero.classList.remove("has-photo"); hero.style.backgroundImage = ""; $("tpEmoji").textContent = "🧑"; }
+      // Badges en surimpression sur le hero (résumé premium : match %, vérifié, en ligne)
+      { const hb = $("tpHeroBadges"); if (hb) {
+        const pctHero = compatibility(myMatchProfile, p);
+        const chips = [];
+        if (p.id !== myUserId) chips.push(`<span class="tph-chip tph-match">❤️ ${pctHero}%</span>`);
+        if (p.is_verified) chips.push('<span class="tph-chip tph-verif">✅ Vérifié</span>');
+        if (isActive(p)) chips.push('<span class="tph-chip tph-online">● En ligne</span>');
+        hb.innerHTML = chips.join("");
+      } }
       $("tpBio").textContent = p.bio || "Voyageur·se SunMates en quête de belles rencontres et d'aventures en sécurité. ✨";
       const verif = $("tpVerif");
       verif.textContent = p.is_verified ? "✅ Vérifié" : "Non vérifié";
