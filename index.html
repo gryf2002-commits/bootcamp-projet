@@ -3351,6 +3351,7 @@
     const SUPABASE_URL = "https://ihiwuharxkmkzaxixhae.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_-Q0evGrgq76Fp-YWLNA1Qg_jsOXEIcn";
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentLang = localStorage.getItem("sm_lang") || "fr"; // déclaré tôt (utilisé par renderSafetyTip/updateStreak appelés avant le bloc i18n)
 
     // --- Petits raccourcis ---
     const $ = (id) => document.getElementById(id);
@@ -6767,33 +6768,35 @@
     // ====================== CENTRE DE SÉCURITÉ ======================
     // Conseils sécurité (voyageur·se solo), rotation quotidienne stable.
     const SAFETY_TIPS = [
-      "Partage ton itinéraire et l'adresse de ton logement avec un proche avant de partir.",
-      "À l'arrivée dans une ville, repère le commissariat et l'hôpital les plus proches.",
-      "Garde une copie numérique (et papier) de ton passeport, séparée de l'original.",
-      "Fais confiance à ton intuition : si une situation te met mal à l'aise, pars.",
-      "En soirée, ne laisse jamais ton verre sans surveillance et garde de quoi rentrer.",
-      "Active le partage de position avec ton cercle de confiance quand tu sors seul·e.",
-      "Privilégie les lieux validés par la communauté pour tes premières rencontres.",
-      "Note le 112 (urgences UE) et ajoute tes contacts d'urgence (ICE) dans l'app.",
-      "Préviens quelqu'un de l'heure prévue de ton retour, et confirme « tout va bien ».",
-      "Évite d'afficher ta localisation en temps réel publiquement sur les réseaux.",
-      "Garde un peu d'argent liquide caché, séparé de ton portefeuille principal.",
-      "Pour un rendez-vous avec un Mate, choisis un lieu public et fréquenté.",
-      "Charge ton téléphone : une batterie pleine, c'est ta meilleure sécurité.",
-      "Renseigne-toi sur les arnaques courantes de ta destination avant d'arriver.",
-      "Le faux appel SunMates t'aide à quitter poliment une situation inconfortable.",
+      { fr: "Partage ton itinéraire et l'adresse de ton logement avec un proche avant de partir.", en: "Share your itinerary and accommodation address with someone close before you leave." },
+      { fr: "À l'arrivée dans une ville, repère le commissariat et l'hôpital les plus proches.", en: "When you arrive in a city, locate the nearest police station and hospital." },
+      { fr: "Garde une copie numérique (et papier) de ton passeport, séparée de l'original.", en: "Keep a digital (and paper) copy of your passport, separate from the original." },
+      { fr: "Fais confiance à ton intuition : si une situation te met mal à l'aise, pars.", en: "Trust your gut: if a situation feels off, leave." },
+      { fr: "En soirée, ne laisse jamais ton verre sans surveillance et garde de quoi rentrer.", en: "On a night out, never leave your drink unattended and keep a way home." },
+      { fr: "Active le partage de position avec ton cercle de confiance quand tu sors seul·e.", en: "Turn on location sharing with your trust circle when you go out alone." },
+      { fr: "Privilégie les lieux validés par la communauté pour tes premières rencontres.", en: "Pick community-verified places for your first meetups." },
+      { fr: "Note le 112 (urgences UE) et ajoute tes contacts d'urgence (ICE) dans l'app.", en: "Note 112 (EU emergency) and add your emergency contacts (ICE) in the app." },
+      { fr: "Préviens quelqu'un de l'heure prévue de ton retour, et confirme « tout va bien ».", en: "Tell someone your expected return time, and confirm “all good”." },
+      { fr: "Évite d'afficher ta localisation en temps réel publiquement sur les réseaux.", en: "Avoid posting your real-time location publicly on social media." },
+      { fr: "Garde un peu d'argent liquide caché, séparé de ton portefeuille principal.", en: "Keep some cash hidden, separate from your main wallet." },
+      { fr: "Pour un rendez-vous avec un Mate, choisis un lieu public et fréquenté.", en: "For a meetup with a Mate, choose a public, busy place." },
+      { fr: "Charge ton téléphone : une batterie pleine, c'est ta meilleure sécurité.", en: "Charge your phone: a full battery is your best safety net." },
+      { fr: "Renseigne-toi sur les arnaques courantes de ta destination avant d'arriver.", en: "Read up on common scams at your destination before you arrive." },
+      { fr: "Le faux appel SunMates t'aide à quitter poliment une situation inconfortable.", en: "The SunMates fake call helps you politely leave an uncomfortable situation." },
     ];
     let detectedCountryName = null; // pays courant détecté par géoloc (déclaré ici pour éviter le TDZ)
     function renderSafetyTip() {
       const el = $("safetyTipText"); if (!el) return;
       const now = new Date();
       const day = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000); // jour de l'année
-      let txt = SAFETY_TIPS[day % SAFETY_TIPS.length];
+      const tip = SAFETY_TIPS[day % SAFETY_TIPS.length];
+      const en = (currentLang === "en");
+      let txt = en ? tip.en : tip.fr;
       // Adapté au pays détecté (si déjà connu via les numéros d'urgence) : on ajoute
       // le numéro local. PAS de prompt géoloc non sollicité ici.
       if (detectedCountryName) {
         const e = EMERGENCY_NUMBERS.find((x) => x.c.toLowerCase() === detectedCountryName.toLowerCase());
-        if (e) txt += ` · 📍 En ${e.c}, urgences : ${e.n}.`;
+        if (e) txt += en ? ` · 📍 In ${e.c}, emergency: ${e.n}.` : ` · 📍 En ${e.c}, urgences : ${e.n}.`;
       }
       el.textContent = txt;
     }
@@ -8414,6 +8417,12 @@
       "Explore autour de toi": "Explore around you", "Découvrir": "Discover", "Demandes": "Requests", "Messages": "Messages",
       "Pars solo, trouve ta bande 🌍": "Travel solo, find your crew 🌍", "Repère les voyageurs autour de toi, propose un café ou une virée, et repars avec des potes.": "Spot travellers around you, suggest a coffee or an outing, and leave with friends.",
       "Inscription": "Sign up", "Créer mon compte": "Create my account",
+      // — Batch 5 : gaps onglet Sécurité —
+      "Partage de position, alerte d'urgence, cercle de confiance et plus.": "Location sharing, emergency alert, trust circle and more.",
+      "En cas d'urgence": "In an emergency", "Un geste, et tu n'es plus seul·e.": "One tap, and you're not alone.", "📍 Partager ma position (sans urgence)": "📍 Share my location (no emergency)",
+      "Tes proches à joindre en un geste. Stockés sur ton appareil (privé).": "Your close contacts, one tap away. Stored on your device (private).",
+      "Seules les positions de tes connexions acceptées apparaissent ici.": "Only the locations of your accepted connections appear here.",
+      "Trouver de l'aide autour de moi": "Find help around me",
     };
     const I18N = {
       fr: {
@@ -8451,7 +8460,6 @@
         "ptr.pull": "↓", "ptr.release": "↑"
       }
     };
-    let currentLang = localStorage.getItem("sm_lang") || "fr";
     function t(key) { return (I18N[currentLang] && I18N[currentLang][key]) || I18N.fr[key] || key; }
     function applyI18n() {
       document.querySelectorAll("[data-i18n]").forEach((el) => { const k = el.getAttribute("data-i18n"); const v = t(k); if (v) el.textContent = v; });
@@ -8520,6 +8528,8 @@
       try { if (typeof renderTrustExplain === "function") renderTrustExplain(); } catch (e) {}
       try { if (currentTravelerId && typeof renderTravelerExtras === "function" && travelerMap[currentTravelerId]) renderTravelerExtras(travelerMap[currentTravelerId]); } catch (e) {}
       try { renderSpotComposer(); } catch (e) {}
+      try { if (typeof renderSafetyTip === "function") renderSafetyTip(); } catch (e) {}
+      try { if (typeof updateStreak === "function") updateStreak(); } catch (e) {}
     }
     document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
 
