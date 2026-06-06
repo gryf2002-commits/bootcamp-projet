@@ -865,6 +865,19 @@
     .xp-banner b { color: #B5740E; font-size: .85rem; }
     .xp-banner .xp-sub { color: var(--muted); font-size: .72rem; }
     .xp-banner .xp-info { margin-left: auto; background: none; border: 0; color: var(--muted); cursor: pointer; font-size: .9rem; padding: .1rem .3rem; }
+    /* Strip de niveau XP (hub de jeu, compact mais premium) */
+    .xpl-card { display: block !important; background: linear-gradient(135deg, rgba(255,201,60,.16), rgba(255,138,61,.12)); border: 1px solid rgba(201,138,30,.2); border-radius: 14px; padding: .7rem .85rem; margin: .4rem 0 .2rem; }
+    .xpl-top { display: flex; align-items: center; gap: .5rem; }
+    .xpl-lvl { font-weight: 800; font-size: .92rem; color: #B5740E; }
+    .xpl-xp { font-weight: 800; font-size: .8rem; color: var(--accent); }
+    .xpl-top .xp-info { margin-left: auto; background: none; border: 0; color: var(--muted); cursor: pointer; font-size: .95rem; padding: .1rem .3rem; }
+    .xpl-bar { height: 7px; background: rgba(0,0,0,.08); border-radius: 999px; margin: .45rem 0 .3rem; overflow: hidden; }
+    .xpl-bar span { display: block; height: 100%; background: var(--accent-grad); border-radius: 999px; transition: width .5s cubic-bezier(.2,.8,.3,1); }
+    .xpl-next { font-size: .72rem; color: var(--muted); }
+    .xpl-next b { color: #B5740E; }
+    body.theme-dusk .xpl-card { background: linear-gradient(135deg, rgba(255,201,60,.14), rgba(255,138,61,.1)); border-color: rgba(255,201,60,.2); }
+    body.theme-dusk .xpl-lvl, body.theme-dusk .xpl-next b { color: #ffce8a; }
+    body.theme-dusk .xpl-bar { background: rgba(255,255,255,.1); }
     /* Cartes « Mes récompenses » (plus jolies, uniformes) */
     .reward-card { display: flex; align-items: center; gap: .6rem; text-align: left; padding: .7rem .8rem; border: 0; border-radius: var(--radius-sm); cursor: pointer;
       background: linear-gradient(135deg, rgba(255,201,60,.22), rgba(255,138,61,.18)); box-shadow: var(--shadow-sm); transition: transform .12s, box-shadow .15s; }
@@ -5514,12 +5527,17 @@
       // Bandeau XP (monnaie de jeu, séparée du score de confiance) — compact + explication
       const xpb = $("xpBanner");
       if (xpb) {
-        xpb.innerHTML = `<span class="xp-ic">⭐</span><b>${(myProfile && myProfile.xp) || 0}</b><span class="xp-sub">XP · monnaie de jeu</span><button class="xp-info" id="xpInfoBtn" title="Comment ça marche ?">ⓘ</button>`;
-        const xi = $("xpInfoBtn"); if (xi) xi.onclick = () => showInfo("⭐ L'XP, comment ça marche ?", `<div style="line-height:1.6;font-size:.9rem">
-          <p style="margin:.2rem 0">Tu gagnes de l'<b>XP</b> en accomplissant des <b>quêtes</b> (3 par jour max).</p>
+        const xp = (myProfile && myProfile.xp) || 0;
+        const lvl = Math.floor(xp / 100) + 1, inLvl = xp % 100;
+        xpb.classList.add("xpl-card");
+        xpb.innerHTML = `<div class="xpl-top"><span class="xpl-lvl">⭐ Niveau ${lvl}</span><span class="xpl-xp">${xp} XP</span><button class="xp-info" id="xpInfoBtn" title="Comment ça marche ?">ⓘ</button></div>
+          <div class="xpl-bar"><span style="width:${inLvl}%"></span></div>
+          <div class="xpl-next">Plus que <b>${100 - inLvl} XP</b> avant le niveau ${lvl + 1} 🚀</div>`;
+        const xi = $("xpInfoBtn"); if (xi) xi.onclick = () => showInfo("⭐ L'XP & les niveaux", `<div style="line-height:1.6;font-size:.9rem">
+          <p style="margin:.2rem 0">Tu gagnes de l'<b>XP</b> en accomplissant des <b>quêtes</b> (3 par jour max). Chaque <b>100 XP</b> = un <b>niveau</b> en plus 🆙</p>
           <p style="margin:.2rem 0">Les <b>quêtes de groupe</b> (confirmées par un Mate) rapportent un <b>bonus</b> ✨</p>
           <p style="margin:.2rem 0">⚠️ L'XP est une <b>monnaie de jeu</b> : elle ne change <b>pas</b> ton score de confiance 🛡️ (qui, lui, repose sur des preuves réelles).</p>
-          <p style="margin:.2rem 0">Plus d'XP = tu grimpes dans le <b>Classement</b> 🏆</p></div>`);
+          <p style="margin:.2rem 0">Plus d'XP = tu grimpes dans le <b>Classement</b> 🏆 et tu débloques des cosmétiques en <b>Boutique</b> 🛍️</p></div>`);
       }
       if (typeof renderWeeklyGoals === "function") renderWeeklyGoals();
 
