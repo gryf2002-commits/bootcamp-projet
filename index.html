@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=238"></script>
-  <script src="sunmates-icons.js?v=238"></script>
+  <script src="sunmates-badges.js?v=239"></script>
+  <script src="sunmates-icons.js?v=239"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1424,6 +1424,15 @@
     .detail-hero .dh-body { padding: 1rem; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.45)); width: 100%; position: relative; }
     .detail-hero .dh-name { font-size: 1.45rem; font-weight: 800; }
     .detail-hero .dh-city { font-size: .85rem; opacity: .95; }
+    /* Étapes d'une quête : Rejoindre → En cours → Accompli */
+    .quest-steps { display: flex; align-items: center; gap: .3rem; margin: 0 0 1rem; }
+    .qstep { display: flex; flex-direction: column; align-items: center; gap: .2rem; flex: 0 0 auto; font-size: .68rem; font-weight: 700; color: var(--muted); }
+    .qstep .qstep-n { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--cream); border: 1.5px solid var(--line); color: var(--muted); font-size: .8rem; }
+    .qstep.done .qstep-n { background: var(--accent-grad); color: #fff; border-color: transparent; }
+    .qstep.cur .qstep-n { border-color: var(--accent); color: var(--accent); }
+    .qstep.done, .qstep.cur { color: var(--ink); }
+    .qstep-line { flex: 1; height: 2px; background: var(--line); border-radius: 2px; }
+    body.theme-dusk .qstep .qstep-n { background: #2a2140; }
     .dstats { display: flex; gap: .6rem; margin-bottom: 1rem; }
     .dstat { flex: 1; background: var(--card); border-radius: var(--radius-sm); padding: .7rem .4rem; text-align: center; box-shadow: var(--shadow-sm); }
     .dstat b { display: block; color: var(--ink); font-size: 1rem; }
@@ -3826,6 +3835,7 @@
             <div class="dh-body"><div class="dh-name" id="detailName">—</div><div class="dh-city" id="detailCity">—</div></div>
           </div>
           <div class="dstats" id="detailStats"></div>
+          <div class="quest-steps" id="detailSteps"></div>
           <div class="card"><h3 style="margin-top:0">Description</h3><p class="muted" id="detailDesc" style="line-height:1.5">—</p></div>
 
           <div class="card">
@@ -6894,6 +6904,16 @@
         <div class="dstat"><b>+${q.points || 0}</b><span>XP</span></div>
         <div class="dstat"><b>${window.SMBadge && SMBadge.hasEmblem(q.badge_key) ? SMBadge(q.badge_key, { size: 30 }) : (q.badge_emoji || "🏅")}</b><span>Badge</span></div>
         <div class="dstat"><b>${status === "completed" ? "✅" : (status === "joined" ? "⏳" : "—")}</b><span>Statut</span></div>`;
+      // Indicateur d'étapes : Rejoindre → En cours → Accompli (suivi clair de la quête)
+      { const ds = $("detailSteps"); if (ds) {
+          const doneCount = status === "completed" ? 3 : (status === "joined" ? 1 : 0);
+          const labels = ["Rejoindre", "En cours", "Accompli"];
+          ds.innerHTML = labels.map((l, i) => {
+            const cls = i < doneCount ? "done" : (i === doneCount ? "cur" : "");
+            const mark = i < doneCount ? "✓" : (i + 1);
+            return '<div class="qstep ' + cls + '"><span class="qstep-n">' + mark + '</span><span>' + l + "</span></div>";
+          }).join('<span class="qstep-line"></span>');
+        } }
       // Récompense badge
       if (window.SMBadge && SMBadge.hasEmblem(q.badge_key)) $("detailBadgeIco").innerHTML = SMBadge(q.badge_key, { size: 46 });
       else $("detailBadgeIco").textContent = q.badge_emoji || "🏅";
@@ -9347,6 +9367,19 @@
     }
 
     function renderGameHub() { try { renderPlayerHero(); renderQuestSpotlight(); renderBadgeRail(); renderNearestQuest(); renderQuestCollection(); renderCapitaleDuJour(); } catch (e) {} }
+
+    // Vignette de niveau cliquable → explique les niveaux, ce qu'ils débloquent, + lien classement.
+    function showLevelInfo() {
+      const xp = (myProfile && myProfile.xp) || 0, lvl = Math.floor(xp / 100) + 1, inLvl = xp % 100;
+      showInfo("⭐ Niveau " + lvl + " · tes récompenses", `<div style="line-height:1.6;font-size:.9rem">
+        <p style="margin:.2rem 0">Tu es <b>Niveau ${lvl}</b> (${inLvl}/100 XP) — plus que <b>${100 - inLvl} XP</b> pour le suivant 🚀</p>
+        <p style="margin:.2rem 0">Chaque <b>100 XP</b> (gagnés en quêtes) = un niveau. Tes <b>titres</b> évoluent :</p>
+        <p style="margin:.2rem 0">🧭 Niv. 1 <b>Touriste</b> · Niv. 3 <b>Explorateur·rice</b> · Niv. 5 <b>Flâneur·se aguerri·e</b> · Niv. 8 <b>Légende</b></p>
+        <p style="margin:.2rem 0">Plus de niveau = tu grimpes au <b>Classement</b> 🏆 et tu débloques des cosmétiques en <b>Boutique</b> 🛍️</p>
+        <button class="btn-primary btn-block" id="lvlGoRank" style="margin-top:.7rem">🏆 Voir le classement</button></div>`);
+      setTimeout(() => { const b = $("lvlGoRank"); if (b) b.onclick = () => { closePicker(); goToTab("jeux"); if (typeof showJeuxView === "function") { showJeuxView("jeuxRank"); if (typeof renderLeaderboard === "function") renderLeaderboard(); } }; }, 40);
+    }
+    { const ph = $("playerHero"); if (ph) { ph.style.cursor = "pointer"; ph.addEventListener("click", (e) => { if (e.target.closest("button")) return; showLevelInfo(); }); } }
 
     // Capitale du jour : une ville de jeu mise à l'honneur (rotation quotidienne).
     function renderCapitaleDuJour() {
