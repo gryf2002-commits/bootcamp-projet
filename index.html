@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=246"></script>
-  <script src="sunmates-icons.js?v=246"></script>
+  <script src="sunmates-badges.js?v=247"></script>
+  <script src="sunmates-icons.js?v=247"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1285,11 +1285,13 @@
     .capitale .cap-txt span{ font-size:.78rem; opacity:.95; }
     .capitale .cap-go{ flex-shrink:0; font-weight:800; font-size:.82rem; background:rgba(255,255,255,.22); padding:.35rem .6rem; border-radius:999px; }
     .capitale:active{ transform:scale(.99); }
-    .qcoll{ margin:.2rem 0 .9rem; }
-    .qcoll-head{ display:flex; justify-content:space-between; font-size:.82rem; font-weight:800; color:var(--ink); margin-bottom:.3rem; }
-    .qcoll-bar{ height:9px; border-radius:999px; background:rgba(120,40,10,.14); overflow:hidden; }
-    .qcoll-bar > span{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#FFC93C,#FF8A3D); transition:width .4s ease; }
-    body.theme-dusk .qcoll-bar{ background:rgba(255,255,255,.12); }
+    /* Collection : MÊME format carte que « Objectifs de la semaine » (uniformisation) */
+    .qcoll{ background:linear-gradient(135deg, rgba(255,201,60,.13), rgba(255,138,61,.1)); border:1px solid rgba(201,138,30,.2); border-radius:14px; padding:.8rem .9rem; margin:.4rem 0 .9rem; }
+    body.theme-dusk .qcoll{ background:linear-gradient(135deg, rgba(255,201,60,.11), rgba(255,138,61,.08)); border-color:rgba(255,201,60,.18); }
+    .qcoll-head{ display:flex; justify-content:space-between; align-items:center; font-size:.88rem; font-weight:800; color:var(--ink); margin-bottom:.5rem; }
+    .qcoll-head b{ font-size:.76rem; color:var(--accent); background:var(--accent-soft, rgba(255,170,90,.16)); border-radius:999px; padding:.1rem .5rem; }
+    .qcoll-bar{ height:6px; border-radius:999px; background:var(--line); overflow:hidden; }
+    .qcoll-bar > span{ display:block; height:100%; border-radius:999px; background:var(--accent-grad); transition:width .4s ease; }
 
     /* --- 2. Quête du jour --- */
     .quest-spotlight{ position:relative; overflow:hidden; border-radius:var(--radius); padding:1.05rem 1.1rem 1.1rem; margin:0 0 1rem;
