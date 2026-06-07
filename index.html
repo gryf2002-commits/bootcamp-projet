@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=260"></script>
-  <script src="sunmates-icons.js?v=260"></script>
+  <script src="sunmates-badges.js?v=261"></script>
+  <script src="sunmates-icons.js?v=261"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -986,6 +986,20 @@
     .gcard .ghead.green { background: linear-gradient(135deg,#8fe6a6,#34c77b); }
     .gcard .ghead.blue  { background: linear-gradient(135deg,#8ed0ff,#3aa0f0); }
     .gcard .ghead.purp  { background: linear-gradient(135deg,#b9a6ff,#7c5cff); }
+    /* Têtes colorées des mini-jeux intégrés (pas de photo → dégradé plein, emoji centré) */
+    .gcard .ghead.gh-gold   { background: linear-gradient(135deg,#ffd98a,#f0a93a); }
+    .gcard .ghead.gh-teal   { background: linear-gradient(135deg,#7fe3d3,#17a99b); }
+    .gcard .ghead.gh-indigo { background: linear-gradient(135deg,#9FA8FF,#5B63E0); }
+    .gcard .ghead.gh-coral  { background: linear-gradient(135deg,#FFB37A,#FF6F3D); }
+    .gcard .ghead.gh-purp   { background: linear-gradient(135deg,#C77DFF,#8A4FE0); }
+    .gcard .ghead.gh-rose   { background: linear-gradient(135deg,#FF9CC2,#F0568F); }
+    .gcard.gcard-play .ghead::after { background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.12)); }
+    .gcard.gcard-play .gemoji { left: 50%; top: 50%; transform: translate(-50%,-50%); width: 44px; height: 44px; font-size: 24px; background: rgba(255,255,255,.96); }
+    /* Bingo */
+    .bingo-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .4rem; }
+    .bingo-cell { font-size: .64rem; font-weight: 700; line-height: 1.15; padding: .4rem .25rem; min-height: 64px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--ink); cursor: pointer; display: grid; place-items: center; text-align: center; }
+    .bingo-cell.on { background: var(--accent-grad); color: #fff; border-color: transparent; }
+    body.theme-dusk .bingo-cell { background: #241b35; color: #eee; }
     /* Emoji en BADGE dans le coin (plus au milieu de la photo) */
     /* Bandeau XP (onglet Jeux) */
     /* Ligne XP DISCRÈTE (plus de gros bandeau) */
@@ -2843,15 +2857,13 @@
         <div class="msg" id="authMsg" style="text-align:center"></div>
       </div>
 
-      <!-- Bloc Pro / B2B : pas d'identifiants, juste un bouton pour entrer dans l'espace Pro -->
+      <!-- Bloc Pro / B2B : 4 tuiles séparées, cliquables → chacune pop son détail (pas de redirect direct) -->
       <div id="authProBlock" class="hidden">
-        <div class="auth-pro-card">
-          <div class="auth-pro-grid">
-            <div><div class="ap-ic">📈</div><div class="ap-l">Visibilité</div></div>
-            <div><div class="ap-ic">🛟</div><div class="ap-l">Badge « Lieu sûr »</div></div>
-            <div><div class="ap-ic">🎟️</div><div class="ap-l">Plus de trafic</div></div>
-            <div><div class="ap-ic">📊</div><div class="ap-l">Statistiques</div></div>
-          </div>
+        <div class="grid2 pro-grid">
+          <div class="tile" data-protile="visi"><div class="thumb gold">📈</div><div class="t-name">Visibilité</div><div class="t-meta">Touche pour en savoir +</div></div>
+          <div class="tile" data-protile="badge"><div class="thumb teal">🛟</div><div class="t-name">Badge « Lieu sûr »</div><div class="t-meta">Touche pour en savoir +</div></div>
+          <div class="tile" data-protile="traffic"><div class="thumb coral">🎟️</div><div class="t-name">Plus de trafic</div><div class="t-meta">Touche pour en savoir +</div></div>
+          <div class="tile" data-protile="stats"><div class="thumb indigo">📊</div><div class="t-name">Statistiques</div><div class="t-meta">Touche pour en savoir +</div></div>
         </div>
         <button class="btn-primary btn-block" id="authProStart" style="margin-top:1rem;font-size:1.05rem;padding:1rem">🚀 Démarrer, Espace Pro</button>
         <p class="muted" style="text-align:center;font-size:.78rem;margin-top:.6rem">Aucun compte requis : découvre l'offre et envoie ta demande de partenariat.</p>
@@ -6886,6 +6898,71 @@
       return flickrImg(city + ",city", c.name);
     }
 
+    // ---- JEUX POPULAIRES : mini-jeux INTÉGRÉS, jouables tout de suite (indépendants de la BDD) ----
+    const CLIENT_GAMES = [
+      { key: "wheel", emoji: "🎲", color: "gold", name: "Roue des défis", desc: "Un défi fun tiré au sort, à relever seul·e ou avec un Mate." },
+      { key: "ice", emoji: "🧊", color: "teal", name: "Brise-glace", desc: "Une question parfaite pour lancer la conversation avec un Mate." },
+      { key: "quiz", emoji: "❓", color: "indigo", name: "Quiz du voyageur", desc: "Teste ta culture voyage, une question à la fois." },
+      { key: "twolies", emoji: "🃏", color: "coral", name: "2 vérités, 1 mensonge", desc: "Le jeu ultime pour apprendre à se connaître." },
+      { key: "decide", emoji: "🪙", color: "purp", name: "Décide pour moi", desc: "Hésitant·e ? Laisse le sort choisir ta prochaine aventure." },
+      { key: "bingo", emoji: "🗺️", color: "rose", name: "Bingo de voyage", desc: "Coche les expériences vécues, vise la ligne complète !" },
+    ];
+    const _GD = {
+      wheel: ["Apprends à dire « bonjour » dans une nouvelle langue aujourd'hui", "Prends en photo le plus beau ciel de ta journée", "Offre un vrai compliment à un·e inconnu·e", "Goûte un plat que tu n'as jamais essayé", "Marche 15 min sans téléphone, juste à observer", "Demande à un local son spot préféré", "Note 3 choses pour lesquelles tu es reconnaissant·e", "Engage la conversation avec un·e voyageur·se", "Trouve le meilleur café du quartier", "Prends un chemin que tu n'as jamais emprunté"],
+      ice: ["Quel est le voyage qui t'a le plus changé·e ?", "Plutôt montagne ou océan ?", "Le plat le plus fou que tu aies goûté en voyage ?", "Si tu pouvais vivre n'importe où, ce serait où ?", "Ta pire galère de voyage (et tu en ris maintenant) ?", "Une destination totalement sous-cotée selon toi ?", "Team planifier ou team improviser ?", "La rencontre la plus marquante de tes voyages ?", "Ton indispensable que tu emportes partout ?", "Le prochain pays sur ta liste ?"],
+      quiz: [
+        { q: "Quelle ville est surnommée « la Cité éternelle » ?", c: ["Athènes", "Rome", "Le Caire"], a: 1 },
+        { q: "Dans quel pays se trouve le Machu Picchu ?", c: ["Bolivie", "Chili", "Pérou"], a: 2 },
+        { q: "Quelle est la capitale de l'Australie ?", c: ["Sydney", "Canberra", "Melbourne"], a: 1 },
+        { q: "Le numéro d'urgence unique dans l'UE est le…", c: ["911", "112", "999"], a: 1 },
+        { q: "Quel pays compte le plus d'îles au monde ?", c: ["Suède", "Indonésie", "Philippines"], a: 0 },
+        { q: "La « Sagrada Família » se trouve à…", c: ["Madrid", "Lisbonne", "Barcelone"], a: 2 },
+        { q: "Quelle monnaie utilise-t-on au Japon ?", c: ["Won", "Yen", "Yuan"], a: 1 },
+        { q: "Les aurores boréales sont visibles surtout…", c: ["Près des pôles", "À l'équateur", "En altitude"], a: 0 },
+      ],
+      twolies: ["Lance-toi : dis 2 vérités et 1 mensonge sur tes voyages. Aux autres de deviner le mensonge !", "Astuce : glisse un détail improbable mais VRAI, ça brouille les pistes 😏", "Variante : 2 vérités et 1 rêve (une destination que tu n'as pas encore faite)."],
+      decide: null, // géré à part (pile ou face / oui-non)
+      bingo: ["Parler à un inconnu", "Goûter un plat local", "Prendre une photo de coucher de soleil", "Visiter un lieu gratuit", "Apprendre un mot en langue locale", "Marcher +5 000 pas", "Boire un café en terrasse", "Découvrir une ruelle cachée", "Aider un·e voyageur·se"],
+    };
+    function playGame(key) {
+      const g = CLIENT_GAMES.find((x) => x.key === key); if (!g) return;
+      const pick = (arr) => arr[Math.floor((Date.now() / 7 + (window._gameSpin = (window._gameSpin || 0) + 1)) % arr.length)];
+      const reBtn = "<button class='btn-accent btn-block' id='gameAgain' style='margin-top:1rem'>🔄 Rejouer</button>";
+      if (key === "wheel" || key === "ice") {
+        popInfo(g.emoji, g.name, "<p style='font-size:1.02rem;line-height:1.5;margin:.3rem 0'>" + escapeHtml(pick(_GD[key])) + "</p>" + reBtn);
+        setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); }, 30);
+      } else if (key === "twolies") {
+        popInfo(g.emoji, g.name, "<p style='font-size:.96rem;line-height:1.5'>" + escapeHtml(pick(_GD.twolies)) + "</p>" + reBtn);
+        setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); }, 30);
+      } else if (key === "decide") {
+        const opts = ["✅ Fonce, c'est oui !", "❌ Pas cette fois.", "🤷 À toi de voir… relance !", "🔥 Carrément, vas-y à fond !", "⏳ Attends un peu."];
+        popInfo("🪙", "Décide pour moi", "<p style='font-size:1.1rem;font-weight:800;margin:.4rem 0'>" + escapeHtml(opts[Math.floor((Date.now() / 3 + (window._gameSpin = (window._gameSpin || 0) + 1)) % opts.length)]) + "</p>" + reBtn);
+        setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); }, 30);
+      } else if (key === "quiz") {
+        const qz = _GD.quiz[Math.floor((Date.now() / 11 + (window._gameSpin = (window._gameSpin || 0) + 1)) % _GD.quiz.length)];
+        popInfo("❓", "Quiz du voyageur", "<p style='font-weight:700;margin:.2rem 0 .7rem'>" + escapeHtml(qz.q) + "</p>" +
+          qz.c.map((c, i) => "<button class='btn-ghost btn-block qzc' data-i='" + i + "' style='margin:.25rem 0'>" + escapeHtml(c) + "</button>").join(""));
+        setTimeout(() => { document.querySelectorAll(".qzc").forEach((b) => b.onclick = () => {
+          const ok = Number(b.dataset.i) === qz.a;
+          b.style.background = ok ? "var(--accent-grad)" : "#e0463b"; b.style.color = "#fff";
+          if (!ok) { const good = document.querySelector(".qzc[data-i='" + qz.a + "']"); if (good) { good.style.background = "var(--accent-grad)"; good.style.color = "#fff"; } }
+          setTimeout(() => playGame("quiz"), 1100);
+        }); }, 30);
+      } else if (key === "bingo") {
+        let st = {}; try { st = JSON.parse(localStorage.getItem("sm_bingo_" + (myUserId || "x")) || "{}") || {}; } catch (e) {}
+        const cells = _GD.bingo.map((t, i) => "<button class='bingo-cell" + (st[i] ? " on" : "") + "' data-bi='" + i + "'>" + escapeHtml(t) + "</button>").join("");
+        const n = Object.keys(st).filter((k) => st[k]).length;
+        popInfo("🗺️", "Bingo de voyage", "<div class='bingo-grid'>" + cells + "</div><p class='muted' style='font-size:.8rem;margin:.6rem 0 0'>" + n + "/9 cases · coche ce que tu as vécu !</p>");
+        setTimeout(() => { document.querySelectorAll(".bingo-cell").forEach((b) => b.onclick = () => {
+          const i = b.dataset.bi; st[i] = !st[i]; try { localStorage.setItem("sm_bingo_" + (myUserId || "x"), JSON.stringify(st)); } catch (e) {}
+          b.classList.toggle("on", !!st[i]);
+          const done = Object.keys(st).filter((k) => st[k]).length;
+          if (done === 9 && typeof celebrate === "function") celebrate();
+        }); }, 30);
+      }
+    }
+    window.playGame = playGame;
+
     function renderJeux() {
       const games = allQuests.filter((q) => q.kind === "game");
       const quests = allQuests.filter((q) => q.kind === "quest");
@@ -6931,9 +7008,17 @@
       }
       if (typeof renderParcours === "function") renderParcours();
 
-      // Jeux populaires (avec ambiance photo)
-      { const gcEl = $("gamesCount"); if (gcEl) gcEl.textContent = games.length + " jeu" + (games.length > 1 ? "x" : "") + " à explorer"; }
-      $("gamesGrid").innerHTML = games.length ? games.map((g, i) => `
+      // Jeux populaires : mini-jeux INTÉGRÉS jouables tout de suite (+ jeux BDD éventuels)
+      { const gcEl = $("gamesCount"); if (gcEl) gcEl.textContent = (CLIENT_GAMES.length + games.length) + " jeux à jouer"; }
+      const clientCards = CLIENT_GAMES.map((g) => `
+        <div class="gcard gcard-play" data-playgame="${g.key}">
+          <div class="ghead gh-${g.color}">
+            <span class="gemoji">${g.emoji}</span>
+            <span class="grate">▶ Jouer</span>
+          </div>
+          <div class="gbody"><div class="gname">${escapeHtml(g.name)}</div><div class="gdesc">${escapeHtml(g.desc)}</div></div>
+        </div>`).join("");
+      const dbCards = games.map((g, i) => `
         <div class="gcard" data-qkey="${g.key}">
           <div class="ghead ${headColors[i % 4]}" style="background-image:url('${questImage(g)}')">
             <span class="gemoji">${g.emoji || "🎮"}</span>
@@ -6941,7 +7026,9 @@
             ${myQuestStatus[g.key] === "completed" ? '<span class="gdone">✅ Fait</span>' : ""}
           </div>
           <div class="gbody"><div class="gname">${escapeHtml(g.title)}</div><div class="gdesc">${escapeHtml((g.description || g.city || "").slice(0, 70))}</div></div>
-        </div>`).join("") : '<p class="muted" style="grid-column:1/-1;text-align:center;padding:1rem">Bientôt de nouveaux jeux ✨</p>';
+        </div>`).join("");
+      $("gamesGrid").innerHTML = clientCards + dbCards;
+      $("gamesGrid").querySelectorAll("[data-playgame]").forEach((el) => el.addEventListener("click", () => playGame(el.dataset.playgame)));
 
       // Quêtes du jour
       const goldQuestRow = goldView() ? `
@@ -9393,7 +9480,19 @@
     $("tabPro").addEventListener("click", () => setAuthMode("pro"));
     { const ps = $("authProStart"); if (ps) ps.addEventListener("click", () => openB2B("auth")); }
     // Les 4 tuiles d'avantages Pro sont cliquables → mènent au CTA (donne envie de cliquer).
-    document.querySelectorAll(".auth-pro-grid > div").forEach((d) => { d.style.cursor = "pointer"; d.addEventListener("click", () => { const b = $("authProStart"); if (b) b.click(); }); });
+    // Tuiles Pro : chacune POP son détail (sans rediriger direct vers l'espace Pro)
+    { const PRO_INFO = {
+        visi: ["📈", "Visibilité", "Ton établissement apparaît sur la <b>carte des lieux sûrs</b> et dans les recherches des voyageurs solo de passage dans ta ville. Plus de regards = plus de visites."],
+        badge: ["🛟", "Badge « Lieu sûr »", "Un <b>badge de confiance</b> affiché sur ta fiche : tu rassures les voyageuses/voyageurs solo, un vrai argument différenciant pour les attirer chez toi."],
+        traffic: ["🎟️", "Plus de trafic", "Propose des <b>quêtes &amp; coupons</b> (1er café offert, happy hour…) qui amènent une communauté engagée directement dans ton lieu."],
+        stats: ["📊", "Statistiques", "Un <b>tableau de bord</b> : vues de ta fiche, check-ins, coupons utilisés. Tu mesures concrètement ce que SunMates t'apporte."],
+      };
+      document.querySelectorAll("[data-protile]").forEach((el) => el.addEventListener("click", () => {
+        const info = PRO_INFO[el.dataset.protile]; if (!info) return;
+        popInfo(info[0], info[1], "<div style='text-align:left'>" + info[2] + "</div><button class='btn-primary btn-block' id='proGo' style='margin-top:1rem'>🚀 Démarrer l'Espace Pro</button>");
+        setTimeout(() => { const b = $("proGo"); if (b) b.onclick = () => { const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); if (typeof openB2B === "function") openB2B("auth"); }; }, 40);
+      }));
+    }
     $("b2bBack").addEventListener("click", closeB2B);
     const b2bScrollToForm = () => { const f = $("b2bForm"); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => { const c = $("b2bCompany"); if (c) c.focus(); }, 450); };
     document.querySelectorAll("#b2bProPreview .qrow").forEach((r) => { r.style.cursor = "pointer"; r.addEventListener("click", () => toast("🔭", "Fonctionnalité Pro, bientôt disponible")); });
