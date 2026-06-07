@@ -2,6 +2,39 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
+  <!-- ============================================================
+       MONITORING (erreurs + audience). Clés publiques par conception, région EU.
+       Vie privée : on ne transmet JAMAIS d'email, de contenu de message, de GPS ni
+       l'usage du SOS — on compte des événements, pas des contenus.
+       ============================================================ -->
+  <script src="https://browser.sentry-cdn.com/8.0.0/bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+    try {
+      if (window.Sentry) Sentry.init({
+        dsn: "https://383baae639ccef902adb48a8439570b8@o4511521167638528.ingest.de.sentry.io/4511521207746640",
+        release: "sunmates@v165",
+        sampleRate: 1.0,
+        beforeSend: function (event) { if (event.user) { delete event.user.email; delete event.user.ip_address; } return event; }
+      });
+    } catch (e) { /* le monitoring ne doit jamais bloquer l'app */ }
+  </script>
+  <script>
+    // PostHog (cloud EU) — mesure d'audience anonymisée (RGPD : mask_all_text + pas d'email).
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    try {
+      posthog.init("phc_AR6vTGSce85wFtsRFswiU3Vqz9rxifZ9ED3uDeSSgjEN", {
+        api_host: "https://eu.i.posthog.com",
+        autocapture: true,
+        mask_all_text: true,      // ne capture jamais le texte saisi (vie privée)
+        capture_pageview: true,
+        persistence: "localStorage"
+      });
+    } catch (e) {}
+    // Helper unique : trace un événement sans JAMAIS planter l'app si PostHog est bloqué.
+    window.track = function (name, props) {
+      try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); } catch (e) {}
+    };
+  </script>
   <!-- viewport-fit=cover : l'app passe sous l'encoche / status bar (on gère les safe-area en CSS).
        maximum-scale retiré : le pinch-to-zoom d'accessibilité reste possible (surtout iOS). -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -3471,6 +3504,7 @@
           } else { console.warn("[SunMates] auth error:", error); msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + _authErr(error); }
         }
         else if (authMode === "signup") {
+          track("signup");
           // Si « Confirm email » est activé côté Supabase, signUp ne crée pas de session :
           // l'utilisateur doit confirmer via le mail (envoyé par notre SMTP custom).
           if (data && data.session) { msg.style.color = "var(--ok)"; msg.textContent = "Compte créé ! Bienvenue 🌞"; }
@@ -4446,6 +4480,7 @@
         const card = document.querySelector(`[data-cafecard="${cafeId}"]`);
         if (card) { flashOk(card); card.scrollIntoView({ behavior: "smooth", block: "center" }); }
         // Toast cliquable : invite à laisser un avis (relie check-in -> avis).
+        track("checkin");
         toast("✅", "Check-in validé ! ⭐ Touche ici pour laisser un avis", () => openReviews(cafeId, cafeName));
         await Promise.all([loadProfile(), loadCheckins()]);
         if (typeof renderHomeMap === "function" && homeLeaf) renderHomeMap();
@@ -5498,7 +5533,7 @@
           .insert({ user_a: myUserId, user_b: otherId, status: "pending" });
         // 23505 = violation d'unicité (filet de sécurité base) → demande déjà existante
         if (error && error.code === "23505") { await loadConnections(); return { ok: true, already: "pending" }; }
-        if (!error) await loadConnections();
+        if (!error) { track("connection_sent"); await loadConnections(); }
         return { ok: !error, error };
       });
     }
@@ -5511,7 +5546,7 @@
         if (msg) {
           msg.style.color = error ? "var(--danger)" : "var(--ok)";
           msg.textContent = error ? "Erreur : " + error.message : "Connexion acceptée ✅";
-          if (!error) flashOk(msg);
+          if (!error) { track("match"); flashOk(msg); }
         }
         if (!error) {
           const reqItem = (pendingRequestsList || []).find((r) => r.connId === connId);
@@ -6090,7 +6125,7 @@
         const res = data || {};
         m.style.color = res.ok ? "var(--ok)" : "var(--danger)";
         m.textContent = res.message || (res.ok ? "Accompli ✅" : "Échec.");
-        if (res.ok) { await Promise.all([loadGameData(), loadProfile()]); const q = questByKey(qkey); if (q) openDetail(q); }
+        if (res.ok) { track("quest_completed", { key: qkey }); await Promise.all([loadGameData(), loadProfile()]); const q = questByKey(qkey); if (q) openDetail(q); }
       });
     });
 
@@ -6544,6 +6579,7 @@
         }
       } else if (bubble) {
         // Succès → on remplace "⏳ envoi…" par l'heure réelle (le temps réel finira le travail).
+        track("message_sent");
         const t = bubble.querySelector(".bubble-time"); if (t) t.textContent = msgTime(new Date().toISOString());
       }
       // La vraie bulle (avec son id serveur) arrive ensuite via le temps réel ci-dessous,
@@ -8015,6 +8051,7 @@
       if (!confirm("Marquer ce coupon comme utilisé ?")) return;
       const { error } = await db.from("user_coupons").update({ used: true }).eq("id", id);
       if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); return; }
+      track("coupon_used");
       toast("🎟️", "Coupon utilisé, bon plan !");
       await loadGameData();
     }
@@ -9937,7 +9974,7 @@
 
       // Android / Chrome / Edge : on intercepte l'invite native pour la déclencher nous-mêmes.
       window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredPrompt = e; showBanner(); });
-      window.addEventListener("appinstalled", () => { hideBanner(); try { localStorage.removeItem("sm_pwa_snooze"); } catch (e) {} });
+      window.addEventListener("appinstalled", () => { track("pwa_installed"); hideBanner(); try { localStorage.removeItem("sm_pwa_snooze"); } catch (e) {} });
 
       installBtn.addEventListener("click", () => once("pwa-install", async () => {
         if (!deferredPrompt) { sub.textContent = manualHint(); return; }
