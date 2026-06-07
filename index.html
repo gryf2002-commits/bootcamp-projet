@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=206"></script>
-  <script src="sunmates-icons.js?v=206"></script>
+  <script src="sunmates-badges.js?v=207"></script>
+  <script src="sunmates-icons.js?v=207"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1429,12 +1429,19 @@
     /* ============ V2.2 — SOBRIÉTÉ (déclutter) + soleil signature ============ */
     /* Plus d'air entre les sections de l'accueil */
     .tab-panel[data-panel="accueil"] > section, .tab-panel[data-panel="accueil"] > .section-head { margin-top: 1.3rem; }
-    /* Clin d'œil SOLEIL en haut-gauche des titres d'écran (essence SunMates, discret) */
-    .tab-panel > h1 { position: relative; isolation: isolate; }
-    .tab-panel > h1::before { content: "☀"; position: absolute; left: -3px; top: -.42em; font-size: 1.7em; line-height: 1; z-index: -1;
-      opacity: .13; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; filter: var(--relief); }
+    /* (Soleil filigrane des titres retiré : le vrai clin d'œil soleil reste celui du logo en topbar) */
     /* Lever de soleil en haut-gauche du héros joueur */
     .player-hero .ph-glow { left: -52px; top: -64px; bottom: auto; background: radial-gradient(circle at 30% 30%, rgba(255,201,60,.6), rgba(255,138,61,0) 70%); }
+    /* Héros joueur COMPACT (la carte niveau ne doit plus écraser l'accueil ; la carte/map reste reine) */
+    .player-hero { padding: .7rem .9rem .8rem; border-radius: var(--radius); margin: .2rem 0 .9rem; }
+    .ph-avatar, .ph-av-emoji { width: 48px; height: 48px; }
+    .ph-av-emoji { font-size: 24px; }
+    .ph-lvl-ring { min-width: 22px; height: 22px; font-size: .74rem; }
+    .ph-name { font-size: 1.1rem; }
+    .ph-title { font-size: .74rem; }
+    .ph-xp { margin-top: .6rem; }
+    .ph-xp-track { height: 9px; }
+    .ph-xp-next { display: none; } /* on retire le détail "plus que X XP" pour alléger */
     /* Mode Maison : préparation voyage repliée (sobriété) */
     .hm-plan { margin: .4rem 0 1rem; }
     .hm-plan > summary { list-style: none; cursor: pointer; padding: .85rem 1rem; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-sm); font-family: "Fraunces", serif; font-weight: 800; color: var(--ink); display: flex; align-items: center; justify-content: space-between; }
@@ -2822,6 +2829,14 @@
           </div>
         </div>
         <div id="homeFeed"><div class="skel-row"><div class="skel skel-av"></div><div class="skel-lines"><div class="skel skel-line m"></div><div class="skel skel-line s"></div></div></div></div>
+
+        <div class="section-head"><h3>Accès rapide</h3></div>
+        <div class="grid2">
+          <div class="tile" data-goto="connexions"><div class="thumb purp" data-smicon="users" data-smicon-size="30">🤝</div><div class="t-name">Mes Mates</div><div class="t-meta" id="qaMates">Rencontre &amp; discute</div></div>
+          <div class="tile" data-goto="securite"><div class="thumb red" data-smicon="shieldsafe" data-smicon-size="30">🛟</div><div class="t-name">Sécurité</div><div class="t-meta">Position & alerte</div></div>
+          <div class="tile" data-goto="lieux"><div class="thumb green" data-smicon="near" data-smicon-size="30">📍</div><div class="t-name">Lieux sûrs</div><div class="t-meta" id="qaLieux">Check-ins</div></div>
+          <div class="tile" data-goto="profil"><div class="thumb blue" data-smicon="usersolo" data-smicon-size="30">👤</div><div class="t-name">Mon profil</div><div class="t-meta" id="qaProfil">Score de confiance</div></div>
+        </div>
       </div>
 
       <!-- ---------------- Onglet LIEUX SÛRS ---------------- -->
