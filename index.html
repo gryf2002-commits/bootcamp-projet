@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=187"></script>
-  <script src="sunmates-icons.js?v=187"></script>
+  <script src="sunmates-badges.js?v=188"></script>
+  <script src="sunmates-icons.js?v=188"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1146,13 +1146,114 @@
     .cic[data-smicon]::after, .jo-ic[data-smicon]::after { content:""; position:absolute; left:8%; right:8%; top:6%; height:42%; border-radius:50% 50% 60% 60%/70% 70% 100% 100%; background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.04)); pointer-events:none; z-index:0; }
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg { display:block; position:relative; z-index:1; }
     .cat-tile.active .cic[data-smicon] { box-shadow: 0 10px 22px -4px rgba(255,90,77,.6), 0 2px 4px rgba(180,60,40,.32), inset 0 1px 1px rgba(255,246,236,.9), inset 0 -2px 3px rgba(150,45,30,.32); }
-    [data-smicon="quest"]{--c1:#FF8A3D;--c2:#FF5A4D} [data-smicon="games"]{--c1:#FF7A59;--c2:#7a5cff} [data-smicon="medal"]{--c1:#E8A33A;--c2:#B25A12} [data-smicon="coupon"]{--c1:#E8923A;--c2:#B85A16} [data-smicon="rank"]{--c1:#E8A33A;--c2:#B25A14}[data-smicon="shop"]{--c1:#FF5A4D;--c2:#ff8a6b}
-    [data-smicon="coffee"]{--c1:#ff9a5c;--c2:#d96a3d} [data-smicon="eco"]{--c1:#34c98f;--c2:#1f9e8c} [data-smicon="near"]{--c1:#FF6A4D;--c2:#ff9a3d} [data-smicon="rating"]{--c1:#E8A33A;--c2:#B25A14}[data-smicon="popular"]{--c1:#FF5A4D;--c2:#ffb274}
-    [data-smicon="medal"]{--c1:#E8A33A;--c2:#B25A12} [data-smicon="trip"]{--c1:#FF8A4D;--c2:#FF5A4D}
+    /* Palette par tuile : un spectre DA distinct par catégorie (anti-uniformité) */
+    [data-smicon="quest"]{--c1:#FF7A4D;--c2:#FF5238} [data-smicon="games"]{--c1:#8a5cff;--c2:#6638d6} [data-smicon="medal"]{--c1:#E8A33A;--c2:#A8500F} [data-smicon="coupon"]{--c1:#FF6FA5;--c2:#E84D86} [data-smicon="rank"]{--c1:#5E74E8;--c2:#3641B8} [data-smicon="shop"]{--c1:#FF5A8A;--c2:#C43A8A}
+    [data-smicon="coffee"]{--c1:#E89A4E;--c2:#A85A1C} [data-smicon="eco"]{--c1:#34C98F;--c2:#0E9E6B} [data-smicon="near"]{--c1:#FF9A3D;--c2:#FF6A1F} [data-smicon="rating"]{--c1:#FFB23D;--c2:#E07E12} [data-smicon="popular"]{--c1:#FF5A4D;--c2:#E83247} [data-smicon="trip"]{--c1:#FF8A4D;--c2:#FF5A4D}
+    [data-smicon="users"]{--c1:#9b7bff;--c2:#6a4fe0} [data-smicon="shieldsafe"]{--c1:#1FB38C;--c2:#0C7E6E} [data-smicon="usersolo"]{--c1:#FF9A5C;--c2:#E8631F} [data-smicon="crown"]{--c1:#8a5cff;--c2:#5028b0} [data-smicon="phone"]{--c1:#2BC48A;--c2:#15897A} [data-smicon="signal"]{--c1:#FFC04E;--c2:#E8901F}
+    [data-smicon="alert"]{--c1:#FF4D4D;--c2:#D81E2A} [data-smicon="aid"]{--c1:#FF7A4D;--c2:#FF9A3D} [data-smicon="chat"]{--c1:#7a8cff;--c2:#5560f0}
     /* Pastille-joyau réutilisable (icône ivoire sur dégradé) pour harmoniser les emojis hors tuiles */
     .smgem { background: linear-gradient(135deg, var(--c1,#FF8A3D), var(--c2,#FF5A4D)) !important; box-shadow: 0 4px 10px rgba(255,90,77,.28), inset 0 1px 1px rgba(255,246,236,.6) !important; color: #fff !important; }
     .smgem svg { filter: drop-shadow(0 1px 1px rgba(122,36,21,.25)); }
     .sv-stat .sv-ico { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; vertical-align: -5px; margin-right: 4px; }
+
+    /* ============================================================= */
+    /* ============ HOME v2 — « Paris, ton terrain de jeu » ========= */
+    /* ============================================================= */
+    /* --- 1. Héros joueur --- */
+    .player-hero{ position:relative; overflow:hidden; border-radius:var(--radius-lg); padding:1.1rem 1.15rem 1.25rem; margin:.2rem 0 1rem;
+      background: radial-gradient(120% 130% at 18% -10%, rgba(255,255,255,.30), rgba(255,255,255,0) 46%), var(--accent-grad);
+      box-shadow:var(--shadow-pop); color:#fff; isolation:isolate; }
+    .player-hero .ph-glow{ position:absolute; z-index:-1; inset:auto auto 0 0; width:200px; height:200px; left:-40px; bottom:-70px;
+      background:radial-gradient(circle, rgba(255,201,60,.55), rgba(255,201,60,0) 70%); filter:blur(6px); animation:phBreathe 5.5s ease-in-out infinite; }
+    .ph-top{ display:flex; align-items:center; gap:.8rem; }
+    .ph-avatar{ position:relative; flex-shrink:0; width:60px; height:60px; }
+    .ph-av-emoji{ display:grid; place-items:center; width:60px; height:60px; font-size:30px; border-radius:50%; overflow:hidden;
+      background:rgba(255,255,255,.18); background-size:cover; background-position:center;
+      box-shadow: inset 0 2px 6px rgba(255,255,255,.4), inset 0 -8px 16px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.18); border:2px solid rgba(255,255,255,.55); }
+    .ph-lvl-ring{ position:absolute; right:-6px; bottom:-6px; min-width:26px; height:26px; padding:0 5px; display:grid; place-items:center;
+      font-family:"Fraunces",serif; font-weight:900; font-size:.86rem; line-height:1; color:#8a3b00;
+      background:linear-gradient(135deg,#FFF2C2,#FFD15C 55%,#E8961F); border-radius:999px; border:2px solid #fff; box-shadow:0 3px 8px rgba(184,90,18,.4); }
+    .ph-id{ flex:1; min-width:0; }
+    .ph-name{ font-family:"Fraunces",serif; font-weight:900; font-size:1.32rem; line-height:1.05; letter-spacing:.2px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow:0 1px 2px rgba(120,40,0,.22); }
+    .ph-title{ font-size:.8rem; font-weight:700; opacity:.92; margin-top:.1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ph-streak{ flex-shrink:0; align-self:flex-start; display:inline-flex; align-items:center; gap:.2rem; min-height:38px; padding:.4rem .65rem;
+      background:rgba(255,255,255,.20); border:1.5px solid rgba(255,255,255,.4); border-radius:999px; color:#fff; font-weight:800; font-size:.9rem; cursor:pointer;
+      backdrop-filter:blur(2px); transition:transform .14s ease, background .18s; }
+    .ph-streak:hover{ background:rgba(255,255,255,.30); } .ph-streak:active{ transform:scale(.94); }
+    .ph-streak-fire{ font-size:1rem; filter:drop-shadow(0 1px 1px rgba(180,60,0,.4)); }
+    .ph-xp{ margin-top:1rem; }
+    .ph-xp-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:.4rem; }
+    .ph-xp-lbl{ font-weight:800; font-size:.82rem; opacity:.95; } .ph-xp-val{ font-size:.82rem; opacity:.95; }
+    .ph-xp-val b{ font-family:"Fraunces",serif; font-weight:900; font-size:.95rem; }
+    .ph-xp-track{ height:12px; border-radius:999px; background:rgba(120,40,10,.28); box-shadow:inset 0 1px 3px rgba(0,0,0,.28); overflow:hidden; }
+    .ph-xp-fill{ height:100%; border-radius:999px; background:linear-gradient(90deg,#FFF2C2,#FFD15C 60%,#FFE9A8); box-shadow:0 0 10px rgba(255,209,92,.7);
+      position:relative; transition:width .9s cubic-bezier(.2,.8,.2,1); }
+    .ph-xp-fill::after{ content:""; position:absolute; inset:0; background:linear-gradient(100deg, transparent 30%, rgba(255,255,255,.6) 50%, transparent 70%);
+      transform:translateX(-120%); animation:phShine 3.4s ease-in-out 1s infinite; }
+    .ph-xp-next{ display:flex; align-items:center; gap:.4rem; margin-top:.55rem; font-size:.8rem; opacity:.96; }
+    .ph-next-ic{ font-size:1rem; flex-shrink:0; } .ph-next-txt{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .ph-next-txt b{ font-weight:800; }
+    @keyframes phBreathe{ 0%,100%{ transform:scale(1); opacity:.85 } 50%{ transform:scale(1.12); opacity:1 } }
+    @keyframes phShine{ 0%{ transform:translateX(-120%) } 55%,100%{ transform:translateX(220%) } }
+    body.theme-dusk .player-hero{ box-shadow:0 18px 44px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.06); }
+    body.theme-dusk .player-hero .ph-glow{ opacity:.9; }
+
+    /* --- 2. Quête du jour --- */
+    .quest-spotlight{ position:relative; overflow:hidden; border-radius:var(--radius); padding:1.05rem 1.1rem 1.1rem; margin:0 0 1rem;
+      background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow); isolation:isolate; }
+    .quest-spotlight::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--accent-grad); }
+    .qs-aura{ position:absolute; z-index:-1; right:-50px; top:-50px; width:170px; height:170px; background:radial-gradient(circle, rgba(255,138,61,.32), rgba(255,138,61,0) 70%); }
+    body.theme-dusk .qs-aura{ background:radial-gradient(circle, rgba(255,154,141,.30), rgba(255,154,141,0) 70%); }
+    .qs-head{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-bottom:.7rem; padding-left:.4rem; }
+    .qs-pill{ display:inline-flex; align-items:center; gap:.2rem; font-weight:800; font-size:.74rem; letter-spacing:.3px; color:#fff; padding:.3rem .65rem;
+      border-radius:999px; background:var(--accent-grad); box-shadow:0 4px 12px rgba(255,90,77,.32); }
+    .qs-timer{ font-size:.76rem; font-weight:700; color:var(--muted); white-space:nowrap; }
+    .qs-body{ display:flex; align-items:flex-start; gap:.8rem; padding-left:.4rem; }
+    .qs-emblem{ flex-shrink:0; width:58px; height:58px; display:grid; place-items:center; font-size:30px; border-radius:18px;
+      background: radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), var(--accent-grad);
+      box-shadow:0 8px 18px rgba(255,90,77,.30), inset 0 -8px 14px rgba(0,0,0,.12), inset 0 2px 3px rgba(255,255,255,.5); }
+    .qs-txt{ min-width:0; }
+    .qs-title{ margin:.1rem 0 .25rem !important; font-family:"Fraunces",serif; font-weight:900; font-size:1.18rem; line-height:1.12; color:var(--ink);
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .qs-desc{ margin:0; font-size:.83rem; line-height:1.4; color:var(--text); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .qs-reward{ display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; margin:.85rem .4rem .9rem; font-size:.82rem; color:var(--text); }
+    .qs-xp{ font-weight:800; color:#B5740E; background:linear-gradient(135deg, rgba(255,209,92,.28), rgba(255,138,61,.18)); padding:.22rem .55rem; border-radius:999px; }
+    .qs-xp b{ font-family:"Fraunces",serif; font-weight:900; } .qs-dot{ color:var(--muted); } .qs-badge-hint b{ color:var(--ink); font-weight:800; }
+    .qs-mode{ display:flex; gap:.2rem; padding:.22rem; background:var(--accent-soft); border-radius:999px; margin:0 .4rem .7rem; }
+    .qs-mode-btn{ flex:1; min-height:40px; border:0; background:none; cursor:pointer; font-weight:800; font-size:.82rem; color:var(--accent);
+      border-radius:999px; padding:.5rem; transition:background .18s, color .18s, transform .12s; }
+    .qs-mode-btn i{ font-style:normal; font-size:.7rem; opacity:.85; font-weight:700; }
+    .qs-mode-btn.active{ background:var(--accent-grad); color:#fff; box-shadow:0 6px 14px rgba(255,90,77,.3); } .qs-mode-btn:active{ transform:scale(.96); }
+    body.theme-dusk .qs-mode{ background:rgba(255,255,255,.06); } body.theme-dusk .qs-mode-btn{ color:var(--accent-2); }
+    .qs-play{ width:calc(100% - .8rem); margin:0 .4rem; min-height:48px; font-weight:800; font-size:1rem; color:#fff; cursor:pointer; border:0;
+      border-radius:var(--radius-sm); background:var(--accent-grad); box-shadow:0 8px 20px rgba(255,90,77,.38); transition:transform .14s ease, box-shadow .2s; }
+    .qs-play:hover{ box-shadow:var(--shadow-pop); } .qs-play:active{ transform:scale(.98); }
+
+    /* --- 3. Missions rapides + rail badges --- */
+    .qm-strip, .badge-rail{ margin:0 0 1rem; }
+    .qm-head{ display:flex; align-items:baseline; justify-content:space-between; margin:.2rem 0 .55rem; }
+    .qm-head h3{ margin:0; } .qm-all{ font-size:.82rem; font-weight:700; color:var(--accent); cursor:pointer; white-space:nowrap; }
+    .qm-rail{ display:flex; gap:.6rem; overflow-x:auto; padding:.2rem .25rem .5rem; margin:0 -.25rem; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    .qm-rail::-webkit-scrollbar{ display:none; }
+    .qm-card{ scroll-snap-align:start; flex:0 0 auto; width:118px; min-height:124px; display:flex; flex-direction:column; align-items:flex-start; gap:.3rem;
+      padding:.7rem .65rem; background:var(--card); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); cursor:pointer; text-align:left;
+      transition:transform .16s cubic-bezier(.2,.8,.3,1), box-shadow .16s; }
+    .qm-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); } .qm-card:active{ transform:scale(.96); }
+    .qm-ic{ width:42px; height:42px; display:grid; place-items:center; font-size:22px; border-radius:13px; color:#fff;
+      box-shadow:inset 0 -6px 12px rgba(0,0,0,.14), inset 0 2px 3px rgba(255,255,255,.45), 0 5px 12px rgba(0,0,0,.12); }
+    .qm-coral .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), linear-gradient(135deg,#FF8A3D,#FF5A4D); }
+    .qm-teal .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), linear-gradient(135deg,#34c98f,#1f9e8c); }
+    .qm-gold .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.55), rgba(255,255,255,0) 55%), linear-gradient(135deg,#FFD15C,#E8961F); }
+    .qm-violet .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), linear-gradient(135deg,#9b7bff,#7a5cff); }
+    .qm-name{ font-weight:800; font-size:.8rem; line-height:1.15; color:var(--ink); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .qm-xp{ margin-top:auto; font-weight:800; font-size:.74rem; color:#B5740E; background:rgba(255,209,92,.22); padding:.12rem .45rem; border-radius:999px; }
+    body.theme-dusk .qm-card{ background:#2a2140; border-color:rgba(255,255,255,.08); } body.theme-dusk .qm-xp{ color:#FFD79A; background:rgba(255,209,92,.14); }
+    .br-item{ flex:0 0 auto; width:92px; display:flex; flex-direction:column; align-items:center; gap:.35rem; scroll-snap-align:start; }
+    .br-medal{ width:64px; height:64px; display:grid; place-items:center; font-size:30px; }
+    .br-item.locked .br-medal{ filter:grayscale(.9) opacity(.5); }
+    .br-lbl{ font-size:.74rem; font-weight:800; color:var(--ink); text-align:center; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:92px; }
+    .br-mini{ font-size:.68rem; font-weight:700; color:var(--muted); }
+    @media (prefers-reduced-motion: reduce){ .ph-glow, .ph-xp-fill::after{ animation:none; } .ph-xp-fill{ transition:none; } .qm-card, .qs-mode-btn, .qs-play{ transition:none; } }
 
     /* Coupons */
     .coupon { display: flex; align-items: center; gap: .85rem; padding: .85rem .9rem; border: 1.5px dashed var(--accent);
@@ -2452,6 +2553,48 @@
 
         <!-- ============ MODE VOYAGE : carte d'exploration (masquée en mode Maison) ============ -->
         <div id="homeTravelMap">
+
+        <!-- ============ HOME v2 — Hub de jeu « Paris, ton terrain de jeu » ============ -->
+        <section class="player-hero" id="playerHero" aria-label="Ta progression">
+          <div class="ph-glow" aria-hidden="true"></div>
+          <div class="ph-top">
+            <div class="ph-avatar"><span class="ph-av-emoji" id="phAvatar">🧭</span><span class="ph-lvl-ring" id="phLvl">1</span></div>
+            <div class="ph-id"><div class="ph-name" id="phName">Voyageur·se</div><div class="ph-title" id="phTitle">Explorateur·rice de Paris</div></div>
+            <button class="ph-streak" id="phStreak" title="Ta série de jours d'affilée"><span class="ph-streak-fire">🔥</span><b id="phStreakN">1</b></button>
+          </div>
+          <div class="ph-xp">
+            <div class="ph-xp-head"><span class="ph-xp-lbl" id="phXpLbl">Niveau 1</span><span class="ph-xp-val"><b id="phXpCur">0</b> / <span id="phXpMax">100</span> XP</span></div>
+            <div class="ph-xp-track"><div class="ph-xp-fill" id="phXpFill" style="width:0%"></div></div>
+            <div class="ph-xp-next"><span class="ph-next-ic">🚀</span><span class="ph-next-txt" id="phXpNext">Accomplis une quête pour gagner ton premier niveau</span></div>
+          </div>
+        </section>
+
+        <section class="quest-spotlight" id="questSpotlight" aria-label="Quête du jour">
+          <div class="qs-aura" aria-hidden="true"></div>
+          <div class="qs-head"><span class="qs-pill">⚡ Quête du jour</span><span class="qs-timer" id="qsTimer"></span></div>
+          <div class="qs-body">
+            <div class="qs-emblem" id="qsEmblem">🗼</div>
+            <div class="qs-txt"><h3 class="qs-title" id="qsTitle">—</h3><p class="qs-desc" id="qsDesc">—</p></div>
+          </div>
+          <div class="qs-reward"><span class="qs-xp"><b id="qsXp">+0</b> XP</span><span class="qs-dot">·</span><span class="qs-badge-hint">🏅 vise <b id="qsBadge">un badge</b></span></div>
+          <div class="qs-mode" role="group" aria-label="Jouer en solo ou à plusieurs">
+            <button class="qs-mode-btn active" data-qsmode="solo" id="qsModeSolo">🧭 Solo</button>
+            <button class="qs-mode-btn" data-qsmode="group" id="qsModeGroup">👥 En groupe <i>+bonus</i></button>
+          </div>
+          <button class="qs-play" id="qsPlayBtn">▶ Jouer cette quête</button>
+        </section>
+
+        <section class="qm-strip" aria-label="Missions rapides">
+          <div class="qm-head"><h3>Missions rapides ⚡</h3><a class="qm-all" data-goto="jeux">Tout voir ›</a></div>
+          <div class="qm-rail" id="qmRail">
+            <button class="qm-card qm-coral" data-mission="talk"><span class="qm-ic">🗣️</span><span class="qm-name">Parler à un·e inconnu·e</span><span class="qm-xp">+30 XP</span></button>
+            <button class="qm-card qm-teal" data-mission="coffee"><span class="qm-ic">☕</span><span class="qm-name">Café avec un Mate</span><span class="qm-xp">+40 XP</span></button>
+            <button class="qm-card qm-gold" data-mission="photo"><span class="qm-ic">📸</span><span class="qm-name">Photo d'un monument</span><span class="qm-xp">+50 XP</span></button>
+            <button class="qm-card qm-violet" data-mission="quartier"><span class="qm-ic">🧭</span><span class="qm-name">Explorer un quartier</span><span class="qm-xp">+60 XP</span></button>
+            <button class="qm-card qm-coral" data-mission="group"><span class="qm-ic">👥</span><span class="qm-name">Sortie de groupe</span><span class="qm-xp">+80 XP</span></button>
+          </div>
+        </section>
+
         <!-- ===== Carte « tout-en-un » : lieux, Mates, activités, check-ins ===== -->
         <div class="section-head"><h3 style="margin-top:.4rem">Explore autour de toi 🗺️</h3><a id="hmFull" style="cursor:pointer">⛶ Plein écran</a></div>
         <p class="muted" style="margin:-.2rem 0 .6rem;font-size:.84rem">Filtre, puis <b>touche une pastille</b> pour agir 👇</p>
@@ -2490,6 +2633,12 @@
           </div>
         </div>
         </div><!-- /#homeTravelMap -->
+
+        <!-- Rail de progression badges (rempli par renderBadgeRail) -->
+        <section class="badge-rail" id="badgeRailSection" style="display:none">
+          <div class="qm-head"><h3>À débloquer 🏅</h3><a class="qm-all" data-goto="jeux">Collection ›</a></div>
+          <div class="qm-rail" id="badgeRail"></div>
+        </section>
 
         <div class="section-head">
           <h3 style="margin-top:.4rem">Ton fil ✨</h3>
@@ -4184,6 +4333,7 @@
       // Accueil : « Bonjour {pseudo} ». Seul le pseudo reçoit le dégradé ; « Bonjour » reste en texte normal.
       $("homeHello").innerHTML = 'Bonjour <span class="hello-name">' + escapeHtml(uname) + "</span>";
       if (typeof updateStreak === "function") updateStreak();
+      if (typeof renderGameHub === "function") renderGameHub();
       if (typeof setHomeMode === "function") setHomeMode("travel", false); // on arrive TOUJOURS sur la carte (mode Voyage), le mode Maison reste accessible via la bascule
       if (typeof renderHost === "function") renderHost(); // badge hôte sur la carte profil
       const badge = $("verifBadge");
@@ -5837,6 +5987,7 @@
           <p style="margin:.2rem 0">Plus d'XP = tu grimpes dans le <b>Classement</b> 🏆 et tu débloques des cosmétiques en <b>Boutique</b> 🛍️</p></div>`);
       }
       if (typeof renderWeeklyGoals === "function") renderWeeklyGoals();
+      if (typeof renderGameHub === "function") renderGameHub(); // rafraîchit héros/quête/badges du home v2
 
       // Rangée des badges ÉPINGLÉS sur la carte profil (3 max, choisis dans l'onglet Badges)
       const pb = $("profileBadges");
@@ -8317,6 +8468,81 @@
       }));
     }
     $("feedRefresh").addEventListener("click", () => { buildHomeFeed(); });
+
+    /* ================= HOME v2 — Hub de jeu « Paris » ================= */
+    // Quêtes du jour (contenu Paris, rotation quotidienne). Le backend de quêtes
+    // reste dans l'onglet Jeux ; ici on met en scène la quête vedette du jour.
+    const PARIS_QUESTS = [
+      { emoji: "🗼", title: "Photographie un monument", desc: "Tour Eiffel, Notre-Dame, Sacré-Cœur… capture-en un et partage-le.", xp: 120, badge: "Photographe" },
+      { emoji: "🗣️", title: "Engage la conversation", desc: "Parle à un·e inconnu·e et demande son meilleur spot parisien.", xp: 100, badge: "Polyglotte" },
+      { emoji: "🥐", title: "Petit-déj à la française", desc: "Commande un croissant dans une vraie boulangerie de quartier.", xp: 80, badge: "Foodie" },
+      { emoji: "🎨", title: "Quartier des artistes", desc: "Explore Montmartre et déniche une œuvre de street-art.", xp: 90, badge: "Culture" },
+      { emoji: "⛵", title: "Au fil de la Seine", desc: "Balade le long des quais et trouve un pont mythique.", xp: 90, badge: "Explorateur" },
+      { emoji: "☕", title: "Café avec un Mate", desc: "Donne rendez-vous à un Mate dans un café sûr de la ville.", xp: 110, badge: "Ami local" },
+      { emoji: "📚", title: "Trésor littéraire", desc: "Pousse la porte d'une librairie indépendante et repars avec une pépite.", xp: 70, badge: "Aventurier" },
+    ];
+    function _dayIdx() { const d = new Date(); return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000); }
+    function _hubTitle(lvl) { return lvl >= 8 ? "Légende parisienne" : lvl >= 5 ? "Flâneur·se aguerri·e" : lvl >= 3 ? "Explorateur·rice de Paris" : "Touriste curieux·se"; }
+    let _qsMode = "solo";
+
+    function renderPlayerHero() {
+      if (!$("playerHero")) return;
+      const name = (myProfile && myProfile.username) || "Voyageur·se";
+      const xp = (myProfile && myProfile.xp) || 0;
+      const lvl = Math.floor(xp / 100) + 1, inLvl = xp % 100;
+      $("phName").textContent = name;
+      $("phTitle").textContent = _hubTitle(lvl);
+      $("phLvl").textContent = lvl;
+      $("phXpLbl").textContent = "Niveau " + lvl;
+      $("phXpCur").textContent = inLvl;
+      $("phXpMax").textContent = 100;
+      $("phXpFill").style.width = inLvl + "%";
+      $("phXpNext").innerHTML = xp === 0 ? "Accomplis une quête pour gagner ton premier niveau"
+        : ("Plus que <b>" + (100 - inLvl) + " XP</b> pour le niveau " + (lvl + 1) + " 🚀");
+      const av = $("phAvatar"), url = myProfile && myProfile.avatar_url;
+      if (av) { if (url) { av.textContent = ""; av.style.backgroundImage = 'url("' + url + '")'; } else { av.style.backgroundImage = ""; av.textContent = "🧭"; } }
+      try { const st = JSON.parse(localStorage.getItem("sm_streak_" + (myUserId || "x")) || "{}") || {}; $("phStreakN").textContent = st.count || 1; } catch (e) {}
+    }
+
+    function renderQuestSpotlight() {
+      if (!$("questSpotlight")) return;
+      const q = PARIS_QUESTS[_dayIdx() % PARIS_QUESTS.length];
+      $("qsEmblem").textContent = q.emoji;
+      $("qsTitle").textContent = q.title;
+      $("qsDesc").textContent = q.desc;
+      const bonus = _qsMode === "group" ? Math.round(q.xp * 0.5) : 0;
+      $("qsXp").textContent = "+" + (q.xp + bonus);
+      $("qsBadge").textContent = q.badge;
+      const now = new Date(), end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+      $("qsTimer").textContent = "⏳ encore " + Math.max(1, Math.round((end - now) / 3600000)) + " h";
+    }
+
+    const HUB_BADGES = [
+      { k: "photographer", l: "Photographe" }, { k: "local", l: "Ami local" }, { k: "polyglot", l: "Polyglotte" },
+      { k: "culture", l: "Culture" }, { k: "foodie", l: "Foodie" }, { k: "explorer", l: "Explorateur" }, { k: "questmaster", l: "Aventurier" },
+    ];
+    function renderBadgeRail() {
+      const rail = $("badgeRail"), sec = $("badgeRailSection"); if (!rail || !sec) return;
+      const earned = new Set((typeof myBadges !== "undefined" ? myBadges : []).map((b) => String(b.badge_key || "").replace(/^badge_/, "")));
+      const todo = HUB_BADGES.filter((b) => !earned.has(b.k)).slice(0, 5);
+      if (!todo.length) { sec.style.display = "none"; return; }
+      rail.innerHTML = todo.map((b) => '<div class="br-item"><div class="br-medal">' +
+        (window.SMBadge && SMBadge.hasEmblem(b.k) ? SMBadge(b.k, { size: 60, lite: true }) : "🏅") +
+        '</div><span class="br-lbl">' + b.l + "</span></div>").join("");
+      sec.style.display = "";
+    }
+
+    function renderGameHub() { try { renderPlayerHero(); renderQuestSpotlight(); renderBadgeRail(); } catch (e) {} }
+
+    // Câblage (une fois) : toggle solo/groupe, bouton Jouer, streak, missions rapides
+    document.querySelectorAll("#questSpotlight .qs-mode-btn").forEach((b) => b.addEventListener("click", () => {
+      _qsMode = b.dataset.qsmode;
+      document.querySelectorAll("#questSpotlight .qs-mode-btn").forEach((x) => x.classList.toggle("active", x === b));
+      renderQuestSpotlight();
+    }));
+    { const pb = $("qsPlayBtn"); if (pb) pb.addEventListener("click", () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxHome"); }); }
+    { const ps = $("phStreak"); if (ps) ps.addEventListener("click", () => { const h = $("homeStreak"); if (h) h.click(); }); }
+    document.querySelectorAll("#qmRail .qm-card").forEach((c) => c.addEventListener("click", () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxHome"); }));
 
     // ---- Accordéon du formulaire de profil ----
     // Accordéon du profil : ouverture/fermeture FLUIDE (on anime la hauteur réelle,
