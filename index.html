@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=228"></script>
-  <script src="sunmates-icons.js?v=228"></script>
+  <script src="sunmates-badges.js?v=229"></script>
+  <script src="sunmates-icons.js?v=229"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -6223,6 +6223,15 @@
       want("badge_questmaster", questsDone >= 5);
       want("badge_polyglot", langs >= 3);
       want("badge_profile100", _lastCompletionPct >= 100);
+      // Nouveaux badges (s34)
+      want("badge_firstquest", questsDone >= 1);
+      want("badge_social", (typeof connectedIds !== "undefined" && connectedIds ? connectedIds.size : 0) >= 1);
+      want("badge_quest25", questsDone >= 25);
+      want("badge_explorer20", ck >= 20);
+      // Tour de France : une quête accomplie dans 10 villes différentes
+      const _qCity = {}; (typeof allQuests !== "undefined" ? allQuests : []).forEach((q) => { if (q.key) _qCity[q.key] = q.city || ""; });
+      const _citiesDone = new Set(Object.keys(myQuestStatus).filter((k) => myQuestStatus[k] === "completed").map((k) => _qCity[k]).filter(Boolean)).size;
+      want("badge_tour_de_france", _citiesDone >= 10);
       if (!toGrant.length) return;
       for (const key of toGrant) {
         const def = allBadgeDefs.find((b) => b.key === key) || {};
@@ -9410,9 +9419,27 @@
         row.querySelectorAll("[data-hmmate]").forEach((el) => el.addEventListener("click", () => { goToTab("connexions"); if (typeof openChat === "function") openChat(el.dataset.hmmate); }));
       } else { if (lbl) lbl.textContent = ""; row.innerHTML = '<p class="muted" style="font-size:.8rem">Pas encore de Mate — pars à la rencontre sur la carte ✨</p>'; }
       $("hmCities").innerHTML = cities.length
-        ? '<div class="hm-mates-lbl">Tes aventures par ville</div>' + cities.slice(0, 8).map((c) => '<div class="hm-city-row"><span>📍</span><span class="hc-name">' + escapeHtml(c) + '</span><span class="hc-n">' + byCity[c] + " quête" + (byCity[c] > 1 ? "s" : "") + "</span></div>").join("")
+        ? '<div class="hm-mates-lbl">Tes aventures par ville · 📖 album souvenir</div>' + cities.slice(0, 8).map((c) => {
+            const note = _souvGet(c);
+            return '<div class="hm-city-row" data-souvcity="' + escapeHtml(c) + '" style="cursor:pointer">'
+              + '<span>📍</span><span class="hc-name">' + escapeHtml(c) + (note ? ' <span style="font-weight:500;color:var(--text)">— « ' + escapeHtml(note) + ' »</span>' : "") + '</span>'
+              + '<span class="hc-n">' + (note ? "✏️" : "➕ souvenir") + "</span></div>";
+          }).join("")
         : "";
+      $("hmCities").querySelectorAll("[data-souvcity]").forEach((el) => el.addEventListener("click", () => {
+        const c = el.dataset.souvcity;
+        const cur = _souvGet(c);
+        const v = window.prompt("Ton souvenir marquant à " + c + " (un moment, une rencontre…) :", cur || "");
+        if (v === null) return; // annulé
+        _souvSet(c, v.trim().slice(0, 140));
+        if (typeof toast === "function") toast("📖", v.trim() ? "Souvenir enregistré ✨" : "Souvenir effacé");
+        renderHomeMates();
+      }));
     }
+    // Album souvenir : 1 note marquante par ville, stockée en local (léger, perso).
+    function _souvKey(c) { return "sm_souv_" + (myUserId || "x") + "_" + c; }
+    function _souvGet(c) { try { return localStorage.getItem(_souvKey(c)) || ""; } catch (e) { return ""; } }
+    function _souvSet(c, v) { try { if (v) localStorage.setItem(_souvKey(c), v); else localStorage.removeItem(_souvKey(c)); } catch (e) {} }
     { const sh = $("hmSouvShare"); if (sh) sh.addEventListener("click", () => { if (typeof openSouvenir === "function") openSouvenir(); }); }
     { const rr = $("scReroll"); if (rr) rr.addEventListener("click", () => { const s = _soloState(); s.seed = ((s.seed || 0) + 1) % 1000; _soloSave(s); renderSoloChallenges(); if (window.SMSound) SMSound.play("pop"); }); }
     { const ss = $("spStreak"); if (ss) ss.addEventListener("click", (e) => { e.stopPropagation(); const h = $("homeStreak"); if (h) h.click(); }); }
