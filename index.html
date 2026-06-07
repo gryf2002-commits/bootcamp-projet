@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=189"></script>
-  <script src="sunmates-icons.js?v=189"></script>
+  <script src="sunmates-badges.js?v=190"></script>
+  <script src="sunmates-icons.js?v=190"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -7369,16 +7369,12 @@
       if (lastKnownGeo) { focusNear(lastKnownGeo.lat, lastKnownGeo.lng, 13); return; }
       const mine = (circleLocs || []).find((l) => l.user_id === myUserId && l.lat != null);
       if (mine) { focusNear(mine.lat, mine.lng, 13); return; }
-      const city = myProfile && myProfile.city;
-      if (city) {
-        if (homeCityCenter) { focusNear(homeCityCenter[0], homeCityCenter[1], 12); return; }
-        try {
-          const r = await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(city));
-          const j = await r.json();
-          if (j && j[0]) { homeCityCenter = [parseFloat(j[0].lat), parseFloat(j[0].lon)]; focusNear(homeCityCenter[0], homeCityCenter[1], 12); return; }
-        } catch (e) {}
-      }
-      if (markers && markers.length) { try { homeLeaf.fitBounds(L.featureGroup(markers).getBounds().pad(0.25)); } catch (e) {} }
+      // 🎯 Lancement Paris : par défaut on pose la carte sur PARIS (là où sont les quêtes),
+      // pour que le plateau de jeu soit visible d'emblée. Une vraie position GPS/partagée
+      // (ci-dessus) reste prioritaire si l'utilisateur en a une.
+      const qMarks = (markers || []).filter((m) => m.smType === "quests");
+      if (qMarks.length) { try { homeLeaf.fitBounds(L.featureGroup(qMarks).getBounds().pad(0.18)); return; } catch (e) {} }
+      homeLeaf.setView([48.8606, 2.3376], 12.5, { animate: false }); // centre de Paris
     }
 
     // Beaucoup d'éléments au MÊME endroit (>6) : au lieu d'une spirale illisible, une petite
@@ -7482,6 +7478,8 @@
           node.querySelectorAll("[data-hmquest]").forEach((b) => b.addEventListener("click", () => { homeLeaf.closePopup(); goToTab("jeux"); const q = (typeof questByKey === "function") && questByKey(b.dataset.hmquest); if (q && typeof openDetail === "function") setTimeout(() => openDetail(q), 80); }));
           // Jouer une quête-lieu de Paris (point de jeu sur la carte)
           node.querySelectorAll("[data-hmqplay]").forEach((b) => b.addEventListener("click", () => { homeLeaf.closePopup(); goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxHome"); }));
+          // Jouer une quête à plusieurs → choisir un Mate à inviter (bonus XP de groupe)
+          node.querySelectorAll("[data-hmqgroup]").forEach((b) => b.addEventListener("click", () => { homeLeaf.closePopup(); goToTab("connexions"); if (typeof toast === "function") toast("👥", "Invite un Mate à cette quête : vous gagnez tous les deux un bonus XP ✨"); }));
         });
         // Clic sur la carte en mode « placement » → créer une activité ici
         homeLeaf.on("click", (e) => { if (homeAddMode) { setHomeAddMode(false); openActCreate(e.latlng); } });
@@ -7644,7 +7642,7 @@
       // curaté), indépendant du back : chaque point = une quête à jouer sur la ville.
       (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS : []).forEach((q) => {
         const mk = L.marker([q.lat, q.lng], { icon: epinIcon(q.emoji, "#E8961F", "quest") })
-          .bindPopup(`<div class="mappop-mini mappop-quest"><span class="mq-tag">⚡ Quête</span><br><b>${escapeHtml(q.title)}</b><br><span class="muted" style="font-size:.74rem">${escapeHtml(q.desc)}</span><div class="mq-rew">+${q.xp} XP · 🏅 ${escapeHtml(q.badge)}</div><button class="mappop-btn" data-hmqplay="1">▶ Jouer cette quête</button></div>`);
+          .bindPopup(`<div class="mappop-mini mappop-quest"><span class="mq-tag">⚡ Quête</span><br><b>${escapeHtml(q.title)}</b><br><span class="muted" style="font-size:.74rem">${escapeHtml(q.desc)}</span><div class="mq-rew">+${q.xp} XP · 🏅 ${escapeHtml(q.badge)}</div><button class="mappop-btn" data-hmqplay="1">🧭 Jouer en solo</button><button class="mappop-btn alt" data-hmqgroup="1">👥 À plusieurs <span style="opacity:.8">+bonus</span></button></div>`);
         mk.smType = "quests"; homeMarkersByType.quests.push(mk); allMarkers.push(mk);
       });
 
