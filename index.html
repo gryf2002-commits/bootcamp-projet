@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=209"></script>
-  <script src="sunmates-icons.js?v=209"></script>
+  <script src="sunmates-badges.js?v=210"></script>
+  <script src="sunmates-icons.js?v=210"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -894,14 +894,11 @@
       background: transparent; border: 0; padding: .4rem .6rem; margin: 0; display: flex; flex-direction: column;
       align-items: center; gap: .15rem; color: var(--muted); font-size: .62rem; font-weight: 600; flex: 1;
     }
-    .bottom-nav button .ni { font-size: 23px; line-height: 1; filter: grayscale(.85) opacity(.5); transition: filter .2s, transform .22s cubic-bezier(.2,.8,.3,1); }
+    /* Barre du bas SOBRE : icônes calmes/monochromes au repos, onglet actif discret (pas de halo) */
+    .bottom-nav button .ni { font-size: 21px; line-height: 1; filter: grayscale(1) opacity(.42); transition: filter .2s, transform .2s ease; }
     .bottom-nav button.active { color: var(--accent); }
-    /* Âme SunMates : l'onglet actif gagne le RELIEF + un petit lever de soleil dessous */
-    .bottom-nav button.active .ni { filter: var(--relief); transform: translateY(-3px) scale(1.16); }
-    .bottom-nav button.active::before {
-      content: ""; position: absolute; top: -3px; left: 50%; transform: translateX(-50%); width: 34px; height: 22px; border-radius: 0;
-      background: radial-gradient(circle at 50% 100%, rgba(255,201,60,.9), rgba(255,138,61,.25) 45%, rgba(255,138,61,0) 72%); pointer-events: none;
-    }
+    .bottom-nav button.active .ni { filter: grayscale(.12) drop-shadow(0 1px 2px rgba(0,0,0,.10)); transform: translateY(-1px) scale(1.05); }
+    .bottom-nav button.active::before { display: none; }
     .bottom-nav button { position: relative; }
 
     /* --------------------------- JEUX ------------------------------- */
@@ -1420,12 +1417,11 @@
     .qs-emblem, .ph-av-emoji, .sp-next-bdg, .qm-ic, .hm-hero-ic, .hm-host-ic, .rit-ic, .empty-ill, .fe-emoji,
     .dh-emoji, .tip-ic, .onb-emoji, .sos-logo, .coupon .cico, .su-e, .su-ic { filter: var(--relief); }
     .sm-emoji3d { filter: var(--relief); } .sm-emoji3d.sm-float { animation: floatySoft 3.2s ease-in-out infinite; }
-    /* Badges : version CHILL — relief doux + désaturation légère + halo soleil diffus (moins « médaille de jeu ») */
+    /* Badges : version TRÈS CHILL/SOBRE — désaturés, ombre minimale, AUCUN halo (plus du tout « médaille de jeu ») */
     .br-medal, .smbadge-wrap, .sm-badge {
-      filter: drop-shadow(0 5px 9px rgba(120,40,0,.20)) drop-shadow(0 1px 2px rgba(0,0,0,.12)) saturate(.82) brightness(1.01);
+      filter: drop-shadow(0 2px 4px rgba(80,40,10,.14)) saturate(.6) brightness(1.005);
       position: relative; isolation: isolate; }
-    .br-medal::before, .smbadge-wrap::before { content:""; position:absolute; inset:-10%; z-index:-1; border-radius:50%;
-      background: radial-gradient(circle at 50% 46%, rgba(255,201,60,.22), rgba(255,138,61,.07) 58%, transparent 74%); }
+    .br-medal::before, .smbadge-wrap::before { content: none; }
     @media (prefers-reduced-motion: reduce) { .sm-float { animation: none !important; } }
 
     /* ============ V2.2 — SOBRIÉTÉ (déclutter) + soleil signature ============ */
@@ -1434,17 +1430,20 @@
     /* Sobriété accueil : on masque le rail de badges (le jeu vit dans l'onglet Jeux) */
     #badgeRailSection { display: none !important; }
     /* (Soleil filigrane des titres retiré : le vrai clin d'œil soleil reste celui du logo en topbar) */
-    /* Lever de soleil en haut-gauche du héros joueur */
-    .player-hero .ph-glow { left: -52px; top: -64px; bottom: auto; background: radial-gradient(circle at 30% 30%, rgba(255,201,60,.6), rgba(255,138,61,0) 70%); }
-    /* Héros joueur COMPACT (la carte niveau ne doit plus écraser l'accueil ; la carte/map reste reine) */
-    .player-hero { padding: .7rem .9rem .8rem; border-radius: var(--radius); margin: .2rem 0 .9rem; }
-    .ph-avatar, .ph-av-emoji { width: 48px; height: 48px; }
-    .ph-av-emoji { font-size: 24px; }
+    /* Héros joueur SOBRE & COMPACT (la carte/map reste reine ; plus de halo ni de brillance criarde) */
+    .player-hero .ph-glow { display: none; } /* halo soleil de la carte coupé → plus basique */
+    .player-hero { padding: .7rem .9rem .8rem; border-radius: var(--radius); margin: .2rem 0 .9rem;
+      box-shadow: 0 4px 14px rgba(120,40,0,.16); }
+    .player-hero::after { content:""; position:absolute; inset:0; background:rgba(0,0,0,.06); pointer-events:none; } /* calme le dégradé */
+    .ph-avatar, .ph-av-emoji { width: 46px; height: 46px; }
+    .ph-av-emoji { font-size: 23px; }
     .ph-lvl-ring { min-width: 22px; height: 22px; font-size: .74rem; }
-    .ph-name { font-size: 1.1rem; }
-    .ph-title { font-size: .74rem; }
-    .ph-xp { margin-top: .6rem; }
-    .ph-xp-track { height: 9px; }
+    .ph-name { font-size: 1.05rem; }
+    .ph-title { font-size: .72rem; opacity: .85; }
+    .ph-xp { margin-top: .55rem; }
+    .ph-xp-track { height: 8px; }
+    .ph-xp-fill { box-shadow: none; } /* on coupe le néon doré */
+    .ph-xp-fill::after { display: none; } /* on coupe le reflet brillant qui balaie la barre */
     .ph-xp-next { display: none; } /* on retire le détail "plus que X XP" pour alléger */
     /* Mode Maison : préparation voyage repliée (sobriété) */
     .hm-plan { margin: .4rem 0 1rem; }
