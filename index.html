@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=254"></script>
-  <script src="sunmates-icons.js?v=254"></script>
+  <script src="sunmates-badges.js?v=255"></script>
+  <script src="sunmates-icons.js?v=255"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1287,6 +1287,10 @@
     .hm-mate .hm-mate-n{ font-size:.7rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .hm-mate:active{ transform:scale(.96); }
     .hm-cities{ margin-top:.5rem; display:flex; flex-direction:column; gap:.3rem; }
+    .hm-album > summary{ list-style:none; cursor:pointer; font-size:.82rem; font-weight:800; color:var(--muted); padding:.3rem 0; }
+    .hm-album > summary::-webkit-details-marker{ display:none; }
+    .hm-album > summary::after{ content:" ▾"; }
+    .hm-album[open] > summary::after{ content:" ▴"; }
     .hm-city-row{ display:flex; align-items:center; gap:.5rem; font-size:.84rem; }
     .hm-city-row .hc-name{ flex:1; font-weight:700; color:var(--ink); }
     .hm-city-row .hc-n{ color:var(--accent); font-weight:800; }
@@ -9878,12 +9882,12 @@
         row.querySelectorAll("[data-hmmate]").forEach((el) => el.addEventListener("click", () => { goToTab("connexions"); if (typeof openChat === "function") openChat(el.dataset.hmmate); }));
       } else { if (lbl) lbl.textContent = ""; row.innerHTML = '<p class="muted" style="font-size:.8rem">Pas encore de Mate — pars à la rencontre sur la carte ✨</p>'; }
       $("hmCities").innerHTML = cities.length
-        ? '<div class="hm-mates-lbl">Tes aventures par ville · 📖 album souvenir</div>' + cities.slice(0, 8).map((c) => {
+        ? '<details class="hm-album"><summary>📖 Album souvenir par ville (' + cities.length + ')</summary>' + cities.slice(0, 8).map((c) => {
             const note = _souvGet(c);
             return '<div class="hm-city-row" data-souvcity="' + escapeHtml(c) + '" style="cursor:pointer">'
               + '<span>📍</span><span class="hc-name">' + escapeHtml(c) + (note ? ' <span style="font-weight:500;color:var(--text)">— « ' + escapeHtml(note) + ' »</span>' : "") + '</span>'
               + '<span class="hc-n">' + (note ? "✏️" : "➕ souvenir") + "</span></div>";
-          }).join("")
+          }).join("") + "</details>"
         : "";
       $("hmCities").querySelectorAll("[data-souvcity]").forEach((el) => el.addEventListener("click", () => {
         const c = el.dataset.souvcity;
@@ -10155,6 +10159,14 @@
       "Tes Mates d'aventure": "Your adventure Mates", "Tes aventures par ville · 📖 album souvenir": "Your adventures by city · 📖 memory album",
       "Rituels du jour ☀️": "Daily rituals ☀️", "🎲 Mélanger": "🎲 Shuffle", "Défis relevés": "Challenges done", "Rituels du jour": "Daily rituals", "XP gagné": "XP earned",
       "Ville à l'honneur du jour · explore ses quêtes (ou repère-les pour ton prochain voyage)": "City of the day · explore its quests (or save them for your next trip)", "Explorer ›": "Explore ›",
+      "Tes Mates d'aventure": "Your adventure Mates", "🎯 Quêtes du jour": "🎯 Daily quests", "🎮 Jeux populaires": "🎮 Popular games",
+      "➕ Rejoindre la quête": "➕ Join the quest", "✅ Marquer comme accompli": "✅ Mark as done", "👥 Valider avec un Mate (+ bonus XP)": "👥 Validate with a Mate (+ bonus XP)", "🤝 Proposer à un Mate": "🤝 Suggest to a Mate", "📍 Voir sur la carte": "📍 See on map",
+      "Rejoins la quête pour la démarrer": "Join the quest to start it", "🎒 Quête en cours — accomplis-la puis valide": "🎒 Quest in progress — do it then validate", "✅ Quête accomplie !": "✅ Quest completed!",
+      "Rejoindre": "Join", "En cours": "In progress", "Accompli": "Done", "XP à gagner": "XP to earn",
+      "Défi": "Challenge", "BFF": "BFF", "Bloquer": "Block", "À propos": "About", "Infos": "Info",
+      "🛟 Sécurité": "🛟 Safety", "📄 Documents": "📄 Documents", "🎒 Pratique": "🎒 Practical", "💊 Santé": "💊 Health",
+      "🧭 Tuto guidé pas-à-pas": "🧭 Step-by-step guided tour", "▶ Visite guidée complète (A → Z)": "▶ Full guided tour (A → Z)", "▶ Tuto guidé": "▶ Guided tour", "▶ Voir": "▶ View",
+      "Centre d'aide ❓": "Help center ❓", "Nous contacter ✉️": "Contact us ✉️", "💡 L'XP & les niveaux": "💡 XP & levels", "⭐ L'XP & les niveaux": "⭐ XP & levels",
       "🗺️ Collection de quêtes": "🗺️ Quest collection", "🏙️ Villes explorées": "🏙️ Cities explored", "🎯 Quête la plus proche": "🎯 Nearest quest",
       "Invite tes amis sur SunMates": "Invite your friends to SunMates", "Plus on est, plus c'est sûr & fun 🌍": "The more we are, the safer & funnier 🌍", "Partager ›": "Share ›",
       "Note vocale (30 s max)": "Voice note (30 s max)", "Envoyer un poc 🔥": "Send a flame 🔥", "Enregistrement…": "Recording…", "Envoyer ➤": "Send ➤", "Annuler": "Cancel",
