@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=217"></script>
-  <script src="sunmates-icons.js?v=217"></script>
+  <script src="sunmates-badges.js?v=218"></script>
+  <script src="sunmates-icons.js?v=218"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -3385,6 +3385,7 @@
             <button data-aseg="reports">🚩 Signal.</button>
             <button data-aseg="quotes">💼 Devis</button>
             <button data-aseg="sounds">🔊 Sons</button>
+            <button data-aseg="system">🧰 Système</button>
           </div>
 
           <div class="aseg" data-asegpanel="demo">
@@ -3463,6 +3464,23 @@
                 <label class="switch"><input type="checkbox" id="adminSoundToggle"><span class="sl"></span></label>
               </div>
               <div id="adminSounds" class="grid2"></div>
+            </div>
+          </div>
+
+          <div class="aseg hidden" data-asegpanel="system">
+            <div class="card">
+              <h3 style="margin-top:0">🧰 Système & déploiement</h3>
+              <div id="adminSysInfo" class="pgrid" style="margin-bottom:.6rem"><p class="muted">Chargement…</p></div>
+              <div class="row" style="margin-top:.2rem">
+                <button class="btn-accent" id="sysCopyStats">📋 Copier le rapport de stats</button>
+                <button class="btn-ghost" id="sysRefresh">↻ Rafraîchir</button>
+              </div>
+            </div>
+            <div class="card">
+              <h3 style="margin-top:0">🔄 Forcer la mise à jour</h3>
+              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Vide le cache du service worker et recharge la dernière version en ligne. Pratique après un déploiement si tu vois encore l'ancienne version.</p>
+              <button class="btn-primary btn-block" id="sysForceUpdate">🧹 Vider le cache & recharger</button>
+              <div class="msg" id="sysMsg" style="text-align:center"></div>
             </div>
           </div>
 
@@ -4834,7 +4852,7 @@
 
     // Recherche + filtres de l'onglet Lieux
     (function () {
-      const s = $("cafeSearch"); if (s) s.addEventListener("input", () => { cafeFilter.q = s.value.trim(); renderCafesList(); });
+      const s = $("cafeSearch"); if (s) s.addEventListener("input", _debounce(() => { cafeFilter.q = s.value.trim(); renderCafesList(); }, 250));
       const f = $("cafeFilters"); if (!f) return;
       f.querySelectorAll(".chip").forEach((b) => b.addEventListener("click", () => {
         const mode = b.dataset.cf;
@@ -4974,8 +4992,46 @@
       else if (seg === "reports") loadReports();
       else if (seg === "quotes") loadAdminQuotes();
       else if (seg === "sounds") loadAdminSounds();
+      else if (seg === "system") loadAdminSystem();
     }
     document.querySelectorAll("[data-aseg]").forEach((b) => b.addEventListener("click", () => showAdminSegment(b.dataset.aseg)));
+
+    // ---- Segment ADMIN « Système & déploiement » ----
+    let _lastAdminStats = null;
+    function _appBuild() { const s = document.querySelector('script[src*="sunmates-badges"]'); const m = s && /[?&]v=(\d+)/.exec(s.getAttribute("src") || ""); return m ? "v" + m[1] : "?"; }
+    async function loadAdminSystem() {
+      const box = $("adminSysInfo"); if (!box) return;
+      const cell = (k, v) => `<div class="pcell"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+      let swState = "inactif", caches_ = "?";
+      try { if (navigator.serviceWorker && navigator.serviceWorker.controller) swState = "actif ✅"; } catch (e) {}
+      try { if (window.caches) { const ks = await caches.keys(); caches_ = ks.filter((k) => /sunmates/.test(k)).join(", ") || "aucun"; } } catch (e) {}
+      const online = navigator.onLine ? "en ligne 🟢" : "hors-ligne 🔴";
+      box.innerHTML = cell("Build", _appBuild()) + cell("Service worker", swState) + cell("Cache", caches_) + cell("Réseau", online) + cell("Langue", (localStorage.getItem("sm_lang") || "fr").toUpperCase()) + cell("Thème", localStorage.getItem("sm_theme") || "day");
+      // Rafraîchit aussi le tableau de bord en mémoire pour le rapport copiable
+      try { const { data } = await db.rpc("admin_stats"); if (data && data.ok) _lastAdminStats = data; } catch (e) {}
+    }
+    { const r = $("sysRefresh"); if (r) r.addEventListener("click", loadAdminSystem); }
+    { const c = $("sysCopyStats"); if (c) c.addEventListener("click", async () => {
+      let d = _lastAdminStats;
+      if (!d) { try { const r = await db.rpc("admin_stats"); if (r.data && r.data.ok) d = r.data; } catch (e) {} }
+      if (!d) { toast("⚠️", "Stats indisponibles"); return; }
+      const txt = `📊 SunMates ${_appBuild()} — rapport\n`
+        + `👥 Membres ${d.users} · ✅ Vérifiés ${d.verified} · 👑 Gold ${d.gold} · 🚫 Bannis ${d.banned}\n`
+        + `🤝 Connexions ${d.connections} (${d.pending_conn} en attente) · 💬 Messages ${d.messages}\n`
+        + `🛟 Check-ins ${d.checkins} · 🎯 Quêtes ${d.quests_done} · 🏅 Badges ${d.badges} · 🎟️ Coupons ${d.coupons}\n`
+        + `📍 Lieux ${d.places} · 🚩 Signalements ${d.reports_pending} · 💼 Devis ${d.quotes}`;
+      if (navigator.clipboard) { navigator.clipboard.writeText(txt).then(() => toast("📋", "Rapport copié !"), () => toast("📋", txt)); }
+      else toast("📋", txt);
+    }); }
+    { const fu = $("sysForceUpdate"); if (fu) fu.addEventListener("click", async () => {
+      const m = $("sysMsg"); if (m) { m.style.color = "var(--muted)"; m.textContent = "Nettoyage du cache…"; }
+      try {
+        if (window.caches) { const ks = await caches.keys(); await Promise.all(ks.map((k) => caches.delete(k))); }
+        if (navigator.serviceWorker) { const rs = await navigator.serviceWorker.getRegistrations(); await Promise.all(rs.map((r) => r.unregister())); }
+        if (m) { m.style.color = "var(--ok)"; m.textContent = "Cache vidé ✅ rechargement…"; }
+        setTimeout(() => location.reload(), 600);
+      } catch (e) { if (m) { m.style.color = "var(--danger)"; m.textContent = "Erreur : " + (e.message || e); } }
+    }); }
 
     // Banque de sons (admin) : un bouton par son, lecture FORCÉE (même si coupé), + toggle global.
     const SOUND_LABELS = { tap:"👆 Tap", pop:"🫧 Pop", nav:"🧭 Navigation", select:"✔️ Sélection", toggle:"🔀 Toggle", success:"✅ Succès", coin:"🪙 Pièce / XP", star:"⭐ Étoile", levelup:"🆙 Niveau sup.", unlock:"🔓 Déblocage", badge:"🏅 Badge", error:"⚠️ Erreur", whoosh:"💨 Whoosh", message:"💬 Message" };
@@ -5088,10 +5144,13 @@
       ]],
       ["🛡️ Admin (back-office)", [
         ["🎬", "Démo guidée auto", "Parcours commenté de A à Z + ce catalogue."],
-        ["📊", "Tableau de bord", "Membres, vérifiés, Gold."],
-        ["👥", "Fiches membre", "Profil complet + activité + actions (vérifier/bannir/score/admin)."],
-        ["📍", "Gestion des lieux", "Ajout/édition + codes check-in."],
+        ["📊", "Tableau de bord (15 KPIs)", "Membres, vérifiés, Gold, check-ins, quêtes, badges… cellules cliquables → segment."],
+        ["👥", "Fiches membre", "Profil complet + activité + actions (vérifier/bannir/admin), recherche."],
+        ["📍", "Gestion des lieux", "Ajout/édition + codes check-in + géoloc auto."],
         ["🚩", "Signalements", "Profil cliquable (faux signalements), traité → supprimer."],
+        ["💼", "Devis B2B", "Demandes de partenariat reçues."],
+        ["🔊", "Banque de sons", "Test des sons synthétisés + toggle global."],
+        ["🧰", "Système & déploiement", "Build/SW/cache/réseau, copier le rapport de stats, forcer la mise à jour (vider cache)."],
         ["👁️", "Aperçu mode gratuit", "Voir l'app comme un compte non-Gold."],
       ]],
     ];
@@ -5283,12 +5342,13 @@
       const el = $("adminDash"); if (!el) return;
       const { data } = await db.rpc("admin_stats");
       if (!data || !data.ok) { el.innerHTML = '<p class="muted">Accès refusé.</p>'; return; }
-      const cell = (k, v) => `<div class="pcell"><div class="k">${k}</div><div class="v">${v ?? 0}</div></div>`;
-      el.innerHTML = cell("Membres", data.users) + cell("Vérifiés", data.verified) + cell("Gold 👑", data.gold)
-        + cell("Bannis", data.banned) + cell("Connexions", data.connections) + cell("Demandes", data.pending_conn)
+      const cell = (k, v, jump) => `<div class="pcell${jump ? " pcell-jump" : ""}"${jump ? ` data-dashjump="${jump}" style="cursor:pointer"` : ""}><div class="k">${k}${jump ? " ›" : ""}</div><div class="v">${v ?? 0}</div></div>`;
+      el.innerHTML = cell("Membres", data.users, "users") + cell("Vérifiés", data.verified, "users") + cell("Gold 👑", data.gold)
+        + cell("Bannis", data.banned, "users") + cell("Connexions", data.connections) + cell("Demandes", data.pending_conn)
         + cell("Check-ins", data.checkins) + cell("Quêtes finies", data.quests_done) + cell("Messages", data.messages)
         + cell("Défis", data.suggestions) + cell("Badges", data.badges) + cell("Coupons", data.coupons)
-        + cell("Lieux", data.places) + cell("Signalements", data.reports_pending) + cell("Devis B2B", data.quotes);
+        + cell("Lieux", data.places, "places") + cell("Signalements", data.reports_pending, "reports") + cell("Devis B2B", data.quotes, "quotes");
+      el.querySelectorAll("[data-dashjump]").forEach((c) => c.addEventListener("click", () => showAdminSegment(c.dataset.dashjump)));
     }
 
     let adminUsersCache = [];
@@ -5912,7 +5972,7 @@
       $("travelersList").querySelectorAll("[data-profile]").forEach((el) =>
         el.addEventListener("click", () => openTravelerProfile(travelerMap[el.dataset.profile])));
     }
-    $("travSearch").addEventListener("input", (e) => renderTravelers(e.target.value));
+    $("travSearch").addEventListener("input", _debounce((e) => renderTravelers(e.target.value), 250));
     document.querySelectorAll("[data-filter]").forEach((b) =>
       b.addEventListener("click", () => {
         const k = b.dataset.filter; travFilters[k] = !travFilters[k];
@@ -7476,7 +7536,9 @@
       box.querySelectorAll("[data-sp]").forEach((el) => el.addEventListener("click", () => { goToTab("connexions"); openTravelerProfile(travelerMap[el.dataset.sp]); }));
       box.querySelectorAll("[data-splace]").forEach((el) => el.addEventListener("click", () => { box.innerHTML = ""; $("homeSearch").value = ""; if (typeof focusCafeInList === "function") focusCafeInList(Number(el.dataset.splace)); }));
     }
-    $("homeSearch").addEventListener("input", (e) => renderSearch(e.target.value));
+    // Debounce générique : évite de relancer un render lourd à CHAQUE frappe (anti-jank).
+    function _debounce(fn, ms) { let t; return function () { const a = arguments, c = this; clearTimeout(t); t = setTimeout(() => fn.apply(c, a), ms || 250); }; }
+    $("homeSearch").addEventListener("input", _debounce((e) => renderSearch(e.target.value), 250));
 
     // ---- Carte interactive des lieux sûrs (Leaflet) ----
     let leafMap = null, mapMarkers = [], mapMarkerById = {};
