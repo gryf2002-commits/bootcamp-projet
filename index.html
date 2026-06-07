@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=251"></script>
-  <script src="sunmates-icons.js?v=251"></script>
+  <script src="sunmates-badges.js?v=252"></script>
+  <script src="sunmates-icons.js?v=252"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -3022,6 +3022,7 @@
       <!-- ---------------- Onglet LIEUX SÛRS ---------------- -->
       <div class="tab-panel hidden" data-panel="lieux">
         <h1 data-i18n="places.title">Lieux sûrs</h1>
+        <p class="muted" style="margin-top:0" data-i18n="places.intro">Les meilleurs spots pour se retrouver ☕ Fais un check-in pour grimper au classement 🏆</p>
 
         <details class="card spot-card" id="spotCard">
           <summary><span data-i18n="spot.title">☀️ Mon spot du jour</span><span class="sp-right"><span class="sp-sum" id="spotSummary"></span><span class="sp-chev">▸</span></span></summary>
@@ -3044,8 +3045,6 @@
           <div style="text-align:right;margin-top:.4rem"><a id="spotClear" style="cursor:pointer;display:none;color:var(--accent);font-weight:600;font-size:.82rem" data-i18n="spot.clear">Effacer</a></div>
           <div class="msg" id="spotMsg" style="text-align:center"></div>
         </details>
-
-        <p class="muted" style="margin-top:0" data-i18n="places.intro">Les meilleurs spots pour se retrouver ☕ Fais un check-in pour grimper au classement 🏆</p>
         <div class="search" style="margin-top:.2rem"><span class="ico">🔍</span><input id="cafeSearch" type="text" placeholder="Rechercher un lieu ou une ville…" data-i18n-ph="places.searchph" /></div>
         <!-- Filtres + tris en tuiles colorées (dans la DA) -->
         <div class="cat-row" id="lieuxCats">
@@ -3838,8 +3837,8 @@
           <!-- Capitale du jour : une ville à l'honneur chaque jour -->
           <button class="capitale" id="capitaleDuJour" style="display:none">
             <span class="cap-ic">🏙️</span>
-            <span class="cap-txt"><b id="capName">—</b><span>Capitale du jour · découvre ses quêtes</span></span>
-            <span class="cap-go">Voir ›</span>
+            <span class="cap-txt"><b id="capName">—</b><span>Ville à l'honneur du jour · explore ses quêtes (ou repère-les pour ton prochain voyage)</span></span>
+            <span class="cap-go">Explorer ›</span>
           </button>
           <div class="xp-banner" id="xpBanner"></div>
           <div id="weeklyGoals"></div>
@@ -9700,6 +9699,16 @@
         const go = $("nqGo"); if (go) { go.textContent = "📍 Me localiser"; go.onclick = () => { if (typeof toast === "function") toast("📍", "Localisation…"); getGeo(() => renderNearestQuest(), () => { if (typeof toast === "function") toast("⚠️", "Position indisponible"); }); }; }
       }
     }
+    // Radar dépliable : touche la carte radar (hors bouton) → liste des quêtes les plus proches.
+    function showNearestQuests() {
+      const pts = _questGeoList();
+      if (!pts.length) return;
+      if (!lastKnownGeo) { if (typeof getGeo === "function") getGeo(() => showNearestQuests(), () => toast("⚠️", "Position indisponible")); return; }
+      const sorted = pts.map((q) => ({ q: q, km: haversineKm(lastKnownGeo, { lat: q.lat, lng: q.lng }) })).sort((a, b) => a.km - b.km).slice(0, 6);
+      showInfo("🎯 Quêtes proches de toi", '<div style="line-height:1.4">' + sorted.map(({ q, km }) => '<div class="qrow" data-nqq="' + escapeHtml(q.key) + '" style="cursor:pointer"><div class="qico">' + (q.emoji || "🎯") + '</div><div class="qname" style="flex:1">' + escapeHtml(q.title) + '<div class="meta muted" style="font-size:.74rem">📍 à ' + _fmtDist(km) + " · +" + (q.xp || 0) + ' XP</div></div><div class="qarrow">›</div></div>').join("") + "</div>");
+      setTimeout(() => { document.querySelectorAll("#pickerBody [data-nqq]").forEach((el) => el.addEventListener("click", () => { closePicker(); const q = _questGeoList().find((x) => x.key === el.dataset.nqq); if (q) { goToTab("jeux"); const real = (typeof questByKey === "function") && questByKey(q.key); if (real && typeof openDetail === "function") setTimeout(() => openDetail(real), 80); else focusHomeMapOnQuest(q.lat, q.lng); } })); }, 40);
+    }
+    { const c = $("nearQuestCard"); if (c) c.addEventListener("click", (e) => { if (e.target.closest("#nqGo")) return; showNearestQuests(); }); }
     function focusHomeMapOnQuest(lat, lng) {
       if (typeof setHomeMode === "function") setHomeMode("travel");
       goToTab("accueil");
@@ -10124,7 +10133,7 @@
       "🏡 Tes souvenirs SunMates": "🏡 Your SunMates memories", "Tes aventures et tes Mates restent avec toi, même rentré·e à la maison.": "Your adventures and Mates stay with you, even back home.",
       "Tes Mates d'aventure": "Your adventure Mates", "Tes aventures par ville · 📖 album souvenir": "Your adventures by city · 📖 memory album",
       "Rituels du jour ☀️": "Daily rituals ☀️", "🎲 Mélanger": "🎲 Shuffle", "Défis relevés": "Challenges done", "Rituels du jour": "Daily rituals", "XP gagné": "XP earned",
-      "Capitale du jour · découvre ses quêtes": "Capital of the day · discover its quests",
+      "Ville à l'honneur du jour · explore ses quêtes (ou repère-les pour ton prochain voyage)": "City of the day · explore its quests (or save them for your next trip)", "Explorer ›": "Explore ›",
       "🗺️ Collection de quêtes": "🗺️ Quest collection", "🏙️ Villes explorées": "🏙️ Cities explored", "🎯 Quête la plus proche": "🎯 Nearest quest",
       "Invite tes amis sur SunMates": "Invite your friends to SunMates", "Plus on est, plus c'est sûr & fun 🌍": "The more we are, the safer & funnier 🌍", "Partager ›": "Share ›",
       "Note vocale (30 s max)": "Voice note (30 s max)", "Envoyer un poc 🔥": "Send a flame 🔥", "Enregistrement…": "Recording…", "Envoyer ➤": "Send ➤", "Annuler": "Cancel",
