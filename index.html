@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=191"></script>
-  <script src="sunmates-icons.js?v=191"></script>
+  <script src="sunmates-badges.js?v=192"></script>
+  <script src="sunmates-icons.js?v=192"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -2518,6 +2518,52 @@
         </div>
         <div id="searchResults"></div>
 
+        <!-- ============ HOME v2 — Hub de jeu (visible en Voyage ET en Maison) ============ -->
+        <!-- Héros joueur : l'identité, toujours en haut dans les deux modes -->
+        <section class="player-hero" id="playerHero" aria-label="Ta progression">
+          <div class="ph-glow" aria-hidden="true"></div>
+          <div class="ph-top">
+            <div class="ph-avatar"><span class="ph-av-emoji" id="phAvatar">🧭</span><span class="ph-lvl-ring" id="phLvl">1</span></div>
+            <div class="ph-id"><div class="ph-name" id="phName">Voyageur·se</div><div class="ph-title" id="phTitle">Explorateur·rice de Paris</div></div>
+            <button class="ph-streak" id="phStreak" title="Ta série de jours d'affilée"><span class="ph-streak-fire">🔥</span><b id="phStreakN">1</b></button>
+          </div>
+          <div class="ph-xp">
+            <div class="ph-xp-head"><span class="ph-xp-lbl" id="phXpLbl">Niveau 1</span><span class="ph-xp-val"><b id="phXpCur">0</b> / <span id="phXpMax">100</span> XP</span></div>
+            <div class="ph-xp-track"><div class="ph-xp-fill" id="phXpFill" style="width:0%"></div></div>
+            <div class="ph-xp-next"><span class="ph-next-ic">🚀</span><span class="ph-next-txt" id="phXpNext">Accomplis une quête pour gagner ton premier niveau</span></div>
+          </div>
+        </section>
+
+        <!-- Jeu solo (quête du jour + missions) : repositionné par setHomeMode
+             (en Maison = en haut, self-sufficient solo ; en Voyage = sous la carte) -->
+        <div id="soloHub">
+        <section class="quest-spotlight" id="questSpotlight" aria-label="Quête du jour">
+          <div class="qs-aura" aria-hidden="true"></div>
+          <div class="qs-head"><span class="qs-pill">⚡ Quête du jour</span><span class="qs-timer" id="qsTimer"></span></div>
+          <div class="qs-body">
+            <div class="qs-emblem" id="qsEmblem">🗼</div>
+            <div class="qs-txt"><h3 class="qs-title" id="qsTitle">—</h3><p class="qs-desc" id="qsDesc">—</p></div>
+          </div>
+          <div class="qs-reward"><span class="qs-xp"><b id="qsXp">+0</b> XP</span><span class="qs-dot">·</span><span class="qs-badge-hint">🏅 vise <b id="qsBadge">un badge</b></span></div>
+          <div class="qs-mode" role="group" aria-label="Jouer en solo ou à plusieurs">
+            <button class="qs-mode-btn active" data-qsmode="solo" id="qsModeSolo">🧭 Solo</button>
+            <button class="qs-mode-btn" data-qsmode="group" id="qsModeGroup">👥 En groupe <i>+bonus</i></button>
+          </div>
+          <button class="qs-play" id="qsPlayBtn">▶ Jouer cette quête</button>
+        </section>
+
+        <section class="qm-strip" aria-label="Missions rapides">
+          <div class="qm-head"><h3>Missions rapides ⚡</h3><a class="qm-all" data-goto="jeux">Tout voir ›</a></div>
+          <div class="qm-rail" id="qmRail">
+            <button class="qm-card qm-coral" data-mission="talk"><span class="qm-ic">🗣️</span><span class="qm-name">Parler à un·e inconnu·e</span><span class="qm-xp">+30 XP</span></button>
+            <button class="qm-card qm-teal" data-mission="coffee"><span class="qm-ic">☕</span><span class="qm-name">Café avec un Mate</span><span class="qm-xp">+40 XP</span></button>
+            <button class="qm-card qm-gold" data-mission="photo"><span class="qm-ic">📸</span><span class="qm-name">Photo d'un monument</span><span class="qm-xp">+50 XP</span></button>
+            <button class="qm-card qm-violet" data-mission="quartier"><span class="qm-ic">🧭</span><span class="qm-name">Explorer un quartier</span><span class="qm-xp">+60 XP</span></button>
+            <button class="qm-card qm-coral" data-mission="group" id="qmGroupCard"><span class="qm-ic">👥</span><span class="qm-name">Sortie de groupe</span><span class="qm-xp">+80 XP</span></button>
+          </div>
+        </section>
+        </div><!-- /#soloHub -->
+
         <!-- ============ MODE MAISON (quand on n'est pas en voyage) ============ -->
         <div id="homeHomeMode" class="hidden">
           <div class="card hm-hero">
@@ -2560,47 +2606,6 @@
 
         <!-- ============ MODE VOYAGE : carte d'exploration (masquée en mode Maison) ============ -->
         <div id="homeTravelMap">
-
-        <!-- ============ HOME v2 — Hub de jeu « Paris, ton terrain de jeu » ============ -->
-        <section class="player-hero" id="playerHero" aria-label="Ta progression">
-          <div class="ph-glow" aria-hidden="true"></div>
-          <div class="ph-top">
-            <div class="ph-avatar"><span class="ph-av-emoji" id="phAvatar">🧭</span><span class="ph-lvl-ring" id="phLvl">1</span></div>
-            <div class="ph-id"><div class="ph-name" id="phName">Voyageur·se</div><div class="ph-title" id="phTitle">Explorateur·rice de Paris</div></div>
-            <button class="ph-streak" id="phStreak" title="Ta série de jours d'affilée"><span class="ph-streak-fire">🔥</span><b id="phStreakN">1</b></button>
-          </div>
-          <div class="ph-xp">
-            <div class="ph-xp-head"><span class="ph-xp-lbl" id="phXpLbl">Niveau 1</span><span class="ph-xp-val"><b id="phXpCur">0</b> / <span id="phXpMax">100</span> XP</span></div>
-            <div class="ph-xp-track"><div class="ph-xp-fill" id="phXpFill" style="width:0%"></div></div>
-            <div class="ph-xp-next"><span class="ph-next-ic">🚀</span><span class="ph-next-txt" id="phXpNext">Accomplis une quête pour gagner ton premier niveau</span></div>
-          </div>
-        </section>
-
-        <section class="quest-spotlight" id="questSpotlight" aria-label="Quête du jour">
-          <div class="qs-aura" aria-hidden="true"></div>
-          <div class="qs-head"><span class="qs-pill">⚡ Quête du jour</span><span class="qs-timer" id="qsTimer"></span></div>
-          <div class="qs-body">
-            <div class="qs-emblem" id="qsEmblem">🗼</div>
-            <div class="qs-txt"><h3 class="qs-title" id="qsTitle">—</h3><p class="qs-desc" id="qsDesc">—</p></div>
-          </div>
-          <div class="qs-reward"><span class="qs-xp"><b id="qsXp">+0</b> XP</span><span class="qs-dot">·</span><span class="qs-badge-hint">🏅 vise <b id="qsBadge">un badge</b></span></div>
-          <div class="qs-mode" role="group" aria-label="Jouer en solo ou à plusieurs">
-            <button class="qs-mode-btn active" data-qsmode="solo" id="qsModeSolo">🧭 Solo</button>
-            <button class="qs-mode-btn" data-qsmode="group" id="qsModeGroup">👥 En groupe <i>+bonus</i></button>
-          </div>
-          <button class="qs-play" id="qsPlayBtn">▶ Jouer cette quête</button>
-        </section>
-
-        <section class="qm-strip" aria-label="Missions rapides">
-          <div class="qm-head"><h3>Missions rapides ⚡</h3><a class="qm-all" data-goto="jeux">Tout voir ›</a></div>
-          <div class="qm-rail" id="qmRail">
-            <button class="qm-card qm-coral" data-mission="talk"><span class="qm-ic">🗣️</span><span class="qm-name">Parler à un·e inconnu·e</span><span class="qm-xp">+30 XP</span></button>
-            <button class="qm-card qm-teal" data-mission="coffee"><span class="qm-ic">☕</span><span class="qm-name">Café avec un Mate</span><span class="qm-xp">+40 XP</span></button>
-            <button class="qm-card qm-gold" data-mission="photo"><span class="qm-ic">📸</span><span class="qm-name">Photo d'un monument</span><span class="qm-xp">+50 XP</span></button>
-            <button class="qm-card qm-violet" data-mission="quartier"><span class="qm-ic">🧭</span><span class="qm-name">Explorer un quartier</span><span class="qm-xp">+60 XP</span></button>
-            <button class="qm-card qm-coral" data-mission="group"><span class="qm-ic">👥</span><span class="qm-name">Sortie de groupe</span><span class="qm-xp">+80 XP</span></button>
-          </div>
-        </section>
 
         <!-- ===== Carte « tout-en-un » : lieux, Mates, activités, check-ins ===== -->
         <div class="section-head"><h3 style="margin-top:.4rem">Explore autour de toi 🗺️</h3><a id="hmFull" style="cursor:pointer">⛶ Plein écran</a></div>
@@ -4045,6 +4050,18 @@
         const hc = $("hmHomeCity"); if (hc) hc.textContent = c ? ("De retour à " + c) : "De retour chez toi";
         renderInspo(); renderNextTrip(); renderTripPrep(); renderWishlist(); renderTripsDone(); renderVisitors(); renderHost();
       } else if (typeof renderHomeMap === "function" && homeLeaf) { setTimeout(renderHomeMap, 60); } // resync la carte au retour
+      // Repositionne le jeu solo selon le mode :
+      //  • Maison → juste sous le héros (l'app se suffit à elle-même en SOLO)
+      //  • Voyage → sous la carte (on garde la rencontre/carte amicale en avant)
+      { const hub = $("soloHub"), hero = $("playerHero"), tmap = $("homeTravelMap");
+        if (hub) { if (home) { if (hero) hero.insertAdjacentElement("afterend", hub); } else if (tmap) { tmap.appendChild(hub); } }
+        // Maison (ou pas prêt à rencontrer) = SOLO uniquement ; le groupe est réservé au Voyage
+        const grp = $("qsModeGroup"), grpCard = $("qmGroupCard");
+        if (grp) grp.style.display = home ? "none" : "";
+        if (grpCard) grpCard.style.display = home ? "none" : "";
+        if (home) { _qsMode = "solo"; const so = $("qsModeSolo"); if (so) so.classList.add("active"); if (grp) grp.classList.remove("active"); }
+        if (typeof renderQuestSpotlight === "function") renderQuestSpotlight();
+      }
     }
     // Inspiration du jour : une destination rotative à ajouter à ses envies (1 tap).
     const HM_INSPO = [
@@ -7604,17 +7621,6 @@
         am.smType = "activities"; homeMarkersByType.activities.push(am); allMarkers.push(am);
       });
 
-      // 🎮 Quêtes à faire (dans des lieux partenaires), accès direct depuis la carte
-      if (typeof allQuests !== "undefined" && allQuests.length && places.length) {
-        allQuests.filter((q) => q.kind === "quest").slice(0, 5).forEach((q) => {
-          let h = 0; const s = String(q.key); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100000;
-          const cafe = places[h % places.length];
-          const mk = L.marker(jitterAt(cafe, "quest-" + q.key), { icon: epinIcon("🎮", "#ff9f1c") })
-            .bindPopup(`<div class="mappop-mini"><b>${escapeHtml((q.emoji || "🎮") + " " + (q.title || "Quête"))}</b><br><span class="muted">Quête à faire · ${escapeHtml(cafe.name)}</span><br><button class="mappop-btn" data-hmquest="${escapeHtml(q.key)}">▶ Voir la quête</button></div>`);
-          mk.smType = "activities"; homeMarkersByType.activities.push(mk); allMarkers.push(mk);
-        });
-      }
-
       // 🛟 Positions partagées au cercle (GPS réel), visibles 1 h puis expirées
       const recentShares = (circleLocs || []).filter((l) => l.lat != null && nowMs - new Date(l.created_at).getTime() < HOUR);
       let myShare = null; const seenShareUser = new Set();
@@ -7644,11 +7650,20 @@
         allMarkers.push(homeMeMarker);
       }
 
-      // 🎯 Points de quêtes Paris — le « plateau de jeu ». Front-end (contenu de jeu
-      // curaté), indépendant du back : chaque point = une quête à jouer sur la ville.
-      (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS : []).forEach((q) => {
+      // 🎯 Points de quêtes Paris — le « plateau de jeu ». Données : on privilégie les
+      // VRAIES quêtes géolocalisées de la base (migration session26, lat/lng réels) ;
+      // tant que la migration n'est pas lancée, on retombe sur la liste Paris en dur.
+      // Chaque quête est placée à SA position réelle (fini le placement aléatoire incohérent).
+      const dbGeoQuests = (typeof allQuests !== "undefined" ? allQuests : [])
+        .filter((q) => q.kind === "quest" && q.lat != null && q.lng != null)
+        .map((q) => ({ key: q.key, emoji: q.emoji || "🎯", lat: q.lat, lng: q.lng, title: q.title, desc: q.description || "", xp: q.points || 0, badge: q.badge_name || "un badge" }));
+      const questPts = dbGeoQuests.length ? dbGeoQuests : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS : []);
+      const _hmMode = (typeof getHomeMode === "function") ? getHomeMode() : "travel";
+      const grpBtn = (_hmMode !== "home") ? '<button class="mappop-btn alt" data-hmqgroup="1">👥 À plusieurs <span style="opacity:.8">+bonus</span></button>' : '';
+      const soloLabel = (_hmMode !== "home") ? "🧭 Jouer en solo" : "🧭 Jouer";
+      questPts.forEach((q) => {
         const mk = L.marker([q.lat, q.lng], { icon: epinIcon(q.emoji, "#E8961F", "quest") })
-          .bindPopup(`<div class="mappop-mini mappop-quest"><span class="mq-tag">⚡ Quête</span><br><b>${escapeHtml(q.title)}</b><br><span class="muted" style="font-size:.74rem">${escapeHtml(q.desc)}</span><div class="mq-rew">+${q.xp} XP · 🏅 ${escapeHtml(q.badge)}</div><button class="mappop-btn" data-hmqplay="${q.key}">🧭 Jouer en solo</button><button class="mappop-btn alt" data-hmqgroup="1">👥 À plusieurs <span style="opacity:.8">+bonus</span></button></div>`);
+          .bindPopup(`<div class="mappop-mini mappop-quest"><span class="mq-tag">⚡ Quête</span><br><b>${escapeHtml(q.title)}</b><br><span class="muted" style="font-size:.74rem">${escapeHtml(q.desc)}</span><div class="mq-rew">+${q.xp} XP · 🏅 ${escapeHtml(q.badge)}</div><button class="mappop-btn" data-hmqplay="${escapeHtml(q.key)}">${soloLabel}</button>${grpBtn}</div>`);
         mk.smType = "quests"; homeMarkersByType.quests.push(mk); allMarkers.push(mk);
       });
 
