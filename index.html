@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=198"></script>
-  <script src="sunmates-icons.js?v=198"></script>
+  <script src="sunmates-badges.js?v=199"></script>
+  <script src="sunmates-icons.js?v=199"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1255,7 +1255,7 @@
     .qm-name{ font-weight:800; font-size:.8rem; line-height:1.15; color:var(--ink); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .qm-xp{ margin-top:auto; font-weight:800; font-size:.74rem; color:#B5740E; background:rgba(255,209,92,.22); padding:.12rem .45rem; border-radius:999px; }
     body.theme-dusk .qm-card{ background:#2a2140; border-color:rgba(255,255,255,.08); } body.theme-dusk .qm-xp{ color:#FFD79A; background:rgba(255,209,92,.14); }
-    .br-item{ flex:0 0 auto; width:92px; display:flex; flex-direction:column; align-items:center; gap:.35rem; scroll-snap-align:start; }
+    .br-item{ flex:0 0 auto; width:92px; display:flex; flex-direction:column; align-items:center; gap:.35rem; scroll-snap-align:start; cursor:pointer; } .br-item:active{ transform:scale(.96); }
     .br-medal{ width:64px; height:64px; display:grid; place-items:center; font-size:30px; }
     .br-item.locked .br-medal{ filter:grayscale(.9) opacity(.5); }
     .br-lbl{ font-size:.74rem; font-weight:800; color:var(--ink); text-align:center; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:92px; }
@@ -1317,6 +1317,12 @@
     body.theme-dusk .rit-row{ background:#2a2140; border-color:rgba(255,255,255,.08); } body.theme-dusk .rit-ic{ background:rgba(255,201,60,.12); }
     body.theme-dusk .rit-cnt{ color:#FFD79A; background:rgba(255,209,92,.16); } body.theme-dusk .rit-box{ border-color:rgba(255,201,60,.4); }
     @media (prefers-reduced-motion: reduce){ .sp-bar span, .sc-card, .rit-row, .rit-box{ transition:none; } }
+    /* Modal preuve de défi */
+    .proof-drop{ margin-top:.4rem; border:2px dashed rgba(201,138,30,.45); border-radius:var(--radius-sm); padding:1.4rem 1rem; text-align:center; cursor:pointer; background:var(--accent-soft); transition:border-color .18s,background .18s; }
+    .proof-drop:active{ transform:scale(.99); } .proof-drop:hover{ border-color:var(--accent); }
+    #proofPlaceholder{ font-weight:800; color:var(--ink); font-size:1rem; line-height:1.5; }
+    #proofPreview{ max-width:100%; max-height:240px; border-radius:12px; display:block; margin:0 auto; }
+    body.theme-dusk .proof-drop{ background:rgba(255,255,255,.05); border-color:rgba(255,201,60,.4); }
 
     /* Coupons */
     .coupon { display: flex; align-items: center; gap: .85rem; padding: .85rem .9rem; border: 1.5px dashed var(--accent);
@@ -1398,6 +1404,24 @@
     .conv-preview { max-width: none; flex: 1; min-width: 0; }
     .iconbtn { min-width: 44px; min-height: 44px; }
     .bottom-nav button { min-height: 44px; }
+
+    /* ============ V2.2 — DA unifiée : RELIEF / PROFONDEUR (ADN onb-emoji) ============ */
+    /* Une seule signature d'ombre, partagée par icônes maison, emojis natifs ET badges,
+       pour qu'ils sortent enfin du même monde (la profondeur des emojis d'onboarding). */
+    :root { --relief: drop-shadow(0 8px 14px rgba(120,40,0,.34)) drop-shadow(0 2px 3px rgba(0,0,0,.18));
+      --relief-strong: drop-shadow(0 12px 22px rgba(0,0,0,.42)) drop-shadow(0 3px 5px rgba(120,40,0,.30)); }
+    @keyframes floatySoft { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+    /* Icônes maison : elles décollent de leur tuile (relief onb-emoji, fini le plat) */
+    .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .qm-ic svg, .smgem svg {
+      filter: drop-shadow(0 3px 4px rgba(90,25,10,.40)) drop-shadow(0 1px 1px rgba(0,0,0,.25)) !important; }
+    /* Emojis-héros natifs : même signature de relief (DA cohérente partout) */
+    .qs-emblem, .ph-av-emoji, .sp-next-bdg, .qm-ic, .hm-hero-ic, .hm-host-ic, .rit-ic, .empty-ill, .fe-emoji { filter: var(--relief); }
+    .sm-emoji3d { filter: var(--relief); } .sm-emoji3d.sm-float { animation: floatySoft 3.2s ease-in-out infinite; }
+    /* Badges : relief commun + halo soleil chaud derrière → réancrés dans la DA sunset */
+    .br-medal, .smbadge-wrap, .sm-badge { filter: var(--relief); position: relative; isolation: isolate; }
+    .br-medal::before, .smbadge-wrap::before { content:""; position:absolute; inset:-12%; z-index:-1; border-radius:50%;
+      background: radial-gradient(circle at 50% 46%, rgba(255,201,60,.42), rgba(255,138,61,.14) 55%, transparent 72%); }
+    @media (prefers-reduced-motion: reduce) { .sm-float { animation: none !important; } }
     .prof-badges .pb-more { font-size: .76rem; font-weight: 800; color: var(--accent); }
     .prof-badges .pb-lbl { font-size: .78rem; font-weight: 700; color: var(--muted); }
     .prof-badges .pb-edit { margin-left: auto; font-size: .76rem; font-weight: 700; color: var(--accent); }
@@ -2675,6 +2699,21 @@
             <div class="qm-head"><h3>Rituels du jour ☀️</h3><span class="rit-cnt" id="ritCnt">0/3</span></div>
             <div class="rit-list" id="ritList"></div>
           </section>
+
+          <!-- Modal de PREUVE : un défi se valide en postant une photo (anti-triche) -->
+          <div id="proofModal" class="act-overlay hidden">
+            <div class="act-card">
+              <div class="picker-head"><h3 id="proofTitle" style="margin:0">Confirme ton défi</h3><button id="proofCancel" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
+              <p class="muted" id="proofDesc" style="font-size:.85rem;margin:.3rem 0 .7rem"></p>
+              <div class="proof-drop" id="proofDrop">
+                <input id="proofFile" type="file" accept="image/*" capture="environment" hidden>
+                <div id="proofPlaceholder">📸 Ajoute une photo preuve<br><span class="muted" style="font-size:.78rem">Touche pour prendre ou choisir</span></div>
+                <img id="proofPreview" alt="" style="display:none">
+              </div>
+              <button class="btn-primary btn-block" id="proofSubmit" style="margin-top:.7rem" disabled>Valider et gagner l'XP</button>
+              <div class="msg" id="proofMsg" style="text-align:center"></div>
+            </div>
+          </div>
 
           <!-- Inspiration du jour (destination rotative) -->
           <div class="card hm-inspo" id="hmInspo"></div>
@@ -8717,6 +8756,7 @@
       rail.innerHTML = todo.map((b) => '<div class="br-item"><div class="br-medal">' +
         renderBadge(b.k, "rail", { emoji: "🏅" }) +
         '</div><span class="br-lbl">' + b.l + "</span></div>").join("");
+      rail.querySelectorAll(".br-item").forEach((el) => el.addEventListener("click", () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); }));
       sec.style.display = "";
     }
 
@@ -8764,9 +8804,9 @@
     // Crédit d'XP solo : SERVEUR D'ABORD (RPC anti-triche grant_solo_xp, cap 3+3/j,
     // cross-device). Repli sur crédit direct uniquement si la migration s27 n'est pas
     // encore lancée (le RPC n'existe pas) — après s27, le trigger bloque tout crédit direct.
-    async function grantSoloXp(key, amount) {
+    async function grantSoloXp(key, amount, proofUrl) {
       try {
-        const { data, error } = await db.rpc("grant_solo_xp", { p_key: key });
+        const { data, error } = await db.rpc("grant_solo_xp", { p_key: key, p_proof_url: proofUrl || null });
         if (!error && data) { if (data.ok && myProfile) myProfile.xp = (myProfile.xp || 0) + (data.xp || 0); return { ok: !!data.ok, xp: data.xp || 0, message: data.message }; }
       } catch (e) {}
       try { if (myUserId && myProfile) { const nx = (myProfile.xp || 0) + amount; const { error } = await db.from("profiles").update({ xp: nx }).eq("id", myUserId); if (!error) { myProfile.xp = nx; return { ok: true, xp: amount }; } } } catch (e) {}
@@ -8788,18 +8828,19 @@
       grid.innerHTML = _soloPick(s.seed || 0).map((c) => '<button class="sc-card sc-' + c.tone + (done[c.key] ? " is-done" : "") + '" data-solo="' + c.key + '"><span class="sc-ic">' + c.emoji + '</span><span class="sc-body"><span class="sc-name">' + escapeHtml(c.title) + '</span><span class="sc-desc">' + escapeHtml(c.desc.replace("{ville}", city)) + '</span></span><span class="sc-xp">+' + c.xp + '</span><span class="sc-check">✓</span></button>').join("");
       grid.querySelectorAll("[data-solo]").forEach((b) => b.addEventListener("click", () => completeSolo(b.dataset.solo)));
     }
-    async function completeSolo(key) {
+    // Un défi ne se valide plus en 1 clic : on doit POSTER une photo preuve (anti-triche).
+    let _proof = { key: null, xp: 0, title: "", file: null };
+    function completeSolo(key) {
       const c = SOLO_CHALLENGES.find((x) => x.key === key); if (!c) return;
-      const s = _soloState(); s.ch = s.ch || {};
-      if (s.ch[key]) return;
-      const r = await grantSoloXp(key, c.xp);            // le SERVEUR décide (anti-triche, cap 3/j)
-      if (!r.ok) { if (typeof toast === "function") toast("🌙", r.message || "Limite atteinte"); return; }
-      s.ch[key] = true; _soloSave(s);
-      try { const tk = "sm_solo_total_" + (myUserId || "x"); localStorage.setItem(tk, String((parseInt(localStorage.getItem(tk) || "0", 10) || 0) + 1)); } catch (e) {}
-      if (typeof toast === "function") toast("⭐", "+" + r.xp + " XP · " + c.title);
-      if (typeof renderGameHub === "function") renderGameHub();
-      if (typeof celebrate === "function") celebrate();
-      renderSoloProgress(); renderSoloChallenges();
+      const s = _soloState(); if ((s.ch || {})[key]) return;
+      _proof = { key: c.key, xp: c.xp, title: c.title, file: null };
+      const city = (myProfile && myProfile.city) || "ta ville";
+      $("proofTitle").textContent = c.title;
+      $("proofDesc").textContent = "Poste une photo qui prouve : " + c.desc.replace("{ville}", city);
+      $("proofPreview").style.display = "none"; $("proofPlaceholder").style.display = "";
+      $("proofFile").value = ""; $("proofSubmit").disabled = true; $("proofMsg").textContent = "";
+      show($("proofModal"), true);
+      if (window.SMSound) SMSound.play("pop");
     }
     function renderRituals() {
       const list = $("ritList"); if (!list) return;
@@ -8833,6 +8874,36 @@
     { const rr = $("scReroll"); if (rr) rr.addEventListener("click", () => { const s = _soloState(); s.seed = ((s.seed || 0) + 1) % 1000; _soloSave(s); renderSoloChallenges(); if (window.SMSound) SMSound.play("pop"); }); }
     { const ss = $("spStreak"); if (ss) ss.addEventListener("click", () => { const h = $("homeStreak"); if (h) h.click(); }); }
 
+    // ---- Modal de PREUVE (photo) : valide un défi solo en postant une preuve ----
+    { const pd = $("proofDrop"); if (pd) pd.addEventListener("click", () => $("proofFile") && $("proofFile").click()); }
+    { const pf = $("proofFile"); if (pf) pf.addEventListener("change", (e) => {
+        const f = e.target.files && e.target.files[0]; if (!f) return; _proof.file = f;
+        const r = new FileReader(); r.onload = () => { const pv = $("proofPreview"); pv.src = r.result; pv.style.display = "block"; $("proofPlaceholder").style.display = "none"; }; r.readAsDataURL(f);
+        $("proofSubmit").disabled = false;
+      }); }
+    { const pc = $("proofCancel"); if (pc) pc.addEventListener("click", () => show($("proofModal"), false)); }
+    { const ps = $("proofSubmit"); if (ps) ps.addEventListener("click", async () => {
+        if (!_proof.file || !_proof.key) return;
+        ps.disabled = true; $("proofMsg").style.color = "var(--muted)"; $("proofMsg").textContent = "Envoi de la preuve…";
+        let url = null;
+        try {
+          const ext = ((_proof.file.name || "photo.jpg").split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+          const path = (myUserId || "x") + "/" + _proof.key + "_" + Date.now() + "." + ext;
+          const up = await db.storage.from("proofs").upload(path, _proof.file, { upsert: true, cacheControl: "3600" });
+          if (!up.error) url = db.storage.from("proofs").getPublicUrl(path).data.publicUrl;
+        } catch (e) {}
+        if (!url) { $("proofMsg").style.color = "var(--danger)"; $("proofMsg").textContent = "Upload impossible, réessaie."; ps.disabled = false; return; }
+        const r = await grantSoloXp(_proof.key, _proof.xp, url);
+        if (!r.ok) { $("proofMsg").style.color = "var(--danger)"; $("proofMsg").textContent = r.message || "Validation refusée"; ps.disabled = false; return; }
+        const s = _soloState(); s.ch = s.ch || {}; s.ch[_proof.key] = true; _soloSave(s);
+        try { const tk = "sm_solo_total_" + (myUserId || "x"); localStorage.setItem(tk, String((parseInt(localStorage.getItem(tk) || "0", 10) || 0) + 1)); } catch (e) {}
+        show($("proofModal"), false);
+        if (typeof toast === "function") toast("⭐", "+" + r.xp + " XP · " + _proof.title);
+        if (typeof renderGameHub === "function") renderGameHub();
+        if (typeof celebrate === "function") celebrate();
+        renderSoloProgress(); renderSoloChallenges();
+      }); }
+
     // Câblage (une fois) : toggle solo/groupe, bouton Jouer, streak, missions rapides
     document.querySelectorAll("#questSpotlight .qs-mode-btn").forEach((b) => b.addEventListener("click", () => {
       _qsMode = b.dataset.qsmode;
@@ -8847,7 +8918,15 @@
       else if (typeof showJeuxView === "function") showJeuxView("jeuxHome");
     }); }
     { const ps = $("phStreak"); if (ps) ps.addEventListener("click", () => { const h = $("homeStreak"); if (h) h.click(); }); }
-    document.querySelectorAll("#qmRail .qm-card").forEach((c) => c.addEventListener("click", () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxHome"); }));
+    const MISSION_QUEST = { talk: "quest_paris_canal", coffee: "quest_paris_marais", photo: "quest_paris_eiffel", quartier: "quest_paris_montmartre" };
+    document.querySelectorAll("#qmRail .qm-card").forEach((c) => c.addEventListener("click", () => {
+      const m = c.dataset.mission;
+      if (m === "group") { goToTab("connexions"); if (typeof toast === "function") toast("👥", "Invite un Mate pour une sortie de groupe (+bonus XP) ✨"); return; }
+      goToTab("jeux");
+      const k = MISSION_QUEST[m], q = (typeof questByKey === "function") && k && questByKey(k);
+      if (q && typeof openDetail === "function") setTimeout(() => openDetail(q), 90);
+      else if (typeof showJeuxView === "function") showJeuxView("jeuxHome");
+    }));
 
     /* ================= SON DE L'INTERFACE (WebAudio, 100% libre de droit) =================
        Tous les sons sont SYNTHÉTISÉS à la volée (aucun fichier audio externe) → aucun
