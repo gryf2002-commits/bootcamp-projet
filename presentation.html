@@ -4,13 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SunMates · Pars solo, trouve ta bande ☀️</title>
-  <meta name="description" content="SunMates connecte les voyageurs solo entre eux, dans des lieux sûrs, avec un cercle de confiance toujours à portée de main. Gratuit, sécurité comprise." />
+  <meta name="description" content="Explore une ville, croise des voyageurs comme toi, relève des quêtes ensemble. Le solo, c'est juste le début de l'histoire." />
   <meta name="theme-color" content="#fbeee9" />
 
   <!-- Partage social (Open Graph + Twitter) -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="SunMates · Pars solo, trouve ta bande" />
-  <meta property="og:description" content="Rencontre d'autres voyageurs solo par affinités, dans des lieux sûrs, avec un cercle de confiance. Gratuit, sécurité comprise. ☀️" />
+  <meta property="og:description" content="Explore, croise des voyageurs comme toi, relève des quêtes ensemble. Ton aventure solo commence ici. ☀️" />
+  <meta property="og:image" content="https://gryf2002-commits.github.io/bootcamp-projet/shot_accueil.png" />
   <meta property="og:url" content="https://gryf2002-commits.github.io/bootcamp-projet/presentation.html" />
   <meta name="twitter:card" content="summary_large_image" />
 
@@ -66,10 +67,7 @@
     }
     .topbar .wrap { display: flex; align-items: center; justify-content: space-between; padding: .7rem 0; }
     .brand { display: flex; align-items: center; gap: .55rem; font-family: "Fraunces", serif; font-weight: 700; font-size: 1.25rem; color: var(--ink); text-decoration: none; }
-    .brand .logo {
-      width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center;
-      background: var(--accent-grad); box-shadow: var(--shadow); font-size: 1.1rem;
-    }
+    .brand .logo { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; background: var(--accent-grad); box-shadow: var(--shadow); font-size: 1.1rem; }
     .nav-links { display: flex; align-items: center; gap: 1.4rem; }
     .nav-links a { text-decoration: none; font-weight: 600; color: var(--text); font-size: .95rem; transition: color .2s; }
     .nav-links a:hover { color: var(--accent); }
@@ -99,50 +97,31 @@
     }
     @media (max-width: 860px) { .eyebrow { margin-inline: auto; } }
     .hero h1 { font-size: clamp(2.5rem, 7vw, 4.2rem); font-weight: 900; letter-spacing: -.02em; }
-    .hero h1 .grad {
-      background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent;
-    }
-    .hero .lede { font-size: clamp(1.05rem, 2.2vw, 1.25rem); margin: 1.3rem 0 2rem; max-width: 32ch; }
+    .hero h1 .grad { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero .lede { font-size: clamp(1.05rem, 2.2vw, 1.25rem); margin: 1.3rem 0 2rem; max-width: 34ch; }
     @media (max-width: 860px) { .hero .lede { margin-inline: auto; } }
     .hero-cta { display: flex; gap: .8rem; flex-wrap: wrap; }
     @media (max-width: 860px) { .hero-cta { justify-content: center; } }
     .trust-note { margin-top: 1.2rem; font-size: .9rem; color: var(--muted); display: flex; align-items: center; gap: .5rem; }
     @media (max-width: 860px) { .trust-note { justify-content: center; } }
 
-    /* ---------- Phone mockup ---------- */
+    /* ---------- Phone (vraies captures) ---------- */
     .phone-stage { display: flex; justify-content: center; position: relative; }
     .phone-stage::before {
-      content: ""; position: absolute; inset: -8% -4%;
-      background: radial-gradient(60% 60% at 60% 30%, rgba(255,138,61,.28), transparent 70%);
-      filter: blur(10px); z-index: 0;
+      content: ""; position: absolute; inset: -10% -6%;
+      background: radial-gradient(60% 60% at 60% 30%, rgba(255,138,61,.30), transparent 70%);
+      filter: blur(12px); z-index: 0;
     }
     .phone {
-      position: relative; z-index: 1; width: min(290px, 78vw); aspect-ratio: 9 / 19;
-      background: var(--paper); border-radius: 42px; padding: 12px;
-      box-shadow: var(--shadow-pop), 0 0 0 2px rgba(0,0,0,.04);
-      border: 9px solid #1d2230;
+      position: relative; z-index: 1; width: min(280px, 74vw); aspect-ratio: 390 / 844;
+      background: #1d2230; border-radius: 42px; padding: 8px;
+      box-shadow: var(--shadow-pop), 0 0 0 1px rgba(0,0,0,.05);
     }
-    .phone-screen {
-      width: 100%; height: 100%; border-radius: 32px; overflow: hidden;
-      background: radial-gradient(120% 60% at 50% 0%, #ffe6d2, #fbe9e4 60%);
-      display: flex; flex-direction: column; text-align: left;
-    }
-    .ps-top { background: var(--sunset-grad); color: #fff; padding: 1.4rem 1.1rem 1.1rem; }
-    .ps-top .hi { font-family: "Fraunces", serif; font-weight: 700; font-size: 1.2rem; }
-    .ps-top .sub { font-size: .8rem; opacity: .92; }
-    .ps-body { padding: .9rem; display: flex; flex-direction: column; gap: .65rem; }
-    .ps-card { background: #fff; border-radius: var(--r-sm); padding: .7rem .8rem; box-shadow: 0 6px 18px rgba(244,101,94,.1); display: flex; align-items: center; gap: .6rem; }
-    .ps-av { width: 38px; height: 38px; border-radius: 50%; background: var(--accent-grad); display: grid; place-items: center; color: #fff; font-weight: 800; flex-shrink: 0; }
-    .ps-card .nm { font-weight: 700; color: var(--ink); font-size: .9rem; }
-    .ps-card .mt { font-size: .72rem; color: var(--muted); }
-    .ps-badge { margin-left: auto; font-size: .68rem; font-weight: 700; padding: .2rem .5rem; border-radius: var(--r-pill); background: rgba(255,209,92,.25); color: #b8860b; white-space: nowrap; }
-    .ps-quest { background: #fff; border-radius: var(--r-sm); padding: .75rem .8rem; box-shadow: 0 6px 18px rgba(122,92,255,.12); }
-    .ps-quest .qt { font-weight: 700; color: var(--ink); font-size: .88rem; display: flex; align-items: center; gap: .4rem; }
-    .ps-quest .qx { font-size: .72rem; color: var(--purple); font-weight: 700; margin-top: .15rem; }
+    .phone img { width: 100%; height: 100%; object-fit: cover; border-radius: 34px; display: block; }
 
     /* ---------- Sections ---------- */
     section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
-    .section-head { text-align: center; max-width: 40ch; margin: 0 auto clamp(2rem, 4vw, 3rem); }
+    .section-head { text-align: center; max-width: 42ch; margin: 0 auto clamp(2rem, 4vw, 3rem); }
     .section-head h2 { font-size: clamp(1.8rem, 4.5vw, 2.6rem); font-weight: 700; }
     .section-head p { margin-top: .8rem; color: var(--text); }
 
@@ -161,9 +140,16 @@
     .ico.game { background: linear-gradient(135deg, #ffb274, #ff5a4d); }
     .pillar h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: .5rem; }
     .pillar p { font-size: .95rem; }
-    .pillar .free { display: inline-block; margin-top: .8rem; font-size: .8rem; font-weight: 700; color: var(--teal); }
 
-    /* Bandeau "comment ça marche" */
+    /* Galerie captures */
+    .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 4vw, 2.5rem); align-items: start; }
+    @media (max-width: 860px) { .gallery { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto; gap: 3rem; } }
+    .shot { text-align: center; }
+    .shot .phone { margin: 0 auto .9rem; }
+    .shot .cap { font-size: .92rem; color: var(--text); max-width: 26ch; margin: 0 auto; }
+    .shot .cap b { color: var(--ink); }
+
+    /* Étapes */
     .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
     @media (max-width: 720px) { .steps { grid-template-columns: 1fr; } }
     .step { text-align: center; padding: 1rem; }
@@ -173,10 +159,7 @@
 
     /* FAQ */
     .faq { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: .8rem; }
-    details {
-      background: var(--paper); border-radius: var(--r-sm); padding: 1rem 1.2rem;
-      box-shadow: var(--shadow); border: 1px solid var(--line); cursor: pointer;
-    }
+    details { background: var(--paper); border-radius: var(--r-sm); padding: 1rem 1.2rem; box-shadow: var(--shadow); border: 1px solid var(--line); cursor: pointer; }
     details summary { font-weight: 700; color: var(--ink); list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
     details summary::-webkit-details-marker { display: none; }
     details summary::after { content: "+"; font-size: 1.4rem; color: var(--accent); transition: transform .2s; }
@@ -185,12 +168,9 @@
 
     /* CTA final */
     .cta-final { text-align: center; }
-    .cta-card {
-      background: var(--sunset-grad); color: #fff; border-radius: var(--r-lg);
-      padding: clamp(2.5rem, 6vw, 4rem) 1.5rem; box-shadow: var(--shadow-pop);
-    }
+    .cta-card { background: var(--sunset-grad); color: #fff; border-radius: var(--r-lg); padding: clamp(2.5rem, 6vw, 4rem) 1.5rem; box-shadow: var(--shadow-pop); }
     .cta-card h2 { color: #fff; font-size: clamp(1.8rem, 4.5vw, 2.6rem); font-weight: 700; }
-    .cta-card p { margin: .9rem auto 1.8rem; max-width: 38ch; opacity: .95; }
+    .cta-card p { margin: .9rem auto 1.8rem; max-width: 40ch; opacity: .95; }
     .cta-card .btn-ghost { background: #fff; color: var(--accent); }
 
     /* Footer */
@@ -214,57 +194,31 @@
       <a class="brand" href="#top"><span class="logo">☀️</span> SunMates</a>
       <nav class="nav-links">
         <a href="#piliers">Pourquoi</a>
-        <a href="#comment">Comment ça marche</a>
+        <a href="#apercu">L'app</a>
         <a href="#faq">FAQ</a>
-        <a class="btn btn-primary btn-sm" href="index.html">Essayer</a>
+        <a class="btn btn-primary btn-sm" href="index.html">Rejoindre</a>
       </nav>
     </div>
   </header>
 
-  <!-- ===================== HERO ===================== -->
   <main id="top">
+    <!-- ===================== HERO ===================== -->
     <section class="hero">
       <div class="wrap">
         <div>
-          <span class="eyebrow">✨ La sécurité, toujours gratuite</span>
+          <span class="eyebrow">☀️ Ton aventure solo commence ici</span>
           <h1>Pars solo,<br><span class="grad">trouve ta bande.</span></h1>
-          <p class="lede">SunMates connecte les voyageurs solo entre eux, dans des lieux sûrs, avec un cercle de confiance toujours à portée de main. ☀️</p>
+          <p class="lede">Explore une ville, croise des voyageurs comme toi, relève des quêtes ensemble. Le solo, c'est juste le début de l'histoire.</p>
           <div class="hero-cta">
-            <a class="btn btn-primary" href="index.html">Essayer SunMates →</a>
-            <a class="btn btn-ghost" href="#piliers">Découvrir</a>
+            <a class="btn btn-primary" href="index.html">Rejoindre l'aventure →</a>
+            <a class="btn btn-ghost" href="#comment">Voir comment ça marche</a>
           </div>
-          <p class="trust-note">🛟 Cercle de confiance · lieux vérifiés · alerte d'urgence — gratuits pour tous.</p>
+          <p class="trust-note">🗺️ Repère les lieux et les voyageurs autour de toi — et pars l'esprit tranquille.</p>
         </div>
 
-        <!-- Mockup téléphone (rendu 100% CSS, raccord avec l'app) -->
         <div class="phone-stage">
           <div class="phone">
-            <div class="phone-screen">
-              <div class="ps-top">
-                <div class="hi">Bonjour Chloé 👋</div>
-                <div class="sub">3 Mates de confiance près de toi</div>
-              </div>
-              <div class="ps-body">
-                <div class="ps-card">
-                  <div class="ps-av">L</div>
-                  <div><div class="nm">Lina · 24</div><div class="mt">☕ Lisbonne · adore le café</div></div>
-                  <span class="ps-badge">✓ Vérifiée</span>
-                </div>
-                <div class="ps-card">
-                  <div class="ps-av">M</div>
-                  <div><div class="nm">Marco · 27</div><div class="mt">🗺️ même style de voyage</div></div>
-                  <span class="ps-badge">92% match</span>
-                </div>
-                <div class="ps-quest">
-                  <div class="qt">🗺️ Chasse au trésor urbaine</div>
-                  <div class="qx">+40 XP · à faire avec un Mate</div>
-                </div>
-                <div class="ps-quest" style="box-shadow:0 6px 18px rgba(25,179,107,.14)">
-                  <div class="qt">📍 Le Comptoir Solaire</div>
-                  <div class="qx" style="color:var(--teal)">Lieu sûr vérifié · check-in dispo</div>
-                </div>
-              </div>
-            </div>
+            <img src="shot_accueil.png" alt="L'accueil de SunMates : une carte d'Europe avec les lieux et les voyageurs autour de toi" loading="eager" />
           </div>
         </div>
       </div>
@@ -274,26 +228,48 @@
     <section id="piliers">
       <div class="wrap">
         <div class="section-head">
-          <h2>Voyager seul·e, jamais isolé·e</h2>
-          <p>Trois promesses simples, pensées pour les exploratrices et explorateurs solo.</p>
+          <h2>Pourquoi tu vas adorer</h2>
         </div>
         <div class="pillars">
           <article class="pillar">
-            <div class="ico sun">🛟</div>
-            <h3>Sécurité d'abord</h3>
-            <p>Badge de confiance, cercle de confiance et alerte d'urgence. Tu n'es jamais vraiment seul·e.</p>
-            <span class="free">Gratuit pour tous, pour toujours.</span>
+            <div class="ico sun">🗺️</div>
+            <h3>Explore autour de toi</h3>
+            <p>Une carte vivante te montre les lieux qui valent le détour et les voyageurs dans le coin. Tu n'as jamais voyagé seul·e, tu ne le savais juste pas encore.</p>
           </article>
           <article class="pillar">
             <div class="ico purp">🤝</div>
-            <h3>Des Mates, pas des dates</h3>
-            <p>Des matchs par affinités — intérêts, langues, style de voyage. Une rencontre amicale assumée, sans ambiguïté.</p>
+            <h3>Trouve ta bande</h3>
+            <p>Croise des gens qui vibrent comme toi, connecte, et transforme un café partagé en souvenirs de voyage. L'amitié, version golden hour.</p>
           </article>
           <article class="pillar">
             <div class="ico game">🎮</div>
-            <h3>Le voyage devient un jeu</h3>
-            <p>Quêtes locales, badges et coupons chez des partenaires éco-responsables. Explore et débloque des récompenses.</p>
+            <h3>Joue, gagne, brille</h3>
+            <p>Quêtes, badges, coupons, classement : chaque sortie te rapporte de l'XP. Voyager devient un terrain de jeu.</p>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== APERÇU (vraies captures) ===================== -->
+    <section id="apercu" style="padding-top:0">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Jette un œil à l'intérieur</h2>
+          <p>De vraies captures de l'app — pas des promesses.</p>
+        </div>
+        <div class="gallery">
+          <figure class="shot">
+            <div class="phone"><img src="shot_accueil.png" alt="Carte d'accueil de SunMates" /></div>
+            <figcaption class="cap"><b>Toute l'Europe à portée de pouce</b> — repère les lieux et les voyageurs autour de toi.</figcaption>
+          </figure>
+          <figure class="shot">
+            <div class="phone"><img src="shot_jeux.png" alt="Onglet Jeux : quêtes, badges, coupons et classement" /></div>
+            <figcaption class="cap"><b>Quêtes, badges et coupons</b> — transforme chaque sortie en partie à gagner.</figcaption>
+          </figure>
+          <figure class="shot">
+            <div class="phone"><img src="shot_profil.png" alt="Profil avec XP, Mates et check-ins" /></div>
+            <figcaption class="cap"><b>Ton aventure en chiffres</b> — XP, Mates et check-ins qui s'accumulent.</figcaption>
+          </figure>
         </div>
       </div>
     </section>
@@ -301,24 +277,22 @@
     <!-- ===================== COMMENT ÇA MARCHE ===================== -->
     <section id="comment" style="padding-top:0">
       <div class="wrap">
-        <div class="section-head">
-          <h2>Trois étapes, et c'est parti</h2>
-        </div>
+        <div class="section-head"><h2>En 3 temps, tu es lancé·e</h2></div>
         <div class="steps">
           <div class="step">
             <div class="num">1</div>
             <h3>Crée ton profil</h3>
-            <p>Quelques secondes, et ta vérification limite les faux profils autour de toi.</p>
+            <p>Quelques infos, ta vibe, et te voilà sur la carte.</p>
           </div>
           <div class="step">
             <div class="num">2</div>
-            <h3>Trouve tes Mates</h3>
-            <p>L'app te propose des voyageurs compatibles dans des lieux sûrs près de toi.</p>
+            <h3>Explore et connecte</h3>
+            <p>Repère les lieux et les voyageurs autour de toi, lance le premier hello.</p>
           </div>
           <div class="step">
             <div class="num">3</div>
-            <h3>Vis l'aventure</h3>
-            <p>Check-in, quêtes, badges — et ton cercle de confiance qui veille, en cas de pépin.</p>
+            <h3>Relève des quêtes</h3>
+            <p>Check-in, défis, badges : amuse-toi et fais grimper ton XP avec ta bande.</p>
           </div>
         </div>
       </div>
@@ -330,20 +304,20 @@
         <div class="section-head"><h2>Les questions qu'on nous pose</h2></div>
         <div class="faq">
           <details open>
-            <summary>C'est vraiment gratuit ?</summary>
-            <p>Oui. Et la sécurité ne sera <strong>jamais</strong> payante : cercle de confiance, lieux sûrs et alerte d'urgence sont gratuits pour tout le monde, pour toujours.</p>
-          </details>
-          <details>
             <summary>C'est une appli de dating ?</summary>
-            <p>Non — c'est de l'amitié de voyage. Des « Mates », pas des « dates ». Les rencontres sont amicales et assumées comme telles.</p>
+            <p>Non ! Ici on cherche des potes de voyage, pas un date. SunMates, c'est l'amitié et les aventures partagées.</p>
           </details>
           <details>
-            <summary>Et mes données personnelles ?</summary>
-            <p>Ta position n'est partagée qu'avec <strong>ton cercle de confiance</strong>, jamais publiquement. On mesure l'usage de façon anonymisée, sans jamais lire tes messages ni te pister.</p>
+            <summary>Je voyage seul·e, je vais vraiment rencontrer du monde ?</summary>
+            <p>Carrément. La carte te montre les voyageurs et les lieux autour de toi — un message, un café, et c'est parti.</p>
           </details>
           <details>
-            <summary>Comment éviter les faux profils ?</summary>
-            <p>Chaque membre peut être vérifié, et les check-ins dans les lieux partenaires se valident par un code sur place. La confiance se gagne par des actions réelles, pas en cliquant.</p>
+            <summary>Ça sert à quoi, les quêtes et les badges ?</summary>
+            <p>À pimenter le voyage. Tu gagnes de l'XP, tu débloques des badges et des coupons, et tu grimpes au classement avec ta bande.</p>
+          </details>
+          <details>
+            <summary>Et mes données ?</summary>
+            <p>Elles restent les tiennes. Tu choisis ce que tu partages, et tu voyages tranquille.</p>
           </details>
         </div>
       </div>
@@ -353,9 +327,9 @@
     <section class="cta-final">
       <div class="wrap">
         <div class="cta-card">
-          <h2>Ton prochain voyage solo commence ici</h2>
-          <p>Rejoins les premiers SunMates et transforme tes rencontres de voyage en connexions sûres.</p>
-          <a class="btn btn-ghost" href="index.html">Essayer SunMates ☀️</a>
+          <h2>Ta bande t'attend quelque part</h2>
+          <p>Une nouvelle ville, des visages à découvrir, des quêtes à relever — il ne manque plus que toi.</p>
+          <a class="btn btn-ghost" href="index.html">Rejoindre l'aventure ☀️</a>
         </div>
       </div>
     </section>
@@ -370,7 +344,7 @@
         <a href="mailto:gryf2002@gmail.com">Contact</a>
         <a href="#confidentialite">Confidentialité</a>
       </nav>
-      <p class="copy">Pars solo, trouve ta bande. ☀️</p>
+      <p class="copy">SunMates — pars solo, trouve ta bande ☀️</p>
     </div>
   </footer>
 
