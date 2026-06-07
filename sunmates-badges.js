@@ -135,6 +135,10 @@
 
   var FRAMES = { exploration:frExploration, social:frSocial, securite:frSecurite, accomplissement:frAccomplissement, secret:frSecret };
 
+  // ---- registre des secrets (auto-détection si opts.secret non fourni) ----
+  var DEFAULT_SECRET = { globetrotter:1, butterfly:1, legend:1, guardian:1, nightowl:1 };
+  var SECRETS = Object.assign({}, DEFAULT_SECRET);
+
   // ---- API publique ----
   // badgeKey : ex "badge_globetrotter" ou "globetrotter". opts: {secret, size, lite, locked}
   window.SMBadge = function (badgeKey, opts) {
@@ -143,17 +147,24 @@
     var key = String(badgeKey || '').replace(/^badge_/, '');
     var size = opts.size || 64;
     var lite = opts.lite != null ? opts.lite : size < 90;
+    var secret = opts.secret != null ? opts.secret : !!SECRETS[key];
     var inner;
-    if (opts.locked && opts.secret) {
+    if (opts.locked && secret) {
       inner = frSecretLocked(lite);
     } else {
-      var fam = opts.secret ? 'secret' : (FAM[key] || 'exploration');
+      var fam = secret ? 'secret' : (FAM[key] || 'exploration');
       inner = (FRAMES[fam] || frExploration)(key, lite);
     }
     return '<svg class="smbadge-svg" viewBox="0 0 128 128" width="' + size + '" height="' + size + '" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + inner + '</svg>';
   };
 
   window.SMBadge.hasEmblem = function (badgeKey) { return !!EM[String(badgeKey || '').replace(/^badge_/, '')]; };
+  window.SMBadge.isSecret = function (badgeKey) { return !!SECRETS[String(badgeKey || '').replace(/^badge_/, '')]; };
+  // Synchronise le registre depuis le catalogue Supabase (is_secret)
+  window.SMBadge.setSecrets = function (keys) {
+    SECRETS = Object.assign({}, DEFAULT_SECRET);
+    (keys || []).forEach(function (k) { SECRETS[String(k).replace(/^badge_/, '')] = 1; });
+  };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', injectDefs);
   else injectDefs();

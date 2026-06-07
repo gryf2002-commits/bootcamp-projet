@@ -65,7 +65,7 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=166"></script>
+  <script src="sunmates-badges.js?v=167"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1188,6 +1188,9 @@
     /* Rangée de badges sur la carte profil */
     .prof-badges { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; margin-top: .8rem; cursor: pointer; }
     .prof-badges .pb-badge { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-grad); color: #fff; display: grid; place-items: center; font-size: 16px; box-shadow: var(--shadow-sm); }
+    .prof-badges .pb-badge.sm { background: none; box-shadow: none; }
+    .pb-badge.sm svg, .sv-badges svg { display: block; }
+    .sv-badges .smb { display: inline-grid; place-items: center; }
     .prof-badges .pb-more { font-size: .76rem; font-weight: 800; color: var(--accent); }
     .prof-badges .pb-lbl { font-size: .78rem; font-weight: 700; color: var(--muted); }
     .prof-badges .pb-edit { margin-left: auto; font-size: .76rem; font-weight: 700; color: var(--accent); }
@@ -5672,7 +5675,7 @@
       const svRows = [["📍", s.ck, "check-ins"], ["🎯", s.q, "quêtes"], ["🏅", s.b, "badges"], ["⭐", s.xp, "XP"]];
       if (s.trips > 0) svRows.push(["🧳", s.trips, s.trips > 1 ? "voyages" : "voyage"]);
       $("svStats").innerHTML = svRows.map(([e, n, l]) => `<div class="sv-stat"><div class="sv-n">${e} ${n}</div><div class="sv-l">${l}</div></div>`).join("");
-      $("svBadges").innerHTML = myBadges.slice(0, 10).map((b) => `<span>${b.emoji || "🏅"}</span>`).join("");
+      $("svBadges").innerHTML = myBadges.slice(0, 10).map((b) => window.SMBadge && SMBadge.hasEmblem(b.badge_key) ? `<span class="smb" title="${escapeHtml(b.name || "")}">${SMBadge(b.badge_key, { size: 34 })}</span>` : `<span>${b.emoji || "🏅"}</span>`).join("");
       m.classList.remove("hidden");
     }
     function shareParcours() {
@@ -5726,7 +5729,7 @@
         const fresh = myBadges.filter((b) => !myBadgeKeys.has(b.badge_key));
         if (fresh.length && typeof celebrate === "function") {
           celebrate();
-          fresh.forEach((b) => toast(b.emoji || "🏅", `Badge débloqué : <b>${escapeHtml(b.name || "Nouveau badge")}</b> 🎉`,
+          fresh.forEach((b) => toast(window.SMBadge && SMBadge.hasEmblem(b.badge_key) ? SMBadge(b.badge_key, { size: 38 }) : (b.emoji || "🏅"), `Badge débloqué : <b>${escapeHtml(b.name || "Nouveau badge")}</b> 🎉`,
             () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); }));
         }
       }
@@ -5812,7 +5815,7 @@
           let shown = myBadges.filter((b) => pins.includes(b.badge_key));
           if (!shown.length) shown = myBadges.slice(0, 3); // par défaut, les 3 premiers
           pb.style.display = "flex";
-          pb.innerHTML = '<span class="pb-lbl">Mes badges :</span>' + shown.slice(0, 3).map((b) => `<span class="pb-badge" title="${escapeHtml(b.name || '')}">${b.emoji || "🏅"}</span>`).join("")
+          pb.innerHTML = '<span class="pb-lbl">Mes badges :</span>' + shown.slice(0, 3).map((b) => window.SMBadge && SMBadge.hasEmblem(b.badge_key) ? `<span class="pb-badge sm" title="${escapeHtml(b.name || '')}">${SMBadge(b.badge_key, { size: 32 })}</span>` : `<span class="pb-badge" title="${escapeHtml(b.name || '')}">${b.emoji || "🏅"}</span>`).join("")
             + '<span class="pb-edit">choisir ›</span>';
           pb.onclick = () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); };
         } else { pb.style.display = "none"; }
@@ -5871,6 +5874,7 @@
         const seen = new Set();
         allQuests.forEach((q) => { if (q.badge_key && !seen.has(q.badge_key)) { seen.add(q.badge_key); defs.push({ key: q.badge_key, name: q.badge_name, emoji: q.badge_emoji, is_secret: false }); } });
       }
+      if (window.SMBadge) SMBadge.setSecrets(defs.filter((d) => d.is_secret).map((d) => d.key));
       const isAdmin = !!(myProfile && myProfile.is_admin);
       // Non-admin : on MASQUE complètement les secrets non débloqués (pas de slot révélateur).
       const shown = defs.filter((b) => isAdmin || !b.is_secret || myBadgeKeys.has(b.key));
@@ -6072,10 +6076,11 @@
       $("detailDesc").textContent = q.description || "";
       $("detailStats").innerHTML = `
         <div class="dstat"><b>+${q.points || 0}</b><span>XP</span></div>
-        <div class="dstat"><b>${q.badge_emoji || "🏅"}</b><span>Badge</span></div>
+        <div class="dstat"><b>${window.SMBadge && SMBadge.hasEmblem(q.badge_key) ? SMBadge(q.badge_key, { size: 30 }) : (q.badge_emoji || "🏅")}</b><span>Badge</span></div>
         <div class="dstat"><b>${status === "completed" ? "✅" : (status === "joined" ? "⏳" : "—")}</b><span>Statut</span></div>`;
       // Récompense badge
-      $("detailBadgeIco").textContent = q.badge_emoji || "🏅";
+      if (window.SMBadge && SMBadge.hasEmblem(q.badge_key)) $("detailBadgeIco").innerHTML = SMBadge(q.badge_key, { size: 46 });
+      else $("detailBadgeIco").textContent = q.badge_emoji || "🏅";
       $("detailBadgeName").textContent = q.badge_name || "Badge";
       $("detailBadgeState").textContent = myBadgeKeys.has(q.badge_key) ? "✅ Débloqué" : "À débloquer";
       // Récompense coupon (si la mission en accorde un)
@@ -6281,7 +6286,7 @@
           : "—";
         const pinned = loadPinnedBadges().includes(key);
         html = `<div style="text-align:center;padding:.4rem 0">
-            <div style="font-size:3.2rem">${earned.emoji || def.emoji || "🏅"}</div>
+            ${window.SMBadge && SMBadge.hasEmblem(key) ? `<div style="display:grid;place-items:center;margin:.2rem auto .4rem">${SMBadge(key, { size: 124 })}</div>` : `<div style="font-size:3.2rem">${earned.emoji || def.emoji || "🏅"}</div>`}
             <h3 style="margin:.3rem 0">${escapeHtml(earned.name || def.name || "Badge")}</h3>
             <p class="muted" style="margin:.2rem 0">Débloqué le <b>${d}</b></p>
             ${def.description ? `<p class="muted" style="margin:.2rem 0">${escapeHtml(def.description)}</p>` : (quest ? `<p class="muted" style="margin:.2rem 0">Via la quête « ${escapeHtml(quest.title)} »</p>` : "")}
@@ -6290,7 +6295,7 @@
       } else if (def.is_secret && !isAdmin) {
         // Badge secret : on garde le mystère (façon jeu vidéo).
         html = `<div style="text-align:center;padding:.4rem 0">
-            <div style="font-size:3.2rem">❓</div>
+            ${window.SMBadge ? `<div style="display:grid;place-items:center;margin:.2rem auto .4rem">${SMBadge(key, { secret: true, locked: true, size: 124 })}</div>` : `<div style="font-size:3.2rem">❓</div>`}
             <h3 style="margin:.3rem 0">Badge secret</h3>
             <p class="muted">🔒 À toi de le découvrir…</p>
             ${def.secret_hint ? `<p class="muted" style="font-style:italic">Indice : ${escapeHtml(def.secret_hint)}</p>` : ""}</div>`;
@@ -6298,7 +6303,7 @@
         // Badge public verrouillé, OU badge secret vu par l'ADMIN (condition révélée).
         const cond = def.unlock_condition || (quest ? ("Accomplis « " + quest.title + " »") : "");
         html = `<div style="text-align:center;padding:.4rem 0">
-            <div style="font-size:3.2rem;filter:grayscale(1);opacity:.55">${def.emoji || (quest && quest.badge_emoji) || "🏅"}</div>
+            ${window.SMBadge && SMBadge.hasEmblem(key) ? `<div style="display:grid;place-items:center;margin:.2rem auto .4rem;filter:grayscale(1);opacity:.55">${SMBadge(key, { size: 124 })}</div>` : `<div style="font-size:3.2rem;filter:grayscale(1);opacity:.55">${def.emoji || (quest && quest.badge_emoji) || "🏅"}</div>`}
             <h3 style="margin:.3rem 0">${escapeHtml(def.name || (quest && quest.badge_name) || "Badge")}${def.is_secret ? ' <span class="badge no" style="font-size:.6rem">SECRET</span>' : ""}</h3>
             <p class="muted">🔒 Pas encore débloqué.</p>
             ${def.description ? `<p class="muted">${escapeHtml(def.description)}</p>` : ""}
@@ -6771,7 +6776,7 @@
       if (badges && badges.length) {
         $("tpBadgesCard").style.display = "";
         $("tpBadges").innerHTML = badges.map((b) =>
-          `<div class="bitem"><div class="hex">${b.emoji || "🏅"}</div><div class="bname">${escapeHtml(b.name || "")}</div><div class="bprog">✅</div></div>`).join("");
+          `<div class="bitem">${window.SMBadge && SMBadge.hasEmblem(b.badge_key) ? `<div class="smbadge-wrap">${SMBadge(b.badge_key, { size: 72 })}</div>` : `<div class="hex">${b.emoji || "🏅"}</div>`}<div class="bname">${escapeHtml(b.name || "")}</div><div class="bprog">✅</div></div>`).join("");
       }
     }
     $("tpMsgBtn").addEventListener("click", () => { if (currentTravelerId) openChat(currentTravelerId); });
@@ -8235,7 +8240,7 @@
       const feed = $("homeFeed"); if (!feed) return;
       skelFirst("homeFeed", skelRows(3));
       const { data: badges } = await db.from("user_badges")
-        .select("user_id,name,emoji,earned_at").order("earned_at", { ascending: false }).limit(40);
+        .select("user_id,badge_key,name,emoji,earned_at").order("earned_at", { ascending: false }).limit(40);
       // On ne garde que les temps forts des 3 derniers jours
       const cutoff = Date.now() - 3 * 24 * 3600 * 1000;
       const posts = (badges || [])
@@ -8245,7 +8250,7 @@
           const p = travelerMap[b.user_id] || {};
           const isMe = b.user_id === myUserId;
           return {
-            uid: b.user_id, isMe, avatar: p.avatar_url,
+            uid: b.user_id, isMe, avatar: p.avatar_url, key: b.badge_key,
             name: isMe ? "Toi" : (p.username || "Un voyageur"),
             emoji: b.emoji || "🏅",
             title: isMe ? "as débloqué un badge" : "a débloqué un badge",
@@ -8262,7 +8267,7 @@
             <div class="fpost-who"><b>${escapeHtml(po.name)}</b><span>${escapeHtml(po.title)}</span></div>
             <span class="fpost-time">${po.time}</span></div>
           <div class="fpost-badge grad-${i % 4}">
-            <span class="fpost-emoji">${po.emoji}</span>
+            <span class="fpost-emoji">${window.SMBadge && SMBadge.hasEmblem(po.key) ? SMBadge(po.key, { size: 40 }) : po.emoji}</span>
             <div class="fpost-txt"><b>Badge débloqué</b><span>${escapeHtml(po.badgeName)}</span></div>
             <span class="fpost-spark">✨</span></div>
         </div>`).join("");
