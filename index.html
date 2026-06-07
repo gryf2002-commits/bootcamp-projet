@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=169"></script>
-  <script src="sunmates-icons.js?v=169"></script>
+  <script src="sunmates-badges.js?v=170"></script>
+  <script src="sunmates-icons.js?v=170"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1126,6 +1126,10 @@
     .bitem:hover .smbadge-wrap .smbadge-svg { transform: translateY(-3px) rotate(-3deg); }
     .bitem.locked .smbadge-svg { filter: grayscale(.92) opacity(.5); }
     @media (prefers-reduced-motion: reduce) { .smbadge-wrap .smbadge-svg { transition: none; } }
+    /* Icônes maison sur tuile : fond crème (l'icône porte la couleur, DA chaude) */
+    .cic[data-smicon] { background: #fffaf2; box-shadow: 0 6px 14px rgba(214,96,74,.13); border: 1px solid rgba(214,96,74,.10); }
+    .cic[data-smicon] svg { display: block; }
+    .cat-tile.active .cic[data-smicon] { box-shadow: 0 8px 18px rgba(255,90,77,.22); border-color: rgba(255,90,77,.28); }
 
     /* Coupons */
     .coupon { display: flex; align-items: center; gap: .85rem; padding: .85rem .9rem; border: 1.5px dashed var(--accent);
@@ -3191,7 +3195,7 @@
             <div class="cat-tile" data-jeuxnav="badges"><div class="cic c-gold" data-smicon="medal" data-smicon-size="30">🏅</div><div class="clbl">Badges</div></div>
             <div class="cat-tile" data-jeuxnav="coupons"><div class="cic c-green" data-smicon="coupon" data-smicon-size="30">🎟️</div><div class="clbl">Coupons</div></div>
             <div class="cat-tile" data-jeuxnav="rank"><div class="cic c-blue" data-smicon="rank" data-smicon-size="30">🏆</div><div class="clbl">Classement</div></div>
-            <div class="cat-tile" data-jeuxnav="shop"><div class="cic c-pink">🛍️</div><div class="clbl">Boutique</div></div>
+            <div class="cat-tile" data-jeuxnav="shop"><div class="cic c-pink" data-smicon="shop" data-smicon-size="30">🛍️</div><div class="clbl">Boutique</div></div>
           </div>
           <div class="gold-only-note">👑 Gratuit : 1 quête + 1 activité par jour. Gold : illimité + <b>coupons exclusifs</b> bien plus avantageux.</div>
 
