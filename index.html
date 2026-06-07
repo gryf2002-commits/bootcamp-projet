@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=205"></script>
-  <script src="sunmates-icons.js?v=205"></script>
+  <script src="sunmates-badges.js?v=206"></script>
+  <script src="sunmates-icons.js?v=206"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1418,7 +1418,7 @@
       filter: drop-shadow(0 3px 4px rgba(90,25,10,.40)) drop-shadow(0 1px 1px rgba(0,0,0,.25)) !important; }
     /* Emojis-héros natifs : même signature de relief (DA cohérente partout) */
     .qs-emblem, .ph-av-emoji, .sp-next-bdg, .qm-ic, .hm-hero-ic, .hm-host-ic, .rit-ic, .empty-ill, .fe-emoji,
-    .dh-emoji, .tip-ic, .onb-emoji, .sos-logo, .coupon .cico, .detail-hero .dh-emoji { filter: var(--relief); }
+    .dh-emoji, .tip-ic, .onb-emoji, .sos-logo, .coupon .cico, .su-e, .su-ic { filter: var(--relief); }
     .sm-emoji3d { filter: var(--relief); } .sm-emoji3d.sm-float { animation: floatySoft 3.2s ease-in-out infinite; }
     /* Badges : relief commun + halo soleil chaud derrière → réancrés dans la DA sunset */
     .br-medal, .smbadge-wrap, .sm-badge { filter: var(--relief); position: relative; isolation: isolate; }
@@ -3121,7 +3121,6 @@
             <div class="tile" data-help="lieux"><div class="thumb green" data-smicon="near" data-smicon-size="30">🛟</div><div class="t-name">Lieux publics sûrs</div><div class="t-meta">Validés</div></div>
             <div class="tile" data-help="mate"><div class="thumb purp" data-smicon="users" data-smicon-size="30">🤝</div><div class="t-name">Trouver un Mate sûr·e</div><div class="t-meta">Cercle de confiance</div></div>
             <div class="tile" data-help="numeros"><div class="thumb teal" data-smicon="phone" data-smicon-size="30">📞</div><div class="t-name">Numéros d'urgence</div><div class="t-meta">Par pays 🌍</div></div>
-            <div class="tile" style="opacity:.5;pointer-events:none"><div class="thumb" data-smicon="chat" data-smicon-size="30">💬</div><div class="t-name">Support SunMates</div><div class="t-meta">Bientôt</div></div>
           </div>
 
           <div class="card" style="margin-top:1.4rem">
@@ -3139,7 +3138,6 @@
           <div class="card">
             <h3 style="margin-top:0">Préférences</h3>
             <div class="qrow" data-secu="contact"><div class="qico" data-smicon="contact" data-smicon-size="27">📢</div><div class="qname">Qui peut me contacter</div><div class="qarrow" id="contactPrefVal">›</div></div>
-            <div class="qrow" style="opacity:.45;pointer-events:none"><div class="qico">✉️</div><div class="qname">Nous contacter <span class="muted" style="font-size:.72rem;font-weight:600">· bientôt</span></div></div>
           </div>
 
           <div class="msg" id="helpMsg" style="text-align:center"></div>
