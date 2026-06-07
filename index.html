@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=202"></script>
-  <script src="sunmates-icons.js?v=202"></script>
+  <script src="sunmates-badges.js?v=203"></script>
+  <script src="sunmates-icons.js?v=203"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -2840,8 +2840,8 @@
           <div class="msg" id="spotMsg" style="text-align:center"></div>
         </details>
 
-        <p class="muted" style="margin-top:0">Les meilleurs spots pour se retrouver ☕ Fais un check-in pour grimper au classement 🏆</p>
-        <div class="search" style="margin-top:.2rem"><span class="ico">🔍</span><input id="cafeSearch" type="text" placeholder="Rechercher un lieu ou une ville…" /></div>
+        <p class="muted" style="margin-top:0" data-i18n="places.intro">Les meilleurs spots pour se retrouver ☕ Fais un check-in pour grimper au classement 🏆</p>
+        <div class="search" style="margin-top:.2rem"><span class="ico">🔍</span><input id="cafeSearch" type="text" placeholder="Rechercher un lieu ou une ville…" data-i18n-ph="places.searchph" /></div>
         <!-- Filtres + tris en tuiles colorées (dans la DA) -->
         <div class="cat-row" id="lieuxCats">
           <div class="cat-tile active" data-catcf="all"><div class="cic c-sun" data-smicon="coffee" data-smicon-size="36">☕</div><div class="clbl">Tous</div></div>
@@ -2850,6 +2850,7 @@
           <div class="cat-tile" data-catsort="rating"><div class="cic c-gold" data-smicon="rating" data-smicon-size="36">⭐</div><div class="clbl">Top notés</div></div>
           <div class="cat-tile" data-catsort="checkins"><div class="cic c-purp" data-smicon="popular" data-smicon-size="36">🔥</div><div class="clbl">Populaires</div></div>
         </div>
+        <!-- Moteur de filtrage (piloté par les cat-tiles ci-dessus ; masqué visuellement) -->
         <div class="chips wrap" id="cafeFilters" style="display:none">
           <button class="chip active" data-cf="all">Tous</button>
           <button class="chip" data-cf="eco">🌱 Éco-responsables</button>
@@ -10008,7 +10009,7 @@
         "nav.home": "Accueil", "nav.places": "Lieux", "nav.games": "Jeux", "nav.mates": "Mates", "nav.safety": "Sécurité", "nav.profile": "Profil",
         "auth.login": "Connexion",
         "mates.title": "Mes Mates", "mates.trusted": "Mates de confiance ›", "mates.messages": "Messages", "mates.discover": "Découvrir", "mates.requests": "Demandes",
-        "places.title": "Lieux sûrs", "profile.title": "Mon profil", "safety.title": "Sécurité", "games.title": "Jeux & Quêtes",
+        "places.title": "Lieux sûrs", "places.intro": "Les meilleurs spots pour se retrouver ☕ Fais un check-in pour grimper au classement 🏆", "places.searchph": "Rechercher un lieu ou une ville…", "profile.title": "Mon profil", "safety.title": "Sécurité", "games.title": "Jeux & Quêtes",
         "prof.seg.edit": "Mon profil", "profile.replay": "🚀 Revoir la présentation",
         "filter.verified": "Vérifiés", "filter.active": "● En ligne", "filter.city": "Même ville", "filter.affinity": "Affinité 50%+",
         "set.title": "⚙️ Paramètres du compte", "set.lang": "🌍 Langue / Language", "set.haptics": "Vibrations (haptique)", "set.hapticsSub": "Petit retour vibrant sur les actions clés", "set.sound": "🔊 Sons de l'interface", "set.soundSub": "Petits sons sur les clics, succès et déblocages",
@@ -10026,7 +10027,7 @@
         "nav.home": "Home", "nav.places": "Places", "nav.games": "Games", "nav.mates": "Mates", "nav.safety": "Safety", "nav.profile": "Profile",
         "auth.login": "Log in",
         "mates.title": "My Mates", "mates.trusted": "Trusted Mates ›", "mates.messages": "Messages", "mates.discover": "Discover", "mates.requests": "Requests",
-        "places.title": "Safe places", "profile.title": "My profile", "safety.title": "Safety", "games.title": "Games & Quests",
+        "places.title": "Safe places", "places.intro": "The best spots to meet up ☕ Check in to climb the leaderboard 🏆", "places.searchph": "Search a place or city…", "profile.title": "My profile", "safety.title": "Safety", "games.title": "Games & Quests",
         "prof.seg.edit": "My profile", "profile.replay": "🚀 Replay the intro",
         "filter.verified": "Verified", "filter.active": "● Online", "filter.city": "Same city", "filter.affinity": "Affinity 50%+",
         "set.title": "⚙️ Account settings", "set.lang": "🌍 Language / Langue", "set.haptics": "Vibrations (haptics)", "set.hapticsSub": "A little buzz on key actions", "set.sound": "🔊 Interface sounds", "set.soundSub": "Little sounds on taps, wins and unlocks",
