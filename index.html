@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=203"></script>
-  <script src="sunmates-icons.js?v=203"></script>
+  <script src="sunmates-badges.js?v=204"></script>
+  <script src="sunmates-icons.js?v=204"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1417,7 +1417,8 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .qm-ic svg, .smgem svg {
       filter: drop-shadow(0 3px 4px rgba(90,25,10,.40)) drop-shadow(0 1px 1px rgba(0,0,0,.25)) !important; }
     /* Emojis-héros natifs : même signature de relief (DA cohérente partout) */
-    .qs-emblem, .ph-av-emoji, .sp-next-bdg, .qm-ic, .hm-hero-ic, .hm-host-ic, .rit-ic, .empty-ill, .fe-emoji { filter: var(--relief); }
+    .qs-emblem, .ph-av-emoji, .sp-next-bdg, .qm-ic, .hm-hero-ic, .hm-host-ic, .rit-ic, .empty-ill, .fe-emoji,
+    .dh-emoji, .tip-ic, .onb-emoji, .sos-logo { filter: var(--relief); }
     .sm-emoji3d { filter: var(--relief); } .sm-emoji3d.sm-float { animation: floatySoft 3.2s ease-in-out infinite; }
     /* Badges : relief commun + halo soleil chaud derrière → réancrés dans la DA sunset */
     .br-medal, .smbadge-wrap, .sm-badge { filter: var(--relief); position: relative; isolation: isolate; }
