@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=219"></script>
-  <script src="sunmates-icons.js?v=219"></script>
+  <script src="sunmates-badges.js?v=220"></script>
+  <script src="sunmates-icons.js?v=220"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1206,6 +1206,15 @@
     @keyframes phShine{ 0%{ transform:translateX(-120%) } 55%,100%{ transform:translateX(220%) } }
     body.theme-dusk .player-hero{ box-shadow:0 18px 44px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.06); }
     body.theme-dusk .player-hero .ph-glow{ opacity:.9; }
+
+    /* Radar « quête la plus proche » (onglet Jeux) */
+    .nq-card{ display:flex; align-items:center; gap:.7rem; padding:.7rem .8rem; margin:.2rem 0 .9rem; }
+    .nq-emblem{ font-size:30px; flex-shrink:0; filter:var(--relief); }
+    .nq-body{ flex:1; min-width:0; }
+    .nq-lbl{ font-size:.7rem; font-weight:800; color:var(--accent); letter-spacing:.02em; }
+    .nq-title{ font-weight:800; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .nq-meta{ font-size:.8rem; }
+    .nq-go{ flex-shrink:0; padding:.45rem .7rem; font-size:.82rem; white-space:nowrap; }
 
     /* --- 2. Quête du jour --- */
     .quest-spotlight{ position:relative; overflow:hidden; border-radius:var(--radius); padding:1.05rem 1.1rem 1.1rem; margin:0 0 1rem;
@@ -3564,6 +3573,16 @@
               <div class="ph-xp-next"><span class="ph-next-ic">🚀</span><span class="ph-next-txt" id="phXpNext">Accomplis une quête pour gagner ton premier niveau</span></div>
             </div>
           </section>
+          <!-- Radar : la quête géolocalisée la plus proche de toi (Paris) -->
+          <div class="card nq-card" id="nearQuestCard" style="display:none">
+            <div class="nq-emblem" id="nqEmblem">🎯</div>
+            <div class="nq-body">
+              <div class="nq-lbl">🎯 Quête la plus proche</div>
+              <div class="nq-title" id="nqTitle">—</div>
+              <div class="nq-meta muted" id="nqMeta"></div>
+            </div>
+            <button class="btn-accent nq-go" id="nqGo">📍 Carte</button>
+          </div>
           <div class="xp-banner" id="xpBanner"></div>
           <div id="weeklyGoals"></div>
           <!-- Navigation rapide en tuiles colorées -->
@@ -5088,6 +5107,7 @@
         ["🪪", "Vignette de niveau", "Carte joueur en haut de l'onglet : avatar, niveau, barre d'XP, série (streak)."],
         ["⚡", "Quête du jour", "Quête vedette en rotation (solo ou groupe +bonus)."],
         ["🗼", "Quêtes géolocalisées Paris", "Points de quête réels dans Paris (Tour Eiffel, Marais, canal…)."],
+        ["🎯", "Radar quête la plus proche", "Géoloc → quête la plus proche + distance, bouton « Carte » qui t'y emmène."],
         ["🎯", "Quêtes du jour", "Ouvertes en feuille (anti-scroll), 3/jour + cooldown."],
         ["👥", "Quêtes de groupe", "Confirmées par un Mate → bonus XP partagé."],
         ["🎲", "Défis entre Mates", "Propose une quête à un Mate."],
@@ -8880,7 +8900,44 @@
       sec.style.display = "";
     }
 
-    function renderGameHub() { try { renderPlayerHero(); renderQuestSpotlight(); renderBadgeRail(); } catch (e) {} }
+    function renderGameHub() { try { renderPlayerHero(); renderQuestSpotlight(); renderBadgeRail(); renderNearestQuest(); } catch (e) {} }
+
+    // ===== Radar « quête la plus proche » (onglet Jeux) : géoloc → quête Paris la + proche =====
+    function _questGeoList() {
+      const dbGeo = (typeof allQuests !== "undefined" ? allQuests : [])
+        .filter((q) => q.kind === "quest" && q.lat != null && q.lng != null)
+        .map((q) => ({ key: q.key, emoji: q.emoji || "🎯", lat: q.lat, lng: q.lng, title: q.title, xp: q.points || 0, badge: q.badge_name || "un badge" }));
+      return dbGeo.length ? dbGeo : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS : []);
+    }
+    function _fmtDist(km) { return km < 1 ? Math.round(km * 1000) + " m" : (km < 10 ? km.toFixed(1) : Math.round(km)) + " km"; }
+    function renderNearestQuest() {
+      const card = $("nearQuestCard"); if (!card) return;
+      const pts = _questGeoList();
+      if (!pts.length) { card.style.display = "none"; return; }
+      card.style.display = "flex";
+      const fill = (q, meta) => {
+        $("nqEmblem").textContent = q.emoji || "🎯";
+        $("nqTitle").textContent = q.title || "Quête";
+        $("nqMeta").innerHTML = meta;
+        const go = $("nqGo"); if (go) go.onclick = () => focusHomeMapOnQuest(q.lat, q.lng);
+      };
+      if (lastKnownGeo) {
+        let best = null, bestKm = Infinity;
+        pts.forEach((q) => { const km = haversineKm(lastKnownGeo, { lat: q.lat, lng: q.lng }); if (km < bestKm) { bestKm = km; best = q; } });
+        fill(best, "à <b>" + _fmtDist(bestKm) + "</b> · +" + (best.xp || 0) + " XP · 🏅 " + escapeHtml(best.badge || "un badge"));
+        const go = $("nqGo"); if (go) go.textContent = "📍 Carte";
+      } else {
+        // Pas encore de position connue : on propose la quête du jour + un bouton pour se localiser.
+        const q = pts[(typeof _dayIdx === "function" ? _dayIdx() : 0) % pts.length];
+        fill(q, "+" + (q.xp || 0) + " XP · 🏅 " + escapeHtml(q.badge || "un badge") + " · 📍 active ta position");
+        const go = $("nqGo"); if (go) { go.textContent = "📍 Me localiser"; go.onclick = () => { if (typeof toast === "function") toast("📍", "Localisation…"); getGeo(() => renderNearestQuest(), () => { if (typeof toast === "function") toast("⚠️", "Position indisponible"); }); }; }
+      }
+    }
+    function focusHomeMapOnQuest(lat, lng) {
+      if (typeof setHomeMode === "function") setHomeMode("travel");
+      goToTab("accueil");
+      setTimeout(() => { if (!homeLeaf) return; try { homeLeaf.setView([lat, lng], 15, { animate: true }); homeLeaf.invalidateSize(); } catch (e) {} }, 160);
+    }
 
     /* ===== Helper UNIQUE d'affichage des badges (cohérence partout) =====
        Même médaillon serti partout, même repli (toujours encadré, jamais d'emoji nu),
