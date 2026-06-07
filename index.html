@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=223"></script>
-  <script src="sunmates-icons.js?v=223"></script>
+  <script src="sunmates-badges.js?v=224"></script>
+  <script src="sunmates-icons.js?v=224"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1930,6 +1930,13 @@
     .mseg button.active .segb { background: #fff; color: var(--accent); }
     /* Nav admin : emoji + libellé → chips qui s'adaptent au texte et passent à la ligne proprement */
     .aseg-nav button { flex: 0 1 auto; padding: .5rem .7rem; white-space: nowrap; }
+    /* Liste membres admin : en-tête comptes actifs/suspendus + filtre */
+    .au-head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+    .au-counts { font-size: .84rem; color: var(--text); } .au-counts b { color: var(--ink); }
+    .au-filters { display: flex; gap: .3rem; }
+    .au-fbtn { font-size: .74rem; font-weight: 700; padding: .3rem .6rem; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
+    .au-fbtn.active { background: var(--accent-grad); color: #fff; border-color: transparent; }
+    body.theme-dusk .au-fbtn { background: #2a2140; color: #eee; border-color: rgba(255,255,255,.1); }
     .mates-stat { display: flex; width: fit-content; align-items: center; gap: .5rem; margin: .3rem auto .8rem; background: var(--accent-soft); border: 1px solid rgba(255,90,77,.22); border-radius: 999px; padding: .4rem .95rem; cursor: pointer; transition: transform .1s; }
     .mates-stat:active { transform: scale(.97); }
     .mates-stat b { font-size: 1.35rem; color: var(--accent); line-height: 1; }
@@ -5201,8 +5208,8 @@
       ]],
       ["🛡️ Admin (back-office)", [
         ["🎬", "Démo guidée auto", "Parcours commenté de A à Z + ce catalogue."],
-        ["📊", "Tableau de bord (15 KPIs)", "Membres, vérifiés, Gold, check-ins, quêtes, badges… cellules cliquables → segment."],
-        ["👥", "Fiches membre", "Profil complet + activité + actions (vérifier/bannir/admin), recherche."],
+        ["📊", "Tableau de bord (KPIs)", "Membres ACTIFS (bannis exclus), suspendus & admins à part, check-ins, quêtes… cellules cliquables → segment."],
+        ["👥", "Fiches membre", "Actifs vs suspendus séparés + filtre, recherche, actions (vérifier/bannir/admin), fiche détaillée."],
         ["📍", "Gestion des lieux", "Ajout/édition + codes check-in + géoloc auto."],
         ["🚩", "Signalements", "Profil cliquable (faux signalements), traité → supprimer."],
         ["💼", "Devis B2B", "Demandes de partenariat reçues."],
@@ -5400,8 +5407,8 @@
       const { data } = await db.rpc("admin_stats");
       if (!data || !data.ok) { el.innerHTML = '<p class="muted">Accès refusé.</p>'; return; }
       const cell = (k, v, jump) => `<div class="pcell${jump ? " pcell-jump" : ""}"${jump ? ` data-dashjump="${jump}" style="cursor:pointer"` : ""}><div class="k">${k}${jump ? " ›" : ""}</div><div class="v">${v ?? 0}</div></div>`;
-      el.innerHTML = cell("Membres", data.users, "users") + cell("Vérifiés", data.verified, "users") + cell("Gold 👑", data.gold)
-        + cell("Bannis", data.banned, "users") + cell("Connexions", data.connections) + cell("Demandes", data.pending_conn)
+      el.innerHTML = cell("Membres actifs", data.users, "users") + cell("Vérifiés", data.verified, "users") + cell("Gold 👑", data.gold)
+        + cell("Admins 🛡️", data.admins) + cell("Suspendus 🚫", data.banned, "users") + cell("Connexions", data.connections) + cell("Demandes", data.pending_conn)
         + cell("Check-ins", data.checkins) + cell("Quêtes finies", data.quests_done) + cell("Messages", data.messages)
         + cell("Défis", data.suggestions) + cell("Badges", data.badges) + cell("Coupons", data.coupons)
         + cell("Lieux", data.places, "places") + cell("Signalements", data.reports_pending, "reports") + cell("Devis B2B", data.quotes, "quotes");
@@ -5409,6 +5416,7 @@
     }
 
     let adminUsersCache = [];
+    let _adminUserFilter = "active";  // active | banned | all
     async function loadAdminUsers() {
       const { data } = await db.from("profiles").select("id,username,city,trust_score,is_verified,banned,ban_permanent,recovery_requested,is_admin,is_demo,is_gold,avatar_url").order("username");
       // Les bannissements DÉFINITIFs disparaissent de la liste (compte « supprimé »).
@@ -5418,9 +5426,17 @@
     function renderAdminUsers(q) {
       const wrap = $("adminUsers"); if (!wrap) return;
       q = (q || "").trim().toLowerCase();
-      const list = adminUsersCache.filter((u) => !q || (u.username || "").toLowerCase().includes(q));
+      const nActive = adminUsersCache.filter((u) => !u.banned).length;
+      const nBanned = adminUsersCache.filter((u) => u.banned).length;
+      // En-tête : comptes ACTIFS vs SUSPENDUS clairement séparés (les bannis ne polluent plus « Membres »).
+      const seg = (k, lbl) => `<button class="au-fbtn${_adminUserFilter === k ? " active" : ""}" data-aufilter="${k}">${lbl}</button>`;
+      const header = `<div class="au-head"><div class="au-counts">👥 <b>${nActive}</b> actifs · 🚫 <b>${nBanned}</b> suspendus</div>
+        <div class="au-filters">${seg("active", "Actifs")}${seg("banned", "Suspendus")}${seg("all", "Tous")}</div></div>`;
+      const list = adminUsersCache
+        .filter((u) => _adminUserFilter === "all" ? true : (_adminUserFilter === "banned" ? u.banned : !u.banned))
+        .filter((u) => !q || (u.username || "").toLowerCase().includes(q));
       const upd = async (id, patch) => { const r = await db.from("profiles").update(patch).eq("id", id); if (r.error) toast("⚠️", escapeHtml(r.error.message)); await loadAdminUsers(); };
-      wrap.innerHTML = list.length ? list.map((u) => `
+      wrap.innerHTML = header + (list.length ? list.map((u) => `
         <div class="qrow" style="align-items:flex-start;flex-wrap:wrap;gap:.4rem;${u.banned ? "opacity:.55" : ""}">
           <div class="qico">${u.is_admin ? "🛡️" : (u.is_demo ? "🤖" : "🧑")}</div>
           <div class="qname" style="flex:1;min-width:110px;cursor:pointer" data-au-open="${u.id}">${escapeHtml(u.username || "Voyageur")} ${u.is_verified ? "✅" : ""}${u.is_gold ? " 👑" : ""}${u.recovery_requested ? " 📨" : ""}
@@ -5430,7 +5446,8 @@
             <button class="btn-ghost" data-au-ban="${u.id}" style="padding:.3rem .5rem;font-size:.7rem;color:var(--danger)">${u.banned ? "Débannir" : "Bannir"}</button>
             <button class="btn-ghost" data-au-admin="${u.id}" style="padding:.3rem .5rem;font-size:.7rem">${u.is_admin ? "− admin" : "+ admin"}</button>
           </div>
-        </div>`).join("") : '<p class="muted">Aucun membre.</p>';
+        </div>`).join("") : '<p class="muted" style="padding:.6rem">Aucun membre dans ce filtre.</p>');
+      wrap.querySelectorAll("[data-aufilter]").forEach((b) => b.addEventListener("click", () => { _adminUserFilter = b.dataset.aufilter; renderAdminUsers($("adminUserSearch") ? $("adminUserSearch").value : ""); }));
       wrap.querySelectorAll("[data-au-verify]").forEach((b) => b.addEventListener("click", () => { const u = adminUsersCache.find((x) => x.id === b.dataset.auVerify); upd(b.dataset.auVerify, { is_verified: !u.is_verified }); }));
       wrap.querySelectorAll("[data-au-ban]").forEach((b) => b.addEventListener("click", () => { const u = adminUsersCache.find((x) => x.id === b.dataset.auBan); if (typeof banChooser === "function") banChooser(u, upd); }));
       wrap.querySelectorAll("[data-au-admin]").forEach((b) => b.addEventListener("click", () => { const u = adminUsersCache.find((x) => x.id === b.dataset.auAdmin); upd(b.dataset.auAdmin, { is_admin: !u.is_admin }); }));
