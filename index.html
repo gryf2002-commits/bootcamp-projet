@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=239"></script>
-  <script src="sunmates-icons.js?v=239"></script>
+  <script src="sunmates-badges.js?v=240"></script>
+  <script src="sunmates-icons.js?v=240"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1449,7 +1449,13 @@
     #matesProfile .dstat b { color: var(--accent); font-size: 1.15rem; font-weight: 800; }
 
     /* --------------------------- CHAT ------------------------------- */
-    .chat-header { display: flex; align-items: center; gap: .7rem; padding: .2rem 0 1rem; border-bottom: 1px solid var(--line); margin-bottom: 1rem; flex-shrink: 0; }
+    .chat-header { display: flex; align-items: center; gap: .5rem; padding: .2rem 0 1rem; border-bottom: 1px solid var(--line); margin-bottom: 1rem; flex-shrink: 0; }
+    .chat-flame { display: inline-flex; align-items: center; gap: .1rem; font-weight: 800; font-size: .9rem; color: var(--accent); flex-shrink: 0; }
+    .chat-menu { position: absolute; top: 110%; right: 0; z-index: 50; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-pop); padding: .3rem; min-width: 210px; display: flex; flex-direction: column; }
+    .chat-menu button { text-align: left; background: none; border: 0; padding: .6rem .7rem; border-radius: 10px; font-size: .85rem; color: var(--ink); cursor: pointer; }
+    .chat-menu button:active { background: var(--accent-soft); }
+    body.theme-dusk .chat-menu { background: #241b35; } body.theme-dusk .chat-menu button { color: #f3e9f3; }
+    .chat-poc { font-size: 1.2rem; flex-shrink: 0; }
     .chat-header .backbtn { margin-bottom: 0; padding: .4rem .7rem; }
     /* Vue chat = vraie messagerie : occupe l'espace entre l'en-tête et la barre du bas,
        le corps défile tout seul et la zone de saisie reste collée en bas. */
@@ -3202,10 +3208,21 @@
               <div class="avatar" id="chatAvatar">M</div>
               <div><div class="name" style="font-weight:700;color:var(--ink)" id="chatName">—</div><div class="meta muted" style="font-size:.78rem" id="chatStatus">Voir le profil ›</div></div>
             </div>
-            <button class="iconbtn" id="chatDeleteBtn" title="Supprimer la conversation" aria-label="Supprimer la conversation" style="font-size:1rem">🗑️</button>
+            <span class="chat-flame hidden" id="chatFlame" title="Votre flamme">🔥<b id="chatFlameN">0</b></span>
+            <div style="position:relative">
+              <button class="iconbtn" id="chatMenuBtn" title="Options" aria-label="Options" style="font-size:1.1rem">⋯</button>
+              <div class="chat-menu hidden" id="chatMenu">
+                <button data-cmenu="profile">👤 Voir le profil</button>
+                <button data-cmenu="flame">🔥 Flammes (24 h)</button>
+                <button data-cmenu="notif" id="chatNotifItem">🔔 Notifications : activées</button>
+                <button data-cmenu="block">🚫 Bloquer / signaler</button>
+                <button data-cmenu="delete" style="color:var(--danger)">🗑️ Supprimer la conversation</button>
+              </div>
+            </div>
           </div>
           <div class="chat-body" id="chatBody"></div>
           <div class="chat-input">
+            <button class="iconbtn chat-poc" id="chatPoc" title="Envoyer un poc 🔥">🔥</button>
             <input id="chatInput" type="text" placeholder="Envoyer un message…" />
             <button class="btn-primary" id="chatSend">➤</button>
           </div>
@@ -7387,6 +7404,8 @@
       if (chOnline) $("chatAvatar").insertAdjacentHTML("beforeend", '<span class="pdot"></span>');
       $("chatStatus").textContent = (p.is_demo || String(otherUserId).startsWith("ia-")) ? "🤖 Compte démo (IA) · Voir le profil ›" : (chOnline ? (t("presence.active") + " · " + t("chat.seeProfile")) : t("chat.seeProfile"));
       $("chatStatus").dataset.base = $("chatStatus").textContent; // base pour l'indicateur « écrit… »
+      if (typeof renderChatFlame === "function") renderChatFlame(otherUserId);
+      { const it = $("chatNotifItem"); if (it) it.textContent = (localStorage.getItem("sm_chatnotif_" + otherUserId) === "0") ? "🔕 Notifications : coupées" : "🔔 Notifications : activées"; }
       $("chatBody").innerHTML = '<p class="muted" style="text-align:center">Chargement…</p>';
       showMatesView("matesChat");
       closeChatRt(); // ferme le canal temps réel de la conversation précédente
@@ -7430,7 +7449,48 @@
       showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("messages");
       await loadConnections(); // reconstruit la liste (+ appendDemoConvs)
     }
-    $("chatDeleteBtn").addEventListener("click", deleteConversation);
+    // ===== Menu ⋯ de la conversation (réglages + actions) =====
+    { const mb = $("chatMenuBtn"), menu = $("chatMenu");
+      if (mb && menu) {
+        mb.addEventListener("click", (e) => { e.stopPropagation(); menu.classList.toggle("hidden"); });
+        document.addEventListener("click", (e) => { if (!menu.classList.contains("hidden") && !e.target.closest("#chatMenu") && e.target !== mb) menu.classList.add("hidden"); });
+        menu.querySelectorAll("[data-cmenu]").forEach((b) => b.addEventListener("click", () => {
+          menu.classList.add("hidden");
+          const a = b.dataset.cmenu, id = currentChatUserId;
+          if (a === "profile") { if (id && travelerMap[id]) openTravelerProfile(travelerMap[id]); }
+          else if (a === "delete") { deleteConversation(); }
+          else if (a === "flame") { const f = _flameGet(id); showInfo("🔥 Flammes", '<p style="line-height:1.6;text-align:center;padding:.3rem">Envoie un <b>poc 🔥</b> à ' + escapeHtml((travelerMap[id] || {}).username || "ce Mate") + ' chaque jour pour entretenir votre <b>flamme</b>.<br><br>Flamme actuelle : <b>🔥 ' + (f.active ? f.count : 0) + '</b><br><span class="muted" style="font-size:.82rem">Reviens dans les <b>24 h</b> pour la garder (perdue après ~35 h sans poc).</span></p>'); }
+          else if (a === "notif") { const on = (localStorage.getItem("sm_chatnotif_" + id) !== "0"); localStorage.setItem("sm_chatnotif_" + id, on ? "0" : "1"); const it = $("chatNotifItem"); if (it) it.textContent = on ? "🔕 Notifications : coupées" : "🔔 Notifications : activées"; toast(on ? "🔕" : "🔔", on ? "Notifications coupées pour cette conv" : "Notifications activées"); }
+          else if (a === "block") { goToTab("connexions"); if (id && travelerMap[id]) openTravelerProfile(travelerMap[id]); toast("🚫", "Bloquer / signaler depuis le profil"); }
+        }));
+      } }
+
+    // ===== Flammes (poc) : streak quotidien entre toi et ce Mate (léger, local) =====
+    function _flameKey(id) { return "sm_flame_" + (myUserId || "x") + "_" + id; }
+    function _flameGet(id) {
+      try { const o = JSON.parse(localStorage.getItem(_flameKey(id)) || "{}"); const active = o.last && (Date.now() - o.last) < 35 * 3600 * 1000; return { count: o.count || 0, last: o.last || 0, active: !!active }; } catch (e) { return { count: 0, last: 0, active: false }; }
+    }
+    function renderChatFlame(id) {
+      const el = $("chatFlame"), n = $("chatFlameN"); if (!el || !n) return;
+      const f = _flameGet(id);
+      if (f.active && f.count > 0) { el.classList.remove("hidden"); n.textContent = f.count; } else el.classList.add("hidden");
+    }
+    function sendPoc() {
+      const id = currentChatUserId; if (!id) return;
+      const f = _flameGet(id); const now = Date.now();
+      let count = f.count;
+      if (f.last && (now - f.last) < 35 * 3600 * 1000) {
+        const sameDay = new Date(f.last).toDateString() === new Date(now).toDateString();
+        if (!sameDay) count += 1; // nouveau jour dans la fenêtre → la flamme grandit
+      } else { count = 1; } // première ou flamme perdue → on (re)démarre
+      try { localStorage.setItem(_flameKey(id), JSON.stringify({ count, last: now })); } catch (e) {}
+      renderChatFlame(id);
+      const inp = $("chatInput"); if (inp) inp.value = "🔥 Poc !";
+      if (typeof sendChatMessage === "function") sendChatMessage();
+      if (window.SMSound) SMSound.play("pop");
+      if (typeof toast === "function") toast("🔥", "Poc ! Flamme x" + count);
+    }
+    { const pc = $("chatPoc"); if (pc) pc.addEventListener("click", sendPoc); }
 
     async function sendChatMessage() {
       const input = $("chatInput");
