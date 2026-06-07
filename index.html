@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=214"></script>
-  <script src="sunmates-icons.js?v=214"></script>
+  <script src="sunmates-badges.js?v=215"></script>
+  <script src="sunmates-icons.js?v=215"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -2810,7 +2810,9 @@
           <div class="tile" data-goto="lieux"><div class="thumb green">📍</div><div class="t-name">Lieux sûrs</div><div class="t-meta" id="qaLieux">Check-ins</div></div>
           <div class="tile" data-goto="jeux"><div class="thumb gold">🎮</div><div class="t-name">Jeux &amp; Quêtes</div><div class="t-meta" id="qaJeux">XP &amp; badges</div></div>
           <div class="tile" data-goto="jeux" data-jeuxview="jeuxRank"><div class="thumb blue">🏆</div><div class="t-name">Classement</div><div class="t-meta">Grimpe le top</div></div>
-          <div class="tile" data-goto="profil"><div class="thumb teal">👤</div><div class="t-name">Mon profil</div><div class="t-meta" id="qaProfil">Score de confiance</div></div>
+          <div class="tile" data-goto="jeux" data-jeuxview="jeuxCoupons"><div class="thumb teal">🎟️</div><div class="t-name">Coupons</div><div class="t-meta" id="qaCoupons">Tes récompenses</div></div>
+          <div class="tile" data-goto="jeux" data-jeuxview="jeuxShop"><div class="thumb purp">🛍️</div><div class="t-name">Boutique</div><div class="t-meta">Dépense ton XP</div></div>
+          <div class="tile" data-goto="profil"><div class="thumb gold">👤</div><div class="t-name">Mon profil</div><div class="t-meta" id="qaProfil">Score de confiance</div></div>
         </div>
       </div>
 
@@ -4049,6 +4051,7 @@
         if (jv && typeof showJeuxView === "function") {
           showJeuxView(jv);
           if (jv === "jeuxRank" && typeof renderLeaderboard === "function") renderLeaderboard();
+          if (jv === "jeuxShop" && typeof renderShop === "function") renderShop();
         }
       });
     });
@@ -5013,7 +5016,7 @@
         ["⛶", "Plein écran carte", "Outils Tout voir / Autour de moi / Partager, resync Leaflet."],
         ["➕", "Partager une activité", "Place une activité sur la carte d'un tap."],
         ["✨", "Ton fil", "Feed d'activité récente."],
-        ["⚡", "Accès rapides (6 tuiles)", "Tuiles éclatantes : Mates, Sécurité, Lieux, Jeux & Quêtes, Classement, Profil."],
+        ["⚡", "Accès rapides (8 tuiles)", "Tuiles éclatantes : Mates, Sécurité, Lieux, Jeux & Quêtes, Classement, Coupons, Boutique, Profil."],
         ["🏠", "Bascule Voyage / Maison", "L'accueil s'adapte : carte de rencontre en Voyage, hub solo à la Maison."],
       ]],
       ["📍 Lieux sûrs", [
