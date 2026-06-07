@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=225"></script>
-  <script src="sunmates-icons.js?v=225"></script>
+  <script src="sunmates-badges.js?v=226"></script>
+  <script src="sunmates-icons.js?v=226"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -3647,6 +3647,8 @@
           <div class="qcoll" id="questCollection" style="display:none">
             <div class="qcoll-head"><span>🗺️ Collection de quêtes</span><b id="qcollCount">0/0</b></div>
             <div class="qcoll-bar"><span id="qcollFill" style="width:0%"></span></div>
+            <div class="qcoll-head" id="cityProgress" style="display:none;margin-top:.5rem"><span>🏙️ Villes explorées</span><b id="cityCount">0/0</b></div>
+            <div class="qcoll-bar" id="cityBarWrap" style="display:none"><span id="cityFill" style="width:0%"></span></div>
           </div>
           <div class="xp-banner" id="xpBanner"></div>
           <div id="weeklyGoals"></div>
@@ -4636,6 +4638,7 @@
       $("homeHello").innerHTML = 'Bonjour <span class="hello-name">' + escapeHtml(uname) + "</span>";
       if (typeof updateStreak === "function") updateStreak();
       if (typeof renderGameHub === "function") renderGameHub();
+      if (typeof claimReferralIfAny === "function") claimReferralIfAny(); // parrainage : crédite le 1er verre si arrivé via un lien ?ref
       if (typeof setHomeMode === "function") setHomeMode("travel", false); // on arrive TOUJOURS sur la carte (mode Voyage), le mode Maison reste accessible via la bascule
       if (typeof renderHost === "function") renderHost(); // badge hôte sur la carte profil
       const badge = $("verifBadge");
@@ -5034,21 +5037,33 @@
       const { data, error } = await db.from("reports").select("*").order("created_at", { ascending: false });
       if (error) { wrap.innerHTML = '<p class="muted">Accès refusé ou erreur.</p>'; return; }
       const list = data || [];
-      wrap.innerHTML = list.length ? list.map((r) => {
+      const pending = list.filter((r) => !r.handled).length;
+      const head = `<div class="au-head"><div class="au-counts">🚩 <b>${pending}</b> en attente · ${list.length} au total</div></div>`;
+      wrap.innerHTML = head + (list.length ? list.map((r) => {
         const who = travelerMap[r.reported_user]?.username || "Voyageur";
         const by = travelerMap[r.reporter]?.username || "Quelqu'un";
         const d = new Date(r.created_at).toLocaleString("fr-FR");
-        return `<div class="qrow" style="align-items:flex-start;${r.handled ? "opacity:.6" : ""}">
+        return `<div class="qrow" style="align-items:flex-start;flex-wrap:wrap;gap:.35rem;${r.handled ? "opacity:.6" : ""}">
             <div class="qico" data-viewrep="${r.reported_user}" style="cursor:pointer">🚩</div>
-            <div class="qname" style="flex:1;cursor:pointer" data-viewrep="${r.reported_user}">${escapeHtml(who)}
+            <div class="qname" style="flex:1;min-width:120px;cursor:pointer" data-viewrep="${r.reported_user}">${escapeHtml(who)}
               <div class="meta muted" style="font-size:.74rem">Signalé par ${escapeHtml(by)} · ${d}</div>
               <div class="meta" style="font-size:.82rem;margin-top:.2rem">« ${escapeHtml(r.reason || "")} »</div>
-              <div class="muted" style="font-size:.7rem;margin-top:.2rem">👆 Touche pour vérifier le profil signalé (attention aux faux signalements)</div></div>
-            ${r.handled
-              ? `<button class="btn-ghost" data-delreport="${r.id}" style="padding:.4rem .6rem;font-size:.78rem">🗑️ Supprimer</button>`
-              : `<button class="btn-accent" data-handle="${r.id}" style="padding:.4rem .6rem;font-size:.78rem">Traiter</button>`}
+              <div class="muted" style="font-size:.7rem;margin-top:.2rem">👆 Vérifie le profil (gare aux faux signalements)</div></div>
+            <div style="display:flex;gap:.3rem;flex-wrap:wrap">
+              ${r.handled
+                ? `<button class="btn-ghost" data-delreport="${r.id}" style="padding:.4rem .6rem;font-size:.76rem">🗑️ Supprimer</button>`
+                : `<button class="btn-ghost" data-banrep="${r.reported_user}" data-banrepid="${r.id}" style="padding:.4rem .6rem;font-size:.76rem;color:var(--danger)">🚫 Bannir</button><button class="btn-accent" data-handle="${r.id}" style="padding:.4rem .6rem;font-size:.76rem">Traiter</button>`}
+            </div>
           </div>`;
-      }).join("") : '<p class="muted">Aucun signalement 🎉</p>';
+      }).join("") : '<p class="muted">Aucun signalement 🎉</p>');
+      // Bannir directement la personne signalée (1 tap) puis marquer le signalement traité.
+      wrap.querySelectorAll("[data-banrep]").forEach((el) => el.addEventListener("click", async () => {
+        const id = el.dataset.banrep; let p = travelerMap[id];
+        if (!p) { try { const { data: d } = await db.from("profiles").select("*").eq("id", id).maybeSingle(); if (d) p = d; } catch (e) {} }
+        if (!p) { toast("🤷", "Profil introuvable"); return; }
+        const upd = async (uid, patch) => { await db.from("profiles").update(patch).eq("id", uid); await db.from("reports").update({ handled: true, status: "reviewed" }).eq("id", Number(el.dataset.banrepid)); toast("🚫", "Membre suspendu, signalement traité"); loadReports(); };
+        if (typeof banChooser === "function") banChooser(p, upd); else upd(id, { banned: true });
+      }));
       wrap.querySelectorAll("[data-handle]").forEach((el) => el.addEventListener("click", async () => {
         await db.from("reports").update({ handled: true, status: "reviewed" }).eq("id", Number(el.dataset.handle));
         toast("✅", "Signalement traité"); loadReports();
@@ -5175,6 +5190,7 @@
         ["🗼", "Quêtes géo · 10 villes FR", "~55 quêtes réelles (Paris, Marseille, Lyon, Toulouse, Nice, Nantes, Montpellier, Strasbourg, Bordeaux, Lille) + sélecteur de ville."],
         ["🎯", "Radar quête la plus proche", "Géoloc → quête la plus proche + distance, bouton « Carte » qui t'y emmène."],
         ["🗺️", "Collection de quêtes", "Barre de progression X/N + célébration à 100%."],
+        ["🇫🇷", "Tour de France", "Jauge « villes explorées X/10 » + célébration quand toutes faites."],
         ["🔒", "Anti-triche quêtes", "Justification OBLIGATOIRE (code de lieu ou note honneur) avant toute validation."],
         ["🎯", "Quêtes du jour", "Ouvertes en feuille (anti-scroll), 3/jour + cooldown."],
         ["👥", "Quêtes de groupe", "Confirmées par un Mate → bonus XP partagé."],
@@ -5201,7 +5217,7 @@
         ["📌", "Épinglage profil", "Choisis 3 badges à afficher sur ton profil."],
       ]],
       ["🤝 Mates & messagerie", [
-        ["✨", "Inviter des amis", "Partage natif d'un lien d'invitation (croissance)."],
+        ["✨", "Inviter des amis (parrainage)", "Partage d'un lien ?ref → coupon « 1er verre offert » au filleul ET au parrain."],
         ["🔍", "Découvrir", "Cartes riches (tags, présence, compatibilité)."],
         ["❤️", "Compatibilité", "Score + détail « pourquoi vous matchez » (tuile cliquable)."],
         ["💬", "Chat temps réel", "Messages, « en train d'écrire », accusés de lecture, traduction."],
@@ -5237,7 +5253,7 @@
         ["📊", "Tableau de bord (KPIs)", "Membres ACTIFS (bannis exclus), suspendus & admins à part, check-ins, quêtes… cellules cliquables → segment."],
         ["👥", "Fiches membre", "Actifs vs suspendus séparés + filtre, recherche, actions (vérifier/bannir/admin), fiche détaillée."],
         ["📍", "Gestion des lieux", "Ajout/édition + codes check-in + géoloc auto."],
-        ["🚩", "Signalements", "Profil cliquable (faux signalements), traité → supprimer."],
+        ["🚩", "Modération", "Compteur en attente + 1 tap : vérifier profil / Bannir / Traiter / supprimer."],
         ["💼", "Devis B2B", "Demandes de partenariat reçues."],
         ["🔊", "Banque de sons", "Test des sons synthétisés + toggle global."],
         ["🧰", "Système & déploiement", "Build/SW/cache/réseau, copier le rapport de stats, forcer la mise à jour (vider cache)."],
@@ -6285,6 +6301,23 @@
         }
       } catch (e) {}
     })();
+    // À l'arrivée d'un membre parrainé : on enregistre le parrainage et on crédite le « 1er verre » (1×).
+    async function claimReferralIfAny() {
+      try {
+        const ref = localStorage.getItem("sm_ref");
+        if (!ref || localStorage.getItem("sm_ref_claimed") || !myUserId || ref === myUserId) return;
+        const { data } = await db.rpc("claim_referral", { p_referrer: ref });
+        if (data && data.ok) {
+          localStorage.setItem("sm_ref_claimed", "1");
+          if (typeof toast === "function") toast("🍹", data.message || "Premier verre offert !");
+          if (typeof celebrate === "function") celebrate();
+          try { if (typeof track === "function") track("referral_claimed", {}); } catch (e) {}
+          if (typeof loadGameData === "function") loadGameData(); // recharge les coupons (filleul)
+        } else if (data && (data.message === "Déjà parrainé" || data.message === "Parrain inconnu")) {
+          localStorage.setItem("sm_ref_claimed", "1"); // on n'insiste pas
+        }
+      } catch (e) {}
+    }
 
     let _badgeKeysInit = false;  // false au tout 1er chargement (évite de fêter les badges déjà acquis)
     let myCoupons = [];          // coupons gagnés
@@ -9087,7 +9120,23 @@
         if (typeof toast === "function") toast("🏆", "Collection de quêtes complète, bravo !");
       }
       _lastCollDone = done;
+      // Jauge « Villes explorées » (Tour de France) — national, indépendant du filtre ville.
+      const aq = (typeof allQuests !== "undefined" ? allQuests : []).filter((q) => q.kind === "quest" && q.city);
+      const allCities = [...new Set(aq.map((q) => q.city))];
+      const explored = [...new Set(aq.filter((q) => typeof myQuestStatus !== "undefined" && myQuestStatus[q.key] === "completed").map((q) => q.city))];
+      const cp = $("cityProgress"), cb = $("cityBarWrap");
+      if (allCities.length > 1 && cp && cb) {
+        cp.style.display = ""; cb.style.display = "";
+        const cc = $("cityCount"); if (cc) cc.textContent = explored.length + "/" + allCities.length;
+        const cf = $("cityFill"); if (cf) cf.style.width = Math.round((explored.length / allCities.length) * 100) + "%";
+        if (explored.length === allCities.length && explored.length > 0 && _lastCities !== -1 && explored.length > _lastCities) {
+          if (typeof celebrate === "function") celebrate();
+          if (typeof toast === "function") toast("🇫🇷", "Tour de France bouclé — toutes les villes explorées !");
+        }
+        _lastCities = explored.length;
+      } else if (cp && cb) { cp.style.display = "none"; cb.style.display = "none"; }
     }
+    let _lastCities = -1;
 
     // ===== Radar « quête la plus proche » (onglet Jeux) : géoloc → quête Paris la + proche =====
     function _questGeoList() {
