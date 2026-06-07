@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=257"></script>
-  <script src="sunmates-icons.js?v=257"></script>
+  <script src="sunmates-badges.js?v=258"></script>
+  <script src="sunmates-icons.js?v=258"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -671,6 +671,16 @@
     .tile-soon { opacity: .62; cursor: default; pointer-events: none; filter: grayscale(.35); }
     .tile-soon .thumb.gold-soon { background: linear-gradient(135deg,#c9a24a,#8a7029); box-shadow: none; }
     .soon-badge { display: inline-block; font-size: .58rem; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; background: var(--accent-grad); color: #fff; padding: .08rem .4rem; border-radius: 999px; vertical-align: middle; margin-left: .25rem; }
+    /* Listing « Ma collection » (quêtes par ville) */
+    .coll-city { border: 1px solid var(--line); border-radius: 12px; margin: .4rem 0; overflow: hidden; }
+    .coll-city > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .6rem .7rem; font-weight: 700; font-size: .9rem; background: var(--cream); }
+    .coll-city > summary::-webkit-details-marker { display: none; }
+    .coll-city > summary b { color: var(--accent); font-size: .8rem; font-weight: 800; flex-shrink: 0; }
+    body.theme-dusk .coll-city > summary { background: #271e3a; }
+    .coll-list { padding: .3rem .6rem .5rem; }
+    .coll-row { display: flex; align-items: center; gap: .5rem; padding: .28rem 0; font-size: .86rem; }
+    .coll-row.done .coll-q { color: var(--muted); text-decoration: line-through; }
+    .coll-ck { flex-shrink: 0; }
     .stat-click { cursor: pointer; transition: transform .15s ease; user-select: none; }
     .stat-click:hover { transform: translateY(-2px); }
     .stat-click:active { transform: scale(.97); }
@@ -1268,7 +1278,10 @@
 
     /* Radar « quête la plus proche » (onglet Jeux) */
     .nq-card{ display:flex; align-items:center; gap:.7rem; padding:.7rem .8rem; margin:.2rem 0 .9rem; }
-    .nq-emblem{ font-size:30px; flex-shrink:0; filter:var(--relief); }
+    .nq-emblem{ position:relative; font-size:30px; flex-shrink:0; filter:var(--relief); cursor:pointer; animation:nqPulse 2.4s ease-in-out infinite; }
+    /* Indice discret « cliquable pour + d'infos » : petit ⓘ + halo qui respire */
+    .nq-emblem::after{ content:"ⓘ"; position:absolute; right:-6px; bottom:-4px; font-size:13px; color:#fff; background:var(--accent-grad); border-radius:50%; width:16px; height:16px; line-height:16px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,.25); }
+    @keyframes nqPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.08); } }
     .nq-body{ flex:1; min-width:0; }
     .nq-lbl{ font-size:.7rem; font-weight:800; color:var(--accent); letter-spacing:.02em; }
     .nq-title{ font-weight:800; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -3898,6 +3911,10 @@
           <div class="act-card" style="max-width:440px;max-height:88vh;display:flex;flex-direction:column">
             <div class="picker-head"><h3 id="jeuxSheetTitle" style="margin:0">Quêtes</h3><button id="jeuxSheetClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
             <p class="muted" id="jeuxSheetHint" style="font-size:.82rem;margin:.3rem 0 .2rem">Touche une quête, accomplis-la dans la vraie vie, puis valide-la pour gagner <b>XP + badge</b> (3 par jour max).</p>
+            <div id="questSheetTools" style="display:flex;gap:.5rem;margin-top:.4rem">
+              <div class="search" style="flex:1;margin:0"><span class="ico">🔍</span><input id="questSheetSearch" type="text" placeholder="Filtrer par nom ou ville…" /></div>
+              <button class="todo-toggle" id="questSheetNear" type="button" title="Trier par distance">📍 Près de moi</button>
+            </div>
             <div style="overflow-y:auto;flex:1;margin-top:.4rem">
               <div id="jeuxSheetQuests"><div class="card" id="questsList" style="margin:0"></div></div>
               <div id="jeuxSheetGames" class="hidden"><div class="grid2" id="gamesGrid"></div></div>
@@ -4726,27 +4743,30 @@
       if (typeof celebrate === "function") celebrate();
     }
     document.querySelectorAll("#homeModeSwitch button").forEach((b) => b.addEventListener("click", () => setHomeMode(b.dataset.mode)));
-    // Statut « hôte » (local) : devenir repère de confiance dans sa ville.
-    function isHost() { try { return localStorage.getItem("sm_host") === "1"; } catch (e) { return false; } }
+    // Statut « hôte » (local) : 3 états — aucun / en attente de validation / actif.
+    // Devenir hôte n'est PAS instantané : on envoie une demande, validée ensuite (modération).
+    function hostState() { try { return localStorage.getItem("sm_host") || "none"; } catch (e) { return "none"; } } // "none" | "pending" | "1"
+    function isHost() { return hostState() === "1"; }
     function renderHost() {
-      const host = isHost();
+      const st = hostState();
       const t = $("hostTitle"), d = $("hostDesc"), b = $("hostBtn");
-      if (t) t.textContent = host ? "🛟 Tu es hôte SunMates" : "Deviens hôte SunMates";
-      if (d) d.textContent = host ? "Merci ! Les voyageurs de passage savent qu'ils peuvent compter sur toi dans ta ville 💛" : "Aide les voyageurs à se sentir en sécurité dans ta ville : conseils, bons spots, café d'accueil.";
-      if (b) b.textContent = host ? "✓ Hôte actif" : "Je veux aider";
-      const pb = $("profileHostBadge"); if (pb) show(pb, host); // visible aussi sur la carte profil
+      if (t) t.textContent = st === "1" ? "🛟 Tu es hôte SunMates" : (st === "pending" ? "⏳ Demande d'hôte en cours" : "Deviens hôte SunMates");
+      if (d) d.textContent = st === "1"
+        ? "Merci ! Les voyageurs de passage savent qu'ils peuvent compter sur toi dans ta ville 💛"
+        : (st === "pending"
+          ? "On vérifie ton profil (compte vérifié, ancienneté, sérieux) avant d'activer ton statut d'hôte. Tu seras prévenu·e dès que c'est bon ✨"
+          : "Aide les voyageurs à se sentir en sécurité dans ta ville : conseils, bons spots, café d'accueil.");
+      if (b) { b.textContent = st === "1" ? "✓ Hôte actif" : (st === "pending" ? "⏳ En attente de validation" : "Je veux aider"); b.disabled = (st === "pending"); b.style.opacity = (st === "pending") ? ".6" : ""; }
+      const pb = $("profileHostBadge"); if (pb) show(pb, st === "1"); // badge profil seulement si validé
     }
     { const hb = $("hostBtn"); if (hb) hb.addEventListener("click", () => {
-      const becoming = !isHost();
-      if (becoming) {
-        showInfo("🛟 Devenir hôte SunMates", `<div style="line-height:1.6;font-size:.9rem">
-          <p style="margin:.2rem 0">En tant qu'<b>hôte</b>, tu aides les voyageurs de passage à se sentir <b>en sécurité</b> dans ta ville :</p>
-          <p style="margin:.2rem 0">☕ partage tes <b>bons spots</b> validés · 🗺️ donne des <b>conseils locaux</b> · 🤝 propose un <b>café d'accueil</b>.</p>
-          <p class="muted" style="font-size:.82rem;margin-top:.5rem">Le programme hôte complet arrive bientôt. Tu es maintenant marqué·e comme hôte 🛟</p></div>`);
-      }
-      try { localStorage.setItem("sm_host", becoming ? "1" : "0"); } catch (e) {}
+      if (hostState() !== "none") return; // déjà en attente ou actif
+      showInfo("🛟 Devenir hôte SunMates", `<div style="line-height:1.6;font-size:.9rem">
+        <p style="margin:.2rem 0">En tant qu'<b>hôte</b>, tu aides les voyageurs de passage à se sentir <b>en sécurité</b> dans ta ville :</p>
+        <p style="margin:.2rem 0">☕ partage tes <b>bons spots</b> validés · 🗺️ donne des <b>conseils locaux</b> · 🤝 propose un <b>café d'accueil</b>.</p>
+        <p style="margin:.4rem 0"><b>Ta demande vient d'être envoyée.</b> Pour garder la confiance des voyageuses, le rôle d'hôte est <b>validé manuellement</b> (profil vérifié + sérieux). On revient vite vers toi 💛</p></div>`);
+      try { localStorage.setItem("sm_host", "pending"); } catch (e) {}
       renderHost();
-      if (typeof toast === "function") toast(becoming ? "🛟" : "👋", becoming ? "Tu es hôte ! Merci 💛" : "Tu n'es plus hôte.");
     }); }
 
     function updateCompletion() {
@@ -9988,8 +10008,35 @@
     { const a = $("profileAvatar"); if (a) a.addEventListener("click", () => { const u = myProfile && myProfile.avatar_url; if (u) openPhotoLightbox(u); else toast("📷", "Ajoute une photo de profil dans « Modifier mon profil »"); }); }
     { const rr = $("scReroll"); if (rr) rr.addEventListener("click", () => { const s = _soloState(); s.seed = ((s.seed || 0) + 1) % 1000; _soloSave(s); renderSoloChallenges(); if (window.SMSound) SMSound.play("pop"); }); }
     { const ss = $("spStreak"); if (ss) ss.addEventListener("click", (e) => { e.stopPropagation(); const h = $("homeStreak"); if (h) h.click(); }); }
-    // Collection de quêtes + villes explorées : cliquable → ouvre les quêtes du jour.
-    { const qc = $("questCollection"); if (qc) { qc.style.cursor = "pointer"; qc.addEventListener("click", () => { goToTab("jeux"); if (typeof openJeuxSheet === "function") openJeuxSheet("quests"); if (window.SMSound) SMSound.play("tap"); }); } }
+    // Collection de quêtes + villes explorées : cliquable → VRAI listing (accomplies / à faire / villes), pas de redirect.
+    function showCollectionSheet() {
+      const pts = (typeof _questGeoList === "function") ? _questGeoList() : ((typeof allQuests !== "undefined" ? allQuests : []).filter((q) => q.kind === "quest"));
+      const st = (typeof myQuestStatus !== "undefined") ? myQuestStatus : {};
+      const isDone = (q) => st[q.key] === "completed";
+      const cityOf = (q) => (q.city || "Ailleurs").replace(/, France$/, "");
+      // Regroupement par ville
+      const byCity = {};
+      pts.forEach((q) => { const c = cityOf(q); (byCity[c] = byCity[c] || []).push(q); });
+      const cities = Object.keys(byCity).sort();
+      const doneN = pts.filter(isDone).length, total = pts.length;
+      const cityDone = cities.filter((c) => byCity[c].some(isDone)).length;
+      let html = `<div style="text-align:center;margin-bottom:.6rem">
+        <div style="font-weight:800">${doneN}/${total} quêtes accomplies · ${cityDone}/${cities.length} villes explorées</div></div>`;
+      html += cities.map((c) => {
+        const list = byCity[c]; const cdone = list.filter(isDone).length;
+        const explored = cdone > 0;
+        const rows = list.map((q) => {
+          const ok = isDone(q);
+          return `<div class="coll-row${ok ? " done" : ""}"><span class="coll-ck">${ok ? "✅" : "⬜"}</span><span class="coll-q">${escapeHtml(q.title || "Quête")}</span></div>`;
+        }).join("");
+        return `<details class="coll-city"${explored ? " open" : ""}>
+          <summary><span>${explored ? "🏙️" : "🗺️"} ${escapeHtml(c)}</span><b>${cdone}/${list.length}${explored ? "" : " · à explorer"}</b></summary>
+          <div class="coll-list">${rows}</div></details>`;
+      }).join("");
+      if (!total) html = "<p class='muted' style='text-align:center'>Aucune quête pour l'instant — reviens vite ✨</p>";
+      showInfo("🗺️ Ma collection", html);
+    }
+    { const qc = $("questCollection"); if (qc) { qc.style.cursor = "pointer"; qc.addEventListener("click", () => { showCollectionSheet(); if (window.SMSound) SMSound.play("tap"); }); } }
     // Les chiffres de la progression solo sont cliquables → petite explication (SANS redirection).
     document.querySelectorAll("#soloProgress [data-spstat]").forEach((el) => el.addEventListener("click", () => {
       const k = el.dataset.spstat;
@@ -11814,8 +11861,34 @@
       { const h = $("jeuxSheetHint"); if (h) h.textContent = isGames ? "Touche un jeu pour le découvrir et y jouer." : "Touche une quête, accomplis-la dans la vraie vie, puis valide-la pour gagner XP + badge (3 par jour max)."; }
       show($("jeuxSheetQuests"), !isGames);
       show($("jeuxSheetGames"), isGames);
+      { const t = $("questSheetTools"); if (t) t.style.display = isGames ? "none" : "flex"; } // recherche/tri : quêtes uniquement
       $("jeuxSheet").classList.remove("hidden");
+      if (!isGames) filterQuestSheet();
     }
+    // Recherche + tri « près de moi » de la feuille Quêtes (réduit le listing énorme).
+    let _questSheetNear = false;
+    function filterQuestSheet() {
+      const list = $("questsList"); if (!list) return;
+      const q = (($("questSheetSearch") && $("questSheetSearch").value) || "").trim().toLowerCase();
+      const rows = [...list.querySelectorAll(".qrow")];
+      rows.forEach((r) => { const txt = r.textContent.toLowerCase(); r.style.display = (!q || txt.includes(q)) ? "" : "none"; });
+      // Tri par distance si activé et position connue
+      if (_questSheetNear && typeof lastKnownGeo !== "undefined" && lastKnownGeo) {
+        const dist = (r) => {
+          const k = r.dataset.qkey; const o = k && typeof questByKey === "function" ? questByKey(k) : null;
+          if (!o || o.lat == null || o.lng == null || typeof haversineKm !== "function") return Infinity;
+          return haversineKm(lastKnownGeo, { lat: o.lat, lng: o.lng });
+        };
+        rows.filter((r) => r.dataset.qkey).sort((a, b) => dist(a) - dist(b)).forEach((r) => list.appendChild(r));
+      }
+    }
+    { const s = $("questSheetSearch"); if (s) s.addEventListener("input", filterQuestSheet); }
+    { const n = $("questSheetNear"); if (n) n.addEventListener("click", () => {
+      _questSheetNear = !_questSheetNear; n.classList.toggle("active", _questSheetNear);
+      if (_questSheetNear && (typeof lastKnownGeo === "undefined" || !lastKnownGeo) && typeof getGeo === "function") {
+        getGeo(() => filterQuestSheet(), () => { if (typeof toast === "function") toast("⚠️", "Position indisponible"); });
+      } else filterQuestSheet();
+    }); }
     { const c = $("jeuxSheetClose"); if (c) c.addEventListener("click", () => $("jeuxSheet").classList.add("hidden")); }
     { const m = $("jeuxSheet"); if (m) m.addEventListener("click", (e) => { if (e.target.id === "jeuxSheet") m.classList.add("hidden"); }); }
     document.querySelectorAll("[data-jeuxopen]").forEach((t) => t.addEventListener("click", () => openJeuxSheet(t.dataset.jeuxopen)));
