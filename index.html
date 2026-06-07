@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=211"></script>
-  <script src="sunmates-icons.js?v=211"></script>
+  <script src="sunmates-badges.js?v=212"></script>
+  <script src="sunmates-icons.js?v=212"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -337,7 +337,7 @@
     .pwa-txt b { font-size: .95rem; }
     .pwa-txt span { font-size: .76rem; color: var(--muted); }
     .pwa-cta { background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .55rem .95rem; font-weight: 800; font-size: .85rem; cursor: pointer; flex-shrink: 0; box-shadow: 0 6px 14px rgba(255,90,77,.35); }
-    .pwa-x { background: transparent; border: 0; color: var(--muted); font-size: 1rem; cursor: pointer; padding: .2rem .35rem; flex-shrink: 0; }
+    .pwa-x { background: transparent; border: 0; color: var(--muted); font-size: 1rem; cursor: pointer; flex-shrink: 0; min-width: 44px; min-height: 44px; display: grid; place-items: center; }
     /* Étapes d'installation (carte explicative) */
     .install-steps { margin: 0 0 .4rem; padding-left: 1.2rem; }
     .install-steps li { font-size: .87rem; line-height: 1.6; color: var(--text); margin-bottom: .3rem; }
@@ -510,7 +510,7 @@
 
     /* ---- Bouton « effacer » (✕) dans les champs de recherche ---- */
     .search input { padding-right: 2.4rem; }
-    .search-clear { position: absolute; right: .5rem; top: 50%; transform: translateY(-50%); width: 26px; height: 26px;
+    .search-clear { position: absolute; right: .4rem; top: 50%; transform: translateY(-50%); width: 34px; height: 34px;
       border-radius: 50%; border: 0; background: rgba(0,0,0,.09); color: var(--ink); font-size: .76rem; cursor: pointer;
       display: grid; place-items: center; padding: 0; line-height: 1; touch-action: manipulation;
       -webkit-tap-highlight-color: transparent; transition: background .12s ease, transform .08s ease; }
@@ -594,7 +594,7 @@
     .lbl-hint { color: var(--muted); font-weight: 400; font-size: .76rem; } /* règle de sélection affichée dans le label */
     /* Bannière de fin d'onboarding (in-page, refermable) */
     .onb-done { display: flex; align-items: center; gap: .7rem; background: var(--accent-grad); color: #fff; border-radius: 16px; padding: .8rem 1rem; margin-bottom: 1rem; box-shadow: 0 10px 24px rgba(255,90,77,.32); }
-    .onb-done button { background: rgba(255,255,255,.22); border: 0; color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; flex-shrink: 0; font-weight: 700; }
+    .onb-done button { background: rgba(255,255,255,.22); border: 0; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; flex-shrink: 0; font-weight: 700; display: grid; place-items: center; }
 
     /* ------------------------- Liste de lieux ----------------------- */
     /* Démo guidée automatique (barre de narration) */
@@ -773,7 +773,7 @@
     .tour-btns { display: flex; align-items: center; gap: .5rem; }
     .tour-prev { background: none; border: 0; color: var(--muted); font-size: .82rem; font-weight: 700; cursor: pointer; padding: .55rem .2rem; }
     /* « Passer » en haut à droite, comme dans les slides d'onboarding (uniformité) */
-    .tour-pass { position: absolute; top: .6rem; right: .8rem; background: none; border: 0; color: var(--muted); font-size: .8rem; font-weight: 600; cursor: pointer; padding: .2rem .3rem; }
+    .tour-pass { position: absolute; top: .5rem; right: .6rem; background: none; border: 0; color: var(--muted); font-size: .8rem; font-weight: 600; cursor: pointer; padding: .55rem .7rem; min-height: 44px; }
     .tour-next { background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .55rem 1.1rem; font-weight: 800; cursor: pointer; }
     /* Chips colorés = couleur des marqueurs (l'âme SunMates), actifs = pleine couleur */
     .homemap-filters .chip.cl-places.active   { background: #FF5A4D; color: #fff; box-shadow: 0 4px 12px rgba(255,90,77,.32); }
@@ -897,7 +897,7 @@
     /* Barre du bas SOBRE : icônes calmes/monochromes au repos, onglet actif discret (pas de halo) */
     .bottom-nav button .ni { font-size: 21px; line-height: 1; filter: grayscale(1) opacity(.42); transition: filter .2s, transform .2s ease; }
     .bottom-nav button.active { color: var(--accent); }
-    .bottom-nav button.active .ni { filter: grayscale(.12) drop-shadow(0 1px 2px rgba(0,0,0,.10)); transform: translateY(-1px) scale(1.05); }
+    .bottom-nav button.active .ni { filter: drop-shadow(0 1px 2px rgba(0,0,0,.10)); transform: translateY(-1px) scale(1.05); }
     .bottom-nav button.active::before { display: none; }
     .bottom-nav button { position: relative; }
 
