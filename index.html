@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=174"></script>
-  <script src="sunmates-icons.js?v=174"></script>
+  <script src="sunmates-badges.js?v=175"></script>
+  <script src="sunmates-icons.js?v=175"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -8368,7 +8368,9 @@
     function applyTheme(t) {
       const dusk = t === "dusk";
       document.body.classList.toggle("theme-dusk", dusk);
-      const tt = $("themeToggle"); if (tt) tt.textContent = dusk ? "☀️" : "🌙";
+      const tt = $("themeToggle"); if (tt) tt.innerHTML = dusk
+        ? '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="display:block"><circle cx="12" cy="12" r="5" fill="#ffd15c"/><g stroke="#FF8A3D" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></g></svg>'
+        : '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="display:block"><path d="M20 14.6A8 8 0 1 1 11 4.2a6.5 6.5 0 0 0 9 10.4z" fill="#ffd15c"/><circle cx="17.5" cy="6.5" r="1.2" fill="#FF8A3D"/></svg>';
       const st = $("setThemeToggle"); if (st) st.checked = dusk; // garde le toggle des Réglages synchro
       const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", dusk ? "#171026" : "#fbeee9");
     }
