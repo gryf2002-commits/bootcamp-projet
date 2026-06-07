@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=224"></script>
-  <script src="sunmates-icons.js?v=224"></script>
+  <script src="sunmates-badges.js?v=225"></script>
+  <script src="sunmates-icons.js?v=225"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1230,6 +1230,20 @@
     .city-pick select{ flex:1; padding:.5rem 1.8rem .5rem .7rem; border-radius:12px; border:1px solid var(--line); background-color:var(--card); color:var(--ink); font-weight:700; font-size:.85rem; cursor:pointer; -webkit-appearance:none; appearance:none;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23E8961F' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right .7rem center; }
     body.theme-dusk .city-pick select{ background-color:#2a2140; color:#fff; border-color:rgba(255,255,255,.12); }
+    /* HomeMates — souvenirs (mode Maison) */
+    .hm-recap{ display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:.6rem; }
+    .hm-recap .hr-chip{ background:var(--cream); border-radius:12px; padding:.4rem .6rem; font-size:.8rem; font-weight:700; color:var(--ink); }
+    body.theme-dusk .hm-recap .hr-chip{ background:rgba(255,255,255,.06); color:#f3e9f3; }
+    .hm-mates-lbl{ font-size:.78rem; font-weight:800; color:var(--muted); margin:.3rem 0 .4rem; }
+    .hm-mates-row{ display:flex; gap:.5rem; overflow-x:auto; padding-bottom:.3rem; }
+    .hm-mate{ flex:0 0 auto; width:62px; text-align:center; cursor:pointer; }
+    .hm-mate .avatar{ width:48px; height:48px; margin:0 auto .2rem; background-size:cover; background-position:center; display:grid; place-items:center; font-weight:800; }
+    .hm-mate .hm-mate-n{ font-size:.7rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .hm-mate:active{ transform:scale(.96); }
+    .hm-cities{ margin-top:.5rem; display:flex; flex-direction:column; gap:.3rem; }
+    .hm-city-row{ display:flex; align-items:center; gap:.5rem; font-size:.84rem; }
+    .hm-city-row .hc-name{ flex:1; font-weight:700; color:var(--ink); }
+    .hm-city-row .hc-n{ color:var(--accent); font-weight:800; }
     .qcoll{ margin:.2rem 0 .9rem; }
     .qcoll-head{ display:flex; justify-content:space-between; font-size:.82rem; font-weight:800; color:var(--ink); margin-bottom:.3rem; }
     .qcoll-bar{ height:9px; border-radius:999px; background:rgba(120,40,10,.14); overflow:hidden; }
@@ -2728,6 +2742,16 @@
               <div class="sp-stat"><b id="spXp">0</b><span>XP gagné</span></div>
             </div>
             <p class="muted" style="margin:.2rem 0 0;font-size:.8rem">Ta ville, ton terrain de jeu 🧭 · relève des défis et grimpe au <b>Niveau</b> dans l'onglet Jeux ›</p>
+          </section>
+
+          <!-- HomeMates : tes souvenirs d'aventure + tes Mates, gardés même de retour à la maison -->
+          <section class="card hm-souv" id="homeMates" style="display:none">
+            <div class="qm-head"><h3>🏡 Tes souvenirs SunMates</h3><a class="qm-all" id="hmSouvShare" role="button" tabindex="0">📤 Partager</a></div>
+            <p class="muted" style="font-size:.82rem;margin:.1rem 0 .6rem">Tes aventures et tes Mates restent avec toi, même rentré·e à la maison.</p>
+            <div class="hm-recap" id="hmRecap"></div>
+            <div class="hm-mates-lbl" id="hmMatesLbl"></div>
+            <div class="hm-mates-row" id="hmMatesRow"></div>
+            <div class="hm-cities" id="hmCities"></div>
           </section>
 
           <section class="solo-ch" id="soloChallenges" aria-label="Défis solo de ta ville">
@@ -4311,6 +4335,7 @@
         const hc = $("hmHomeCity"); if (hc) hc.textContent = c ? ("De retour à " + c) : "De retour chez toi";
         if (typeof renderSoloHome === "function") renderSoloHome();
         renderInspo(); renderNextTrip(); renderTripPrep(); renderWishlist(); renderTripsDone(); renderVisitors(); renderHost();
+        if (typeof renderHomeMates === "function") renderHomeMates();
       } else if (typeof renderHomeMap === "function" && homeLeaf) { setTimeout(renderHomeMap, 60); } // resync la carte au retour
       // (Le hub quête/missions a été retiré de l'accueil → plus rien à repositionner ici.
       //  Le solo "à la maison" est rendu par renderSoloHome ; les quêtes vivent dans l'onglet Jeux.)
@@ -5167,6 +5192,7 @@
         ["💡", "Inspiration du jour", "Une destination rotative à ajouter à tes envies en 1 tap."],
         ["🧳", "Préparer mon voyage", "Prochain voyage, check-list, mes envies, voyages passés (replié)."],
         ["👋", "De passage chez toi", "Voyageurs qui explorent ta ville ; devenir hôte/ambassadeur."],
+        ["🏡", "HomeMates — souvenirs", "Récap de tes aventures (Mates, villes, quêtes, check-ins) gardé au retour ; partage en carte souvenir."],
       ]],
       ["🏅 Badges", [
         ["🏅", "Catalogue de badges", "Médaillons ronds à emoji, couleurs variées (DA), grisés tant que verrouillés."],
@@ -9212,8 +9238,33 @@
           if (data && data.length) { const s = _soloState(); s.ch = s.ch || {}; s.rit = s.rit || {}; data.forEach((r) => { if (r.kind === "ritual") s.rit[r.task_key] = true; else s.ch[r.task_key] = true; }); _soloSave(s); }
         }
       } catch (e) {}
-      try { renderSoloProgress(); renderSoloChallenges(); renderRituals(); } catch (e) {}
+      try { renderSoloProgress(); renderSoloChallenges(); renderRituals(); renderHomeMates(); } catch (e) {}
     }
+
+    // ===== HomeMates : récap souvenirs (aventures + Mates), gardé au retour à la maison =====
+    function renderHomeMates() {
+      const sec = $("homeMates"); if (!sec) return;
+      const mates = (typeof connectedIds !== "undefined" && connectedIds ? [...connectedIds] : []).map((id) => travelerMap[id]).filter(Boolean);
+      const ckN = (typeof myCheckinsRaw !== "undefined" ? myCheckinsRaw : []).length;
+      const doneQuests = (typeof myQuestRows !== "undefined" ? myQuestRows : []).filter((r) => r.status === "completed");
+      const qCity = {}; (typeof allQuests !== "undefined" ? allQuests : []).forEach((q) => { if (q.key) qCity[q.key] = (q.city || "").replace(/, France$/, ""); });
+      const byCity = {}; doneQuests.forEach((r) => { const c = qCity[r.quest_key]; if (c) byCity[c] = (byCity[c] || 0) + 1; });
+      const cities = Object.keys(byCity).sort((a, b) => byCity[b] - byCity[a]);
+      if (!mates.length && !ckN && !doneQuests.length) { sec.style.display = "none"; return; } // rien à se rappeler encore
+      sec.style.display = "";
+      $("hmRecap").innerHTML = [["🤝", mates.length, "Mate" + (mates.length > 1 ? "s" : "")], ["🏙️", cities.length, "ville" + (cities.length > 1 ? "s" : "")], ["🎯", doneQuests.length, "quête" + (doneQuests.length > 1 ? "s" : "")], ["🛟", ckN, "check-in" + (ckN > 1 ? "s" : "")]]
+        .filter((x) => x[1] > 0).map((x) => '<span class="hr-chip">' + x[0] + " <b>" + x[1] + "</b> " + x[2] + "</span>").join("");
+      const lbl = $("hmMatesLbl"), row = $("hmMatesRow");
+      if (mates.length) {
+        if (lbl) lbl.textContent = "Tes Mates d'aventure";
+        row.innerHTML = mates.slice(0, 12).map((p) => '<div class="hm-mate" data-hmmate="' + p.id + '"><div class="avatar"' + (p.avatar_url ? " style=\"background-image:url('" + p.avatar_url + "')\"" : "") + ">" + (p.avatar_url ? "" : escapeHtml((p.username || "?")[0].toUpperCase())) + '</div><div class="hm-mate-n">' + escapeHtml(p.username || "Mate") + "</div></div>").join("");
+        row.querySelectorAll("[data-hmmate]").forEach((el) => el.addEventListener("click", () => { goToTab("connexions"); if (typeof openChat === "function") openChat(el.dataset.hmmate); }));
+      } else { if (lbl) lbl.textContent = ""; row.innerHTML = '<p class="muted" style="font-size:.8rem">Pas encore de Mate — pars à la rencontre sur la carte ✨</p>'; }
+      $("hmCities").innerHTML = cities.length
+        ? '<div class="hm-mates-lbl">Tes aventures par ville</div>' + cities.slice(0, 8).map((c) => '<div class="hm-city-row"><span>📍</span><span class="hc-name">' + escapeHtml(c) + '</span><span class="hc-n">' + byCity[c] + " quête" + (byCity[c] > 1 ? "s" : "") + "</span></div>").join("")
+        : "";
+    }
+    { const sh = $("hmSouvShare"); if (sh) sh.addEventListener("click", () => { if (typeof openSouvenir === "function") openSouvenir(); }); }
     { const rr = $("scReroll"); if (rr) rr.addEventListener("click", () => { const s = _soloState(); s.seed = ((s.seed || 0) + 1) % 1000; _soloSave(s); renderSoloChallenges(); if (window.SMSound) SMSound.play("pop"); }); }
     { const ss = $("spStreak"); if (ss) ss.addEventListener("click", (e) => { e.stopPropagation(); const h = $("homeStreak"); if (h) h.click(); }); }
     // La carte « progression solo » est cliquable → ouvre l'onglet Jeux (où vivent niveau & XP).
