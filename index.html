@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=230"></script>
-  <script src="sunmates-icons.js?v=230"></script>
+  <script src="sunmates-badges.js?v=231"></script>
+  <script src="sunmates-icons.js?v=231"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -2012,7 +2012,9 @@
     /* Actions sur ses propres messages (éditer / supprimer) */
     .msg-quest { display: inline-block; margin-top: .4rem; background: rgba(255,255,255,.25); color: inherit; border: 1px solid rgba(255,255,255,.4); border-radius: 999px; padding: .2rem .7rem; font-size: .76rem; font-weight: 700; cursor: pointer; }
     .bubble.them .msg-quest { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
-    .bubble-time { display: block; font-size: .66rem; opacity: .6; margin-top: .25rem; text-align: right; }
+    /* Heure cachée par défaut (la journée est déjà affichée plus haut) → révélée en touchant le message */
+    .bubble-time { display: none; font-size: .66rem; opacity: .6; margin-top: .25rem; text-align: right; }
+    .bubble.show-time .bubble-time { display: block; }
     .bubble.them .bubble-time { text-align: left; }
     .bubble-act { display: flex; gap: .3rem; margin-top: .3rem; justify-content: flex-end; opacity: .85; }
     .bubble-act button { background: rgba(255,255,255,.25); border: 0; border-radius: 7px; padding: .12rem .4rem; font-size: .72rem; cursor: pointer; line-height: 1; }
@@ -7125,6 +7127,7 @@
       return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "2-digit" }) + " · " + time;
     }
     const QUEST_MSG_PREFIX = "🎯 Je te propose la quête : ";
+    let _chatTranslatable = true; // false si le Mate parle déjà ta langue
     function bubbleHtml(m) {
       const mine = m.sender_id === myUserId;
       const act = mine ? `<div class="bubble-act"><button class="msg-del" data-mid="${m.id}">🗑️</button></div>` : "";
@@ -7136,7 +7139,8 @@
         if (q) questBtn = `<button class="msg-quest" data-qview="${escapeHtml(q.key)}">▶ Voir la quête</button>`;
       }
       const trLbl = (typeof t === "function") ? t("chat.translate") : "Traduire";
-      const trBtn = (m.content || "").trim() ? `<button class="bubble-translate" data-tr="1">🌐 ${trLbl}</button>` : "";
+      // Pas de bouton « Traduire » si le Mate parle déjà ta langue (pollution visuelle inutile).
+      const trBtn = (_chatTranslatable && (m.content || "").trim()) ? `<button class="bubble-translate" data-tr="1">🌐 ${trLbl}</button>` : "";
       return `<div class="bubble ${mine ? "me" : "them"}" data-mid="${m.id}"><span class="bubble-txt">${escapeHtml(m.content)}</span>${questBtn}<span class="bubble-time">${msgTime(m.created_at)}</span>${trBtn}${act}</div>`;
     }
     // Étiquette de jour pour les séparateurs du chat (« Aujourd'hui », « Hier », sinon la date).
@@ -7176,7 +7180,11 @@
         const { error } = await db.from("messages").delete().eq("id", id);
         if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); return; }
         const b = document.querySelector(`.bubble[data-mid="${id}"]`); if (b) b.remove();
+        return;
       }
+      // Toucher un message (hors bouton) révèle/masque son heure d'envoi.
+      const bub = e.target.closest(".bubble");
+      if (bub && !e.target.closest("button")) bub.classList.toggle("show-time");
     });
 
     // ---- Conversations d'exemple avec les comptes IA (démo), côté navigateur ----
@@ -7241,6 +7249,10 @@
       currentChatUserId = otherUserId;
       if (typeof unhideConv === "function") unhideConv(otherUserId); // rouvrir = ré-afficher dans la liste
       const p = travelerMap[otherUserId] || {};
+      // « Traduire » seulement si le Mate ne parle pas déjà ta langue (anti pollution visuelle)
+      { const myLang = (localStorage.getItem("sm_lang") || "fr"); const syn = ({ fr: ["fran", "french"], en: ["engl", "anglais"] })[myLang] || [];
+        const pl = (p.languages || []).map((l) => String(l).toLowerCase());
+        _chatTranslatable = !(pl.length && syn.some((s) => pl.some((l) => l.includes(s)))); }
       const name = p.username || "Voyageur";
       $("chatName").textContent = name + ((p.is_demo || String(otherUserId).startsWith("ia-")) ? " 🤖" : "");
       setAvatarEl($("chatAvatar"), p.avatar_url, name[0] || "?");
