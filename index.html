@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=226"></script>
-  <script src="sunmates-icons.js?v=226"></script>
+  <script src="sunmates-badges.js?v=227"></script>
+  <script src="sunmates-icons.js?v=227"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -3765,6 +3765,7 @@
             <button data-lb="trust">🛡️ Confiance</button>
             <button data-lb="badges">🏅 Badges</button>
           </div>
+          <div class="city-pick" style="margin-top:.6rem"><span class="city-pick-ic">🏙️</span><select id="lbCitySelect" aria-label="Classement par ville"><option value="">Toutes les villes</option></select></div>
           <div id="leaderboardList"><p class="muted">Chargement…</p></div>
         </div>
 
@@ -4639,6 +4640,7 @@
       if (typeof updateStreak === "function") updateStreak();
       if (typeof renderGameHub === "function") renderGameHub();
       if (typeof claimReferralIfAny === "function") claimReferralIfAny(); // parrainage : crédite le 1er verre si arrivé via un lien ?ref
+      if (typeof retentionNudge === "function") retentionNudge(); // relance douce si retour après ≥3 jours
       if (typeof setHomeMode === "function") setHomeMode("travel", false); // on arrive TOUJOURS sur la carte (mode Voyage), le mode Maison reste accessible via la bascule
       if (typeof renderHost === "function") renderHost(); // badge hôte sur la carte profil
       const badge = $("verifBadge");
@@ -5197,7 +5199,7 @@
         ["🎲", "Défis entre Mates", "Propose une quête à un Mate."],
         ["⭐", "XP (monnaie de jeu)", "Gagnée via les quêtes, séparée du score de confiance. Anti-triche serveur."],
         ["📅", "Objectifs de la semaine", "Mini-objectifs hebdo pour garder le rythme."],
-        ["🏆", "Classement multi-onglets", "XP / Check-ins / Confiance / Badges, opt-in si privé."],
+        ["🏆", "Classement multi-onglets + PAR VILLE", "XP / Check-ins / Confiance / Badges, filtrable par ville (top de Lyon…), opt-in si privé."],
         ["🎟️", "Coupons partenaires", "Récompenses débloquées par les quêtes."],
         ["🛍️", "Boutique cosmétiques", "Titres & cadres d'avatar achetés avec l'XP."],
       ]],
@@ -5453,7 +5455,7 @@
         + cell("Admins 🛡️", data.admins) + cell("Suspendus 🚫", data.banned, "users") + cell("Connexions", data.connections) + cell("Demandes", data.pending_conn)
         + cell("Check-ins", data.checkins) + cell("Quêtes finies", data.quests_done) + cell("Messages", data.messages)
         + cell("Défis", data.suggestions) + cell("Badges", data.badges) + cell("Coupons", data.coupons)
-        + cell("Lieux", data.places, "places") + cell("Signalements", data.reports_pending, "reports") + cell("Devis B2B", data.quotes, "quotes");
+        + cell("Parrainages 🍹", data.referrals) + cell("Lieux", data.places, "places") + cell("Signalements", data.reports_pending, "reports") + cell("Devis B2B", data.quotes, "quotes");
       el.querySelectorAll("[data-dashjump]").forEach((c) => c.addEventListener("click", () => showAdminSegment(c.dataset.dashjump)));
     }
 
@@ -5635,14 +5637,18 @@
     if ($("apReset")) $("apReset").addEventListener("click", adminResetPlace);
 
     // ====================== CLASSEMENT (onglet Lieux) ======================
-    let lbMetric = "xp";
+    let lbMetric = "xp", _lbCity = "";
     async function renderLeaderboard(metric) {
       lbMetric = metric || lbMetric;
       const box = $("leaderboardList"); if (!box) return;
+      populateLbCities();
       box.innerHTML = skelRows(5);
-      const { data, error } = await db.rpc("leaderboard", { p_metric: lbMetric, p_limit: 30 });
-      if (error) { box.innerHTML = '<p class="muted">Classement indisponible pour l\'instant.</p>'; return; }
-      const rows = data || [];
+      // Classement par ville (p_city). Repli sur la signature sans ville si la s33 n'est pas lancée.
+      let res = await db.rpc("leaderboard", { p_metric: lbMetric, p_city: _lbCity || null, p_limit: 30 });
+      if (res.error) res = await db.rpc("leaderboard", { p_metric: lbMetric, p_limit: 30 });
+      if (res.error) { box.innerHTML = '<p class="muted">Classement indisponible pour l\'instant.</p>'; return; }
+      let rows = res.data || [];
+      if (_lbCity) rows = rows.filter((r) => (r.city || "").split(",")[0].trim().toLowerCase() === _lbCity.toLowerCase()); // sécurité si repli sans filtre serveur
       const unit = ({ xp: "XP", checkins: "check-ins", trust: "pts", badges: "🏅" })[lbMetric] || "";
       const inTop = rows.some((r) => r.id === myUserId);
       // Consentement explicite : tant que le partage n'est pas ACTIVÉ (is_public === true),
@@ -5682,6 +5688,17 @@
       document.querySelectorAll("[data-lb]").forEach((x) => x.classList.toggle("active", x === b));
       renderLeaderboard(b.dataset.lb);
     }));
+    // Menu ville du classement (alimenté par les villes de jeu, noms « nus » p.ex. Lyon)
+    let _lbCitiesSig = "";
+    function populateLbCities() {
+      const sel = $("lbCitySelect"); if (!sel) return;
+      const cities = [...new Set((typeof allQuests !== "undefined" ? allQuests : []).filter((q) => q.kind === "quest" && q.city).map((q) => q.city.replace(/, France$/, "")))].sort();
+      const sig = cities.join("|"); if (sig === _lbCitiesSig) return;
+      _lbCitiesSig = sig;
+      sel.innerHTML = '<option value="">🏙️ Toutes les villes</option>' + cities.map((c) => '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + "</option>").join("");
+      sel.value = (_lbCity && cities.includes(_lbCity)) ? _lbCity : "";
+    }
+    { const lc = $("lbCitySelect"); if (lc) lc.addEventListener("change", () => { _lbCity = lc.value || ""; renderLeaderboard(); if (window.SMSound) SMSound.play("tap"); }); }
 
     // ====================== SÉCURITÉ ======================
     $("shareLocBtn").addEventListener("click", () => sendLocation(false, $("locMsg"), "Position partagée avec ton cercle ✅"));
@@ -6316,6 +6333,25 @@
         } else if (data && (data.message === "Déjà parrainé" || data.message === "Parrain inconnu")) {
           localStorage.setItem("sm_ref_claimed", "1"); // on n'insiste pas
         }
+      } catch (e) {}
+    }
+
+    // Relance douce : si tu reviens après ≥3 jours, petit mot d'accueil (1×/session). 100% local.
+    let _retentionDone = false;
+    function retentionNudge() {
+      try {
+        if (_retentionDone || !myUserId) return; _retentionDone = true;
+        const k = "sm_last_visit_" + myUserId;
+        const last = localStorage.getItem(k);
+        const now = Date.now();
+        if (last) {
+          const days = Math.floor((now - parseInt(last, 10)) / 86400000);
+          if (days >= 3) {
+            const hasMates = (typeof connectedIds !== "undefined" && connectedIds && connectedIds.size > 0);
+            setTimeout(() => { if (typeof toast === "function") toast(hasMates ? "👀" : "☀️", hasMates ? "Ça fait " + days + " jours ! Un Mate t'attend peut-être." : "Content de te revoir — prêt·e pour une nouvelle quête ?"); }, 1600);
+          }
+        }
+        localStorage.setItem(k, String(now));
       } catch (e) {}
     }
 
