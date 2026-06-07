@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=248"></script>
-  <script src="sunmates-icons.js?v=248"></script>
+  <script src="sunmates-badges.js?v=249"></script>
+  <script src="sunmates-icons.js?v=249"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -2836,26 +2836,19 @@
           </div>
 
           <!-- ============ MAISON v2 — Hub SOLO (l'app se suffit à elle-même) ============ -->
-          <section class="card solo-prog stat-click" id="soloProgress" aria-label="Ta progression solo" role="button" tabindex="0" title="Toucher pour tes raccourcis">
+          <section class="card solo-prog" id="soloProgress" aria-label="Ta progression solo">
             <div class="sp-aura" aria-hidden="true"></div>
             <div class="sp-head">
               <h3 class="sp-title">Ta progression solo</h3>
               <button class="sp-streak" id="spStreak" title="Ta série de jours d'affilée"><span class="sp-fire">🔥</span><b id="spStreakN">1</b></button>
             </div>
+            <!-- Chaque chiffre est cliquable (petite explication), SANS redirection -->
             <div class="sp-stats">
-              <div class="sp-stat"><b id="spDone">0</b><span>Défis relevés</span></div>
-              <div class="sp-stat"><b id="spRit">0/3</b><span>Rituels du jour</span></div>
-              <div class="sp-stat"><b id="spXp">0</b><span>XP gagné</span></div>
+              <div class="sp-stat stat-click" data-spstat="done" role="button" tabindex="0"><b id="spDone">0</b><span>Défis relevés</span></div>
+              <div class="sp-stat stat-click" data-spstat="rit" role="button" tabindex="0"><b id="spRit">0/3</b><span>Rituels du jour</span></div>
+              <div class="sp-stat stat-click" data-spstat="xp" role="button" tabindex="0"><b id="spXp">0</b><span>XP gagné</span></div>
             </div>
-            <p class="muted" style="margin:.2rem 0 0;font-size:.8rem">Touche pour ouvrir tes raccourcis <span id="soloAnnexChev">↓</span></p>
           </section>
-          <!-- Mini-tuiles annexes (dépliées au clic sur la progression — pas de redirection brutale) -->
-          <div class="solo-annex" id="soloAnnex" style="display:none">
-            <button class="sa-tile" data-annex="badges"><span class="sa-ic">🏅</span><span>Mes badges</span></button>
-            <button class="sa-tile" data-annex="rank"><span class="sa-ic">🏆</span><span>Classement</span></button>
-            <button class="sa-tile" data-annex="parcours"><span class="sa-ic">🧭</span><span>Mon parcours</span></button>
-            <button class="sa-tile" data-annex="quests"><span class="sa-ic">🎯</span><span>Mes quêtes</span></button>
-          </div>
 
           <!-- HomeMates : tes souvenirs d'aventure + tes Mates, gardés même de retour à la maison -->
           <section class="card hm-souv" id="homeMates" style="display:none">
@@ -2990,7 +2983,7 @@
         <div class="feed-composer" id="feedComposer">
           <div class="fc-row">
             <span class="fc-av" id="feedComposerAv">🙂</span>
-            <textarea id="feedInput" rows="1" maxlength="280" placeholder="Quoi de neuf ? Partage un spot, une aventure…"></textarea>
+            <textarea id="feedInput" rows="1" maxlength="280" placeholder="Écris quelque chose…"></textarea>
           </div>
           <div class="fc-bottom">
             <div class="fc-kinds">
@@ -5360,7 +5353,7 @@
     }); }
 
     // Banque de sons (admin) : un bouton par son, lecture FORCÉE (même si coupé), + toggle global.
-    const SOUND_LABELS = { tap:"👆 Tap", pop:"🫧 Pop", nav:"🧭 Navigation", select:"✔️ Sélection", toggle:"🔀 Toggle", success:"✅ Succès", coin:"🪙 Pièce / XP", star:"⭐ Étoile", levelup:"🆙 Niveau sup.", unlock:"🔓 Déblocage", badge:"🏅 Badge", error:"⚠️ Erreur", whoosh:"💨 Whoosh", message:"💬 Message" };
+    const SOUND_LABELS = { tap:"👆 Tap", pop:"🫧 Pop", nav:"🧭 Navigation", select:"✔️ Sélection", toggle:"🔀 Toggle", success:"✅ Succès", coin:"🪙 Pièce / XP", star:"⭐ Étoile", levelup:"🆙 Niveau sup.", unlock:"🔓 Déblocage", badge:"🏅 Badge", error:"⚠️ Erreur", whoosh:"💨 Whoosh", message:"💬 Message", ringtone:"📞 Sonnerie faux appel" };
     function loadAdminSounds() {
       const box = $("adminSounds"); if (!box || !window.SMSound) return;
       box.innerHTML = SMSound.list().map((n) => `<button class="btn-ghost" data-snd="${n}" style="justify-content:center;font-size:.82rem">${SOUND_LABELS[n] || n}</button>`).join("");
@@ -6046,24 +6039,9 @@
 
     // ---- Faux appel : sortie de secours discrète (voyageur solo). 100 % local, aucune donnée. ----
     let fcRingTick = null, fcCallTimer = null, fcSeconds = 0, fcStartTimeout = null;
-    // Sonnerie synthétisée (WebAudio) : motif mélodique + pulse « dembow », ~20 s puis stop.
-    let _fcAudio = null, _fcRingStop = null;
-    function _playFakeRing() {
-      try {
-        const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
-        const ctx = new AC(); _fcAudio = ctx;
-        const master = ctx.createGain(); master.connect(ctx.destination);
-        master.gain.setValueAtTime(0, ctx.currentTime); master.gain.linearRampToValueAtTime(0.16, ctx.currentTime + 0.1);
-        const start = ctx.currentTime, beat = 0.26, total = 20;
-        const notes = [523, 659, 784, 659, 587, 784, 880, 784];
-        const note = (f, t, dur) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "triangle"; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.4, t + 0.02); g.gain.exponentialRampToValueAtTime(0.001, t + dur); o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.05); };
-        const kick = (t) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine"; o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(50, t + 0.12); g.gain.setValueAtTime(0.7, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.18); o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.2); };
-        const n = Math.floor(total / beat);
-        for (let k = 0; k < n; k++) { const t = start + k * beat; note(notes[k % notes.length], t, beat * 0.9); if (k % 2 === 0) kick(t); if (k % 4 === 2) kick(t + beat * 0.5); }
-        _fcRingStop = setTimeout(() => { try { master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3); setTimeout(() => { try { ctx.close(); } catch (e) {} }, 400); } catch (e) {} }, total * 1000);
-      } catch (e) {}
-    }
-    function _stopFakeRing() { try { if (_fcRingStop) { clearTimeout(_fcRingStop); _fcRingStop = null; } if (_fcAudio) { _fcAudio.close(); _fcAudio = null; } } catch (e) {} }
+    // Sonnerie du faux appel = sonnerie SMSound (banque centralisée, respecte le mute, testable en admin).
+    function _playFakeRing() { if (window.SMSound && SMSound.playRing) SMSound.playRing(); }
+    function _stopFakeRing() { if (window.SMSound && SMSound.stopRing) SMSound.stopRing(); }
     function startFakeCall(name) {
       name = name || "Maman";
       $("fcName").textContent = name;
@@ -7556,7 +7534,7 @@
           const a = b.dataset.cmenu, id = currentChatUserId;
           if (a === "profile") { if (id && travelerMap[id]) openTravelerProfile(travelerMap[id]); }
           else if (a === "delete") { deleteConversation(); }
-          else if (a === "flame") { const f = _flameGet(id); showInfo("🔥 Flammes", '<p style="line-height:1.6;text-align:center;padding:.3rem">Envoie un <b>poc 🔥</b> à ' + escapeHtml((travelerMap[id] || {}).username || "ce Mate") + ' chaque jour pour entretenir votre <b>flamme</b>.<br><br>Flamme actuelle : <b>🔥 ' + (f.active ? f.count : 0) + '</b><br><span class="muted" style="font-size:.82rem">Reviens dans les <b>24 h</b> pour la garder (perdue après ~35 h sans poc).</span></p>'); }
+          else if (a === "flame") { const f = _flameGet(id); showInfo("🔥 Flammes", '<p style="line-height:1.6;text-align:center;padding:.3rem">Envoie un <b>poc 🔥</b> à ' + escapeHtml((travelerMap[id] || {}).username || "ce Mate") + ' chaque jour pour entretenir votre <b>flamme</b>.<br><br>Flamme actuelle : <b>🔥 ' + (f.active ? f.count : 0) + '</b><br><span class="muted" style="font-size:.82rem">Reviens chaque jour (sous <b>24 h</b>) pour la garder !</span></p>'); }
           else if (a === "notif") { const on = (localStorage.getItem("sm_chatnotif_" + id) !== "0"); localStorage.setItem("sm_chatnotif_" + id, on ? "0" : "1"); const it = $("chatNotifItem"); if (it) it.textContent = on ? "🔕 Notifications : coupées" : "🔔 Notifications : activées"; toast(on ? "🔕" : "🔔", on ? "Notifications coupées pour cette conv" : "Notifications activées"); }
           else if (a === "block") { goToTab("connexions"); if (id && travelerMap[id]) openTravelerProfile(travelerMap[id]); toast("🚫", "Bloquer / signaler depuis le profil"); }
         }));
@@ -9888,21 +9866,14 @@
     { const a = $("profileAvatar"); if (a) a.addEventListener("click", () => { const u = myProfile && myProfile.avatar_url; if (u) openPhotoLightbox(u); else toast("📷", "Ajoute une photo de profil dans « Modifier mon profil »"); }); }
     { const rr = $("scReroll"); if (rr) rr.addEventListener("click", () => { const s = _soloState(); s.seed = ((s.seed || 0) + 1) % 1000; _soloSave(s); renderSoloChallenges(); if (window.SMSound) SMSound.play("pop"); }); }
     { const ss = $("spStreak"); if (ss) ss.addEventListener("click", (e) => { e.stopPropagation(); const h = $("homeStreak"); if (h) h.click(); }); }
-    // La carte « progression solo » déplie des mini-tuiles annexes (pas de redirection brutale).
-    { const sp = $("soloProgress"); if (sp) sp.addEventListener("click", () => {
-      const a = $("soloAnnex"); if (!a) return;
-      const open = a.style.display === "none" || !a.style.display;
-      a.style.display = open ? "grid" : "none";
-      const ch = $("soloAnnexChev"); if (ch) ch.textContent = open ? "↑" : "↓";
+    // Collection de quêtes + villes explorées : cliquable → ouvre les quêtes du jour.
+    { const qc = $("questCollection"); if (qc) { qc.style.cursor = "pointer"; qc.addEventListener("click", () => { goToTab("jeux"); if (typeof openJeuxSheet === "function") openJeuxSheet("quests"); if (window.SMSound) SMSound.play("tap"); }); } }
+    // Les chiffres de la progression solo sont cliquables → petite explication (SANS redirection).
+    document.querySelectorAll("#soloProgress [data-spstat]").forEach((el) => el.addEventListener("click", () => {
+      const k = el.dataset.spstat;
+      const txt = { done: "🧭 Le nombre de défis solo de ta ville que tu as relevés.", rit: "☀️ Tes petits rituels du jour (3 max) : sortir, capturer, rêver une destination.", xp: "⭐ L'XP gagnée en solo. Chaque 100 XP = un niveau (visible dans l'onglet Jeux)." }[k];
+      if (txt && typeof toast === "function") toast("💡", txt);
       if (window.SMSound) SMSound.play("tap");
-    }); }
-    document.querySelectorAll("#soloAnnex [data-annex]").forEach((b) => b.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const a = b.dataset.annex;
-      if (a === "badges") { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); }
-      else if (a === "rank") { goToTab("jeux"); if (typeof showJeuxView === "function") { showJeuxView("jeuxRank"); if (typeof renderLeaderboard === "function") renderLeaderboard(); } }
-      else if (a === "parcours") { if (typeof openSouvenir === "function") openSouvenir(); }
-      else if (a === "quests") { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxHome"); }
     }));
 
     // ---- Modal de PREUVE (photo) : valide un défi solo en postant une preuve ----
@@ -9989,14 +9960,34 @@
         error:   (n) => blip(220, 0.22, "sawtooth", 0.06, n, 130),
         whoosh:  (n) => blip(300, 0.26, "sine", 0.05, n, 900),
         message: (n) => { blip(740, 0.07, "sine", 0.06, n); blip(990, 0.08, "sine", 0.05, n + 0.05); },
+        // Aperçu (2 mesures) de la sonnerie reggaeton du faux appel → visible/testable dans l'admin
+        ringtone: (n) => { const bar = 0.95; for (let k = 0; k < 2; k++) { const b = n + k * bar; [0, 0.375, 0.5, 0.875].forEach((d) => blip(150, 0.14, "sine", 0.2, b + d * bar, 50)); [659, 587, 523, 587].forEach((f, i) => blip(f, 0.11, "square", 0.09, b + i * (bar / 4))); } },
       };
       function play(name, force) {
         if (!on && !force) return; const c = ac(); if (!c) return;
         if (c.state === "suspended") { try { c.resume(); } catch (e) {} }
         (SEQ[name] || SEQ.tap)(c.currentTime);
       }
-      function set(v) { on = !!v; try { localStorage.setItem("sm_sound", on ? "1" : "0"); } catch (e) {} if (on) { try { ac() && ctx.resume(); } catch (e) {} play("toggle", true); } }
-      return { play, set, isOn: function () { return on; }, list: function () { return Object.keys(SEQ); } };
+      // Sonnerie LONGUE du faux appel (reggaeton « dembow »), stoppable, qui RESPECTE le mute global.
+      let _ringMaster = null, _ringTO = null;
+      function _rkick(t, c, m) { const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; o.frequency.setValueAtTime(165, t); o.frequency.exponentialRampToValueAtTime(48, t + 0.12); g.gain.setValueAtTime(0.95, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.17); o.connect(g); g.connect(m); o.start(t); o.stop(t + 0.19); }
+      function _rnote(t, c, m, f, dur, type, vol) { const o = c.createOscillator(), g = c.createGain(); o.type = type || "triangle"; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol || 0.15, t + 0.02); g.gain.exponentialRampToValueAtTime(0.001, t + dur); o.connect(g); g.connect(m); o.start(t); o.stop(t + dur + 0.04); }
+      function playRing() {
+        if (!on) return; const c = ac(); if (!c) return; if (c.state === "suspended") { try { c.resume(); } catch (e) {} }
+        stopRing();
+        const m = c.createGain(); m.gain.value = 0.22; m.connect(c.destination); _ringMaster = m;
+        const start = c.currentTime, bar = 0.95, bass = [110, 110, 147, 98], hook = [659, 587, 523, 587, 659, 784, 659, 0];
+        for (let bi = 0; bi < 21; bi++) {
+          const b0 = start + bi * bar;
+          [0, 0.375, 0.5, 0.875].forEach((d) => _rkick(b0 + d * bar, c, m));        // dembow
+          _rnote(b0, c, m, bass[bi % bass.length], 0.42, "sawtooth", 0.11);          // basse
+          hook.forEach((f, i) => { if (f) _rnote(b0 + i * (bar / 8), c, m, f, bar / 8 * 0.9, "square", 0.09); }); // hook
+        }
+        _ringTO = setTimeout(stopRing, 20000);
+      }
+      function stopRing() { try { if (_ringTO) { clearTimeout(_ringTO); _ringTO = null; } if (_ringMaster && ctx) { const m = _ringMaster; _ringMaster = null; m.gain.cancelScheduledValues(ctx.currentTime); m.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15); setTimeout(() => { try { m.disconnect(); } catch (e) {} }, 250); } } catch (e) {} }
+      function set(v) { on = !!v; try { localStorage.setItem("sm_sound", on ? "1" : "0"); } catch (e) {} if (on) { try { ac() && ctx.resume(); } catch (e) {} play("toggle", true); } else { stopRing(); } }
+      return { play, playRing, stopRing, set, isOn: function () { return on; }, list: function () { return Object.keys(SEQ); } };
     })();
     window.SMSound = SMSound;
 
@@ -10118,7 +10109,19 @@
       "✈️ En voyage": "✈️ Travelling", "🏠 À la maison": "🏠 At home",
       "Explore autour de toi 🗺️": "Explore around you 🗺️", "⛶ Plein écran": "⛶ Fullscreen", "✕ Fermer": "✕ Close",
       "➕ Partager": "➕ Share", "📍 Autour de moi": "📍 Around me", "🌍 Tout voir": "🌍 See all",
-      "Ton fil ✨": "Your feed ✨", "Masquer": "Hide", "Accès rapide": "Quick access",
+      "Ton fil ✨": "Your feed ✨", "Le fil ✨": "The feed ✨", "Masquer": "Hide", "Accès rapide": "Quick access",
+      "Écris quelque chose…": "Write something…", "✨ Humeur": "✨ Mood", "📍 Spot": "📍 Spot", "Publier": "Post",
+      "🏡 Tes souvenirs SunMates": "🏡 Your SunMates memories", "Tes aventures et tes Mates restent avec toi, même rentré·e à la maison.": "Your adventures and Mates stay with you, even back home.",
+      "Tes Mates d'aventure": "Your adventure Mates", "Tes aventures par ville · 📖 album souvenir": "Your adventures by city · 📖 memory album",
+      "Rituels du jour ☀️": "Daily rituals ☀️", "🎲 Mélanger": "🎲 Shuffle", "Défis relevés": "Challenges done", "Rituels du jour": "Daily rituals", "XP gagné": "XP earned",
+      "Capitale du jour · découvre ses quêtes": "Capital of the day · discover its quests",
+      "🗺️ Collection de quêtes": "🗺️ Quest collection", "🏙️ Villes explorées": "🏙️ Cities explored", "🎯 Quête la plus proche": "🎯 Nearest quest",
+      "Invite tes amis sur SunMates": "Invite your friends to SunMates", "Plus on est, plus c'est sûr & fun 🌍": "The more we are, the safer & funnier 🌍", "Partager ›": "Share ›",
+      "Note vocale (30 s max)": "Voice note (30 s max)", "Envoyer un poc 🔥": "Send a flame 🔥", "Enregistrement…": "Recording…", "Envoyer ➤": "Send ➤", "Annuler": "Cancel",
+      "🔥 Flammes (24 h)": "🔥 Flames (24 h)", "🔔 Notifications : activées": "🔔 Notifications: on", "🔕 Notifications : coupées": "🔕 Notifications: off", "🚫 Bloquer / signaler": "🚫 Block / report", "🗑️ Supprimer la conversation": "🗑️ Delete conversation",
+      "Aide & support": "Help & support", "Centre d'aide · FAQ": "Help center · FAQ", "Nous contacter": "Contact us", "✏️ Modifier mon profil": "✏️ Edit my profile", "‹ Fermer l'édition": "‹ Close editing",
+      "Touche une quête, accomplis-la dans la vraie vie, puis valide-la pour gagner XP + badge (3 par jour max).": "Tap a quest, do it in real life, then validate it to earn XP + a badge (3 per day max).",
+      "🧭 Visites guidées interactives": "🧭 Interactive guided tours", "▶ Visite complète (A → Z)": "▶ Full tour (A → Z)",
       "Mes Mates": "My Mates", "Rencontre & discute": "Meet & chat", "Sécurité": "Safety", "Position & alerte": "Location & alert",
       "Lieux sûrs": "Safe places", "Check-ins": "Check-ins", "Mon profil": "My profile", "Score de confiance": "Trust score",
       "Jeux & Quêtes": "Games & Quests", "Gagne des badges": "Earn badges", "XP & badges": "XP & badges", "Grimpe le top": "Climb the top", "SunMates Gold": "SunMates Gold", "Bientôt dispo · Gold 👑": "Coming soon · Gold 👑",
