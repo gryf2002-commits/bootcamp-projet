@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=241"></script>
-  <script src="sunmates-icons.js?v=241"></script>
+  <script src="sunmates-badges.js?v=242"></script>
+  <script src="sunmates-icons.js?v=242"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -3860,7 +3860,7 @@
               <div class="qico" id="detailBadgeIco">🏅</div>
               <div class="info"><div class="name" id="detailBadgeName">Badge</div><div class="meta" id="detailBadgeState">À débloquer</div></div>
             </div>
-            <div class="coupon" id="detailCouponBox"><div class="cico" id="detailCouponIco">🎟️</div><div><div class="cname" id="detailCouponName">Coupon</div><div class="cdesc" id="detailCouponDesc">—</div></div></div>
+            <div class="coupon" id="detailCouponBox"><div class="cico smgem" id="detailCouponIco">🎟️</div><div><div class="cname" id="detailCouponName">Coupon</div><div class="cdesc" id="detailCouponDesc">—</div></div></div>
             <div class="gold-only-note">👑 Avec Gold : coupon <b>exclusif</b> et bien plus avantageux (offre doublée).</div>
           </div>
 
@@ -5813,13 +5813,26 @@
       box.innerHTML = optIn + (rows.length ? rows.map((r, i) => {
         const me = r.id === myUserId;
         const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i + 1);
-        return `<div class="lb-row${me ? " lb-me" : ""}">
+        return `<div class="lb-row${me ? " lb-me" : ""}" data-lbrow="${r.id}" style="cursor:pointer">
           <div class="lb-rank">${medal}</div>
           ${avatarMarkup(r.username, r.avatar_url)}
           <div class="lb-info"><div class="lb-name">${escapeHtml(r.username || "Voyageur")}${r.is_verified ? ' <span class="vchip" title="Vérifié">✓</span>' : ""}${me ? ' <span class="lb-you">toi</span>' : ""}</div><div class="lb-city muted" style="font-size:.76rem">${escapeHtml(r.city || "")}</div></div>
           <div class="lb-val">${r.value}<span> ${unit}</span></div>
         </div>`;
       }).join("") : '<p class="muted">Personne au classement pour l\'instant, sois le premier 🌟</p>');
+      // Mini-aperçu de la personne au clic sur sa ligne (infos liées au classement)
+      box.querySelectorAll(".lb-row[data-lbrow]").forEach((el) => el.addEventListener("click", () => {
+        const r = rows.find((x) => x.id === el.dataset.lbrow); if (!r) return;
+        const metricLbl = ({ xp: "XP", checkins: "check-ins", trust: "pts de confiance", badges: "badges" })[lbMetric] || "";
+        showInfo("Aperçu", `<div style="text-align:center;line-height:1.5">
+          <div style="display:flex;justify-content:center;margin-bottom:.4rem">${avatarMarkup(r.username, r.avatar_url)}</div>
+          <div style="font-weight:800;font-size:1.1rem">${escapeHtml(r.username || "Voyageur")}${r.is_verified ? ' <span class="vchip" title="Vérifié">✓</span>' : ""}</div>
+          <div class="muted">${escapeHtml(r.city || "—")}</div>
+          <div style="margin:.6rem 0;font-weight:800;color:var(--accent)">#${rows.indexOf(r) + 1} au classement · ${r.value} ${metricLbl}</div>
+          ${r.id !== myUserId ? '<button class="btn-primary btn-block" id="lbViewProfile">👤 Voir le profil</button>' : '<p class="muted" style="margin:0">C\'est toi 🌟</p>'}
+        </div>`);
+        setTimeout(() => { const b = $("lbViewProfile"); if (b) b.onclick = () => { closePicker(); const pr = travelerMap[r.id]; if (pr) { goToTab("connexions"); openTravelerProfile(pr); } else toast("🤷", "Profil indisponible"); }; }, 40);
+      }));
       // Bouton « participer » (sort du mode privé)
       { const jb = $("lbJoinBtn"); if (jb) jb.addEventListener("click", async () => {
         if (myProfile) myProfile.is_public = true;
@@ -6750,7 +6763,7 @@
 
       // Coupons réels
       $("couponList").innerHTML = myCoupons.length
-        ? myCoupons.map((c) => `<div class="coupon" style="${c.used ? "opacity:.55" : ""}"><div class="cico smgem" data-smicon="coupon">${window.SMIcon ? SMIcon("coupon", { size: 22 }) : "🎟️"}</div>
+        ? myCoupons.map((c) => `<div class="coupon" style="${c.used ? "opacity:.55" : ""}"><div class="cico smgem">🎟️</div>
             <div style="flex:1"><div class="cname">${escapeHtml(c.title || "Coupon")}</div><div class="cdesc">${escapeHtml(c.descr || "")}</div></div>
             ${c.used ? '<span class="badge no">Utilisé</span>' : `<button class="btn-accent" data-usecoupon="${c.id}" style="padding:.4rem .7rem;font-size:.8rem">Utiliser</button>`}</div>`).join("")
         : emptyState("🎟️", "Pas encore de coupon", "Accomplis une quête qui offre une récompense pour gagner ton premier coupon.", "Voir les quêtes", "jeux");
