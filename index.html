@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=255"></script>
-  <script src="sunmates-icons.js?v=255"></script>
+  <script src="sunmates-badges.js?v=256"></script>
+  <script src="sunmates-icons.js?v=256"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -10004,28 +10004,41 @@
         error:   (n) => blip(220, 0.22, "sawtooth", 0.06, n, 130),
         whoosh:  (n) => blip(300, 0.26, "sine", 0.05, n, 900),
         message: (n) => { blip(740, 0.07, "sine", 0.06, n); blip(990, 0.08, "sine", 0.05, n + 0.05); },
-        // Aperçu (2 mesures) de la sonnerie reggaeton du faux appel → visible/testable dans l'admin
-        ringtone: (n) => { const bar = 0.95; for (let k = 0; k < 2; k++) { const b = n + k * bar; [0, 0.375, 0.5, 0.875].forEach((d) => blip(150, 0.14, "sine", 0.2, b + d * bar, 50)); [659, 587, 523, 587].forEach((f, i) => blip(f, 0.11, "square", 0.09, b + i * (bar / 4))); } },
+        // Aperçu (1 phrase marimba) de la sonnerie du faux appel → visible/testable dans l'admin
+        ringtone: (n) => { [523, 659, 784, 1047, 880, 784, 659, 587].forEach((f, i) => { blip(f, 0.45, "triangle", 0.16, n + i * 0.26); blip(f * 2, 0.26, "sine", 0.05, n + i * 0.26); }); },
       };
       function play(name, force) {
         if (!on && !force) return; const c = ac(); if (!c) return;
         if (c.state === "suspended") { try { c.resume(); } catch (e) {} }
         (SEQ[name] || SEQ.tap)(c.currentTime);
       }
-      // Sonnerie LONGUE du faux appel (reggaeton « dembow »), stoppable, qui RESPECTE le mute global.
+      // Sonnerie LONGUE du faux appel : mélodie « marimba » crédible (tempo modéré, respiration
+      // entre les boucles comme une vraie sonnerie), stoppable, qui RESPECTE le mute global.
       let _ringMaster = null, _ringTO = null;
-      function _rkick(t, c, m) { const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; o.frequency.setValueAtTime(165, t); o.frequency.exponentialRampToValueAtTime(48, t + 0.12); g.gain.setValueAtTime(0.95, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.17); o.connect(g); g.connect(m); o.start(t); o.stop(t + 0.19); }
-      function _rnote(t, c, m, f, dur, type, vol) { const o = c.createOscillator(), g = c.createGain(); o.type = type || "triangle"; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol || 0.15, t + 0.02); g.gain.exponentialRampToValueAtTime(0.001, t + dur); o.connect(g); g.connect(m); o.start(t); o.stop(t + dur + 0.04); }
+      // Note marimba = triangle + octave sine, attaque vive + longue décroissance → chaud et « vrai ».
+      function _rmar(t, c, m, f, vol) {
+        const o = c.createOscillator(), g = c.createGain(); o.type = "triangle"; o.frequency.value = f;
+        const o2 = c.createOscillator(), g2 = c.createGain(); o2.type = "sine"; o2.frequency.value = f * 2;
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.008); g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+        g2.gain.setValueAtTime(0, t); g2.gain.linearRampToValueAtTime(vol * 0.3, t + 0.008); g2.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+        o.connect(g); g.connect(m); o2.connect(g2); g2.connect(m); o.start(t); o2.start(t); o.stop(t + 0.55); o2.stop(t + 0.35);
+      }
+      // Basse douce (sine, chaude — pas de sawtooth criard) sous la phrase.
+      function _rsub(t, c, m, f) { const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.16, t + 0.02); g.gain.exponentialRampToValueAtTime(0.001, t + 0.6); o.connect(g); g.connect(m); o.start(t); o.stop(t + 0.65); }
       function playRing() {
         if (!on) return; const c = ac(); if (!c) return; if (c.state === "suspended") { try { c.resume(); } catch (e) {} }
         stopRing();
-        const m = c.createGain(); m.gain.value = 0.22; m.connect(c.destination); _ringMaster = m;
-        const start = c.currentTime, bar = 0.95, bass = [110, 110, 147, 98], hook = [659, 587, 523, 587, 659, 784, 659, 0];
-        for (let bi = 0; bi < 21; bi++) {
-          const b0 = start + bi * bar;
-          [0, 0.375, 0.5, 0.875].forEach((d) => _rkick(b0 + d * bar, c, m));        // dembow
-          _rnote(b0, c, m, bass[bi % bass.length], 0.42, "sawtooth", 0.11);          // basse
-          hook.forEach((f, i) => { if (f) _rnote(b0 + i * (bar / 8), c, m, f, bar / 8 * 0.9, "square", 0.09); }); // hook
+        const m = c.createGain(); m.gain.value = 0.3; m.connect(c.destination); _ringMaster = m;
+        const STEP = 0.26;                                             // tempo modéré (pas accéléré)
+        const phrase = [523, 659, 784, 1047, 880, 784, 659, 587];      // do majeur, montée-descente accrocheuse
+        const phraseLen = phrase.length * STEP;                        // ~2,08 s
+        const cycle = phraseLen + 0.75;                                // + respiration entre 2 sonneries
+        const start = c.currentTime;
+        for (let ci = 0; ci < 10 && ci * cycle < 20; ci++) {
+          const b0 = start + ci * cycle;
+          _rsub(b0, c, m, 131);                                        // do2 chaud sous la phrase
+          _rsub(b0 + phraseLen / 2, c, m, 98);
+          phrase.forEach((f, i) => _rmar(b0 + i * STEP, c, m, f, 0.5 - (i % 2) * 0.08));
         }
         _ringTO = setTimeout(stopRing, 20000);
       }
