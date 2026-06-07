@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=262"></script>
-  <script src="sunmates-icons.js?v=262"></script>
+  <script src="sunmates-badges.js?v=263"></script>
+  <script src="sunmates-icons.js?v=263"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -10431,24 +10431,42 @@
       }
       // Basse douce (sine, chaude — pas de sawtooth criard) sous la phrase.
       function _rsub(t, c, m, f) { const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.16, t + 0.02); g.gain.exponentialRampToValueAtTime(0.001, t + 0.6); o.connect(g); g.connect(m); o.start(t); o.stop(t + 0.65); }
-      function playRing() {
-        if (!on) return; const c = ac(); if (!c) return; if (c.state === "suspended") { try { c.resume(); } catch (e) {} }
-        stopRing();
+      // Sonnerie marimba synthétisée (fallback, 100 % libre de droit).
+      function _synthRing() {
+        const c = ac(); if (!c) return; if (c.state === "suspended") { try { c.resume(); } catch (e) {} }
         const m = c.createGain(); m.gain.value = 0.3; m.connect(c.destination); _ringMaster = m;
         const STEP = 0.26;                                             // tempo modéré (pas accéléré)
         const phrase = [523, 659, 784, 1047, 880, 784, 659, 587];      // do majeur, montée-descente accrocheuse
-        const phraseLen = phrase.length * STEP;                        // ~2,08 s
-        const cycle = phraseLen + 0.75;                                // + respiration entre 2 sonneries
+        const phraseLen = phrase.length * STEP;
+        const cycle = phraseLen + 0.75;
         const start = c.currentTime;
         for (let ci = 0; ci < 10 && ci * cycle < 20; ci++) {
           const b0 = start + ci * cycle;
-          _rsub(b0, c, m, 131);                                        // do2 chaud sous la phrase
-          _rsub(b0 + phraseLen / 2, c, m, 98);
+          _rsub(b0, c, m, 131); _rsub(b0 + phraseLen / 2, c, m, 98);
           phrase.forEach((f, i) => _rmar(b0 + i * STEP, c, m, f, 0.5 - (i % 2) * 0.08));
         }
         _ringTO = setTimeout(stopRing, 20000);
       }
-      function stopRing() { try { if (_ringTO) { clearTimeout(_ringTO); _ringTO = null; } if (_ringMaster && ctx) { const m = _ringMaster; _ringMaster = null; m.gain.cancelScheduledValues(ctx.currentTime); m.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15); setTimeout(() => { try { m.disconnect(); } catch (e) {} }, 250); } } catch (e) {} }
+      // Si un fichier ringtone.mp3 (libre de droit, avec paroles) est présent, on le joue ;
+      // sinon on retombe sur la marimba synthétisée. Respecte TOUJOURS le mute global.
+      let _ringAudio = null, _ringAudioOk = null;
+      function playRing() {
+        if (!on) return;
+        stopRing();
+        try {
+          if (_ringAudioOk === false) { _synthRing(); return; }   // déjà testé absent → marimba direct
+          if (!_ringAudio) { _ringAudio = new Audio("ringtone.mp3"); _ringAudio.loop = true; _ringAudio.volume = 0.85; }
+          _ringAudio.currentTime = 0;
+          const p = _ringAudio.play();
+          if (p && p.then) p.then(() => { _ringAudioOk = true; }).catch(() => { _ringAudioOk = false; _ringAudio = null; _synthRing(); });
+          _ringTO = setTimeout(stopRing, 20000);
+        } catch (e) { _ringAudioOk = false; _synthRing(); }
+      }
+      function stopRing() {
+        try { if (_ringTO) { clearTimeout(_ringTO); _ringTO = null; } } catch (e) {}
+        try { if (_ringAudio) { _ringAudio.pause(); _ringAudio.currentTime = 0; } } catch (e) {}
+        try { if (_ringMaster && ctx) { const m = _ringMaster; _ringMaster = null; m.gain.cancelScheduledValues(ctx.currentTime); m.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15); setTimeout(() => { try { m.disconnect(); } catch (e) {} }, 250); } } catch (e) {}
+      }
       function set(v) { on = !!v; try { localStorage.setItem("sm_sound", on ? "1" : "0"); } catch (e) {} if (on) { try { ac() && ctx.resume(); } catch (e) {} play("toggle", true); } else { stopRing(); } }
       return { play, playRing, stopRing, set, isOn: function () { return on; }, list: function () { return Object.keys(SEQ); } };
     })();
