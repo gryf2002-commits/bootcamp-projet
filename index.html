@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=222"></script>
-  <script src="sunmates-icons.js?v=222"></script>
+  <script src="sunmates-badges.js?v=223"></script>
+  <script src="sunmates-icons.js?v=223"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1224,6 +1224,12 @@
     .invite-banner .inv-txt span{ font-size:.78rem; opacity:.95; }
     .invite-banner .inv-go{ flex-shrink:0; font-weight:800; font-size:.82rem; background:rgba(255,255,255,.22); padding:.35rem .6rem; border-radius:999px; }
     .invite-banner:active{ transform:scale(.99); }
+    /* Sélecteur de ville (menu déroulant carte) */
+    .city-pick{ display:flex; align-items:center; gap:.45rem; margin-bottom:.55rem; }
+    .city-pick-ic{ font-size:18px; flex-shrink:0; }
+    .city-pick select{ flex:1; padding:.5rem 1.8rem .5rem .7rem; border-radius:12px; border:1px solid var(--line); background-color:var(--card); color:var(--ink); font-weight:700; font-size:.85rem; cursor:pointer; -webkit-appearance:none; appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23E8961F' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right .7rem center; }
+    body.theme-dusk .city-pick select{ background-color:#2a2140; color:#fff; border-color:rgba(255,255,255,.12); }
     .qcoll{ margin:.2rem 0 .9rem; }
     .qcoll-head{ display:flex; justify-content:space-between; font-size:.82rem; font-weight:800; color:var(--ink); margin-bottom:.3rem; }
     .qcoll-bar{ height:9px; border-radius:999px; background:rgba(120,40,10,.14); overflow:hidden; }
@@ -2777,6 +2783,8 @@
         <div class="section-head"><h3 style="margin-top:.4rem">Explore autour de toi 🗺️</h3><a id="hmFull" style="cursor:pointer">⛶ Plein écran</a></div>
         <p class="muted" style="margin:-.2rem 0 .6rem;font-size:.84rem">Filtre, puis <b>touche une pastille</b> pour agir 👇</p>
         <div class="card homemap-card">
+          <!-- Sélecteur de ville (menu déroulant) : concentre la carte sur une ville de jeu -->
+          <div class="city-pick"><span class="city-pick-ic">🗺️</span><select id="questCitySelect" aria-label="Choisir une ville"><option value="">Toutes les villes</option></select></div>
           <!-- Chips colorés + emojis (l'âme SunMates) : couleur = type de marqueur sur la carte -->
           <div class="chips wrap homemap-filters" id="homeMapFilters">
             <button class="chip active cl-places" data-layer="places">📍 Lieux <b data-cnt></b></button>
@@ -5132,7 +5140,7 @@
       ["🎮 Jeux, XP & classement", [
         ["🪪", "Vignette de niveau", "Carte joueur en haut de l'onglet : avatar, niveau, barre d'XP, série (streak)."],
         ["⚡", "Quête du jour", "Quête vedette en rotation (solo ou groupe +bonus)."],
-        ["🗼", "Quêtes géolocalisées Paris", "Points de quête réels dans Paris (Tour Eiffel, Marais, canal…)."],
+        ["🗼", "Quêtes géo · 10 villes FR", "~55 quêtes réelles (Paris, Marseille, Lyon, Toulouse, Nice, Nantes, Montpellier, Strasbourg, Bordeaux, Lille) + sélecteur de ville."],
         ["🎯", "Radar quête la plus proche", "Géoloc → quête la plus proche + distance, bouton « Carte » qui t'y emmène."],
         ["🗺️", "Collection de quêtes", "Barre de progression X/N + célébration à 100%."],
         ["🔒", "Anti-triche quêtes", "Justification OBLIGATOIRE (code de lieu ou note honneur) avant toute validation."],
@@ -7687,6 +7695,7 @@
     let homeMarkersByType = { places: [], mates: [], activities: [], checkins: [], quests: [] }; // marqueurs par type (pour les filtres)
     const homeLayerOn = { places: true, mates: true, activities: true, checkins: true, quests: true };
     let homeMapSig = null;                                   // signature des données du dernier rendu carte (perf : évite un rebuild identique)
+    let _questCity = "";                                     // ville sélectionnée pour les quêtes ("" = toutes)
     let homeMeMarker = null;
 
     // Pastille emoji colorée comme marqueur (au lieu du marqueur bleu par défaut).
@@ -7793,6 +7802,24 @@
         if (!travelerMap[p.id]) travelerMap[p.id] = Object.assign({ is_demo: true, is_verified: true, trust_score: 80 }, p);
       });
     }
+
+    // Menu déroulant des villes : on le (re)peuple seulement quand la liste des villes change.
+    let _questCitiesSig = "";
+    function populateQuestCities(pts) {
+      const sel = $("questCitySelect"); if (!sel) return;
+      const cities = [...new Set((pts || []).map((q) => q.city).filter(Boolean))].sort();
+      const sig = cities.join("|");
+      if (sig === _questCitiesSig) return; // pas de changement → on garde le menu (et la sélection)
+      _questCitiesSig = sig;
+      sel.innerHTML = '<option value="">🗺️ Toutes les villes</option>' + cities.map((c) => '<option value="' + escapeHtml(c) + '">' + escapeHtml(c.replace(/, France$/, "")) + "</option>").join("");
+      sel.value = (_questCity && cities.includes(_questCity)) ? _questCity : "";
+    }
+    { const cs = $("questCitySelect"); if (cs) cs.addEventListener("change", () => {
+      _questCity = cs.value || "";
+      if (typeof renderHomeMap === "function") renderHomeMap();
+      if (typeof renderNearestQuest === "function") renderNearestQuest();
+      if (window.SMSound) SMSound.play("tap");
+    }); }
 
     async function renderHomeMap() {
       if (typeof L === "undefined") return;
@@ -7906,6 +7933,7 @@
         qg: (typeof allQuests !== "undefined" ? allQuests.filter((q) => q.kind === "quest" && q.lat != null).length : 0),
         me: myUserId,
         hm: (typeof getHomeMode === "function") ? getHomeMode() : "travel",
+        qc: _questCity,
       });
       if (_sig === homeMapSig && homeCluster && typeof homeCluster.getLayers === "function" && homeCluster.getLayers().length) {
         setTimeout(() => { try { homeLeaf.invalidateSize(); } catch (e) {} }, 120);
@@ -8055,8 +8083,12 @@
       // Chaque quête est placée à SA position réelle (fini le placement aléatoire incohérent).
       const dbGeoQuests = (typeof allQuests !== "undefined" ? allQuests : [])
         .filter((q) => q.kind === "quest" && q.lat != null && q.lng != null)
-        .map((q) => ({ key: q.key, emoji: q.emoji || "🎯", lat: q.lat, lng: q.lng, title: q.title, desc: q.description || "", xp: q.points || 0, badge: q.badge_name || "un badge" }));
-      const questPts = dbGeoQuests.length ? dbGeoQuests : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS : []);
+        .map((q) => ({ key: q.key, emoji: q.emoji || "🎯", lat: q.lat, lng: q.lng, title: q.title, desc: q.description || "", xp: q.points || 0, badge: q.badge_name || "un badge", city: q.city || "Autre" }));
+      const allQuestPts = dbGeoQuests.length ? dbGeoQuests
+        : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS.map((q) => Object.assign({ city: "Paris, France" }, q)) : []);
+      populateQuestCities(allQuestPts); // alimente le menu déroulant des villes
+      // Sélecteur de ville : on n'affiche que les quêtes de la ville choisie (sinon toutes).
+      const questPts = _questCity ? allQuestPts.filter((q) => (q.city || "") === _questCity) : allQuestPts;
       const _hmMode = (typeof getHomeMode === "function") ? getHomeMode() : "travel";
       const grpBtn = (_hmMode !== "home") ? '<button class="mappop-btn alt" data-hmqgroup="1">👥 À plusieurs <span style="opacity:.8">+bonus</span></button>' : '';
       const soloLabel = (_hmMode !== "home") ? "🧭 Jouer en solo" : "🧭 Jouer";
@@ -8077,9 +8109,10 @@
 
       homeAllMarkers = allMarkers;
       applyHomeLayers();
-      // On ne recadre qu'au tout premier rendu : ensuite on préserve la vue de l'utilisateur.
-      // On centre sur la ville/position de l'utilisateur (pas un dézoom monde).
-      if (!homeFitDone) { homeFitDone = true; centerHomeMapOnUser(allMarkers); }
+      // Une ville est sélectionnée → on recadre sur ses quêtes. Sinon, recadrage initial seulement.
+      if (_questCity && homeMarkersByType.quests.length) {
+        try { homeLeaf.fitBounds(L.featureGroup(homeMarkersByType.quests).getBounds().pad(0.3), { maxZoom: 14 }); } catch (e) {}
+      } else if (!homeFitDone) { homeFitDone = true; centerHomeMapOnUser(allMarkers); }
       setTimeout(() => { try { homeLeaf.invalidateSize(); } catch (e) {} }, 120);
       renderHomeLegend();
     }
@@ -9017,8 +9050,11 @@
     function _questGeoList() {
       const dbGeo = (typeof allQuests !== "undefined" ? allQuests : [])
         .filter((q) => q.kind === "quest" && q.lat != null && q.lng != null)
-        .map((q) => ({ key: q.key, emoji: q.emoji || "🎯", lat: q.lat, lng: q.lng, title: q.title, xp: q.points || 0, badge: q.badge_name || "un badge" }));
-      return dbGeo.length ? dbGeo : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS : []);
+        .map((q) => ({ key: q.key, emoji: q.emoji || "🎯", lat: q.lat, lng: q.lng, title: q.title, xp: q.points || 0, badge: q.badge_name || "un badge", city: q.city || "Autre" }));
+      const all = dbGeo.length ? dbGeo : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS.map((q) => Object.assign({ city: "Paris, France" }, q)) : []);
+      // Si une ville est choisie, le radar se concentre dessus (sinon national).
+      if (_questCity) { const f = all.filter((q) => (q.city || "") === _questCity); if (f.length) return f; }
+      return all;
     }
     function _fmtDist(km) { return km < 1 ? Math.round(km * 1000) + " m" : (km < 10 ? km.toFixed(1) : Math.round(km)) + " km"; }
     function renderNearestQuest() {
