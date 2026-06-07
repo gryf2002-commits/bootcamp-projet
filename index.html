@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=195"></script>
-  <script src="sunmates-icons.js?v=195"></script>
+  <script src="sunmates-badges.js?v=196"></script>
+  <script src="sunmates-icons.js?v=196"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1383,6 +1383,21 @@
     .prof-badges .pb-badge.sm { background: none; box-shadow: none; }
     .pb-badge.sm svg, .sv-badges svg { display: block; }
     .sv-badges .smb { display: inline-grid; place-items: center; }
+    /* Badge unifié (helper renderBadge) : même rendu serti + même repli partout */
+    .sm-badge { display: inline-grid; place-items: center; line-height: 1; vertical-align: middle; flex-shrink: 0; }
+    .sm-badge svg { display: block; width: 100%; height: 100%; }
+    .sm-badge--emoji { border-radius: 50%; background: var(--accent-grad); color: #fff; box-shadow: var(--shadow-sm); }
+    /* ===== V2.1 — anti-débordement (troncatures oubliées sur composants JS) + cibles tactiles ===== */
+    .post-head .ph-name, .post-body .pb-title, .post-body .pb-sub { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .post-head .ph-time { flex-shrink: 0; }
+    .feed-card .ftitle, .feed-card .fmeta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sresult { align-items: center; } .sresult .sname, .sresult .smeta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .place .name { min-width: 0; } .place .name > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .coupon .cname, .coupon .cdesc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .dh-name { overflow-wrap: anywhere; }
+    .conv-preview { max-width: none; flex: 1; min-width: 0; }
+    .iconbtn { min-width: 44px; min-height: 44px; }
+    .bottom-nav button { min-height: 44px; }
     .prof-badges .pb-more { font-size: .76rem; font-weight: 800; color: var(--accent); }
     .prof-badges .pb-lbl { font-size: .78rem; font-weight: 700; color: var(--muted); }
     .prof-badges .pb-edit { margin-left: auto; font-size: .76rem; font-weight: 700; color: var(--accent); }
@@ -5998,7 +6013,7 @@
       const svRows = [["📍", "near", s.ck, "check-ins"], ["🎯", "quest", s.q, "quêtes"], ["🏅", "medal", s.b, "badges"], ["⭐", "rating", s.xp, "XP"]];
       if (s.trips > 0) svRows.push(["🧳", "trip", s.trips, s.trips > 1 ? "voyages" : "voyage"]);
       $("svStats").innerHTML = svRows.map(([e, name, n, l]) => { const ic = (window.SMIcon && SMIcon.has(name)) ? `<span class="sv-ico smgem">${SMIcon(name, { size: 14 })}</span>` : (e + " "); return `<div class="sv-stat"><div class="sv-n">${ic}${n}</div><div class="sv-l">${l}</div></div>`; }).join("");
-      $("svBadges").innerHTML = myBadges.slice(0, 10).map((b) => window.SMBadge && SMBadge.hasEmblem(b.badge_key) ? `<span class="smb" title="${escapeHtml(b.name || "")}">${SMBadge(b.badge_key, { size: 34 })}</span>` : `<span>${b.emoji || "🏅"}</span>`).join("");
+      $("svBadges").innerHTML = myBadges.slice(0, 10).map((b) => `<span class="smb" title="${escapeHtml(b.name || "")}">${renderBadge(b.badge_key, "mini", { emoji: b.emoji })}</span>`).join("");
       m.classList.remove("hidden");
     }
     function shareParcours() {
@@ -6139,7 +6154,7 @@
           let shown = myBadges.filter((b) => pins.includes(b.badge_key));
           if (!shown.length) shown = myBadges.slice(0, 3); // par défaut, les 3 premiers
           pb.style.display = "flex";
-          pb.innerHTML = '<span class="pb-lbl">Mes badges :</span>' + shown.slice(0, 3).map((b) => window.SMBadge && SMBadge.hasEmblem(b.badge_key) ? `<span class="pb-badge sm" title="${escapeHtml(b.name || '')}">${SMBadge(b.badge_key, { size: 32 })}</span>` : `<span class="pb-badge" title="${escapeHtml(b.name || '')}">${b.emoji || "🏅"}</span>`).join("")
+          pb.innerHTML = '<span class="pb-lbl">Mes badges :</span>' + shown.slice(0, 3).map((b) => `<span title="${escapeHtml(b.name || '')}">${renderBadge(b.badge_key, "mini", { emoji: b.emoji })}</span>`).join("")
             + '<span class="pb-edit">choisir ›</span>';
           pb.onclick = () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); };
         } else { pb.style.display = "none"; }
@@ -7100,7 +7115,7 @@
       if (badges && badges.length) {
         $("tpBadgesCard").style.display = "";
         $("tpBadges").innerHTML = badges.map((b) =>
-          `<div class="bitem">${window.SMBadge && SMBadge.hasEmblem(b.badge_key) ? `<div class="smbadge-wrap">${SMBadge(b.badge_key, { size: 72 })}</div>` : `<div class="hex">${b.emoji || "🏅"}</div>`}<div class="bname">${escapeHtml(b.name || "")}</div><div class="bprog">✅</div></div>`).join("");
+          `<div class="bitem"><div class="smbadge-wrap">${renderBadge(b.badge_key, "grid", { emoji: b.emoji })}</div><div class="bname">${escapeHtml(b.name || "")}</div><div class="bprog">✅</div></div>`).join("");
       }
     }
     $("tpMsgBtn").addEventListener("click", () => { if (currentTravelerId) openChat(currentTravelerId); });
@@ -8623,7 +8638,7 @@
             <div class="fpost-who"><b>${escapeHtml(po.name)}</b><span>${escapeHtml(po.title)}</span></div>
             <span class="fpost-time">${po.time}</span></div>
           <div class="fpost-badge grad-${i % 4}">
-            <span class="fpost-emoji">${window.SMBadge && SMBadge.hasEmblem(po.key) ? SMBadge(po.key, { size: 40 }) : po.emoji}</span>
+            <span class="fpost-emoji">${renderBadge(po.key, "feed", { emoji: po.emoji })}</span>
             <div class="fpost-txt"><b>Badge débloqué</b><span>${escapeHtml(po.badgeName)}</span></div>
             <span class="fpost-spark">✨</span></div>
         </div>`).join("");
@@ -8700,12 +8715,29 @@
       const todo = HUB_BADGES.filter((b) => !earned.has(b.k)).slice(0, 5);
       if (!todo.length) { sec.style.display = "none"; return; }
       rail.innerHTML = todo.map((b) => '<div class="br-item"><div class="br-medal">' +
-        (window.SMBadge && SMBadge.hasEmblem(b.k) ? SMBadge(b.k, { size: 60, lite: true }) : "🏅") +
+        renderBadge(b.k, "rail", { emoji: "🏅" }) +
         '</div><span class="br-lbl">' + b.l + "</span></div>").join("");
       sec.style.display = "";
     }
 
     function renderGameHub() { try { renderPlayerHero(); renderQuestSpotlight(); renderBadgeRail(); } catch (e) {} }
+
+    /* ===== Helper UNIQUE d'affichage des badges (cohérence partout) =====
+       Même médaillon serti partout, même repli (toujours encadré, jamais d'emoji nu),
+       échelle de tailles nommée. Remplace les rendus ad hoc (svBadges, pb-badge, feed,
+       tpBadges, toast, rail…) qui divergeaient en taille/repli/style. */
+    const BADGE_SIZES = { mini: 34, feed: 44, stat: 44, rail: 60, grid: 72, hero: 124 };
+    function renderBadge(key, size, opts) {
+      opts = opts || {};
+      const px = typeof size === "number" ? size : (BADGE_SIZES[size] || 44);
+      const grey = opts.lockedPublic ? ' style="filter:grayscale(1);opacity:.55"' : "";
+      if (window.SMBadge && SMBadge.hasEmblem(key)) {
+        return '<span class="sm-badge" style="width:' + px + 'px;height:' + px + 'px"' + grey + '>' +
+          SMBadge(key, { size: px, secret: !!opts.secret, locked: !!opts.locked }) + '</span>';
+      }
+      const e = opts.emoji || "🏅";
+      return '<span class="sm-badge sm-badge--emoji" style="width:' + px + 'px;height:' + px + 'px;font-size:' + Math.round(px * 0.5) + 'px"' + grey + '>' + e + '</span>';
+    }
 
     /* ============ MAISON v2 — défis solo & rituels (l'app utile en SOLO) ============ */
     const SOLO_CHALLENGES = [
@@ -8729,11 +8761,16 @@
     function _soloState() { try { return JSON.parse(localStorage.getItem(_soloKey()) || "{}") || {}; } catch (e) { return {}; } }
     function _soloSave(s) { try { localStorage.setItem(_soloKey(), JSON.stringify(s)); } catch (e) {} }
     function _soloPick(seed) { return SOLO_CHALLENGES.map((c, i) => ({ c: c, k: (i * 97 + seed * 31) % 1000 })).sort((a, b) => a.k - b.k).slice(0, 4).map((x) => x.c); }
-    async function grantSoloXp(n, label) {
-      try { if (myUserId && myProfile) { const nx = (myProfile.xp || 0) + n; const { error } = await db.from("profiles").update({ xp: nx }).eq("id", myUserId); if (!error) myProfile.xp = nx; } } catch (e) {}
-      if (typeof toast === "function") toast("⭐", "+" + n + " XP · " + label);
-      if (typeof renderGameHub === "function") renderGameHub();
-      renderSoloProgress();
+    // Crédit d'XP solo : SERVEUR D'ABORD (RPC anti-triche grant_solo_xp, cap 3+3/j,
+    // cross-device). Repli sur crédit direct uniquement si la migration s27 n'est pas
+    // encore lancée (le RPC n'existe pas) — après s27, le trigger bloque tout crédit direct.
+    async function grantSoloXp(key, amount) {
+      try {
+        const { data, error } = await db.rpc("grant_solo_xp", { p_key: key });
+        if (!error && data) { if (data.ok && myProfile) myProfile.xp = (myProfile.xp || 0) + (data.xp || 0); return { ok: !!data.ok, xp: data.xp || 0, message: data.message }; }
+      } catch (e) {}
+      try { if (myUserId && myProfile) { const nx = (myProfile.xp || 0) + amount; const { error } = await db.from("profiles").update({ xp: nx }).eq("id", myUserId); if (!error) { myProfile.xp = nx; return { ok: true, xp: amount }; } } } catch (e) {}
+      return { ok: false, message: "Action impossible" };
     }
     function renderSoloProgress() {
       if (!$("soloProgress")) return;
@@ -8751,16 +8788,18 @@
       grid.innerHTML = _soloPick(s.seed || 0).map((c) => '<button class="sc-card sc-' + c.tone + (done[c.key] ? " is-done" : "") + '" data-solo="' + c.key + '"><span class="sc-ic">' + c.emoji + '</span><span class="sc-body"><span class="sc-name">' + escapeHtml(c.title) + '</span><span class="sc-desc">' + escapeHtml(c.desc.replace("{ville}", city)) + '</span></span><span class="sc-xp">+' + c.xp + '</span><span class="sc-check">✓</span></button>').join("");
       grid.querySelectorAll("[data-solo]").forEach((b) => b.addEventListener("click", () => completeSolo(b.dataset.solo)));
     }
-    function completeSolo(key) {
+    async function completeSolo(key) {
       const c = SOLO_CHALLENGES.find((x) => x.key === key); if (!c) return;
       const s = _soloState(); s.ch = s.ch || {};
       if (s.ch[key]) return;
-      if (Object.keys(s.ch).length >= 3) { if (typeof toast === "function") toast("🌙", "3 défis solo par jour max — reviens demain ✨"); return; }
+      const r = await grantSoloXp(key, c.xp);            // le SERVEUR décide (anti-triche, cap 3/j)
+      if (!r.ok) { if (typeof toast === "function") toast("🌙", r.message || "Limite atteinte"); return; }
       s.ch[key] = true; _soloSave(s);
       try { const tk = "sm_solo_total_" + (myUserId || "x"); localStorage.setItem(tk, String((parseInt(localStorage.getItem(tk) || "0", 10) || 0) + 1)); } catch (e) {}
-      grantSoloXp(c.xp, c.title);
+      if (typeof toast === "function") toast("⭐", "+" + r.xp + " XP · " + c.title);
+      if (typeof renderGameHub === "function") renderGameHub();
       if (typeof celebrate === "function") celebrate();
-      renderSoloChallenges();
+      renderSoloProgress(); renderSoloChallenges();
     }
     function renderRituals() {
       const list = $("ritList"); if (!list) return;
@@ -8769,16 +8808,28 @@
       const cnt = $("ritCnt"); if (cnt) cnt.textContent = Object.keys(done).length + "/" + SOLO_RITUALS.length;
       list.querySelectorAll("[data-rit]").forEach((b) => b.addEventListener("click", () => toggleRitual(b.dataset.rit)));
     }
-    function toggleRitual(key) {
+    async function toggleRitual(key) {
       const r = SOLO_RITUALS.find((x) => x.key === key); if (!r) return;
       const s = _soloState(); s.rit = s.rit || {};
       if (s.rit[key]) return;
+      const res = await grantSoloXp(key, r.xp);
+      if (!res.ok) { if (typeof toast === "function") toast("🌙", res.message || "Limite atteinte"); return; }
       s.rit[key] = true; _soloSave(s);
-      grantSoloXp(r.xp, r.title);
+      if (typeof toast === "function") toast("⭐", "+" + res.xp + " XP");
       if (window.SMSound) SMSound.play("success");
-      renderRituals();
+      if (typeof renderGameHub === "function") renderGameHub();
+      renderSoloProgress(); renderRituals();
     }
-    function renderSoloHome() { try { renderSoloProgress(); renderSoloChallenges(); renderRituals(); } catch (e) {} }
+    // État SERVEUR du jour (cross-device) : marque les tâches déjà faites, puis rend.
+    async function renderSoloHome() {
+      try {
+        if (myUserId) {
+          const { data } = await db.from("user_solo_log").select("task_key,kind").eq("user_id", myUserId).eq("day", new Date().toISOString().slice(0, 10));
+          if (data && data.length) { const s = _soloState(); s.ch = s.ch || {}; s.rit = s.rit || {}; data.forEach((r) => { if (r.kind === "ritual") s.rit[r.task_key] = true; else s.ch[r.task_key] = true; }); _soloSave(s); }
+        }
+      } catch (e) {}
+      try { renderSoloProgress(); renderSoloChallenges(); renderRituals(); } catch (e) {}
+    }
     { const rr = $("scReroll"); if (rr) rr.addEventListener("click", () => { const s = _soloState(); s.seed = ((s.seed || 0) + 1) % 1000; _soloSave(s); renderSoloChallenges(); if (window.SMSound) SMSound.play("pop"); }); }
     { const ss = $("spStreak"); if (ss) ss.addEventListener("click", () => { const h = $("homeStreak"); if (h) h.click(); }); }
 
