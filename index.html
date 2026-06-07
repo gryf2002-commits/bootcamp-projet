@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=252"></script>
-  <script src="sunmates-icons.js?v=252"></script>
+  <script src="sunmates-badges.js?v=253"></script>
+  <script src="sunmates-icons.js?v=253"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1156,6 +1156,8 @@
     .avatar.frame-coral, .shop-frame-prev.frame-coral { box-shadow: 0 0 0 3px #ff7e5f, 0 0 12px rgba(255,126,95,.5); }
     .avatar.frame-sunset, .shop-frame-prev.frame-sunset { box-shadow: 0 0 0 3px #ffce6b, 0 0 0 6px #ff5a4d, 0 0 14px rgba(255,90,77,.4); }
     .avatar.frame-aurora, .shop-frame-prev.frame-aurora { animation: auroraGlow 3s ease-in-out infinite; }
+    .avatar.frame-emerald, .shop-frame-prev.frame-emerald { box-shadow: 0 0 0 3px #2fd6a6, 0 0 0 6px #0e9e8c, 0 0 14px rgba(47,214,166,.5); }
+    .avatar.frame-royal, .shop-frame-prev.frame-royal { box-shadow: 0 0 0 3px #ffd15c, 0 0 0 6px #7c5cff, 0 0 16px rgba(124,92,255,.55); }
     @keyframes auroraGlow { 0%,100% { box-shadow: 0 0 0 3px #7ee8c9, 0 0 0 6px #8a7bff, 0 0 14px rgba(138,123,255,.5); } 50% { box-shadow: 0 0 0 3px #ffb0e0, 0 0 0 6px #7ee8c9, 0 0 18px rgba(126,232,201,.6); } }
     .shop-frame-prev { background: var(--accent-grad); color: #fff; }
     .bitem { text-align: center; }
@@ -6907,7 +6909,11 @@
       { id: "sunchaser", name: "Chasseur·euse de soleil 🌅", xp: 120, label: "🌅 Chasseur·euse de soleil" },
       { id: "wildsoul", name: "Âme aventurière 🔥", xp: 250, label: "🔥 Âme aventurière" },
       { id: "shootingstar", name: "Étoile filante 🌠", xp: 500, label: "🌠 Étoile filante" },
-      { id: "sunlegend", name: "Légende SunMates 👑", xp: 1000, label: "👑 Légende SunMates" },
+      { id: "globetrotter", name: "Globe-trotter 🌍", xp: 1000, label: "🌍 Globe-trotter" },
+      { id: "pathfinder", name: "Éclaireur·euse 🧭", xp: 2000, label: "🧭 Éclaireur·euse" },
+      { id: "citylegend", name: "Légende urbaine 🏙️", xp: 3500, label: "🏙️ Légende urbaine" },
+      { id: "sunlegend", name: "Légende SunMates 👑", xp: 5000, label: "👑 Légende SunMates" },
+      { id: "mythic", name: "Mythe vivant 🌟", xp: 9000, label: "🌟 Mythe vivant" },
     ];
     const SHOP_FRAMES = [
       { id: "none", name: "Classique", xp: 0, cls: "" },
@@ -6915,6 +6921,8 @@
       { id: "coral", name: "Corail", xp: 200, cls: "frame-coral" },
       { id: "sunset", name: "Coucher de soleil", xp: 400, cls: "frame-sunset" },
       { id: "aurora", name: "Aurore", xp: 800, cls: "frame-aurora" },
+      { id: "emerald", name: "Émeraude", xp: 1800, cls: "frame-emerald" },
+      { id: "royal", name: "Royal", xp: 4000, cls: "frame-royal" },
     ];
     const SHOP_FRAME_CLASSES = SHOP_FRAMES.map((f) => f.cls).filter(Boolean);
     function myXp() { return (myProfile && myProfile.xp) || 0; }
@@ -9543,10 +9551,16 @@
       if (g === "Homme") return masc;
       return incl;
     }
+    // Titres de niveau — progression longue (jusqu'au niv 99 et au-delà), sans plafond annoncé.
     function _hubTitle(lvl) {
-      if (lvl >= 8) return "Légende parisienne";
+      if (lvl >= 99) return "Mythe vivant 🌟";
+      if (lvl >= 75) return _gw("Légende vivante", "Légende vivant", "Légende vivante");
+      if (lvl >= 50) return _gw("Grande voyageuse", "Grand voyageur", "Grand·e voyageur·se");
+      if (lvl >= 35) return "Globe-trotter 🌍";
+      if (lvl >= 20) return _gw("Aventurière confirmée", "Aventurier confirmé", "Aventurier·ère confirmé·e");
+      if (lvl >= 10) return _gw("Routarde", "Routard", "Routard·e");
       if (lvl >= 5) return _gw("Flâneuse aguerrie", "Flâneur aguerri", "Flâneur·se aguerri·e");
-      if (lvl >= 3) return _gw("Exploratrice de Paris", "Explorateur de Paris", "Explorateur·rice de Paris");
+      if (lvl >= 3) return _gw("Exploratrice", "Explorateur", "Explorateur·rice");
       return _gw("Touriste curieuse", "Touriste curieux", "Touriste curieux·se");
     }
     let _qsMode = "solo";
@@ -9609,7 +9623,7 @@
       showInfo("⭐ Niveau " + lvl + " · tes récompenses", `<div style="line-height:1.6;font-size:.9rem">
         <p style="margin:.2rem 0">Tu es <b>Niveau ${lvl}</b> (${inLvl}/100 XP) — plus que <b>${100 - inLvl} XP</b> pour le suivant 🚀</p>
         <p style="margin:.2rem 0">Chaque <b>100 XP</b> (gagnés en quêtes) = un niveau. Tes <b>titres</b> évoluent :</p>
-        <p style="margin:.2rem 0">🧭 Niv. 1 <b>Touriste</b> · Niv. 3 <b>Explorateur·rice</b> · Niv. 5 <b>Flâneur·se aguerri·e</b> · Niv. 8 <b>Légende</b></p>
+        <p style="margin:.2rem 0">🧭 Tes titres évoluent : Touriste → Explorateur·rice (3) → Routard·e (10) → Aventurier·ère (20) → Globe-trotter (35) → Grand·e voyageur·se (50) → Légende (75) → <b>Mythe vivant (99)</b> 🌟</p>
         <p style="margin:.2rem 0">Plus de niveau = tu grimpes au <b>Classement</b> 🏆 et tu débloques des cosmétiques en <b>Boutique</b> 🛍️</p>
         <button class="btn-primary btn-block" id="lvlGoRank" style="margin-top:.7rem">🏆 Voir le classement</button></div>`);
       setTimeout(() => { const b = $("lvlGoRank"); if (b) b.onclick = () => { closePicker(); goToTab("jeux"); if (typeof showJeuxView === "function") { showJeuxView("jeuxRank"); if (typeof renderLeaderboard === "function") renderLeaderboard(); } }; }, 40);
