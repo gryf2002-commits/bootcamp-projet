@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=181"></script>
-  <script src="sunmates-icons.js?v=181"></script>
+  <script src="sunmates-badges.js?v=182"></script>
+  <script src="sunmates-icons.js?v=182"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1133,6 +1133,11 @@
     .bitem:hover .smbadge-wrap .smbadge-svg { transform: translateY(-3px) rotate(-3deg); }
     .bitem.locked .smbadge-svg { filter: grayscale(.92) opacity(.5); }
     @media (prefers-reduced-motion: reduce) { .smbadge-wrap .smbadge-svg { transition: none; } }
+    /* Retour tactile premium : léger enfoncement à l'appui sur les éléments cliquables */
+    @media (prefers-reduced-motion: no-preference) {
+      .tile, .cat-tile, .jeux-open, .qrow, .bitem, .coupon, .person, .stat-box.stat-click, .empty .btn-primary { transition: transform .12s ease, box-shadow .12s ease; }
+      .tile:active, .cat-tile:active, .jeux-open:active, .qrow:active, .bitem:active, .coupon:active, .person:active, .stat-box.stat-click:active { transform: scale(.97); }
+    }
     /* Icônes maison sur tuile : fond crème (l'icône porte la couleur, DA chaude) */
     /* Tuile-joyau : dégradé sunset bombé + gloss + rim-light + ombre chaude (zéro crème) */
     .cic[data-smicon], .jo-ic[data-smicon] { position: relative; isolation: isolate; overflow: hidden; border: none;
