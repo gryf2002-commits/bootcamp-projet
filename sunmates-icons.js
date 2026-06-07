@@ -10,7 +10,7 @@
     '<linearGradient id="sm-ico-teal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#46d6b0"/><stop offset="1" stop-color="#1f9e8c"/></linearGradient>' +
     '<linearGradient id="sm-ico-violet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a98fff"/><stop offset="1" stop-color="#7a5cff"/></linearGradient>' +
     '<radialGradient id="sm-ico-gloss" cx="36%" cy="26%" r="50%"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>' +
-    '<linearGradient id="sm-ico-iv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFBF5"/><stop offset="1" stop-color="#FFE6CC"/></linearGradient>' +
+    '<linearGradient id="sm-ico-iv" x1=".15" y1="0" x2=".7" y2="1"><stop offset="0" stop-color="#FFF2C2"/><stop offset=".4" stop-color="#FFD15C"/><stop offset="1" stop-color="#E8961F"/></linearGradient>' +
     '<filter id="sm-ico-drop" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1" stdDeviation="0.9" flood-color="#7a2415" flood-opacity="0.4"/></filter>' +
     '</defs></svg>';
   function injectDefs() {

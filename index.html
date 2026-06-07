@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=186"></script>
-  <script src="sunmates-icons.js?v=186"></script>
+  <script src="sunmates-badges.js?v=187"></script>
+  <script src="sunmates-icons.js?v=187"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1146,9 +1146,9 @@
     .cic[data-smicon]::after, .jo-ic[data-smicon]::after { content:""; position:absolute; left:8%; right:8%; top:6%; height:42%; border-radius:50% 50% 60% 60%/70% 70% 100% 100%; background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.04)); pointer-events:none; z-index:0; }
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg { display:block; position:relative; z-index:1; }
     .cat-tile.active .cic[data-smicon] { box-shadow: 0 10px 22px -4px rgba(255,90,77,.6), 0 2px 4px rgba(180,60,40,.32), inset 0 1px 1px rgba(255,246,236,.9), inset 0 -2px 3px rgba(150,45,30,.32); }
-    [data-smicon="quest"]{--c1:#FF8A3D;--c2:#FF5A4D} [data-smicon="games"]{--c1:#FF7A59;--c2:#7a5cff} [data-smicon="medal"]{--c1:#FFCD4E;--c2:#FF9D3D} [data-smicon="coupon"]{--c1:#ffb274;--c2:#FF7A3D} [data-smicon="rank"]{--c1:#FFCD4E;--c2:#FF8A3D} [data-smicon="shop"]{--c1:#FF5A4D;--c2:#ff8a6b}
-    [data-smicon="coffee"]{--c1:#ff9a5c;--c2:#d96a3d} [data-smicon="eco"]{--c1:#34c98f;--c2:#1f9e8c} [data-smicon="near"]{--c1:#FF6A4D;--c2:#ff9a3d} [data-smicon="rating"]{--c1:#FFCD4E;--c2:#FF8A3D} [data-smicon="popular"]{--c1:#FF5A4D;--c2:#ffb274}
-    [data-smicon="medal"]{--c1:#FFCD4E;--c2:#FF9D3D} [data-smicon="trip"]{--c1:#FF8A4D;--c2:#FF5A4D}
+    [data-smicon="quest"]{--c1:#FF8A3D;--c2:#FF5A4D} [data-smicon="games"]{--c1:#FF7A59;--c2:#7a5cff} [data-smicon="medal"]{--c1:#E8A33A;--c2:#B25A12} [data-smicon="coupon"]{--c1:#E8923A;--c2:#B85A16} [data-smicon="rank"]{--c1:#E8A33A;--c2:#B25A14}[data-smicon="shop"]{--c1:#FF5A4D;--c2:#ff8a6b}
+    [data-smicon="coffee"]{--c1:#ff9a5c;--c2:#d96a3d} [data-smicon="eco"]{--c1:#34c98f;--c2:#1f9e8c} [data-smicon="near"]{--c1:#FF6A4D;--c2:#ff9a3d} [data-smicon="rating"]{--c1:#E8A33A;--c2:#B25A14}[data-smicon="popular"]{--c1:#FF5A4D;--c2:#ffb274}
+    [data-smicon="medal"]{--c1:#E8A33A;--c2:#B25A12} [data-smicon="trip"]{--c1:#FF8A4D;--c2:#FF5A4D}
     /* Pastille-joyau réutilisable (icône ivoire sur dégradé) pour harmoniser les emojis hors tuiles */
     .smgem { background: linear-gradient(135deg, var(--c1,#FF8A3D), var(--c2,#FF5A4D)) !important; box-shadow: 0 4px 10px rgba(255,90,77,.28), inset 0 1px 1px rgba(255,246,236,.6) !important; color: #fff !important; }
     .smgem svg { filter: drop-shadow(0 1px 1px rgba(122,36,21,.25)); }

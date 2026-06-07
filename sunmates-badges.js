@@ -5,12 +5,29 @@
    API : window.SMBadge(badgeKey, { secret, size, lite }) -> string SVG
    ============================================================ */
 (function () {
+  // ---- bibliothèque de gradients/matières "œuvre" (sm2-, zéro ivoire) ----
+  var SM2_DEFS =
+    '<radialGradient id="sm2-sunset" cx="36%" cy="28%" r="82%"><stop offset="0" stop-color="#FFC27A"/><stop offset=".42" stop-color="#FF8A3D"/><stop offset=".78" stop-color="#FF5A4D"/><stop offset="1" stop-color="#C5331F"/></radialGradient>' +
+    '<radialGradient id="sm2-coral" cx="36%" cy="26%" r="80%"><stop offset="0" stop-color="#FFB59A"/><stop offset=".45" stop-color="#FF6E5A"/><stop offset="1" stop-color="#B62A1E"/></radialGradient>' +
+    '<linearGradient id="sm2-gold" x1=".15" y1="0" x2=".7" y2="1"><stop offset="0" stop-color="#FFE9A0"/><stop offset=".34" stop-color="#FFD15C"/><stop offset=".66" stop-color="#E8961F"/><stop offset="1" stop-color="#9A5E14"/></linearGradient>' +
+    '<radialGradient id="sm2-gold-cab" cx="36%" cy="28%" r="80%"><stop offset="0" stop-color="#FFF2C2"/><stop offset=".45" stop-color="#FFCD4E"/><stop offset=".82" stop-color="#E0901E"/><stop offset="1" stop-color="#8F560F"/></radialGradient>' +
+    '<radialGradient id="sm2-teal" cx="38%" cy="30%" r="82%"><stop offset="0" stop-color="#9FF0DC"/><stop offset=".42" stop-color="#34C98F"/><stop offset=".82" stop-color="#1F9E8C"/><stop offset="1" stop-color="#0C544D"/></radialGradient>' +
+    '<radialGradient id="sm2-violet" cx="38%" cy="30%" r="82%"><stop offset="0" stop-color="#D9C9FF"/><stop offset=".5" stop-color="#9B7BFF"/><stop offset="1" stop-color="#4B2BB0"/></radialGradient>' +
+    '<radialGradient id="sm2-amber" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#FFD89A"/><stop offset=".5" stop-color="#FFB274"/><stop offset="1" stop-color="#D17A2E"/></radialGradient>' +
+    '<radialGradient id="sm2-galaxy" cx="42%" cy="38%" r="80%"><stop offset="0" stop-color="#FFD7A0"/><stop offset=".26" stop-color="#FF5A4D"/><stop offset=".6" stop-color="#7A5CFF"/><stop offset="1" stop-color="#0C0A2A"/></radialGradient>' +
+    '<radialGradient id="sm2-spec" cx="34%" cy="26%" r="42%"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>' +
+    '<radialGradient id="sm2-gloss" cx="38%" cy="22%" r="60%"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></radialGradient>' +
+    '<radialGradient id="sm2-halo-warm" cx="50%" cy="46%" r="52%"><stop offset=".55" stop-color="#FFE6B0" stop-opacity="0"/><stop offset="1" stop-color="#FFB86B" stop-opacity=".7"/></radialGradient>' +
+    '<radialGradient id="sm2-halo-cool" cx="50%" cy="50%" r="50%"><stop offset=".5" stop-color="#BFF3E4" stop-opacity="0"/><stop offset="1" stop-color="#7FE3CC" stop-opacity=".55"/></radialGradient>' +
+    '<radialGradient id="sm2-shadow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#3a1d12" stop-opacity=".4"/><stop offset="1" stop-color="#3a1d12" stop-opacity="0"/></radialGradient>' +
+    '<filter id="sm2-drop" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="1.1" flood-color="#7a2415" flood-opacity=".42"/></filter>';
+
   // ---- défs partagées (injectées une seule fois) ----
   var DEFS = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>' +
     '<radialGradient id="sm-light" cx="38%" cy="32%" r="80%"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".42" stop-color="#fff" stop-opacity="0"/></radialGradient>' +
     '<filter id="sm-drop" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="3.5" flood-color="#3a1d12" flood-opacity=".35"/></filter>' +
     '<linearGradient id="ex-brass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE7AE"/><stop offset=".45" stop-color="#D69A4E"/><stop offset="1" stop-color="#8a5a2c"/></linearGradient>' +
-    '<radialGradient id="ex-leather" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#b0703f"/><stop offset="1" stop-color="#5c3417"/></radialGradient>' +
+    '<radialGradient id="ex-leather" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#5a6db8"/><stop offset=".5" stop-color="#293568"/><stop offset="1" stop-color="#0e1334"/></radialGradient>' +
     '<filter id="ex-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0"/><feComposite operator="over" in2="SourceGraphic"/></filter>' +
     '<radialGradient id="so-enamel" cx="42%" cy="34%" r="72%"><stop offset="0" stop-color="#ffd0c4"/><stop offset=".5" stop-color="#FF6E6A"/><stop offset="1" stop-color="#7a5cff"/></radialGradient>' +
     '<linearGradient id="so-petal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb0b8"/><stop offset="1" stop-color="#c86bd6"/></linearGradient>' +
@@ -24,7 +41,7 @@
     '<filter id="lg-stars"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 16 -9"/><feComposite operator="in" in2="SourceGraphic"/></filter>' +
     '<symbol id="sm-sunseal" viewBox="-12 -12 24 24"><circle r="6" fill="none" stroke="currentColor" stroke-width="1.1" opacity=".9"/><circle r="2.4" fill="currentColor"/><g stroke="currentColor" stroke-width="1.1" stroke-linecap="round"><line x1="0" y1="-8.5" x2="0" y2="-10.5"/><line x1="0" y1="8.5" x2="0" y2="10.5"/><line x1="-8.5" y1="0" x2="-10.5" y2="0"/><line x1="8.5" y1="0" x2="10.5" y2="0"/><line x1="-6" y1="-6" x2="-7.4" y2="-7.4"/><line x1="6" y1="6" x2="7.4" y2="7.4"/><line x1="6" y1="-6" x2="7.4" y2="-7.4"/><line x1="-6" y1="6" x2="-7.4" y2="7.4"/></g></symbol>' +
     '<radialGradient id="emb-spec" cx="34%" cy="26%" r="40%"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>' +
-    '<radialGradient id="emb-cream" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#FFFDF5"/><stop offset=".55" stop-color="#FFE9C8"/><stop offset="1" stop-color="#E9A86A"/></radialGradient>' +
+    '<radialGradient id="emb-cream" cx="38%" cy="28%" r="82%"><stop offset="0" stop-color="#FFE7BC"/><stop offset=".5" stop-color="#FFC489"/><stop offset="1" stop-color="#DD8A34"/></radialGradient>' +
     '<radialGradient id="emb-gold" cx="36%" cy="28%" r="82%"><stop offset="0" stop-color="#FFF7D8"/><stop offset=".42" stop-color="#FFD56A"/><stop offset=".8" stop-color="#E89A2C"/><stop offset="1" stop-color="#A9670F"/></radialGradient>' +
     '<radialGradient id="emb-coral" cx="36%" cy="28%" r="80%"><stop offset="0" stop-color="#FFD0B0"/><stop offset=".45" stop-color="#FF7E5A"/><stop offset="1" stop-color="#D23A2C"/></radialGradient>' +
     '<radialGradient id="emb-teal" cx="38%" cy="30%" r="82%"><stop offset="0" stop-color="#EAFBF5"/><stop offset=".4" stop-color="#7FE3CC"/><stop offset=".82" stop-color="#1F9E8C"/><stop offset="1" stop-color="#0C544D"/></radialGradient>' +
@@ -32,10 +49,11 @@
     '<radialGradient id="emb-moon" cx="36%" cy="30%" r="78%"><stop offset="0" stop-color="#FFFDF2"/><stop offset=".6" stop-color="#FBE9B8"/><stop offset="1" stop-color="#E7C06A"/></radialGradient>' +
     '<radialGradient id="emb-atmo" cx="50%" cy="46%" r="52%"><stop offset=".55" stop-color="#FFE6B0" stop-opacity="0"/><stop offset="1" stop-color="#FFE6B0" stop-opacity=".7"/></radialGradient>' +
     '<radialGradient id="emb-glowcool" cx="50%" cy="50%" r="50%"><stop offset=".5" stop-color="#BFF3E4" stop-opacity="0"/><stop offset="1" stop-color="#BFF3E4" stop-opacity=".55"/></radialGradient>' +
-    '<linearGradient id="emb-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFDF7"/><stop offset="1" stop-color="#E7C9A6"/></linearGradient>' +
+    '<linearGradient id="emb-glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE2B4"/><stop offset="1" stop-color="#CE8A48"/></linearGradient>' +
     '<radialGradient id="emb-shadow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#3a1d12" stop-opacity=".42"/><stop offset="1" stop-color="#3a1d12" stop-opacity="0"/></radialGradient>' +
     '<clipPath id="sm-sheen"><circle cx="64" cy="64" r="60"/></clipPath>' +
     '<linearGradient id="sm-sheen-grad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>' +
+    SM2_DEFS +
     '</defs></svg>';
 
   function injectDefs() {
@@ -89,7 +107,7 @@
   // ---- cadres par famille (inner SVG, viewBox 0 0 128 128) ----
   function frExploration(key, lite){
     var star='M64 4 L76 38 L110 20 L92 54 L126 64 L92 74 L110 108 L76 90 L64 124 L52 90 L18 108 L36 74 L2 64 L36 54 L18 20 L52 38 Z';
-    var grain = lite ? '' : '<circle cx="64" cy="64" r="40" fill="#fff" filter="url(#ex-grain)" opacity=".5"/>';
+    var grain = lite ? '' : '<g opacity=".7"><circle cx="48" cy="40" r="1" fill="#dfe9ff"/><circle cx="80" cy="36" r=".8" fill="#dfe9ff"/><circle cx="92" cy="60" r="1" fill="#cfe0ff"/><circle cx="40" cy="78" r=".9" fill="#cfe0ff"/><circle cx="86" cy="86" r=".8" fill="#dfe9ff"/><circle cx="36" cy="58" r=".7" fill="#bcd0ff"/></g>';
     return '<g'+drop(lite)+'><path d="'+star+'" fill="url(#ex-brass)" stroke="#7a4d24" stroke-width="1.5"/>'+
       '<circle cx="64" cy="64" r="40" fill="url(#ex-leather)"/>'+grain+
       '<circle cx="64" cy="64" r="40" fill="none" stroke="url(#ex-brass)" stroke-width="3.5"/>'+
