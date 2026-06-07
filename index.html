@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=261"></script>
-  <script src="sunmates-icons.js?v=261"></script>
+  <script src="sunmates-badges.js?v=262"></script>
+  <script src="sunmates-icons.js?v=262"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -912,7 +912,7 @@
     .stat-box .lbl { color: var(--muted); font-size: .72rem; margin-top: .2rem; white-space: nowrap; }
 
     /* ----------------------------- Avatars -------------------------- */
-    .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--accent-grad); display: grid; place-items: center; color: #fff; font-weight: 700; flex-shrink: 0; }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--accent-grad); background-size: cover; background-position: center; background-repeat: no-repeat; display: grid; place-items: center; color: #fff; font-weight: 700; flex-shrink: 0; overflow: hidden; }
     .person { display: flex; align-items: center; gap: .75rem; padding: .8rem 0; border-bottom: 1px solid var(--line); }
     .person:last-child { border-bottom: 0; }
     .person .info { flex: 1; min-width: 0; }
@@ -3694,26 +3694,19 @@
           </div>
 
           <div class="aseg" data-asegpanel="demo">
+            <!-- FUSION : UNE seule visite guidée (auto + pas-à-pas), 41 chapitres A→Z. -->
             <div class="card demo-intro" style="text-align:center">
-              <h3 style="margin-top:0">🎬 Démo guidée automatique</h3>
-              <p class="muted" style="margin:.2rem 0 .9rem;font-size:.84rem">Clé en main : l'app déroule toute seule le parcours d'un nouvel utilisateur, écran par écran, avec une narration. Tu n'as qu'à regarder (ou commenter par-dessus).</p>
-              <button class="btn-primary btn-block" id="demoPlay" style="font-size:1.05rem">▶ Démarrer la démo guidée</button>
-              <p class="muted" style="font-size:.76rem;margin:.6rem 0 0">Tu peux mettre en pause, avancer ou quitter à tout moment.</p>
-            </div>
-
-            <!-- Tuto guidé pas-à-pas (spotlight) — l'utilisateur avance à son rythme. Les tutos PAR ZONE
-                 sont accessibles via « ▶ Tuto guidé » dans le catalogue ci-dessous. -->
-            <div class="card">
-              <h3 style="margin-top:0">🧭 Tuto guidé pas-à-pas</h3>
-              <p class="muted" style="font-size:.8rem;margin:.1rem 0 .7rem">Visite surlignée de toute l'app (Précédent / Suivant), parfaite pour accompagner quelqu'un de A à Z. Pour un onglet précis, utilise « ▶ Tuto guidé » dans le catalogue plus bas.</p>
-              <button class="btn-primary btn-block" data-tuto="full">▶ Visite guidée complète (A → Z)</button>
+              <h3 style="margin-top:0">🎬 Visite guidée complète (A → Z)</h3>
+              <p class="muted" style="margin:.2rem 0 .9rem;font-size:.84rem">Un seul parcours qui combine TOUT : l'app se déroule toute seule, écran par écran, avec narration — et tu peux <b>mettre en pause, avancer ou reculer</b> (Précédent / Suivant) pour aller à ton rythme. 41 chapitres.</p>
+              <button class="btn-primary btn-block" id="demoPlay" style="font-size:1.05rem">▶ Lancer la visite guidée</button>
+              <p class="muted" style="font-size:.76rem;margin:.6rem 0 0">Pause / avancer / reculer / quitter à tout moment. Chaque « ▶ Démo guidée » du catalogue l'ouvre directement au bon chapitre.</p>
             </div>
 
             <div class="section-head"><h3 style="margin:.4rem 0 .2rem">📚 Knowledge base : tout ce que l'app permet</h3></div>
             <p class="muted" style="font-size:.8rem;margin:.1rem 0 .6rem">La liste des scènes de la démo. Touche « ▶ Jouer depuis ici » pour lancer la démo à partir d'une étape précise.</p>
             <div id="demoSteps"></div>
             <div class="section-head"><h3 style="margin:1rem 0 .2rem">📋 Catalogue des fonctionnalités</h3></div>
-            <p class="muted" style="font-size:.8rem;margin:.1rem 0 .6rem">Tout ce que fait SunMates, par zone. Touche « ▶ Voir » pour aller dans l'onglet concerné.</p>
+            <p class="muted" style="font-size:.8rem;margin:.1rem 0 .6rem">Tout ce que fait SunMates, par zone. Touche « ▶ Démo guidée » pour lancer la visite directement au chapitre de cette zone.</p>
             <div class="search" style="margin-bottom:.6rem"><span class="ico">🔍</span><input id="featSearch" type="text" placeholder="Rechercher une fonctionnalité…" /></div>
             <div id="featureCatalog"></div>
           </div>
@@ -5551,21 +5544,23 @@
         ["🇫🇷", "Tour de France", "Jauge « villes explorées X/10 » + célébration quand toutes faites."],
         ["🏙️", "Capitale du jour", "Une ville de jeu à l'honneur chaque jour → ses quêtes en 1 tap."],
         ["🔒", "Anti-triche quêtes", "Justification OBLIGATOIRE (code de lieu ou note honneur) avant toute validation."],
-        ["🎯", "Quêtes du jour", "Ouvertes en feuille (anti-scroll), 3/jour + cooldown."],
+        ["🎯", "Quêtes du jour", "Ouvertes en feuille avec BARRE DE RECHERCHE + tri « près de moi » (anti-listing géant), 3/jour + cooldown."],
+        ["🗺️", "Ma collection", "Listing des quêtes accomplies / à faire par ville + villes explorées (plus de redirect)."],
+        ["🎮", "Jeux populaires (6 mini-jeux)", "Jouables tout de suite : Roue des défis, Brise-glace, Quiz voyageur, 2 vérités 1 mensonge, Décide pour moi, Bingo de voyage."],
         ["👥", "Quêtes de groupe", "Confirmées par un Mate → bonus XP partagé."],
         ["🎲", "Défis entre Mates", "Propose une quête à un Mate."],
         ["⭐", "XP (monnaie de jeu)", "Gagnée via les quêtes, séparée du score de confiance. Anti-triche serveur."],
-        ["📅", "Objectifs de la semaine", "Mini-objectifs hebdo pour garder le rythme."],
+        ["📅", "Objectifs de la semaine", "Mini-objectifs hebdo qui VARIENT chaque semaine (pool tournant), placés sous le niveau."],
         ["🏆", "Classement multi-onglets + PAR VILLE", "XP / Check-ins / Confiance / Badges, filtrable par ville (top de Lyon…), opt-in si privé."],
         ["🎟️", "Coupons partenaires", "Récompenses débloquées par les quêtes."],
         ["🛍️", "Boutique cosmétiques", "Titres & cadres d'avatar achetés avec l'XP."],
       ]],
       ["🏠 Mode Maison (solo)", [
-        ["🧭", "Défis solo de ta ville", "Redécouvre ton coin comme une voyageuse (10 défis, mélangeables)."],
-        ["☀️", "Rituels du jour", "3 petits rituels quotidiens (sortir, capturer, rêver une destination)."],
-        ["📈", "Progression solo", "Niveau, XP et défis relevés, série en cours."],
-        ["💡", "Inspiration du jour", "Une destination rotative à ajouter à tes envies en 1 tap."],
-        ["🧳", "Préparer mon voyage", "Prochain voyage, check-list, mes envies, voyages passés (replié)."],
+        ["🧭", "Défis solo de ta ville", "Redécouvre ton coin comme en voyage (10 défis adaptés à TA ville, mélangeables)."],
+        ["☀️", "Rituels du jour", "3 rituels quotidiens + ton RITUEL PERSO paramétrable (ta propre routine)."],
+        ["📈", "Progression solo", "Chiffres cliquables → tuile d'explication (défis, rituels, XP, série)."],
+        ["💡", "Inspiration du jour", "Vraie fiche destination : pourquoi y aller, incontournables, quand/budget/sécurité, ajout en 1 tap."],
+        ["🧳", "Préparer mon voyage", "Check-list par catégories + FICHE PAYS réelle (formalités, argent, transport, eau, prise, coutumes, sécurité) selon la destination."],
         ["👋", "De passage chez toi", "Voyageurs qui explorent ta ville ; devenir hôte/ambassadeur."],
         ["🏡", "HomeMates — souvenirs", "Récap de tes aventures (Mates, villes, quêtes, check-ins) gardé au retour ; partage en carte souvenir."],
       ]],
@@ -5612,8 +5607,8 @@
         ["💼", "Espace Pro / B2B", "Pitch partenaires, demande de partenariat."],
       ]],
       ["🛡️ Admin (back-office)", [
-        ["🎬", "Démo guidée auto", "Parcours commenté de A à Z + ce catalogue."],
-        ["🧭", "Visites guidées interactives", "Tutos pas-à-pas surlignés sur l'app (complète A→Z + par onglet) pour accompagner les moins à l'aise."],
+        ["🎬", "Démo guidée UNIQUE (A→Z)", "Un seul parcours commenté de 41 chapitres : auto OU pas-à-pas (Précédent/Suivant/Pause). Chaque « Voir » du catalogue l'ouvre au bon chapitre. (Fusion tuto + démo)"],
+        ["🗄️", "Données (base)", "Vue admin sur la base Supabase (tables/compteurs) + le contenu de jeu (quêtes par ville, badges, défis) + schéma/sécurité."],
         ["📊", "Tableau de bord (KPIs)", "Membres ACTIFS (bannis exclus), suspendus & admins à part, check-ins, quêtes… cellules cliquables → segment."],
         ["👥", "Fiches membre", "Actifs vs suspendus séparés + filtre, recherche, actions (vérifier/bannir/admin), fiche détaillée."],
         ["📍", "Gestion des lieux", "Ajout/édition + codes check-in + géoloc auto."],
@@ -5644,17 +5639,14 @@
         if (!matched.length) return "";
         any = true;
         const tab = zoneTab(zone);
-        const hasTour = tab && typeof GUIDED_TOURS !== "undefined" && GUIDED_TOURS.full.some((s) => s.tab === tab);
-        const goBtn = tab ? `<button class="feat-go" data-feattab="${tab}" data-feattour="${hasTour ? 1 : 0}">${hasTour ? "▶ Tuto guidé" : "▶ Voir"}</button>` : "";
+        // FUSION : « Voir » lance LA démo guidée unique (AUTO_DEMO) directement au bon chapitre.
+        const goBtn = tab ? `<button class="feat-go" data-feattab="${tab}">▶ Démo guidée</button>` : "";
         return `<div class="feat-zone">${escapeHtml(zone)}${goBtn}</div>
           ${matched.map(([ic, name, desc]) => `<div class="feat-item"><div class="feat-ic">${ic}</div><div><div class="feat-name">${escapeHtml(name)}</div><div class="feat-desc">${escapeHtml(desc)}</div></div></div>`).join("")}`;
       }).join("") || "";
       if (!any) box.innerHTML = '<p class="muted" style="text-align:center;padding:1rem">Aucune fonctionnalité ne correspond à « ' + escapeHtml(q) + ' ».</p>';
-      // « Voir » = TUTO GUIDÉ (visite spotlight de la zone), sinon simple redirection.
-      box.querySelectorAll("[data-feattab]").forEach((b) => b.addEventListener("click", () => {
-        if (b.dataset.feattour === "1" && typeof startGuidedTour === "function") startGuidedTour(b.dataset.feattab);
-        else goToTab(b.dataset.feattab);
-      }));
+      // « Voir » = LA démo guidée unique, ouverte au chapitre de la zone (plus de système de tour séparé).
+      box.querySelectorAll("[data-feattab]").forEach((b) => b.addEventListener("click", () => startGuidedTour(b.dataset.feattab)));
     }
     { const fs2 = $("featSearch"); if (fs2) fs2.addEventListener("input", (e) => renderFeatureCatalog(e.target.value)); }
     // ====================== DÉMO GUIDÉE AUTOMATIQUE (clé en main, A à Z) ======================
@@ -9253,10 +9245,12 @@
         { tab: "profil", sel: "#editProfileBtn", emoji: "👤", title: "Ton profil", text: "Complète-le pour de meilleurs matchs. Mon parcours et ton BFF sont aussi sur cette carte." },
       ],
     };
+    // FUSION tuto pas-à-pas + démo auto : un SEUL moteur = AUTO_DEMO (auto + Précédent/Suivant).
+    // startGuidedTour(key) ouvre cette démo unique directement au chapitre correspondant.
+    const TAB_DEMO_IDX = { full: 0, accueil: 4, lieux: 12, connexions: 16, mates: 16, jeux: 25, securite: 29, profil: 32 };
     function startGuidedTour(key) {
-      const steps = (key === "full") ? GUIDED_TOURS.full : GUIDED_TOURS.full.filter((s) => s.tab === key);
-      if (!steps.length) return;
-      runGuidedTour(steps);
+      const i = (typeof TAB_DEMO_IDX[key] === "number") ? TAB_DEMO_IDX[key] : 0;
+      if (typeof startAutoDemo === "function") startAutoDemo(i);
     }
     function showTourStep(i) {
       if (i >= _activeTour.length) { endTour(); return; }
