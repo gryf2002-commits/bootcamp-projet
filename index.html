@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=199"></script>
-  <script src="sunmates-icons.js?v=199"></script>
+  <script src="sunmates-badges.js?v=200"></script>
+  <script src="sunmates-icons.js?v=200"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -894,11 +894,13 @@
       background: transparent; border: 0; padding: .4rem .6rem; margin: 0; display: flex; flex-direction: column;
       align-items: center; gap: .15rem; color: var(--muted); font-size: .62rem; font-weight: 600; flex: 1;
     }
-    .bottom-nav button .ni { font-size: 20px; line-height: 1; filter: grayscale(1) opacity(.6); transition: filter .15s; }
+    .bottom-nav button .ni { font-size: 23px; line-height: 1; filter: grayscale(.85) opacity(.5); transition: filter .2s, transform .22s cubic-bezier(.2,.8,.3,1); }
     .bottom-nav button.active { color: var(--accent); }
-    .bottom-nav button.active .ni { filter: none; }
+    /* Âme SunMates : l'onglet actif gagne le RELIEF + un petit lever de soleil dessous */
+    .bottom-nav button.active .ni { filter: var(--relief); transform: translateY(-3px) scale(1.16); }
     .bottom-nav button.active::before {
-      content: ""; position: absolute; top: 0; width: 28px; height: 3px; border-radius: 0 0 4px 4px; background: var(--accent);
+      content: ""; position: absolute; top: -3px; left: 50%; transform: translateX(-50%); width: 34px; height: 22px; border-radius: 0;
+      background: radial-gradient(circle at 50% 100%, rgba(255,201,60,.9), rgba(255,138,61,.25) 45%, rgba(255,138,61,0) 72%); pointer-events: none;
     }
     .bottom-nav button { position: relative; }
 
@@ -1422,6 +1424,19 @@
     .br-medal::before, .smbadge-wrap::before { content:""; position:absolute; inset:-12%; z-index:-1; border-radius:50%;
       background: radial-gradient(circle at 50% 46%, rgba(255,201,60,.42), rgba(255,138,61,.14) 55%, transparent 72%); }
     @media (prefers-reduced-motion: reduce) { .sm-float { animation: none !important; } }
+
+    /* ============ V2.2 — SOBRIÉTÉ (déclutter) + soleil signature ============ */
+    /* L'accès rapide ne double plus la barre de nav du bas (moins de blocs lourds) */
+    .grid2 .tile[data-goto="connexions"], .grid2 .tile[data-goto="securite"],
+    .grid2 .tile[data-goto="lieux"], .grid2 .tile[data-goto="profil"] { display: none; }
+    /* Plus d'air entre les sections de l'accueil */
+    .tab-panel[data-panel="accueil"] > section, .tab-panel[data-panel="accueil"] > .section-head { margin-top: 1.3rem; }
+    /* Clin d'œil SOLEIL en haut-gauche des titres d'écran (essence SunMates, discret) */
+    .tab-panel > h1 { position: relative; isolation: isolate; }
+    .tab-panel > h1::before { content: "☀"; position: absolute; left: -3px; top: -.42em; font-size: 1.7em; line-height: 1; z-index: -1;
+      opacity: .13; background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; filter: var(--relief); }
+    /* Lever de soleil en haut-gauche du héros joueur */
+    .player-hero .ph-glow { left: -52px; top: -64px; bottom: auto; background: radial-gradient(circle at 30% 30%, rgba(255,201,60,.6), rgba(255,138,61,0) 70%); }
     .prof-badges .pb-more { font-size: .76rem; font-weight: 800; color: var(--accent); }
     .prof-badges .pb-lbl { font-size: .78rem; font-weight: 700; color: var(--muted); }
     .prof-badges .pb-edit { margin-left: auto; font-size: .76rem; font-weight: 700; color: var(--accent); }
@@ -2705,12 +2720,8 @@
             <div class="act-card">
               <div class="picker-head"><h3 id="proofTitle" style="margin:0">Confirme ton défi</h3><button id="proofCancel" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
               <p class="muted" id="proofDesc" style="font-size:.85rem;margin:.3rem 0 .7rem"></p>
-              <div class="proof-drop" id="proofDrop">
-                <input id="proofFile" type="file" accept="image/*" capture="environment" hidden>
-                <div id="proofPlaceholder">📸 Ajoute une photo preuve<br><span class="muted" style="font-size:.78rem">Touche pour prendre ou choisir</span></div>
-                <img id="proofPreview" alt="" style="display:none">
-              </div>
-              <button class="btn-primary btn-block" id="proofSubmit" style="margin-top:.7rem" disabled>Valider et gagner l'XP</button>
+              <textarea id="proofNote" rows="2" maxlength="200" placeholder="En un mot, comment l'as-tu accompli ? (optionnel) ✨" style="width:100%;resize:none"></textarea>
+              <button class="btn-primary btn-block" id="proofSubmit" style="margin-top:.6rem">✅ Je confirme l'avoir accompli</button>
               <div class="msg" id="proofMsg" style="text-align:center"></div>
             </div>
           </div>
@@ -3668,12 +3679,12 @@
 
     <!-- ---------------- Barre de navigation (bas) ---------------- -->
     <nav class="bottom-nav">
-      <button data-tab="accueil" class="active"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span class="nav-lbl" data-i18n="nav.home">Accueil</span></button>
-      <button data-tab="lieux"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg><span class="nav-lbl" data-i18n="nav.places">Lieux</span></button>
-      <button data-tab="jeux"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z"/></svg><span class="nav-lbl" data-i18n="nav.games">Jeux</span><span class="navbadge hidden" id="navJeux"></span></button>
-      <button data-tab="connexions"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2"/><path d="M3.6 19a5.5 5.5 0 0 1 10.8 0"/><path d="M16 7.6a3 3 0 0 1 0 5.6"/><path d="M17.8 19a5 5 0 0 0-3-4.7"/></svg><span class="nav-lbl" data-i18n="nav.mates">Mates</span><span class="navbadge hidden" id="navMates"></span></button>
-      <button data-tab="securite"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/></svg><span class="nav-lbl" data-i18n="nav.safety">Sécurité</span><span class="navbadge hidden" id="navSecu">●</span></button>
-      <button data-tab="profil"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg><span class="nav-lbl" data-i18n="nav.profile">Profil</span></button>
+      <button data-tab="accueil" class="active"><span class="ni">🏠</span><span class="nav-lbl" data-i18n="nav.home">Accueil</span></button>
+      <button data-tab="lieux"><span class="ni">🛟</span><span class="nav-lbl" data-i18n="nav.places">Lieux</span></button>
+      <button data-tab="jeux"><span class="ni">🎯</span><span class="nav-lbl" data-i18n="nav.games">Jeux</span><span class="navbadge hidden" id="navJeux"></span></button>
+      <button data-tab="connexions"><span class="ni">🤝</span><span class="nav-lbl" data-i18n="nav.mates">Mates</span><span class="navbadge hidden" id="navMates"></span></button>
+      <button data-tab="securite"><span class="ni">🛡️</span><span class="nav-lbl" data-i18n="nav.safety">Sécurité</span><span class="navbadge hidden" id="navSecu">●</span></button>
+      <button data-tab="profil"><span class="ni">🧭</span><span class="nav-lbl" data-i18n="nav.profile">Profil</span></button>
     </nav>
   </section>
 
@@ -4221,6 +4232,9 @@
         if (grp) grp.style.display = home ? "none" : "";
         if (grpCard) grpCard.style.display = home ? "none" : "";
         if (home) { _qsMode = "solo"; const so = $("qsModeSolo"); if (so) so.classList.add("active"); if (grp) grp.classList.remove("active"); }
+        // Sobriété : en Voyage on allège (focus carte/rencontre) → on masque les missions rapides
+        // (le jeu solo vit surtout en mode Maison) ; en Maison on les montre.
+        const qms = hub ? hub.querySelector(".qm-strip") : null; if (qms) qms.style.display = home ? "" : "none";
         if (typeof renderQuestSpotlight === "function") renderQuestSpotlight();
       }
     }
@@ -8833,12 +8847,12 @@
     function completeSolo(key) {
       const c = SOLO_CHALLENGES.find((x) => x.key === key); if (!c) return;
       const s = _soloState(); if ((s.ch || {})[key]) return;
-      _proof = { key: c.key, xp: c.xp, title: c.title, file: null };
+      _proof = { key: c.key, xp: c.xp, title: c.title };
       const city = (myProfile && myProfile.city) || "ta ville";
       $("proofTitle").textContent = c.title;
-      $("proofDesc").textContent = "Poste une photo qui prouve : " + c.desc.replace("{ville}", city);
-      $("proofPreview").style.display = "none"; $("proofPlaceholder").style.display = "";
-      $("proofFile").value = ""; $("proofSubmit").disabled = true; $("proofMsg").textContent = "";
+      $("proofDesc").textContent = c.desc.replace("{ville}", city) + " — confirme quand c'est fait (sur l'honneur ✨).";
+      { const n = $("proofNote"); if (n) n.value = ""; }
+      $("proofSubmit").disabled = false; $("proofMsg").textContent = "";
       show($("proofModal"), true);
       if (window.SMSound) SMSound.play("pop");
     }
@@ -8875,25 +8889,12 @@
     { const ss = $("spStreak"); if (ss) ss.addEventListener("click", () => { const h = $("homeStreak"); if (h) h.click(); }); }
 
     // ---- Modal de PREUVE (photo) : valide un défi solo en postant une preuve ----
-    { const pd = $("proofDrop"); if (pd) pd.addEventListener("click", () => $("proofFile") && $("proofFile").click()); }
-    { const pf = $("proofFile"); if (pf) pf.addEventListener("change", (e) => {
-        const f = e.target.files && e.target.files[0]; if (!f) return; _proof.file = f;
-        const r = new FileReader(); r.onload = () => { const pv = $("proofPreview"); pv.src = r.result; pv.style.display = "block"; $("proofPlaceholder").style.display = "none"; }; r.readAsDataURL(f);
-        $("proofSubmit").disabled = false;
-      }); }
     { const pc = $("proofCancel"); if (pc) pc.addEventListener("click", () => show($("proofModal"), false)); }
     { const ps = $("proofSubmit"); if (ps) ps.addEventListener("click", async () => {
-        if (!_proof.file || !_proof.key) return;
-        ps.disabled = true; $("proofMsg").style.color = "var(--muted)"; $("proofMsg").textContent = "Envoi de la preuve…";
-        let url = null;
-        try {
-          const ext = ((_proof.file.name || "photo.jpg").split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
-          const path = (myUserId || "x") + "/" + _proof.key + "_" + Date.now() + "." + ext;
-          const up = await db.storage.from("proofs").upload(path, _proof.file, { upsert: true, cacheControl: "3600" });
-          if (!up.error) url = db.storage.from("proofs").getPublicUrl(path).data.publicUrl;
-        } catch (e) {}
-        if (!url) { $("proofMsg").style.color = "var(--danger)"; $("proofMsg").textContent = "Upload impossible, réessaie."; ps.disabled = false; return; }
-        const r = await grantSoloXp(_proof.key, _proof.xp, url);
+        if (!_proof.key) return;
+        ps.disabled = true; $("proofMsg").style.color = "var(--muted)"; $("proofMsg").textContent = "Validation…";
+        const note = (($("proofNote") && $("proofNote").value) || "").trim();
+        const r = await grantSoloXp(_proof.key, _proof.xp, note || null);  // léger : note courte, AUCUNE photo
         if (!r.ok) { $("proofMsg").style.color = "var(--danger)"; $("proofMsg").textContent = r.message || "Validation refusée"; ps.disabled = false; return; }
         const s = _soloState(); s.ch = s.ch || {}; s.ch[_proof.key] = true; _soloSave(s);
         try { const tk = "sm_solo_total_" + (myUserId || "x"); localStorage.setItem(tk, String((parseInt(localStorage.getItem(tk) || "0", 10) || 0) + 1)); } catch (e) {}
