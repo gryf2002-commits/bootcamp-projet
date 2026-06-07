@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=259"></script>
-  <script src="sunmates-icons.js?v=259"></script>
+  <script src="sunmates-badges.js?v=260"></script>
+  <script src="sunmates-icons.js?v=260"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -665,6 +665,12 @@
     .popinfo-t { margin: 0 0 .5rem; font-size: 1.08rem; }
     .popinfo-b { font-size: .9rem; color: var(--muted); line-height: 1.5; }
     .popinfo-b b { color: var(--ink); }
+    /* Spot actif « story » */
+    .spot-live { display: flex; align-items: center; gap: .7rem; padding: .6rem .7rem; border-radius: 14px; color: #fff; background: radial-gradient(120% 130% at 12% -10%, rgba(255,255,255,.22), rgba(255,255,255,0) 46%), linear-gradient(135deg,#FF9E4D,#FF6F3D); box-shadow: var(--shadow-pop); }
+    .spot-live-emoji { font-size: 1.7rem; flex-shrink: 0; }
+    .spot-live-body { flex: 1; min-width: 0; }
+    .spot-live-txt { font-weight: 800; line-height: 1.2; }
+    .spot-live-meta { font-size: .74rem; opacity: .96; margin-top: .15rem; }
     .inspo-chip { font-size: .74rem; font-weight: 700; background: var(--cream); border: 1px solid var(--line); border-radius: 999px; padding: .2rem .55rem; color: var(--ink); }
     body.theme-dusk .inspo-chip { background: #2a2140; }
     @keyframes popinfoFade { from { opacity: 0; } to { opacity: 1; } }
@@ -3872,6 +3878,8 @@
               <div class="ph-xp-next"><span class="ph-next-ic">🚀</span><span class="ph-next-txt" id="phXpNext">Accomplis une quête pour gagner ton premier niveau</span></div>
             </div>
           </section>
+          <!-- Objectifs de la semaine : remontés ici (sous le niveau) → moins de scroll -->
+          <div id="weeklyGoals"></div>
           <!-- Radar : la quête géolocalisée la plus proche de toi (Paris) -->
           <div class="card nq-card" id="nearQuestCard" style="display:none">
             <div class="nq-emblem" id="nqEmblem">🎯</div>
@@ -3896,7 +3904,6 @@
             <span class="cap-go">Explorer ›</span>
           </button>
           <div class="xp-banner" id="xpBanner"></div>
-          <div id="weeklyGoals"></div>
           <!-- Navigation rapide en tuiles colorées -->
           <div class="cat-row" id="jeuxNav">
             <div class="cat-tile" data-jeuxnav="quests"><div class="cic c-sun" data-smicon="quest" data-smicon-size="36">🎯</div><div class="clbl">Quêtes</div></div>
@@ -6640,11 +6647,22 @@
       const ckWeek = (myCheckinsRaw || []).filter((c) => _isThisWeek(c.created_at)).length;
       const qWeek = (myQuestRows || []).filter((r) => r.status === "completed" && _isThisWeek(r.completed_at)).length;
       const prof = _lastCompletionPct || 0;
-      const goals = [
+      const ritDone = Object.keys((typeof _soloState === "function" ? (_soloState().rit || {}) : {})).length;
+      // Pool d'objectifs qui VARIE chaque semaine (3 piochés selon le n° de semaine).
+      const pool = [
         { ic: "🎯", label: "Accomplir 2 quêtes", cur: Math.min(qWeek, 2), max: 2, go: "quests" },
+        { ic: "🎯", label: "Accomplir 3 quêtes", cur: Math.min(qWeek, 3), max: 3, go: "quests" },
         { ic: "📍", label: "Faire 1 check-in", cur: Math.min(ckWeek, 1), max: 1, go: "lieux" },
+        { ic: "📍", label: "Faire 2 check-ins", cur: Math.min(ckWeek, 2), max: 2, go: "lieux" },
         { ic: "🪪", label: "Profil complété à 80 %", cur: Math.min(prof, 80), max: 80, unit: "%", go: "profil" },
+        { ic: "☀️", label: "Cocher 3 rituels", cur: Math.min(ritDone, 3), max: 3, go: "home" },
+        { ic: "🤝", label: "Recommander un Mate", cur: 0, max: 1, go: "mates" },
       ];
+      // Sélection déterministe par semaine (toujours 3, mais elles tournent)
+      const wk = (function () { const m = /(\d+)/.exec(String(_weekStart ? _weekStart() : "0")); return m ? parseInt(m[1].slice(-4), 10) : 0; })();
+      const idx = [0, 1, 2].map((k) => (wk * 3 + k * 5 + k) % pool.length);
+      const uniq = [...new Set(idx)]; while (uniq.length < 3) { const c = (uniq[uniq.length - 1] + 1) % pool.length; if (!uniq.includes(c)) uniq.push(c); else break; }
+      const goals = uniq.slice(0, 3).map((i) => pool[i]);
       const doneCount = goals.filter((g) => g.cur >= g.max).length;
       // Fête la semaine parfaite, une seule fois par semaine.
       if (doneCount === goals.length) {
@@ -6669,6 +6687,8 @@
         if (g === "quests") { goToTab("jeux"); if (typeof openJeuxSheet === "function") setTimeout(() => openJeuxSheet("quests"), 80); }
         else if (g === "lieux") { goToTab("lieux"); }
         else if (g === "profil") { goToTab("profil"); if (typeof showProfileSegment === "function") showProfileSegment("edit"); }
+        else if (g === "home") { goToTab("accueil"); if (typeof setHomeMode === "function") setHomeMode("home"); }
+        else if (g === "mates") { goToTab("connexions"); }
       }));
     }
     function renderParcours() {
@@ -10150,13 +10170,16 @@
           }).join("") + "</details>"
         : "";
       $("hmCities").querySelectorAll("[data-souvcity]").forEach((el) => el.addEventListener("click", () => {
-        const c = el.dataset.souvcity;
-        const cur = _souvGet(c);
-        const v = window.prompt("Ton souvenir marquant à " + c + " (un moment, une rencontre…) :", cur || "");
-        if (v === null) return; // annulé
-        _souvSet(c, v.trim().slice(0, 140));
-        if (typeof toast === "function") toast("📖", v.trim() ? "Souvenir enregistré ✨" : "Souvenir effacé");
-        renderHomeMates();
+        const c = el.dataset.souvcity; const cur = _souvGet(c);
+        popInfo("📖", "Souvenir · " + c,
+          "<p style='font-size:.84rem;margin:0 0 .6rem'>Un moment, une rencontre, une émotion à " + escapeHtml(c) + "…</p>" +
+          "<textarea id='souvInput' maxlength='140' rows='3' placeholder='Ton plus beau souvenir ici…' style='width:100%;box-sizing:border-box;padding:.6rem;border:1px solid var(--line);border-radius:10px;resize:none;font:inherit'>" + (cur ? escapeHtml(cur) : "") + "</textarea>" +
+          "<button class='btn-primary btn-block' id='souvSave' style='margin-top:.7rem'>Enregistrer</button>" +
+          (cur ? "<button class='btn-ghost btn-block' id='souvDel' style='margin-top:.4rem'>Effacer</button>" : ""));
+        setTimeout(() => {
+          const sv = $("souvSave"); if (sv) sv.onclick = () => { const v = (($("souvInput") && $("souvInput").value) || "").trim().slice(0, 140); _souvSet(c, v); const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); if (typeof toast === "function") toast("📖", v ? "Souvenir enregistré ✨" : "Souvenir effacé"); renderHomeMates(); };
+          const dl = $("souvDel"); if (dl) dl.onclick = () => { _souvSet(c, ""); const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); renderHomeMates(); };
+        }, 50);
       }));
     }
     // Album souvenir : 1 note marquante par ville, stockée en local (léger, perso).
@@ -11586,7 +11609,13 @@
       if (myProfile && isSpotActive(myProfile)) {
         selectedSpotEmoji = myProfile.status_emoji || selectedSpotEmoji;
         pick.querySelectorAll("[data-spotemoji]").forEach((x) => x.classList.toggle("active", x.dataset.spotemoji === selectedSpotEmoji));
-        if (cur) { cur.style.display = ""; cur.innerHTML = `<span class="spot-chip"><span class="se">${escapeHtml(myProfile.status_emoji || "☀️")}</span><span class="stxt">${escapeHtml(myProfile.status_text)}</span></span> <span class="muted" style="font-size:.72rem">· ${t("spot.live")}</span>`; }
+        // Carte « story » du spot actif + compte à rebours de visibilité (fenêtre 24 h)
+        const left = SPOT_WINDOW - (Date.now() - new Date(myProfile.status_at).getTime());
+        const hLeft = Math.max(1, Math.round(left / 3600000));
+        if (cur) { cur.style.display = ""; cur.innerHTML =
+          `<div class="spot-live"><span class="spot-live-emoji">${escapeHtml(myProfile.status_emoji || "☀️")}</span>
+             <div class="spot-live-body"><div class="spot-live-txt">${escapeHtml(myProfile.status_text)}</div>
+               <div class="spot-live-meta">🟢 En story · visible encore <b>${hLeft} h</b></div></div></div>`; }
         if ($("spotInput") && !$("spotInput").value) $("spotInput").value = myProfile.status_text;
         if (clr) clr.style.display = "";
         if (sum) sum.textContent = (myProfile.status_emoji || "☀️") + " " + myProfile.status_text;
