@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=231"></script>
-  <script src="sunmates-icons.js?v=231"></script>
+  <script src="sunmates-badges.js?v=232"></script>
+  <script src="sunmates-icons.js?v=232"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -840,7 +840,7 @@
     .stat { font-size: 2.2rem; font-weight: 800; color: var(--accent); line-height: 1; }
     .stat-row { display: flex; gap: .6rem; }
     .stat-box { flex: 1; min-width: 0; background: var(--accent-soft); border-radius: var(--radius-sm); padding: .9rem .5rem; text-align: center; }
-    .stat-box .stat { font-size: 1.55rem; } /* compact : tient à 4 stats (Confiance/XP/Mates/Check-ins) */
+    .stat-box .stat { font-size: 1.2rem; } /* chiffres plus discrets : l'identité (nom/ville) prime */
     .stat-box .lbl { color: var(--muted); font-size: .72rem; margin-top: .2rem; white-space: nowrap; }
 
     /* ----------------------------- Avatars -------------------------- */
@@ -855,7 +855,9 @@
        le ⚙️ (absolu, en haut à droite) et le badge de vérification. */
     #profMain .person .info { padding-right: 2.6rem; } /* réserve la place du ⚙️ (40px + offset) */
     #profMain .person .info .name { flex-wrap: nowrap; }
-    #profileName { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #profileName { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1.3rem; font-weight: 800; }
+    #profileCity { font-size: .92rem; }
+    #profileAvatar { cursor: pointer; } /* tap → photo en grand */
     #verifBadge { flex-shrink: 0; }
     /* Logo « vérifié » rond aux couleurs SunMates (sans le mot, partout dans l'app) */
     .vchip { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: linear-gradient(135deg,#FFC93C,#FF8A3D 60%,#17a99b); color: #fff; font-size: 10px; font-weight: 900; line-height: 1; vertical-align: middle; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
@@ -2419,6 +2421,11 @@
   </div>
 
   <!-- ===== Carte explicative d'installation (depuis Réglages) ===== -->
+  <!-- Photo en grand (lightbox) -->
+  <div id="photoLightbox" class="act-overlay hidden" style="background:rgba(0,0,0,.9)">
+    <img id="photoLightboxImg" alt="Photo" style="max-width:94vw;max-height:88vh;border-radius:14px;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.6)" />
+  </div>
+
   <div id="installModal" class="act-overlay hidden">
     <div class="act-card" style="max-width:360px">
       <div class="picker-head"><h3 style="margin:0">📲 Installer SunMates</h3><button id="installModalClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
@@ -9465,6 +9472,10 @@
     function _souvGet(c) { try { return localStorage.getItem(_souvKey(c)) || ""; } catch (e) { return ""; } }
     function _souvSet(c, v) { try { if (v) localStorage.setItem(_souvKey(c), v); else localStorage.removeItem(_souvKey(c)); } catch (e) {} }
     { const sh = $("hmSouvShare"); if (sh) sh.addEventListener("click", () => { if (typeof openSouvenir === "function") openSouvenir(); }); }
+    // Photo en grand (lightbox) : tap sur sa photo de profil → vue agrandie.
+    function openPhotoLightbox(url) { if (!url) return; const m = $("photoLightbox"), im = $("photoLightboxImg"); if (!m || !im) return; im.src = url; m.classList.remove("hidden"); }
+    { const m = $("photoLightbox"); if (m) m.addEventListener("click", () => m.classList.add("hidden")); }
+    { const a = $("profileAvatar"); if (a) a.addEventListener("click", () => { const u = myProfile && myProfile.avatar_url; if (u) openPhotoLightbox(u); else toast("📷", "Ajoute une photo de profil dans « Modifier mon profil »"); }); }
     { const rr = $("scReroll"); if (rr) rr.addEventListener("click", () => { const s = _soloState(); s.seed = ((s.seed || 0) + 1) % 1000; _soloSave(s); renderSoloChallenges(); if (window.SMSound) SMSound.play("pop"); }); }
     { const ss = $("spStreak"); if (ss) ss.addEventListener("click", (e) => { e.stopPropagation(); const h = $("homeStreak"); if (h) h.click(); }); }
     // La carte « progression solo » est cliquable → ouvre l'onglet Jeux (où vivent niveau & XP).
@@ -11017,6 +11028,8 @@
       $("qrScanModal").classList.add("hidden");
     }
     async function openQrScan() {
+      // RGPD : on explique et on demande l'accord AVANT d'allumer la caméra.
+      if (!confirm("SunMates va utiliser ta caméra uniquement pour scanner le QR d'un Mate. Aucune image n'est enregistrée ni envoyée. Continuer ?")) return;
       const msg = $("qrScanMsg"); if (msg) msg.textContent = "";
       $("qrScanModal").classList.remove("hidden");
       const v = $("qrScanVideo");
