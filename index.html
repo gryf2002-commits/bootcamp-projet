@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=263"></script>
-  <script src="sunmates-icons.js?v=263"></script>
+  <script src="sunmates-badges.js?v=264"></script>
+  <script src="sunmates-icons.js?v=264"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -655,8 +655,19 @@
     .ds-go { margin-top: .55rem; padding: .4rem .8rem; font-size: .8rem; }
 
     /* Carte « score de confiance » */
+    /* Profil : métrique HÉRO (score de confiance) + nom focal */
+    #profMain .person .info .name { font-size: 1.3rem; font-weight: 800; }
+    .prof-hero-stat { display: flex; align-items: center; gap: .7rem; margin-top: 1rem; padding: .7rem .85rem; border-radius: 16px; cursor: pointer; color: #fff; background: radial-gradient(120% 130% at 12% -10%, rgba(255,255,255,.22), rgba(255,255,255,0) 46%), var(--accent-grad); box-shadow: var(--shadow-pop); }
+    .prof-hero-stat .phs-ic { font-size: 1.7rem; flex-shrink: 0; }
+    .prof-hero-stat .phs-txt { flex: 1; min-width: 0; line-height: 1.2; }
+    .prof-hero-stat .phs-lbl { font-weight: 800; font-size: .92rem; }
+    .prof-hero-stat .phs-sub { font-size: .72rem; opacity: .95; }
+    .prof-hero-stat .phs-v { font-size: 1.9rem; font-weight: 900; flex-shrink: 0; }
+    .prof-hero-stat:active { transform: scale(.99); }
+    .stat-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .5rem; }
     /* popInfo : tuile explicative qui pop au centre (DA sunset) */
-    .popinfo-ov { position: fixed; inset: 0; z-index: 4000; display: grid; place-items: center; padding: 1.2rem; background: rgba(20,8,30,.55); backdrop-filter: blur(3px); animation: popinfoFade .18s ease; }
+    .popinfo-ov { position: fixed; inset: 0; z-index: 100000; display: grid; place-items: center; padding: 1.2rem; background: rgba(20,8,30,.55); backdrop-filter: blur(3px); animation: popinfoFade .18s ease; }
+    .fc-gear { position: absolute; top: calc(1rem + env(safe-area-inset-top)); right: 1rem; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,.16); color: #fff; font-size: 1.1rem; cursor: pointer; display: grid; place-items: center; }
     .popinfo-ov.hidden { display: none; }
     .popinfo-card { position: relative; width: 100%; max-width: 340px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 1.5rem 1.3rem 1.3rem; box-shadow: 0 18px 50px rgba(0,0,0,.32); text-align: center; animation: popinfoPop .22s cubic-bezier(.2,1.2,.4,1); }
     .popinfo-x { position: absolute; top: .6rem; right: .6rem; width: 30px; height: 30px; border: 0; border-radius: 50%; background: var(--cream); color: var(--muted); font-size: .9rem; cursor: pointer; display: grid; place-items: center; }
@@ -2398,7 +2409,7 @@
     .chip.active { background: var(--accent-grad) !important; color: #fff !important; border-color: transparent; }
     .badge.ok { background: rgba(255,177,60,.16); color: #B5740E; border-color: rgba(255,177,60,.45); }
     .tile, .gcard { background: var(--card) !important; border: 1px solid var(--line) !important; }
-    .thumb { background: var(--accent-grad); color: #fff; }
+    .thumb { background: var(--accent-grad); color: #fff; background-repeat: no-repeat; background-size: cover; }
     .thumb.green { background: linear-gradient(135deg,#22D3C5,#0E9E96) !important; }
     .thumb.blue  { background: linear-gradient(135deg,#5BC0FF,#2D8FE0) !important; }
     .thumb.purp  { background: linear-gradient(135deg,#C77DFF,#8A4FE0) !important; }
@@ -2625,6 +2636,8 @@
   <!-- ===== Faux appel (sortie de secours pour voyageur solo) ===== -->
   <div id="fakeCall" class="fakecall hidden">
     <div class="fc-inner">
+      <button class="fc-gear" id="fcGear" title="Choisir ma sonnerie" aria-label="Choisir ma sonnerie">⚙️</button>
+      <input type="file" accept="audio/*" id="fcSoundFile" style="display:none" />
       <div class="fc-top">
         <div class="fc-avatar" id="fcAvatar">📞</div>
         <div class="fc-name" id="fcName">Maman</div>
@@ -3016,7 +3029,7 @@
         <p class="muted" style="margin:-.2rem 0 .6rem;font-size:.84rem">Filtre, puis <b>touche une pastille</b> pour agir 👇</p>
         <div class="card homemap-card">
           <!-- Sélecteur de ville (menu déroulant) : concentre la carte sur une ville de jeu -->
-          <div class="city-pick"><span class="city-pick-ic">🗺️</span><select id="questCitySelect" aria-label="Choisir une ville"><option value="">Toutes les villes</option></select><button class="todo-toggle" id="questTodoToggle" type="button" title="N'afficher que les quêtes pas encore faites">🎯 À faire</button></div>
+          <div class="city-pick"><select id="questCitySelect" aria-label="Choisir une ville"><option value="">Toutes les villes</option></select><button class="todo-toggle" id="questTodoToggle" type="button" title="N'afficher que les quêtes pas encore faites">À faire</button></div>
           <!-- Chips colorés + emojis (l'âme SunMates) : couleur = type de marqueur sur la carte -->
           <div class="chips wrap homemap-filters" id="homeMapFilters">
             <button class="chip active cl-places" data-layer="places">📍 Lieux <b data-cnt></b></button>
@@ -3464,8 +3477,14 @@
               <div class="meta" id="profileCity"></div>
             </div>
           </div>
-          <div class="stat-row" style="margin-top:1rem">
-            <div class="stat-box stat-click" data-stat="trust"><div class="stat" id="trustScore">0</div><div class="lbl">Confiance ⓘ</div></div>
+          <!-- Hiérarchie : le score de confiance (cœur « sécurité d'abord ») en métrique HÉRO -->
+          <div class="prof-hero-stat stat-click" data-stat="trust" role="button" tabindex="0">
+            <span class="phs-ic">🛟</span>
+            <div class="phs-txt"><div class="phs-lbl">Score de confiance</div><div class="phs-sub">ta fiabilité aux yeux des voyageurs ⓘ</div></div>
+            <div class="phs-v" id="trustScore">0</div>
+          </div>
+          <!-- Stats secondaires -->
+          <div class="stat-row stat-row-3" style="margin-top:.55rem">
             <div class="stat-box stat-click" data-stat="xp"><div class="stat" id="xpScore">0</div><div class="lbl">XP ⭐</div></div>
             <div class="stat-box stat-click" data-stat="mates"><div class="stat" id="matesCountSelf">0</div><div class="lbl">Mates</div></div>
             <div class="stat-box stat-click" data-stat="checkins"><div class="stat" id="checkinCount">0</div><div class="lbl">Check-ins</div></div>
@@ -6230,6 +6249,29 @@
     // Sonnerie du faux appel = sonnerie SMSound (banque centralisée, respecte le mute, testable en admin).
     function _playFakeRing() { if (window.SMSound && SMSound.playRing) SMSound.playRing(); }
     function _stopFakeRing() { if (window.SMSound && SMSound.stopRing) SMSound.stopRing(); }
+    // ⚙️ Roue du faux appel : l'utilisateur charge SA propre sonnerie (stockée locale, compacte).
+    { const gear = $("fcGear"), fileIn = $("fcSoundFile");
+      if (gear && fileIn) {
+        gear.addEventListener("click", () => {
+          const has = (() => { try { return !!localStorage.getItem("sm_ringtone"); } catch (e) { return false; } })();
+          popInfo("🎵", "Ma sonnerie",
+            "<p style='font-size:.84rem;margin:0 0 .8rem'>Choisis un fichier audio (mp3/m4a) depuis ton téléphone — idéalement <b>court (≈30 s) et léger (&lt; 1 Mo)</b>. Il est gardé sur ton appareil.</p>" +
+            "<button class='btn-primary btn-block' id='ringPick'>📂 Choisir un fichier</button>" +
+            (has ? "<button class='btn-ghost btn-block' id='ringReset' style='margin-top:.5rem'>↩️ Revenir à la sonnerie par défaut</button>" : ""));
+          setTimeout(() => {
+            const pk = document.getElementById("ringPick"); if (pk) pk.onclick = () => fileIn.click();
+            const rs = document.getElementById("ringReset"); if (rs) rs.onclick = () => { try { localStorage.removeItem("sm_ringtone"); } catch (e) {} if (window.SMSound) SMSound.reloadRing && SMSound.reloadRing(); const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); toast("🎵", "Sonnerie par défaut rétablie"); _stopFakeRing(); _playFakeRing(); };
+          }, 40);
+        });
+        fileIn.addEventListener("change", () => {
+          const f = fileIn.files && fileIn.files[0]; if (!f) return;
+          if (f.size > 1500000) { toast("⚠️", "Fichier trop lourd (max ~1,5 Mo). Choisis un extrait plus court."); fileIn.value = ""; return; }
+          const rd = new FileReader();
+          rd.onload = () => { try { localStorage.setItem("sm_ringtone", rd.result); if (window.SMSound) SMSound.reloadRing && SMSound.reloadRing(); const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); toast("🎵", "Ta sonnerie est enregistrée !"); _stopFakeRing(); _playFakeRing(); } catch (e) { toast("⚠️", "Trop lourd pour être gardé. Essaie un extrait plus court."); } };
+          rd.readAsDataURL(f); fileIn.value = "";
+        });
+      }
+    }
     function startFakeCall(name) {
       name = name || "Maman";
       $("fcName").textContent = name;
@@ -10449,18 +10491,19 @@
       }
       // Si un fichier ringtone.mp3 (libre de droit, avec paroles) est présent, on le joue ;
       // sinon on retombe sur la marimba synthétisée. Respecte TOUJOURS le mute global.
-      let _ringAudio = null, _ringAudioOk = null;
+      let _ringAudio = null;
+      function _ringSrc() { try { return localStorage.getItem("sm_ringtone") || "ringtone.mp3"; } catch (e) { return "ringtone.mp3"; } }
+      function reloadRing() { try { if (_ringAudio) { _ringAudio.pause(); } } catch (e) {} _ringAudio = null; }
       function playRing() {
         if (!on) return;
         stopRing();
         try {
-          if (_ringAudioOk === false) { _synthRing(); return; }   // déjà testé absent → marimba direct
-          if (!_ringAudio) { _ringAudio = new Audio("ringtone.mp3"); _ringAudio.loop = true; _ringAudio.volume = 0.85; }
+          if (!_ringAudio) { _ringAudio = new Audio(_ringSrc()); _ringAudio.loop = true; _ringAudio.volume = 0.9; }
           _ringAudio.currentTime = 0;
           const p = _ringAudio.play();
-          if (p && p.then) p.then(() => { _ringAudioOk = true; }).catch(() => { _ringAudioOk = false; _ringAudio = null; _synthRing(); });
+          if (p && p.then) p.then(() => {}).catch(() => { _ringAudio = null; _synthRing(); });  // pas de fichier → marimba
           _ringTO = setTimeout(stopRing, 20000);
-        } catch (e) { _ringAudioOk = false; _synthRing(); }
+        } catch (e) { _synthRing(); }
       }
       function stopRing() {
         try { if (_ringTO) { clearTimeout(_ringTO); _ringTO = null; } } catch (e) {}
@@ -10468,7 +10511,7 @@
         try { if (_ringMaster && ctx) { const m = _ringMaster; _ringMaster = null; m.gain.cancelScheduledValues(ctx.currentTime); m.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15); setTimeout(() => { try { m.disconnect(); } catch (e) {} }, 250); } } catch (e) {}
       }
       function set(v) { on = !!v; try { localStorage.setItem("sm_sound", on ? "1" : "0"); } catch (e) {} if (on) { try { ac() && ctx.resume(); } catch (e) {} play("toggle", true); } else { stopRing(); } }
-      return { play, playRing, stopRing, set, isOn: function () { return on; }, list: function () { return Object.keys(SEQ); } };
+      return { play, playRing, stopRing, reloadRing, set, isOn: function () { return on; }, list: function () { return Object.keys(SEQ); } };
     })();
     window.SMSound = SMSound;
 
