@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=201"></script>
-  <script src="sunmates-icons.js?v=201"></script>
+  <script src="sunmates-badges.js?v=202"></script>
+  <script src="sunmates-icons.js?v=202"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1426,9 +1426,6 @@
     @media (prefers-reduced-motion: reduce) { .sm-float { animation: none !important; } }
 
     /* ============ V2.2 — SOBRIÉTÉ (déclutter) + soleil signature ============ */
-    /* L'accès rapide ne double plus la barre de nav du bas (moins de blocs lourds) */
-    .grid2 .tile[data-goto="connexions"], .grid2 .tile[data-goto="securite"],
-    .grid2 .tile[data-goto="lieux"], .grid2 .tile[data-goto="profil"] { display: none; }
     /* Plus d'air entre les sections de l'accueil */
     .tab-panel[data-panel="accueil"] > section, .tab-panel[data-panel="accueil"] > .section-head { margin-top: 1.3rem; }
     /* Clin d'œil SOLEIL en haut-gauche des titres d'écran (essence SunMates, discret) */
@@ -2824,16 +2821,6 @@
           </div>
         </div>
         <div id="homeFeed"><div class="skel-row"><div class="skel skel-av"></div><div class="skel-lines"><div class="skel skel-line m"></div><div class="skel skel-line s"></div></div></div></div>
-
-        <div class="section-head"><h3>Accès rapide</h3></div>
-        <div class="grid2">
-          <div class="tile" data-goto="connexions"><div class="thumb purp" data-smicon="users" data-smicon-size="30">🤝</div><div class="t-name">Mes Mates</div><div class="t-meta" id="qaMates">Rencontre &amp; discute</div></div>
-          <div class="tile" data-goto="securite"><div class="thumb red" data-smicon="shieldsafe" data-smicon-size="30">🚨</div><div class="t-name">Sécurité</div><div class="t-meta">Position & alerte</div></div>
-          <div class="tile" data-goto="lieux"><div class="thumb green" data-smicon="near" data-smicon-size="30">🛟</div><div class="t-name">Lieux sûrs</div><div class="t-meta" id="qaLieux">Check-ins</div></div>
-          <div class="tile" data-goto="profil"><div class="thumb blue" data-smicon="usersolo" data-smicon-size="30">👤</div><div class="t-name">Mon profil</div><div class="t-meta" id="qaProfil">Score de confiance</div></div>
-          <div class="tile" data-goto="jeux"><div class="thumb" data-smicon="games" data-smicon-size="30">🎮</div><div class="t-name">Jeux & Quêtes</div><div class="t-meta" id="qaJeux">Gagne des badges</div></div>
-          <div class="tile soon" id="goldHomeTile"><div class="thumb gold" data-smicon="crown" data-smicon-size="30">👑</div><div class="t-name">SunMates Gold</div><div class="t-meta">Bientôt dispo · Gold 👑</div></div>
-        </div>
       </div>
 
       <!-- ---------------- Onglet LIEUX SÛRS ---------------- -->
