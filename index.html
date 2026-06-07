@@ -65,7 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=167"></script>
+  <script src="sunmates-badges.js?v=168"></script>
+  <script src="sunmates-icons.js?v=168"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -2355,7 +2356,7 @@
       </span><b><span class="sun">Sun</span>Mates</b></div>
       <div class="topbar-actions hidden" id="userBox">
         <button class="iconbtn" id="themeToggle" title="Changer de thème" aria-label="Changer de thème jour / nuit">🌙</button>
-        <button class="iconbtn" id="notifBell" aria-label="Notifications">🔔<span class="nbadge hidden" id="notifBellCount">0</span></button>
+        <button class="iconbtn" id="notifBell" aria-label="Notifications"><span data-smicon="bell" data-smicon-size="22">🔔</span><span class="nbadge hidden" id="notifBellCount">0</span></button>
         <button class="btn-ghost" id="logoutBtn" style="padding:.5rem .8rem;font-size:.82rem">Déconnexion</button>
       </div>
     </header>
@@ -2504,11 +2505,11 @@
         <div class="search" style="margin-top:.2rem"><span class="ico">🔍</span><input id="cafeSearch" type="text" placeholder="Rechercher un lieu ou une ville…" /></div>
         <!-- Filtres + tris en tuiles colorées (dans la DA) -->
         <div class="cat-row" id="lieuxCats">
-          <div class="cat-tile active" data-catcf="all"><div class="cic c-sun">☕</div><div class="clbl">Tous</div></div>
-          <div class="cat-tile" data-catcf="eco"><div class="cic c-green">🌱</div><div class="clbl">Éco</div></div>
-          <div class="cat-tile" data-catcf="near"><div class="cic c-blue">📍</div><div class="clbl">Près de moi</div></div>
-          <div class="cat-tile" data-catsort="rating"><div class="cic c-gold">⭐</div><div class="clbl">Top notés</div></div>
-          <div class="cat-tile" data-catsort="checkins"><div class="cic c-purp">🔥</div><div class="clbl">Populaires</div></div>
+          <div class="cat-tile active" data-catcf="all"><div class="cic c-sun" data-smicon="coffee" data-smicon-size="30">☕</div><div class="clbl">Tous</div></div>
+          <div class="cat-tile" data-catcf="eco"><div class="cic c-green" data-smicon="eco" data-smicon-size="30">🌱</div><div class="clbl">Éco</div></div>
+          <div class="cat-tile" data-catcf="near"><div class="cic c-blue" data-smicon="near" data-smicon-size="30">📍</div><div class="clbl">Près de moi</div></div>
+          <div class="cat-tile" data-catsort="rating"><div class="cic c-gold" data-smicon="rating" data-smicon-size="30">⭐</div><div class="clbl">Top notés</div></div>
+          <div class="cat-tile" data-catsort="checkins"><div class="cic c-purp" data-smicon="popular" data-smicon-size="30">🔥</div><div class="clbl">Populaires</div></div>
         </div>
         <div class="chips wrap" id="cafeFilters" style="display:none">
           <button class="chip active" data-cf="all">Tous</button>
@@ -3185,11 +3186,11 @@
           <div id="weeklyGoals"></div>
           <!-- Navigation rapide en tuiles colorées -->
           <div class="cat-row" id="jeuxNav">
-            <div class="cat-tile" data-jeuxnav="quests"><div class="cic c-sun">🎯</div><div class="clbl">Quêtes</div></div>
-            <div class="cat-tile" data-jeuxnav="games"><div class="cic c-purp">🎮</div><div class="clbl">Jeux</div></div>
-            <div class="cat-tile" data-jeuxnav="badges"><div class="cic c-gold">🏅</div><div class="clbl">Badges</div></div>
-            <div class="cat-tile" data-jeuxnav="coupons"><div class="cic c-green">🎟️</div><div class="clbl">Coupons</div></div>
-            <div class="cat-tile" data-jeuxnav="rank"><div class="cic c-blue">🏆</div><div class="clbl">Classement</div></div>
+            <div class="cat-tile" data-jeuxnav="quests"><div class="cic c-sun" data-smicon="quest" data-smicon-size="30">🎯</div><div class="clbl">Quêtes</div></div>
+            <div class="cat-tile" data-jeuxnav="games"><div class="cic c-purp" data-smicon="games" data-smicon-size="30">🎮</div><div class="clbl">Jeux</div></div>
+            <div class="cat-tile" data-jeuxnav="badges"><div class="cic c-gold" data-smicon="medal" data-smicon-size="30">🏅</div><div class="clbl">Badges</div></div>
+            <div class="cat-tile" data-jeuxnav="coupons"><div class="cic c-green" data-smicon="coupon" data-smicon-size="30">🎟️</div><div class="clbl">Coupons</div></div>
+            <div class="cat-tile" data-jeuxnav="rank"><div class="cic c-blue" data-smicon="rank" data-smicon-size="30">🏆</div><div class="clbl">Classement</div></div>
             <div class="cat-tile" data-jeuxnav="shop"><div class="cic c-pink">🛍️</div><div class="clbl">Boutique</div></div>
           </div>
           <div class="gold-only-note">👑 Gratuit : 1 quête + 1 activité par jour. Gold : illimité + <b>coupons exclusifs</b> bien plus avantageux.</div>
