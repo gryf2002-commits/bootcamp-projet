@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=227"></script>
-  <script src="sunmates-icons.js?v=227"></script>
+  <script src="sunmates-badges.js?v=228"></script>
+  <script src="sunmates-icons.js?v=228"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1230,6 +1230,9 @@
     .city-pick select{ flex:1; padding:.5rem 1.8rem .5rem .7rem; border-radius:12px; border:1px solid var(--line); background-color:var(--card); color:var(--ink); font-weight:700; font-size:.85rem; cursor:pointer; -webkit-appearance:none; appearance:none;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23E8961F' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right .7rem center; }
     body.theme-dusk .city-pick select{ background-color:#2a2140; color:#fff; border-color:rgba(255,255,255,.12); }
+    .todo-toggle{ flex-shrink:0; padding:.5rem .7rem; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--text); font-weight:700; font-size:.8rem; cursor:pointer; white-space:nowrap; }
+    .todo-toggle.active{ background:var(--accent-grad); color:#fff; border-color:transparent; }
+    body.theme-dusk .todo-toggle{ background:#2a2140; color:#eee; border-color:rgba(255,255,255,.12); }
     /* HomeMates — souvenirs (mode Maison) */
     .hm-recap{ display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:.6rem; }
     .hm-recap .hr-chip{ background:var(--cream); border-radius:12px; padding:.4rem .6rem; font-size:.8rem; font-weight:700; color:var(--ink); }
@@ -1244,6 +1247,15 @@
     .hm-city-row{ display:flex; align-items:center; gap:.5rem; font-size:.84rem; }
     .hm-city-row .hc-name{ flex:1; font-weight:700; color:var(--ink); }
     .hm-city-row .hc-n{ color:var(--accent); font-weight:800; }
+    /* Capitale du jour */
+    .capitale{ display:flex; align-items:center; gap:.7rem; width:100%; text-align:left; margin:.2rem 0 .9rem; padding:.7rem .85rem; border:0; border-radius:var(--radius); cursor:pointer;
+      background:radial-gradient(120% 130% at 15% -10%, rgba(255,255,255,.26), rgba(255,255,255,0) 46%), linear-gradient(135deg,#5E74E8,#3641B8); color:#fff; box-shadow:var(--shadow-pop); }
+    .capitale .cap-ic{ font-size:26px; flex-shrink:0; filter:var(--relief); }
+    .capitale .cap-txt{ flex:1; min-width:0; display:flex; flex-direction:column; line-height:1.2; }
+    .capitale .cap-txt b{ font-weight:800; }
+    .capitale .cap-txt span{ font-size:.78rem; opacity:.95; }
+    .capitale .cap-go{ flex-shrink:0; font-weight:800; font-size:.82rem; background:rgba(255,255,255,.22); padding:.35rem .6rem; border-radius:999px; }
+    .capitale:active{ transform:scale(.99); }
     .qcoll{ margin:.2rem 0 .9rem; }
     .qcoll-head{ display:flex; justify-content:space-between; font-size:.82rem; font-weight:800; color:var(--ink); margin-bottom:.3rem; }
     .qcoll-bar{ height:9px; border-radius:999px; background:rgba(120,40,10,.14); overflow:hidden; }
@@ -1412,6 +1424,12 @@
     .bubble { max-width: 80%; padding: .6rem .85rem; border-radius: 16px; font-size: .9rem; line-height: 1.35; word-wrap: break-word; }
     .bubble.them { background: #ffe7e1; color: var(--text); border-bottom-left-radius: 5px; align-self: flex-start; }
     .bubble.me { background: var(--accent-grad); color: #fff; border-bottom-right-radius: 5px; align-self: flex-end; }
+    /* Brise-glace (chat vide) */
+    .ice-break { display: flex; flex-direction: column; gap: .5rem; padding: 1rem .4rem; }
+    .ice-break-t { font-size: .8rem; font-weight: 800; color: var(--muted); text-align: center; margin-bottom: .2rem; }
+    .ice-chip { text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .6rem .8rem; font-size: .85rem; color: var(--ink); cursor: pointer; box-shadow: var(--shadow-sm); }
+    .ice-chip:active { transform: scale(.99); }
+    body.theme-dusk .ice-chip { background: #241b35; color: #f3e9f3; border-color: rgba(255,255,255,.08); }
     .chat-input { display: flex; gap: .5rem; align-items: center; background: var(--bg); padding: .7rem 0 .3rem; flex-shrink: 0; }
     .chat-input input { flex: 1; box-shadow: var(--shadow-sm); border-color: #fff; }
     .chat-input button { padding: .75rem 1rem; flex-shrink: 0; }
@@ -2815,7 +2833,7 @@
         <p class="muted" style="margin:-.2rem 0 .6rem;font-size:.84rem">Filtre, puis <b>touche une pastille</b> pour agir 👇</p>
         <div class="card homemap-card">
           <!-- Sélecteur de ville (menu déroulant) : concentre la carte sur une ville de jeu -->
-          <div class="city-pick"><span class="city-pick-ic">🗺️</span><select id="questCitySelect" aria-label="Choisir une ville"><option value="">Toutes les villes</option></select></div>
+          <div class="city-pick"><span class="city-pick-ic">🗺️</span><select id="questCitySelect" aria-label="Choisir une ville"><option value="">Toutes les villes</option></select><button class="todo-toggle" id="questTodoToggle" type="button" title="N'afficher que les quêtes pas encore faites">🎯 À faire</button></div>
           <!-- Chips colorés + emojis (l'âme SunMates) : couleur = type de marqueur sur la carte -->
           <div class="chips wrap homemap-filters" id="homeMapFilters">
             <button class="chip active cl-places" data-layer="places">📍 Lieux <b data-cnt></b></button>
@@ -3650,6 +3668,12 @@
             <div class="qcoll-head" id="cityProgress" style="display:none;margin-top:.5rem"><span>🏙️ Villes explorées</span><b id="cityCount">0/0</b></div>
             <div class="qcoll-bar" id="cityBarWrap" style="display:none"><span id="cityFill" style="width:0%"></span></div>
           </div>
+          <!-- Capitale du jour : une ville à l'honneur chaque jour -->
+          <button class="capitale" id="capitaleDuJour" style="display:none">
+            <span class="cap-ic">🏙️</span>
+            <span class="cap-txt"><b id="capName">—</b><span>Capitale du jour · découvre ses quêtes</span></span>
+            <span class="cap-go">Voir ›</span>
+          </button>
           <div class="xp-banner" id="xpBanner"></div>
           <div id="weeklyGoals"></div>
           <!-- Navigation rapide en tuiles colorées -->
@@ -5178,6 +5202,7 @@
         ["✨", "Ton fil", "Feed d'activité récente."],
         ["⚡", "Accès rapides (8 tuiles)", "Tuiles éclatantes : Mates, Sécurité, Lieux, Jeux & Quêtes, Classement, Coupons, Boutique, Profil."],
         ["🏠", "Bascule Voyage / Maison", "L'accueil s'adapte : carte de rencontre en Voyage, hub solo à la Maison."],
+        ["🎯", "Filtre quêtes « à faire »", "Sur la carte : n'affiche que les quêtes pas encore accomplies."],
       ]],
       ["📍 Lieux sûrs", [
         ["☕", "Catalogue de lieux", "Cartes photo : éco, check-ins, note, top noté."],
@@ -5193,6 +5218,7 @@
         ["🎯", "Radar quête la plus proche", "Géoloc → quête la plus proche + distance, bouton « Carte » qui t'y emmène."],
         ["🗺️", "Collection de quêtes", "Barre de progression X/N + célébration à 100%."],
         ["🇫🇷", "Tour de France", "Jauge « villes explorées X/10 » + célébration quand toutes faites."],
+        ["🏙️", "Capitale du jour", "Une ville de jeu à l'honneur chaque jour → ses quêtes en 1 tap."],
         ["🔒", "Anti-triche quêtes", "Justification OBLIGATOIRE (code de lieu ou note honneur) avant toute validation."],
         ["🎯", "Quêtes du jour", "Ouvertes en feuille (anti-scroll), 3/jour + cooldown."],
         ["👥", "Quêtes de groupe", "Confirmées par un Mate → bonus XP partagé."],
@@ -5223,6 +5249,7 @@
         ["🔍", "Découvrir", "Cartes riches (tags, présence, compatibilité)."],
         ["❤️", "Compatibilité", "Score + détail « pourquoi vous matchez » (tuile cliquable)."],
         ["💬", "Chat temps réel", "Messages, « en train d'écrire », accusés de lecture, traduction."],
+        ["🧊", "Brise-glace", "Suggestions de 1er message (intérêts/ville du Mate) quand la conversation est vide."],
         ["📨", "Demandes", "Connexions à accepter/refuser, confettis au match."],
         ["👍", "Recommandations (vouch)", "Des Mates se portent garants."],
         ["🚫", "Bloquer / signaler", "Couleurs distinctes, anti-spam, auto-blocage."],
@@ -7178,6 +7205,19 @@
     }
 
     // Ouvre la conversation avec un Mate (identifié par son id utilisateur)
+    // Brise-glace : suggestions de 1er message, personnalisées (intérêts / ville du Mate).
+    function _iceBreakerHtml(p) {
+      const name = ((p.username || "").split(" ")[0]) || "toi";
+      const city = (p.city || "").split(",")[0].trim();
+      const interests = Array.isArray(p.interests) ? p.interests : [];
+      const ideas = [];
+      if (interests.length) ideas.push("Hello " + name + " ! Moi aussi j'aime " + String(interests[0]).toLowerCase() + " 😄 on partage ça ?");
+      if (city) ideas.push("Coucou " + name + " ! Un bon spot à me conseiller à " + city + " ? ☕");
+      ideas.push("Salut " + name + " ! Partant·e pour une quête SunMates ensemble ? 🎯");
+      ideas.push("Hey " + name + " 👋 qu'est-ce qui t'amène à voyager en ce moment ?");
+      const chips = ideas.slice(0, 3).map((t) => '<button class="ice-chip" data-ice-msg="' + escapeHtml(t) + '">' + escapeHtml(t) + "</button>").join("");
+      return '<div class="ice-break"><div class="ice-break-t">💬 Brise-glace — touche pour démarrer</div>' + chips + "</div>";
+    }
     async function openChat(otherUserId) {
       currentChatUserId = otherUserId;
       if (typeof unhideConv === "function") unhideConv(otherUserId); // rouvrir = ré-afficher dans la liste
@@ -7206,9 +7246,8 @@
         .order("created_at", { ascending: true });
       const body = $("chatBody");
       if (error) { body.innerHTML = '<p class="muted">Erreur de chargement.</p>'; return; }
-      body.innerHTML = data.length
-        ? chatHtml(data)
-        : '<p class="muted" style="text-align:center">Démarrez la conversation 👋</p>';
+      body.innerHTML = data.length ? chatHtml(data) : _iceBreakerHtml(p);
+      if (!data.length) body.querySelectorAll("[data-ice-msg]").forEach((b) => b.addEventListener("click", () => { const i = $("chatInput"); if (i) { i.value = b.dataset.iceMsg; i.focus(); } if (window.SMSound) SMSound.play("tap"); }));
       scrollChatBottom();
       // Temps réel : « en train d'écrire » + accusés de lecture, et j'accuse réception (j'ai ouvert la conv).
       openChatRt(otherUserId);
@@ -7808,6 +7847,7 @@
     const homeLayerOn = { places: true, mates: true, activities: true, checkins: true, quests: true };
     let homeMapSig = null;                                   // signature des données du dernier rendu carte (perf : évite un rebuild identique)
     let _questCity = "";                                     // ville sélectionnée pour les quêtes ("" = toutes)
+    let _questTodoOnly = false;                              // n'afficher que les quêtes pas encore accomplies
     let homeMeMarker = null;
 
     // Pastille emoji colorée comme marqueur (au lieu du marqueur bleu par défaut).
@@ -7932,6 +7972,11 @@
       if (typeof renderNearestQuest === "function") renderNearestQuest();
       if (window.SMSound) SMSound.play("tap");
     }); }
+    { const tt = $("questTodoToggle"); if (tt) tt.addEventListener("click", () => {
+      _questTodoOnly = !_questTodoOnly; tt.classList.toggle("active", _questTodoOnly);
+      if (typeof renderHomeMap === "function") renderHomeMap();
+      if (window.SMSound) SMSound.play("tap");
+    }); }
 
     async function renderHomeMap() {
       if (typeof L === "undefined") return;
@@ -8046,6 +8091,8 @@
         me: myUserId,
         hm: (typeof getHomeMode === "function") ? getHomeMode() : "travel",
         qc: _questCity,
+        td: _questTodoOnly,
+        qd: (typeof myQuestStatus !== "undefined") ? Object.keys(myQuestStatus).filter((k) => myQuestStatus[k] === "completed").length : 0,
       });
       if (_sig === homeMapSig && homeCluster && typeof homeCluster.getLayers === "function" && homeCluster.getLayers().length) {
         setTimeout(() => { try { homeLeaf.invalidateSize(); } catch (e) {} }, 120);
@@ -8199,8 +8246,9 @@
       const allQuestPts = dbGeoQuests.length ? dbGeoQuests
         : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS.map((q) => Object.assign({ city: "Paris, France" }, q)) : []);
       populateQuestCities(allQuestPts); // alimente le menu déroulant des villes
-      // Sélecteur de ville : on n'affiche que les quêtes de la ville choisie (sinon toutes).
-      const questPts = _questCity ? allQuestPts.filter((q) => (q.city || "") === _questCity) : allQuestPts;
+      // Sélecteur de ville + filtre « à faire » : on restreint les quêtes affichées.
+      let questPts = _questCity ? allQuestPts.filter((q) => (q.city || "") === _questCity) : allQuestPts;
+      if (_questTodoOnly) questPts = questPts.filter((q) => !(typeof myQuestStatus !== "undefined" && myQuestStatus[q.key] === "completed"));
       const _hmMode = (typeof getHomeMode === "function") ? getHomeMode() : "travel";
       const grpBtn = (_hmMode !== "home") ? '<button class="mappop-btn alt" data-hmqgroup="1">👥 À plusieurs <span style="opacity:.8">+bonus</span></button>' : '';
       const soloLabel = (_hmMode !== "home") ? "🧭 Jouer en solo" : "🧭 Jouer";
@@ -9139,7 +9187,23 @@
       sec.style.display = "";
     }
 
-    function renderGameHub() { try { renderPlayerHero(); renderQuestSpotlight(); renderBadgeRail(); renderNearestQuest(); renderQuestCollection(); } catch (e) {} }
+    function renderGameHub() { try { renderPlayerHero(); renderQuestSpotlight(); renderBadgeRail(); renderNearestQuest(); renderQuestCollection(); renderCapitaleDuJour(); } catch (e) {} }
+
+    // Capitale du jour : une ville de jeu mise à l'honneur (rotation quotidienne).
+    function renderCapitaleDuJour() {
+      const el = $("capitaleDuJour"); if (!el) return;
+      const full = [...new Set((typeof allQuests !== "undefined" ? allQuests : []).filter((q) => q.kind === "quest" && q.city).map((q) => q.city))];
+      if (full.length < 2) { el.style.display = "none"; return; }
+      const cf = full[(typeof _dayIdx === "function" ? _dayIdx() : 0) % full.length];
+      el.style.display = "flex";
+      const n = $("capName"); if (n) n.textContent = cf.replace(/, France$/, "");
+      el.onclick = () => {
+        _questCity = cf; const sel = $("questCitySelect"); if (sel) sel.value = cf;
+        goToTab("accueil"); if (typeof setHomeMode === "function") setHomeMode("travel");
+        setTimeout(() => { if (typeof renderHomeMap === "function") renderHomeMap(); }, 140);
+        if (window.SMSound) SMSound.play("tap");
+      };
+    }
 
     // Collection de quêtes géolocalisées : barre de progression (objectif clair) + micro-délice à 100%.
     let _lastCollDone = -1;
