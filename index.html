@@ -43,7 +43,7 @@
     };
   </script>
   <!-- viewport-fit=cover : l'app passe sous l'encoche / status bar (on gère les safe-area en CSS).
-       maximum-scale retiré : le pinch-to-zoom d'accessibilité reste possible (surtout iOS). -->
+       maximum-scale=1 + user-scalable=no : sensation APP (plus de zoom web par pincement, item 9). -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>SunMates · pars solo, trouve ta bande</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=298"></script>
-  <script src="sunmates-icons.js?v=298"></script>
+  <script src="sunmates-badges.js?v=299"></script>
+  <script src="sunmates-icons.js?v=299"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -8586,7 +8586,7 @@
         <div class="fb-chips" style="display:flex;gap:.4rem;margin-bottom:.7rem">${chips}</div>
         <textarea id="fbText" rows="4" placeholder="Décris le bug, l'idée ou le détail visuel à corriger…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.6rem;font:inherit;resize:vertical;background:var(--card);color:var(--ink)"></textarea>
         <button class="btn-primary btn-block" id="fbSend" style="margin-top:.7rem">Envoyer mon retour</button>
-        <p class="muted" style="font-size:.7rem;margin:.5rem 0 0;text-align:center">Anonymisé si tu n'es pas connecté · version ${typeof APP_VER !== "undefined" ? APP_VER : ""}</p>`);
+        <p class="muted" style="font-size:.7rem;margin:.5rem 0 0;text-align:center">Anonymisé si tu n'es pas connecté · version ${typeof _appBuild === "function" ? _appBuild() : ""}</p>`);
       setTimeout(() => {
         document.querySelectorAll("[data-fbt]").forEach((b) => b.addEventListener("click", () => {
           _fbType = b.dataset.fbt;
@@ -8603,7 +8603,7 @@
         type: _fbType, message: msg.slice(0, 2000),
         user_id: (typeof myUserId !== "undefined" && myUserId) ? myUserId : null,
         username: (typeof myProfile !== "undefined" && myProfile) ? (myProfile.username || null) : null,
-        app_version: (typeof APP_VER !== "undefined" ? String(APP_VER) : ""),
+        app_version: (typeof _appBuild === "function" ? _appBuild() : ""),
         user_agent: (navigator.userAgent || "").slice(0, 300),
       };
       let ok = false;
@@ -8612,7 +8612,7 @@
         try { const q = JSON.parse(localStorage.getItem("sm_feedback_queue") || "[]"); q.push({ ...row, ts: Date.now() }); localStorage.setItem("sm_feedback_queue", JSON.stringify(q.slice(-50))); } catch (e) {}
       }
       try { if (typeof track === "function") track("beta_feedback", { type: _fbType }); } catch (e) {}
-      if (typeof closePop === "function") closePop();
+      closePopInfo(); // ferme la modale de feedback après envoi
       if (typeof toast === "function") toast("💛", "Merci ! Ton retour est bien arrivé.");
       if (window.SMSound) SMSound.play("pop");
     }
@@ -10480,6 +10480,9 @@
       if (window.SMSound) SMSound.play("tap");
     }
     window.popInfo = popInfo;
+    // Fermeture programmatique de la modale popInfo (ex. après envoi d'un formulaire).
+    function closePopInfo() { const ov = document.getElementById("popInfoOv"); if (ov) ov.classList.add("hidden"); }
+    window.closePopInfo = closePopInfo;
 
     // ---- Confettis (déblocage de badge, moment de fête 🎉) ----
     function celebrate() {
