@@ -3,7 +3,7 @@
 // cache à la volée les libs CDN et les images (avatars, tuiles de carte) en
 // "stale-while-revalidate" (on sert le cache tout de suite, on rafraîchit en fond).
 // Les écritures Supabase (POST/PATCH…) ne sont jamais touchées.
-const VER = "v280";
+const VER = "v281";
 const SHELL_CACHE = "sunmates-shell-" + VER;   // coquille (versionnée → purge à chaque déploiement)
 const RUNTIME = "sunmates-rt-" + VER;          // CDN + images (regénéré par version)
 const SHELL = ["./", "./index.html", "./manifest.json", "./icon.svg", "./sunmates-badges.js", "./sunmates-icons.js",
@@ -46,9 +46,16 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // 2) Même origine (index.js bundlé, icônes, manifest) : SWR sur la coquille → instantané + frais.
+  // 2) Même origine (JS, CSS, icônes, manifest) : RÉSEAU D'ABORD, cache en secours (offline).
+  // → on a TOUJOURS le code le plus frais (zéro état « cache hybride » ancien/nouveau qui buggue),
+  //   tout en restant utilisable hors-ligne grâce au repli sur la coquille.
   if (url.origin === self.location.origin) {
-    e.respondWith(staleWhileRevalidate(req, SHELL_CACHE));
+    e.respondWith(
+      fetch(req).then((res) => {
+        if (res && res.ok) { const c = res.clone(); caches.open(SHELL_CACHE).then((cc) => cc.put(req, c)).catch(() => {}); }
+        return res;
+      }).catch(() => caches.match(req).then((c) => c || caches.match("./index.html")))
+    );
     return;
   }
 
