@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=267"></script>
-  <script src="sunmates-icons.js?v=267"></script>
+  <script src="sunmates-badges.js?v=268"></script>
+  <script src="sunmates-icons.js?v=268"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -258,6 +258,9 @@
 
     /* ---- Rangée de tuiles colorées (catégories Lieux / navigation Jeux) ---- */
     .cat-row { display: flex; gap: .55rem; justify-content: center; flex-wrap: wrap; padding: .2rem .05rem .5rem; margin: .2rem 0 .5rem; scrollbar-width: none; }
+    /* Onglet Jeux : nav en grille 3×2 propre (équilibrée), au lieu de 4+2 */
+    #jeuxNav { display: grid; grid-template-columns: repeat(3, 1fr); gap: .55rem; }
+    #jeuxNav .cat-tile { min-width: 0; width: auto; }
     .cat-row::-webkit-scrollbar { display: none; }
     .cat-tile { flex: 0 0 auto; min-width: 84px; background: var(--card); border: 1.5px solid var(--line); border-radius: 16px;
       padding: .65rem .5rem; text-align: center; cursor: pointer; transition: transform .1s ease, box-shadow .15s ease, border-color .15s ease; }
@@ -697,6 +700,14 @@
     .tile-soon .thumb.gold-soon { background: linear-gradient(135deg,#c9a24a,#8a7029); box-shadow: none; }
     .soon-badge { display: inline-block; font-size: .58rem; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; background: var(--accent-grad); color: #fff; padding: .08rem .4rem; border-radius: 999px; vertical-align: middle; margin-left: .25rem; }
     /* Listing « Ma collection » (quêtes par ville) */
+    .coll-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .7rem; }
+    .coll-stat { background: var(--accent-soft); border-radius: 14px; padding: .6rem; text-align: center; }
+    .coll-stat .cs-v { font-size: 1.5rem; font-weight: 900; color: var(--accent); }
+    .coll-stat .cs-v span { font-size: .9rem; opacity: .7; }
+    .coll-stat .cs-l { font-size: .72rem; color: var(--muted); font-weight: 700; margin-top: .1rem; }
+    .coll-bar { height: 5px; border-radius: 999px; background: var(--cream); overflow: hidden; margin: 0 .6rem .3rem; }
+    .coll-bar span { display: block; height: 100%; background: var(--accent-grad); }
+    body.theme-dusk .coll-bar { background: #2a2140; }
     .coll-city { border: 1px solid var(--line); border-radius: 12px; margin: .4rem 0; overflow: hidden; }
     .coll-city > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .6rem .7rem; font-weight: 700; font-size: .9rem; background: var(--cream); }
     .coll-city > summary::-webkit-details-marker { display: none; }
@@ -3127,7 +3138,7 @@
 
         <details class="card spot-card" id="spotCard">
           <summary><span data-i18n="spot.title">☀️ Mon spot du jour</span><span class="sp-right"><span class="sp-sum" id="spotSummary"></span><span class="sp-chev">▸</span></span></summary>
-          <p class="muted" style="font-size:.8rem;margin:.5rem 0" data-i18n="spot.sub">Dis où tu traînes aujourd'hui, visible 24 h, façon story.</p>
+          <p class="muted" style="font-size:.8rem;margin:.5rem 0" data-i18n="spot.sub">Dis où tu traînes aujourd'hui : tes Mates te voient sur la carte et peuvent venir te rejoindre. Visible 24 h, façon story.</p>
           <div id="spotCurrent" style="display:none;margin-bottom:.5rem"></div>
           <div class="spot-emoji-pick" id="spotEmojiPick"></div>
           <!-- Suggestions en 1 tap (plus pratique) -->
@@ -10163,7 +10174,14 @@
       if (!lastKnownGeo) { if (typeof getGeo === "function") getGeo(() => showNearestQuests(), () => toast("⚠️", "Position indisponible")); return; }
       const sorted = pts.map((q) => ({ q: q, km: haversineKm(lastKnownGeo, { lat: q.lat, lng: q.lng }) })).sort((a, b) => a.km - b.km).slice(0, 6);
       showInfo("🎯 Quêtes proches de toi", '<div style="line-height:1.4">' + sorted.map(({ q, km }) => '<div class="qrow" data-nqq="' + escapeHtml(q.key) + '" style="cursor:pointer"><div class="qico">' + (q.emoji || "🎯") + '</div><div class="qname" style="flex:1">' + escapeHtml(q.title) + '<div class="meta muted" style="font-size:.74rem">📍 à ' + _fmtDist(km) + " · +" + (q.xp || 0) + ' XP</div></div><div class="qarrow">›</div></div>').join("") + "</div>");
-      setTimeout(() => { document.querySelectorAll("#pickerBody [data-nqq]").forEach((el) => el.addEventListener("click", () => { closePicker(); const q = _questGeoList().find((x) => x.key === el.dataset.nqq); if (q) { goToTab("jeux"); const real = (typeof questByKey === "function") && questByKey(q.key); if (real && typeof openDetail === "function") setTimeout(() => openDetail(real), 80); else focusHomeMapOnQuest(q.lat, q.lng); } })); }, 40);
+      setTimeout(() => { document.querySelectorAll("#pickerBody [data-nqq]").forEach((el) => el.addEventListener("click", () => {
+        closePicker();
+        const q = _questGeoList().find((x) => x.key === el.dataset.nqq); if (!q) return;
+        const real = (typeof questByKey === "function") && questByKey(q.key);
+        // Une seule navigation (sinon ça saute jeux→accueil) : détail si vraie quête, sinon carte.
+        if (real && typeof openDetail === "function") { goToTab("jeux"); setTimeout(() => openDetail(real), 90); }
+        else { focusHomeMapOnQuest(q.lat, q.lng); }
+      })); }, 40);
     }
     { const c = $("nearQuestCard"); if (c) c.addEventListener("click", (e) => { if (e.target.closest("#nqGo")) return; showNearestQuests(); }); }
     function focusHomeMapOnQuest(lat, lng) {
@@ -10395,17 +10413,22 @@
       const cities = Object.keys(byCity).sort();
       const doneN = pts.filter(isDone).length, total = pts.length;
       const cityDone = cities.filter((c) => byCity[c].some(isDone)).length;
-      let html = `<div style="text-align:center;margin-bottom:.6rem">
-        <div style="font-weight:800">${doneN}/${total} quêtes accomplies · ${cityDone}/${cities.length} villes explorées</div></div>`;
-      html += cities.map((c) => {
+      let html = `<div class="coll-stats">
+          <div class="coll-stat"><div class="cs-v">${doneN}<span>/${total}</span></div><div class="cs-l">🎯 quêtes accomplies</div></div>
+          <div class="coll-stat"><div class="cs-v">${cityDone}<span>/${cities.length}</span></div><div class="cs-l">🏙️ villes explorées</div></div>
+        </div>`;
+      // Villes explorées d'abord, puis celles à explorer (tri par avancement)
+      const ordered = cities.slice().sort((a, b) => (byCity[b].some(isDone) - byCity[a].some(isDone)));
+      html += ordered.map((c) => {
         const list = byCity[c]; const cdone = list.filter(isDone).length;
-        const explored = cdone > 0;
+        const explored = cdone > 0; const pct = Math.round((cdone / list.length) * 100);
         const rows = list.map((q) => {
           const ok = isDone(q);
           return `<div class="coll-row${ok ? " done" : ""}"><span class="coll-ck">${ok ? "✅" : "⬜"}</span><span class="coll-q">${escapeHtml(q.title || "Quête")}</span></div>`;
         }).join("");
         return `<details class="coll-city"${explored ? " open" : ""}>
           <summary><span>${explored ? "🏙️" : "🗺️"} ${escapeHtml(c)}</span><b>${cdone}/${list.length}${explored ? "" : " · à explorer"}</b></summary>
+          <div class="coll-bar"><span style="width:${pct}%"></span></div>
           <div class="coll-list">${rows}</div></details>`;
       }).join("");
       if (!total) html = "<p class='muted' style='text-align:center'>Aucune quête pour l'instant — reviens vite ✨</p>";
@@ -11637,7 +11660,7 @@
         "chat.translate": "Traduire", "chat.seeProfile": "Voir le profil ›", "tr.loading": "Traduction…", "tr.error": "Traduction indisponible", "tr.from": "Traduit",
         "vouch.title": "⭐ Recommandé par des Mates", "vouch.sub": "Des voyageurs de confiance se portent garants de cette personne.", "vouch.subEmpty": "Sois le premier à recommander ce Mate de confiance.", "vouch.cta": "⭐ Recommander", "vouch.done": "⭐ Recommandé", "vouch.needConnect": "Connecte-toi d'abord pour recommander", "vouch.none": "Aucune recommandation pour l'instant", "vouch.added": "Recommandation ajoutée ⭐", "vouch.removed": "Recommandation retirée",
         "match.title": "C'est un match !", "match.sub": "Toi et {name} êtes connectés 🎉", "match.message": "💬 Envoyer un message", "match.later": "Plus tard",
-        "spot.title": "☀️ Mon spot du jour", "spot.clear": "Effacer", "spot.sub": "Dis où tu traînes aujourd'hui, visible 24 h, façon story.", "spot.ph": "Ex : Café cosy à Lisbonne ☕", "spot.save": "Publier", "spot.saved": "Spot du jour publié ☀️", "spot.cleared": "Spot du jour effacé", "spot.need": "Écris d'abord ton spot du jour.", "spot.live": "En ligne 24 h", "spot.add": "Ajouter le tien ›",
+        "spot.title": "☀️ Mon spot du jour", "spot.clear": "Effacer", "spot.sub": "Dis où tu traînes aujourd'hui : tes Mates te voient sur la carte et peuvent venir te rejoindre. Visible 24 h, façon story.", "spot.ph": "Ex : Café cosy à Lisbonne ☕", "spot.save": "Publier", "spot.saved": "Spot du jour publié ☀️", "spot.cleared": "Spot du jour effacé", "spot.need": "Écris d'abord ton spot du jour.", "spot.live": "En ligne 24 h", "spot.add": "Ajouter le tien ›",
         "qr.title": "🪪 Mon QR SunMates", "qr.sub": "Fais-le scanner à un voyageur rencontré en vrai pour vous connecter en un instant.", "qr.scanTitle": "📷 Scanner un QR", "qr.scanSub": "Vise le QR SunMates d'un autre voyageur.", "qr.self": "C'est ton propre QR 🙂", "qr.notfound": "Profil introuvable.", "qr.found": "Profil de {name} ouvert 🪪", "qr.noCam": "Scanner indisponible sur cet appareil.", "qr.camErr": "Accès caméra refusé.",
         "ptr.pull": "↓", "ptr.release": "↑"
       },
@@ -11655,7 +11678,7 @@
         "chat.translate": "Translate", "chat.seeProfile": "See profile ›", "tr.loading": "Translating…", "tr.error": "Translation unavailable", "tr.from": "Translated",
         "vouch.title": "⭐ Vouched by Mates", "vouch.sub": "Trusted travellers vouch for this person.", "vouch.subEmpty": "Be the first to vouch for this trusted Mate.", "vouch.cta": "⭐ Vouch", "vouch.done": "⭐ Vouched", "vouch.needConnect": "Connect first to vouch", "vouch.none": "No recommendations yet", "vouch.added": "Vouch added ⭐", "vouch.removed": "Vouch removed",
         "match.title": "It's a match!", "match.sub": "You and {name} are connected 🎉", "match.message": "💬 Send a message", "match.later": "Later",
-        "spot.title": "☀️ My spot of the day", "spot.clear": "Clear", "spot.sub": "Share where you're hanging out today, visible for 24h, like a story.", "spot.ph": "e.g. Cosy café in Lisbon ☕", "spot.save": "Post", "spot.saved": "Spot of the day posted ☀️", "spot.cleared": "Spot of the day cleared", "spot.need": "Write your spot of the day first.", "spot.live": "Live for 24h", "spot.add": "Add yours ›",
+        "spot.title": "☀️ My spot of the day", "spot.clear": "Clear", "spot.sub": "Share where you're hanging out today: your Mates see you on the map and can come join you. Visible for 24h, like a story.", "spot.ph": "e.g. Cosy café in Lisbon ☕", "spot.save": "Post", "spot.saved": "Spot of the day posted ☀️", "spot.cleared": "Spot of the day cleared", "spot.need": "Write your spot of the day first.", "spot.live": "Live for 24h", "spot.add": "Add yours ›",
         "qr.title": "🪪 My SunMates QR", "qr.sub": "Let a traveller you meet in person scan it to connect instantly.", "qr.scanTitle": "📷 Scan a QR", "qr.scanSub": "Point at another traveller's SunMates QR.", "qr.self": "That's your own QR 🙂", "qr.notfound": "Profile not found.", "qr.found": "Opened {name}'s profile 🪪", "qr.noCam": "Scanner not available on this device.", "qr.camErr": "Camera access denied.",
         "ptr.pull": "↓", "ptr.release": "↑"
       }
@@ -11824,7 +11847,7 @@
         if (cur) { cur.style.display = ""; cur.innerHTML =
           `<div class="spot-live"><span class="spot-live-emoji">${escapeHtml(myProfile.status_emoji || "☀️")}</span>
              <div class="spot-live-body"><div class="spot-live-txt">${escapeHtml(myProfile.status_text)}</div>
-               <div class="spot-live-meta">🟢 En story · visible encore <b>${hLeft} h</b></div></div></div>`; }
+               <div class="spot-live-meta">🗺️ Visible par tes Mates · encore <b>${hLeft} h</b></div></div></div>`; }
         if ($("spotInput") && !$("spotInput").value) $("spotInput").value = myProfile.status_text;
         if (clr) clr.style.display = "";
         if (sum) sum.textContent = (myProfile.status_emoji || "☀️") + " " + myProfile.status_text;
