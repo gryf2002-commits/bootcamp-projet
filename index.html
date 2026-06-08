@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=278"></script>
-  <script src="sunmates-icons.js?v=278"></script>
+  <script src="sunmates-badges.js?v=279"></script>
+  <script src="sunmates-icons.js?v=279"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1831,7 +1831,10 @@
        Dégradés coucher de soleil, effets verre, ombres douces,
        micro-animations. N'affecte que l'apparence.
        =================================================================== */
-    body { background: var(--bg-grad); background-attachment: fixed; }
+    /* PAS de background-attachment:fixed (repeint à chaque frame de scroll = gros lag mobile). */
+    body { background: var(--bg-grad); }
+    /* Taps instantanés (supprime le délai/zoom mobile) sur tout ce qui est interactif. */
+    button, a, label, input[type=range], .tile, .cat-tile, .chip, .qrow, .fc-chip, .spot-quick button, .stat-box, .stat-click, [role="button"], [data-goto], [data-jeuxnav], [data-jeuxopen] { touch-action: manipulation; }
     .app-shell { background: transparent; }
     h1 { letter-spacing: -.02em; }
     h2, h3 { letter-spacing: -.01em; }
@@ -2059,7 +2062,7 @@
 
     /* --- Fond : ciel solaire + GRAIN photographique (réalisme analogique) --- */
     body {
-      background: radial-gradient(130% 80% at 50% -8%, #ffe6b8 0%, #ffd2b0 26%, #fce2d8 56%, #f9eee7 100%) fixed;
+      background: radial-gradient(130% 80% at 50% -8%, #ffe6b8 0%, #ffd2b0 26%, #fce2d8 56%, #f9eee7 100%);
     }
     body::after {
       content: ""; position: fixed; inset: 0; pointer-events: none; z-index: var(--z-nav);
@@ -2263,7 +2266,7 @@
       --ink: #f3ecf6; --ink-warm: #f6eef8; --text: #ded3e6; --muted: #a99fbe;
       --line: rgba(255,255,255,.09); --retro-teal: #4fd6c4;
       color: var(--text);
-      background: radial-gradient(130% 80% at 50% -8%, #3b2550 0%, #2a1c3e 34%, #20182f 64%, #171026 100%) fixed;
+      background: radial-gradient(130% 80% at 50% -8%, #3b2550 0%, #2a1c3e 34%, #20182f 64%, #171026 100%);
     }
     body.theme-dusk .app-shell { background: radial-gradient(120% 55% at 50% -12%, rgba(255,150,110,.30) 0%, rgba(255,150,110,0) 58%), var(--bg) !important; }
     body.theme-dusk .card { background: linear-gradient(180deg, #241b36 0%, #1f1830 100%) !important; border-color: rgba(255,255,255,.07) !important; box-shadow: 0 14px 34px rgba(0,0,0,.42) !important; }
@@ -2394,7 +2397,7 @@
       --ink: #F4ECDC; --ink-warm: #F7F0E2; --text: #D7CFBF; --muted: #94A39B;
       --line: rgba(255,255,255,.08); --retro-teal: #59C9B9; --ok: #57C99A;
       color: var(--text);
-      background: radial-gradient(130% 80% at 50% -8%, #2a4f4a 0%, #16332f 36%, #0f2421 64%, #0E1F1D 100%) fixed;
+      background: radial-gradient(130% 80% at 50% -8%, #2a4f4a 0%, #16332f 36%, #0f2421 64%, #0E1F1D 100%);
     }
     body.theme-dusk .app-shell { background: radial-gradient(120% 55% at 50% -12%, rgba(224,124,91,.26) 0%, rgba(224,124,91,0) 58%), var(--bg) !important; }
     body.theme-dusk .card { background: linear-gradient(180deg, #163029 0%, #12231f 100%) !important; }
@@ -2439,7 +2442,7 @@
       --sunset-grad: linear-gradient(150deg, #FFC93C 0%, #FF7A3D 38%, #FF4F6D 72%, #B25CC9 100%);
       --ring:      0 0 0 4px rgba(255,90,77,.18);
     }
-    body { background: var(--bg-grad) fixed; color: var(--text); }
+    body { background: var(--bg-grad); color: var(--text); }
     .app-shell { background: radial-gradient(125% 48% at 50% -8%, rgba(255,201,60,.42) 0%, rgba(255,138,61,.10) 38%, rgba(255,255,255,0) 64%), #FFF7EE !important; }
 
     h1, h2, h3 { color: var(--ink); }
@@ -2518,7 +2521,7 @@
       --ink: #FCEFE9; --ink-warm: #FFF3EC; --text: #E6D7EC; --muted: #A98FC0;
       --ok: #2BE0B0; --danger: #FF6A78; --line: rgba(255,255,255,.10);
       color: var(--text);
-      background: radial-gradient(120% 70% at 50% -6%, #FF7A3D40 0%, #6A2A6E 24%, #34164F 52%, #190E2E 100%) fixed;
+      background: radial-gradient(120% 70% at 50% -6%, #FF7A3D40 0%, #6A2A6E 24%, #34164F 52%, #190E2E 100%);
     }
     body.theme-dusk .app-shell { background: radial-gradient(125% 50% at 50% -8%, rgba(255,138,61,.34) 0%, rgba(255,79,109,.10) 40%, rgba(0,0,0,0) 66%), var(--bg) !important; }
     body.theme-dusk .card, body.theme-dusk .post, body.theme-dusk .pf-section { background: linear-gradient(180deg,#2A1846,#22123A) !important; border-color: rgba(255,255,255,.08) !important; }
