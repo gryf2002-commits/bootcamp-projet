@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=294"></script>
-  <script src="sunmates-icons.js?v=294"></script>
+  <script src="sunmates-badges.js?v=295"></script>
+  <script src="sunmates-icons.js?v=295"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -317,7 +317,9 @@
     .fc-chips::-webkit-scrollbar { display: none; }
     .fc-chip { flex: 0 0 auto; font-size: .78rem; font-weight: 600; padding: .35rem .65rem; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); color: var(--ink); cursor: pointer; white-space: nowrap; }
     .fc-chip:active { transform: scale(.96); }
+    .fc-chip.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 7px rgba(255,90,77,.3); }
     body.theme-dusk .fc-chip { background: #2a2140; color: #eee; border-color: rgba(255,255,255,.1); }
+    .fc-hint { font-size: .72rem; color: var(--muted); font-weight: 600; margin-top: .35rem; }
     .fc-kind { font-size: .76rem; font-weight: 700; padding: .35rem .75rem; border-radius: 999px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
     .fc-kind.active { background: var(--accent-grad); color: #fff; box-shadow: 0 2px 8px rgba(255,90,77,.3); }
     .fc-send { padding: .45rem 1rem; font-size: .85rem; }
@@ -3219,6 +3221,7 @@
             <textarea id="feedInput" rows="1" maxlength="280" placeholder="Écris quelque chose…"></textarea>
           </div>
           <!-- Tuiles de sélection rapides (humeur ou spot) -->
+          <div class="fc-hint" id="feedChipsHint">👇 Touche une humeur, puis personnalise</div>
           <div class="fc-chips" id="feedChips"></div>
           <div class="fc-bottom">
             <div class="fc-kinds">
@@ -10519,9 +10522,17 @@
           <div class="fpost-body">${escapeHtml(r.body || "")}</div>
           <div class="fpost-actions">
             <button class="fpost-like${r.liked ? " liked" : ""}" data-like="${r.id}">${r.liked ? "❤️" : "🤍"} <span>${r.likes || 0}</span></button>
+            <button class="fpost-like fpost-cmt" data-cmt="${r.id}">💬 <span data-cmtn="${r.id}">0</span></button>
             ${isMe ? '<button class="fpost-del" data-del="' + r.id + '" title="Supprimer">🗑️</button>' : ""}
           </div></div>`;
       }).join("");
+      // Compte des commentaires en 1 appel (RPC) → maj des pastilles 💬.
+      (async () => {
+        const ids = rows.map((r) => Number(r.id)).filter(Boolean);
+        if (!ids.length) return;
+        try { const { data } = await db.rpc("feed_comment_counts", { p_ids: ids }); (data || []).forEach((c) => { const s = feed.querySelector('[data-cmtn="' + c.post_id + '"]'); if (s) s.textContent = c.n; }); } catch (e) {}
+      })();
+      feed.querySelectorAll("[data-cmt]").forEach((el) => el.addEventListener("click", (e) => { e.stopPropagation(); openFeedComments(Number(el.dataset.cmt)); }));
       feed.querySelectorAll("[data-like]").forEach((el) => el.addEventListener("click", async (e) => {
         e.stopPropagation();
         try { const { data } = await db.rpc("toggle_feed_like", { p_post: Number(el.dataset.like) }); if (data && data.ok) { el.classList.toggle("liked", data.liked); el.innerHTML = (data.liked ? "❤️" : "🤍") + " <span>" + data.likes + "</span>"; if (window.SMSound) SMSound.play("tap"); } } catch (er) {}
@@ -10534,6 +10545,43 @@
         if (e.target.closest("button")) return;
         const uid = el.dataset.fuid; if (uid && uid !== myUserId && travelerMap[uid]) { goToTab("connexions"); openTravelerProfile(travelerMap[uid]); }
       }));
+    }
+    // Commentaires d'un post du fil (modale : liste + champ d'ajout).
+    async function openFeedComments(postId) {
+      popInfo("💬", "Commentaires", '<div id="fcmtList" style="text-align:left;max-height:46vh;overflow:auto;margin:-.2rem 0 .6rem"><p class="muted" style="font-size:.84rem">Chargement…</p></div>' +
+        '<div style="display:flex;gap:.4rem;align-items:flex-end"><textarea id="fcmtInput" rows="1" maxlength="500" placeholder="Écris un commentaire…" style="flex:1;box-sizing:border-box;border:1px solid var(--line);border-radius:14px;padding:.55rem .7rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea><button class="btn-primary" id="fcmtSend" style="padding:.55rem .9rem">Envoyer</button></div>');
+      async function load() {
+        const box = $("fcmtList"); if (!box) return;
+        let rows = null;
+        try { const { data, error } = await db.from("feed_comments").select("id,body,user_id,created_at").eq("post_id", postId).order("created_at", { ascending: true }).limit(100); if (!error) rows = data || []; } catch (e) {}
+        if (rows === null) { box.innerHTML = '<p class="muted" style="font-size:.82rem">Commentaires bientôt disponibles (lance <code>supabase_migration_feed_comments.sql</code>).</p>'; return; }
+        if (!rows.length) { box.innerHTML = '<p class="muted" style="font-size:.84rem;text-align:center;padding:.6rem">Aucun commentaire. Sois le premier ✨</p>'; return; }
+        // Pseudos/avatars depuis le cache (sinon « Voyageur »).
+        box.innerHTML = rows.map((c) => {
+          const p = travelerMap[c.user_id] || (c.user_id === myUserId ? myProfile : null) || {};
+          const name = c.user_id === myUserId ? "Toi" : (p.username || "Voyageur");
+          const mine = c.user_id === myUserId;
+          return `<div class="qrow" style="padding:.45rem .2rem;align-items:flex-start">${avatarMarkup(p.username, p.avatar_url)}<div class="qname" style="flex:1;font-weight:500"><b style="font-size:.82rem">${escapeHtml(name)}</b> <span class="muted" style="font-size:.7rem">${timeAgo(c.created_at)}</span><div style="font-size:.86rem;margin-top:.1rem">${escapeHtml(c.body)}</div></div>${mine ? '<button class="fpost-del" data-cdel="' + c.id + '">🗑️</button>' : ""}</div>`;
+        }).join("");
+        box.querySelectorAll("[data-cdel]").forEach((b) => b.addEventListener("click", async () => { try { await db.from("feed_comments").delete().eq("id", Number(b.dataset.cdel)); load(); _syncCmtCount(postId); } catch (e) {} }));
+      }
+      setTimeout(() => {
+        load();
+        const sb = $("fcmtSend"); if (sb) sb.addEventListener("click", async () => {
+          const ta = $("fcmtInput"); const body = ((ta && ta.value) || "").trim();
+          if (body.length < 1) return;
+          if (!myUserId) { if (typeof toast === "function") toast("🔑", "Connecte-toi pour commenter."); return; }
+          sb.disabled = true;
+          const { error } = await db.from("feed_comments").insert({ post_id: postId, user_id: myUserId, body: body.slice(0, 500) });
+          sb.disabled = false;
+          if (error) { if (typeof toast === "function") toast("⚠️", "Réessaie dans un instant."); return; }
+          ta.value = ""; if (window.SMSound) SMSound.play("tap"); load(); _syncCmtCount(postId);
+        });
+      }, 30);
+    }
+    // Recompte les commentaires d'un post et met à jour la pastille 💬 du fil.
+    async function _syncCmtCount(postId) {
+      try { const { data } = await db.rpc("feed_comment_counts", { p_ids: [postId] }); const n = (data && data[0]) ? data[0].n : 0; const s = document.querySelector('[data-cmtn="' + postId + '"]'); if (s) s.textContent = n; } catch (e) {}
     }
     // Composer : publier sur le fil
     { const pb = $("feedPostBtn"); if (pb) pb.addEventListener("click", async () => {
@@ -10555,10 +10603,13 @@
     function renderFeedChips() {
       const box = $("feedChips"); if (!box) return;
       const items = _feedKind === "spot" ? FEED_SPOTS : FEED_MOODS;
+      const hint = $("feedChipsHint"); if (hint) hint.textContent = _feedKind === "spot" ? "👇 Touche ton spot, puis personnalise" : "👇 Touche une humeur, puis personnalise";
       box.innerHTML = items.map((t) => `<button type="button" class="fc-chip" data-fchip="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join("");
       box.querySelectorAll("[data-fchip]").forEach((c) => c.addEventListener("click", () => {
         const ta = $("feedInput"); if (!ta) return;
         const base = c.dataset.fchip;
+        // Surbrillance du chip choisi (retour visuel = plus intuitif).
+        box.querySelectorAll("[data-fchip]").forEach((x) => x.classList.toggle("on", x === c));
         // Spot = on suffixe la ville si connue ; humeur = on pose le ressenti, prêt à compléter.
         const city = (myProfile && myProfile.city) ? String(myProfile.city).split(",")[0].trim() : "";
         ta.value = (_feedKind === "spot" && city) ? base + " à " + city : base;
