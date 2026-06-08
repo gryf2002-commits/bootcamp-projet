@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=270"></script>
-  <script src="sunmates-icons.js?v=270"></script>
+  <script src="sunmates-badges.js?v=271"></script>
+  <script src="sunmates-icons.js?v=271"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -82,9 +82,14 @@
       window.addEventListener("load", function () {
         // updateViaCache:'none' = le navigateur ne sert jamais un sw.js périmé depuis son cache HTTP.
         navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(function (reg) {
-          reg.update(); // vérifie tout de suite s'il y a une nouvelle version
-          setInterval(function () { reg.update(); }, 30 * 60 * 1000); // puis toutes les 30 min
-          document.addEventListener("visibilitychange", function () { if (!document.hidden) reg.update(); }); // et au retour sur l'app
+          // iOS lève "InvalidStateError: newestWorker is null" si on appelle update()
+          // alors qu'aucun worker n'est encore rattaché → on garde-fou + try/catch.
+          function safeUpdate() {
+            try { if (reg && (reg.installing || reg.waiting || reg.active)) { var p = reg.update(); if (p && p.catch) p.catch(function () {}); } } catch (e) {}
+          }
+          safeUpdate();
+          setInterval(safeUpdate, 30 * 60 * 1000); // puis toutes les 30 min
+          document.addEventListener("visibilitychange", function () { if (!document.hidden) safeUpdate(); }); // et au retour sur l'app
         }).catch(function () {});
       });
     }
@@ -626,7 +631,7 @@
     .lbl-hint { color: var(--muted); font-weight: 400; font-size: .76rem; } /* règle de sélection affichée dans le label */
     /* Bannière de fin d'onboarding (in-page, refermable) */
     .onb-done { display: flex; align-items: center; gap: .7rem; background: var(--accent-grad); color: #fff; border-radius: 16px; padding: .8rem 1rem; margin-bottom: 1rem; box-shadow: 0 10px 24px rgba(255,90,77,.32); }
-    .onb-done button { background: rgba(255,255,255,.22); border: 0; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; flex-shrink: 0; font-weight: 700; display: grid; place-items: center; }
+    .onb-done button { background: rgba(255,255,255,.22); border: 0; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; flex-shrink: 0; font-weight: 700; display: grid; place-items: center; line-height: 1; padding: 0; font-size: 1rem; }
 
     /* ------------------------- Liste de lieux ----------------------- */
     /* Démo guidée automatique (barre de narration) */
@@ -697,6 +702,7 @@
     @keyframes popinfoPop { from { opacity: 0; transform: translateY(10px) scale(.94); } to { opacity: 1; transform: none; } }
     /* Tuile « bientôt dispo » (Gold) : grisée, non cliquable */
     .tile-soon { opacity: .62; cursor: default; pointer-events: none; filter: grayscale(.35); }
+    .qrow-soon { opacity: .6; pointer-events: none; filter: grayscale(.3); }
     .tile-soon .thumb.gold-soon { background: linear-gradient(135deg,#c9a24a,#8a7029); box-shadow: none; }
     .soon-badge { display: inline-block; font-size: .58rem; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; background: var(--accent-grad); color: #fff; padding: .08rem .4rem; border-radius: 999px; vertical-align: middle; margin-left: .25rem; }
     /* Listing « Ma collection » (quêtes par ville) */
@@ -3474,6 +3480,14 @@
             <div class="qrow" data-secu="contact"><div class="qico" data-smicon="contact" data-smicon-size="27">📢</div><div class="qname">Qui peut me contacter</div><div class="qarrow" id="contactPrefVal">›</div></div>
           </div>
 
+          <!-- Support SunMates : bientôt disponible (grisé, non cliquable) -->
+          <div class="card qrow-soon" aria-disabled="true" title="Bientôt disponible">
+            <div class="qrow" style="padding:0">
+              <div class="qico">💬</div>
+              <div class="qname">Support SunMates <span class="soon-badge">Bientôt</span><div class="meta muted" style="font-size:.76rem">Une équipe pour t'aider en direct, très vite.</div></div>
+            </div>
+          </div>
+
           <div class="msg" id="helpMsg" style="text-align:center"></div>
         </div>
 
@@ -3876,10 +3890,10 @@
             <button class="btn-ghost" id="scanQrBtn" data-i18n="set.scanQr">📷 Scanner</button>
           </div>
 
-          <!-- Aide & support (déplacé depuis Sécurité : la FAQ n'avait rien à y faire) -->
+          <!-- Aide & support : FAQ retirée (revient quand la démo guidée sera finie) ;
+               contact = bientôt dispo (pas d'email perso affiché). -->
           <div class="set-grouptitle">Aide &amp; support</div>
-          <button class="btn-ghost btn-block" data-secu="aide">❓ Centre d'aide · FAQ</button>
-          <button class="btn-ghost btn-block" data-secu="contactus" style="margin-top:.5rem">✉️ Nous contacter</button>
+          <button class="btn-ghost btn-block" data-secu="contactus">✉️ Nous contacter</button>
 
           <!-- Application -->
           <div class="set-grouptitle">Application</div>
@@ -4748,7 +4762,7 @@
             <input id="ntDest" type="text" placeholder="Destination (ex : Lisbonne 🇵🇹)" maxlength="40" />
             <input id="ntDate" type="date" />
             <button class="btn-primary btn-block" id="ntSave" style="margin-top:.5rem">✈️ Planifier mon voyage</button></div>`;
-        box.querySelectorAll("[data-ntpick]").forEach((b) => b.addEventListener("click", () => { const i = $("ntDest"); if (i) { i.value = b.dataset.ntpick; i.focus(); } }));
+        box.querySelectorAll("[data-ntpick]").forEach((b) => b.addEventListener("click", () => { const i = $("ntDest"); if (i) { i.value = b.dataset.ntpick; } }));
         const s = $("ntSave"); if (s) s.addEventListener("click", () => {
           const dest = ($("ntDest").value || "").trim(), date = $("ntDate").value;
           if (!dest || !date) { toast("✈️", "Indique une destination et une date 🙂"); return; }
@@ -8303,14 +8317,14 @@
       $("tpCity").textContent = "📍 " + (p.city || "Quelque part dans le monde");
       // Photo en bandeau si disponible, sinon emoji
       const hero = $("tpHero");
-      if (p.avatar_url) { hero.classList.add("has-photo"); hero.style.backgroundImage = "url('" + p.avatar_url + "')"; }
-      else { hero.classList.remove("has-photo"); hero.style.backgroundImage = ""; $("tpEmoji").textContent = "🧑"; }
+      if (p.avatar_url) { hero.classList.add("has-photo"); hero.style.backgroundImage = "url('" + p.avatar_url + "')"; hero.dataset.photo = p.avatar_url; hero.style.cursor = "zoom-in"; }
+      else { hero.classList.remove("has-photo"); hero.style.backgroundImage = ""; hero.dataset.photo = ""; hero.style.cursor = ""; $("tpEmoji").textContent = "🧑"; }
       // Badges en surimpression sur le hero (résumé premium : match %, vérifié, en ligne)
       { const hb = $("tpHeroBadges"); if (hb) {
         const pctHero = compatibility(myMatchProfile, p);
         const chips = [];
         if (p.id !== myUserId) chips.push(`<span class="tph-chip tph-match">❤️ ${pctHero}%</span>`);
-        if (p.is_verified) chips.push('<span class="tph-chip tph-verif">✅ Vérifié</span>');
+        if (p.is_verified) chips.push('<span class="tph-chip tph-verif"><span class="vchip" style="width:14px;height:14px;font-size:9px;vertical-align:-1px">✓</span> Vérifié</span>');
         if (isActive(p)) chips.push('<span class="tph-chip tph-online">● En ligne</span>');
         hb.innerHTML = chips.join("");
       } }
@@ -8597,7 +8611,7 @@
           <details><summary>🍹 C'est quoi le parrainage ?</summary><p>Invite un ami via « Inviter tes amis » : vous recevez tous les deux un coupon <b>1er verre offert</b> 🍹</p></details>
         </div>`);
       } else if (action === "contactus" || action === "support2") {
-        showInfo("Nous contacter ✉️", '<p style="text-align:center;line-height:1.6;padding:.4rem">Une question, un souci, une idée ?<br><br>Écris-nous à <b>maxime.durao@delta-business.school</b> ☀️<br><br>En cas d\'<b>urgence</b>, utilise le <b>112</b>, tes <b>contacts d\'urgence</b> ou ton <b>cercle de confiance</b>.</p>');
+        showInfo("Nous contacter ✉️", '<div style="text-align:center;line-height:1.6;padding:.4rem"><div style="font-size:2rem;margin-bottom:.4rem">🛠️</div><b>Le support arrive bientôt</b><p class="muted" style="font-size:.85rem;margin:.5rem 0 0">Un espace pour nous écrire (questions, idées, soucis) sera disponible très vite.</p><p style="font-size:.85rem;margin:.8rem 0 0">En cas d\'<b>urgence</b> : le <b>112</b>, tes <b>contacts d\'urgence</b> ou ton <b>cercle de confiance</b>.</p></div>');
       } else if (action === "voyage") {
         showInfo("Voyager en sécurité ✈️", `<div class="faq-secu">
           <p class="muted" style="font-size:.8rem;margin:0 0 .7rem">Le guide essentiel du voyage solo serein. Touche chaque thème pour le déplier 👇</p>
@@ -10127,7 +10141,7 @@
         // Spot = on suffixe la ville si connue ; humeur = on pose le ressenti, prêt à compléter.
         const city = (myProfile && myProfile.city) ? String(myProfile.city).split(",")[0].trim() : "";
         ta.value = (_feedKind === "spot" && city) ? base + " à " + city : base;
-        ta.focus(); ta.dispatchEvent(new Event("input"));
+        ta.dispatchEvent(new Event("input")); // pas de .focus() → on n'ouvre pas le clavier de force
       }));
     }
     document.querySelectorAll(".fc-kind").forEach((b) => b.addEventListener("click", () => {
@@ -10571,6 +10585,8 @@
     function openPhotoLightbox(url) { if (!url) return; const m = $("photoLightbox"), im = $("photoLightboxImg"); if (!m || !im) return; im.src = url; m.classList.remove("hidden"); }
     { const m = $("photoLightbox"); if (m) m.addEventListener("click", () => m.classList.add("hidden")); }
     { const a = $("profileAvatar"); if (a) a.addEventListener("click", () => { const u = myProfile && myProfile.avatar_url; if (u) openPhotoLightbox(u); else toast("📷", "Ajoute une photo de profil dans « Modifier mon profil »"); }); }
+    // Aperçu d'un Mate : photo cliquable → plein écran (lightbox), si non bouton.
+    { const th = $("tpHero"); if (th) th.addEventListener("click", (e) => { if (e.target.closest("button, a, .tpa-btn")) return; const u = th.dataset.photo; if (u) openPhotoLightbox(u); }); }
     { const rr = $("scReroll"); if (rr) rr.addEventListener("click", () => { const s = _soloState(); s.seed = ((s.seed || 0) + 1) % 1000; _soloSave(s); renderSoloChallenges(); if (window.SMSound) SMSound.play("pop"); }); }
     { const ss = $("spStreak"); if (ss) ss.addEventListener("click", (e) => { e.stopPropagation(); const h = $("homeStreak"); if (h) h.click(); }); }
     // Collection de quêtes + villes explorées : cliquable → VRAI listing (accomplies / à faire / villes), pas de redirect.
@@ -12008,7 +12024,7 @@
       pick.innerHTML = SPOT_EMOJIS.map((e) => `<button type="button" data-spotemoji="${e}" class="${e === selectedSpotEmoji ? "active" : ""}">${e}</button>`).join("");
       pick.querySelectorAll("[data-spotemoji]").forEach((b) => b.addEventListener("click", () => { selectedSpotEmoji = b.dataset.spotemoji; pick.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b)); }));
       // Suggestions rapides : remplissent le champ en 1 tap (plus pratique)
-      { const q = $("spotQuick"); if (q && !q.dataset.wired) { q.dataset.wired = "1"; q.querySelectorAll("[data-spotq]").forEach((b) => b.addEventListener("click", () => { const i = $("spotInput"); if (i) { i.value = b.dataset.spotq; i.focus(); } if (window.SMSound) SMSound.play("tap"); })); } }
+      { const q = $("spotQuick"); if (q && !q.dataset.wired) { q.dataset.wired = "1"; q.querySelectorAll("[data-spotq]").forEach((b) => b.addEventListener("click", () => { const i = $("spotInput"); if (i) { i.value = b.dataset.spotq; } if (window.SMSound) SMSound.play("tap"); })); } }
       const cur = $("spotCurrent"), clr = $("spotClear"), sum = $("spotSummary");
       if (myProfile && isSpotActive(myProfile)) {
         selectedSpotEmoji = myProfile.status_emoji || selectedSpotEmoji;
