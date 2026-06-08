@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=282"></script>
-  <script src="sunmates-icons.js?v=282"></script>
+  <script src="sunmates-badges.js?v=283"></script>
+  <script src="sunmates-icons.js?v=283"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -804,18 +804,16 @@
       .player-hero { padding: .55rem .8rem; }
       .souvenir-card { padding: 1rem 1.1rem; }
       #photoLightboxImg { max-height: 84vh; }
-    /* Cropper photo de profil */
-    /* Carte de recadrage : bornée + scrollable (sinon le bouton publier passe hors écran → on est coincé) */
-    .crop-card { max-height: 92vh; overflow-y: auto; display: flex; flex-direction: column; }
-    .crop-stage { position: relative; width: 100%; aspect-ratio: 1; max-width: 260px; margin: 0 auto; border-radius: 16px; overflow: hidden; background: #1a1320; touch-action: none; cursor: grab; flex-shrink: 0; }
-    /* Fallback si aspect-ratio non géré (vieux navigateurs) : on force une hauteur carrée via padding */
-    @supports not (aspect-ratio: 1) { .crop-stage { height: 0; padding-bottom: min(260px, 80vw); } }
+    }
+    /* Cropper photo de profil (HORS media query — doit s'appliquer PARTOUT, surtout desktop/portrait) */
+    .crop-card { max-height: 92vh; overflow-y: auto; }
+    /* Taille du stage FIXÉE EN JS (carré garanti) — pas d'aspect-ratio (buguait en flex → image géante). */
+    .crop-stage { position: relative; width: 240px; height: 240px; margin: 0 auto; border-radius: 16px; overflow: hidden; background-color: #1a1320; background-repeat: no-repeat; touch-action: none; cursor: grab; }
     .crop-stage:active { cursor: grabbing; }
-    .crop-stage img { position: absolute; left: 50%; top: 50%; transform-origin: center; user-select: none; -webkit-user-drag: none; max-width: none; pointer-events: none; }
+    .crop-stage img { display: none; } /* l'image s'affiche en background du stage (clip garanti) ; l'<img> ne sert qu'à l'export */
     .crop-ring { position: absolute; inset: 0; box-shadow: 0 0 0 2000px rgba(0,0,0,.45); border-radius: 50%; pointer-events: none; }
     .crop-zoom { display: flex; align-items: center; gap: .6rem; margin-top: .7rem; }
     .crop-zoom input[type=range] { flex: 1; accent-color: var(--accent); }
-    }
     /* Bouton « Plein écran » bien visible (pill accent) */
     .fs-btn { flex-shrink: 0; background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .4rem .8rem; font-weight: 800; font-size: .8rem; cursor: pointer; box-shadow: 0 4px 12px rgba(255,90,77,.32); white-space: nowrap; }
     .fs-btn:active { transform: scale(.96); }
@@ -5244,45 +5242,47 @@
     // ---- Cropper : positionner (glisser) + zoom, sortie carrée ----
     let _crop = null;
     function _applyCrop() {
-      if (!_crop) return; const img = $("cropImg");
+      if (!_crop) return; const stage = $("cropStage");
       const s = _crop.base * _crop.scale;
       const w = _crop.nw * s, h = _crop.nh * s;
       const maxX = Math.max(0, (w - _crop.sw) / 2), maxY = Math.max(0, (h - _crop.sh) / 2);
       _crop.x = Math.max(-maxX, Math.min(maxX, _crop.x));
       _crop.y = Math.max(-maxY, Math.min(maxY, _crop.y));
-      img.style.width = w + "px"; img.style.height = h + "px";
-      img.style.transform = "translate(-50%,-50%) translate(" + _crop.x + "px," + _crop.y + "px)";
+      // Affichage via BACKGROUND (toujours clippé au cadre) : taille = image mise à l'échelle,
+      // position = centré + décalage du glisser. Bulletproof, aucun débordement possible.
+      stage.style.backgroundSize = w + "px " + h + "px";
+      stage.style.backgroundPosition = "calc(50% + " + _crop.x + "px) calc(50% + " + _crop.y + "px)";
     }
     function openCropper(file) {
       const stage = $("cropStage"), img = $("cropImg");
       const url = URL.createObjectURL(file);
       img.onload = () => {
-        // IMPORTANT : afficher le modal AVANT de mesurer le stage (sinon clientWidth = 0 → cadrage faux).
         $("cropModal").classList.remove("hidden");
         requestAnimationFrame(() => {
-          const sw = stage.clientWidth || 280, sh = stage.clientHeight || sw;
+          // Taille CARRÉE imposée en JS (l'aspect-ratio CSS buguait en flex → stage géant).
+          const avail = Math.min(window.innerWidth - 70, window.innerHeight - 230, 300);
+          const sq = Math.max(180, Math.round(avail));
+          stage.style.width = sq + "px"; stage.style.height = sq + "px";
+          stage.style.backgroundImage = "url('" + url + "')";  // affichage clippé garanti
           const nw = img.naturalWidth, nh = img.naturalHeight;
-          _crop = { url, nw, nh, sw, sh, base: Math.max(sw / nw, sh / nh), scale: 1, x: 0, y: 0 };
+          _crop = { url, nw, nh, sw: sq, sh: sq, base: Math.max(sq / nw, sq / nh), scale: 1, x: 0, y: 0 };
           $("cropZoom").value = "1"; $("cropMsg").textContent = "";
           _applyCrop();
         });
       };
       img.src = url;
     }
-    // Export BULLETPROOF : on lit les positions RÉELLES à l'écran (getBoundingClientRect)
-    // au lieu de refaire le calcul → le résultat correspond EXACTEMENT à ce qui est affiché.
+    // Export : formule directe (le stage est CARRÉ et l'image centrée+décalée → calcul exact).
     function _cropExport() {
       return new Promise((res) => {
-        const stage = $("cropStage"), img = $("cropImg");
-        if (!stage || !img || !img.naturalWidth) { res(null); return; }
-        const sr = stage.getBoundingClientRect(), ir = img.getBoundingClientRect();
-        if (!ir.width || !ir.height) { res(null); return; }
-        const scaleX = img.naturalWidth / ir.width, scaleY = img.naturalHeight / ir.height;
-        const srcX = (sr.left - ir.left) * scaleX, srcY = (sr.top - ir.top) * scaleY;
-        const srcW = sr.width * scaleX, srcH = sr.height * scaleY;
+        const img = $("cropImg");
+        if (!_crop || !img || !img.naturalWidth) { res(null); return; }
+        const s = _crop.base * _crop.scale, w = _crop.nw * s, h = _crop.nh * s;
+        const imageLeft = _crop.sw / 2 + _crop.x - w / 2, imageTop = _crop.sh / 2 + _crop.y - h / 2;
+        const srcX = (0 - imageLeft) / s, srcY = (0 - imageTop) / s, srcSize = _crop.sw / s;
         const OUT = 720, cv = document.createElement("canvas"); cv.width = OUT; cv.height = OUT;
         const ctx = cv.getContext("2d");
-        try { ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, OUT, OUT); } catch (e) { res(null); return; }
+        try { ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, OUT, OUT); } catch (e) { res(null); return; }
         cv.toBlob((b) => res(b), "image/jpeg", 0.85);
       });
     }
