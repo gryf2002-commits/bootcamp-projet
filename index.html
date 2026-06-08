@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=279"></script>
-  <script src="sunmates-icons.js?v=279"></script>
+  <script src="sunmates-badges.js?v=280"></script>
+  <script src="sunmates-icons.js?v=280"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -680,7 +680,7 @@
 
     /* Carte « score de confiance » */
     /* Profil : photo grande & entière, nom/titre/ville centrés, confiance compacte */
-    .prof-photo { width: 132px; height: 132px; margin: .2rem auto .7rem; border-radius: 20px; background-color: var(--cream); background-size: contain; background-position: center; background-repeat: no-repeat; display: grid; place-items: center; font-size: 3.2rem; box-shadow: var(--shadow-sm); }
+    .prof-photo { width: 132px; height: 132px; margin: .2rem auto .7rem; border-radius: 20px; background-color: var(--cream); background-size: cover; background-position: center; background-repeat: no-repeat; display: grid; place-items: center; font-size: 3.2rem; box-shadow: var(--shadow-sm); overflow: hidden; }
     body.theme-dusk .prof-photo { background-color: #2a2140; }
     .prof-name { font-size: 1.45rem; font-weight: 800; justify-content: center; display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
     .prof-title { font-size: .95rem; color: var(--accent); font-weight: 700; margin-top: .15rem; }
@@ -816,7 +816,8 @@
     .fs-btn { flex-shrink: 0; background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .4rem .8rem; font-weight: 800; font-size: .8rem; cursor: pointer; box-shadow: 0 4px 12px rgba(255,90,77,.32); white-space: nowrap; }
     .fs-btn:active { transform: scale(.96); }
     /* Aussi un bouton flottant ⛶ dans le coin de la carte (toujours visible) */
-    .homemap-fsopen { position: absolute; top: .5rem; right: .5rem; z-index: 500; width: 38px; height: 38px; border: 0; border-radius: 11px; background: rgba(255,255,255,.95); color: var(--accent); font-size: 1.1rem; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,.2); display: grid; place-items: center; }
+    .homemap-fsopen { position: absolute; top: .5rem; right: .5rem; z-index: 500; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 11px; background: rgba(255,255,255,.95); color: var(--accent); line-height: 0; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,.2); display: flex; align-items: center; justify-content: center; }
+    .homemap-fsopen svg { display: block; }
     body.theme-dusk .homemap-fsopen { background: rgba(40,30,55,.95); }
     .homemap-card.fs .homemap-fsopen { display: none; }
     /* Plein écran : TOUTE la carte (filtres + carte + légende) passe en plein écran */
@@ -2280,7 +2281,7 @@
     body.theme-dusk .chip.active, body.theme-dusk .mseg button.active { background: var(--accent-grad) !important; color: #fff !important; }
     body.theme-dusk .notif-card, body.theme-dusk .picker-card { background: #221a34; }
     body.theme-dusk .topbar { background: linear-gradient(rgba(23,16,38,.86), rgba(23,16,38,0)); }
-    body.theme-dusk .bottom-nav { background: rgba(28,20,44,.86) !important; }
+    body.theme-dusk .bottom-nav { background: #1c1428 !important; }
     body.theme-dusk .iconbtn { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.13); }
     body.theme-dusk .bubble.them { background: #2c2342; color: #ede6f2; }
     body.theme-dusk .sresult:hover, body.theme-dusk .notif-item:hover, body.theme-dusk .matepick:hover,
