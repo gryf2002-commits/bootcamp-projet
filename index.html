@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=301"></script>
-  <script src="sunmates-icons.js?v=301"></script>
+  <script src="sunmates-badges.js?v=302"></script>
+  <script src="sunmates-icons.js?v=302"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -2301,9 +2301,12 @@
     /* Actions sur ses propres messages (éditer / supprimer) */
     .msg-quest { display: inline-block; margin-top: .4rem; background: rgba(255,255,255,.25); color: inherit; border: 1px solid rgba(255,255,255,.4); border-radius: 999px; padding: .2rem .7rem; font-size: .76rem; font-weight: 700; cursor: pointer; }
     .bubble.them .msg-quest { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
-    /* Heure cachée par défaut (la journée est déjà affichée plus haut) → révélée en touchant le message */
-    .bubble-time { display: none; font-size: .66rem; opacity: .6; margin-top: .25rem; text-align: right; }
-    .bubble.show-time .bubble-time, .chat-body.times-on .bubble-time { display: block; }
+    /* Heure : placée dans la gouttière À DROITE de chaque bulle, cachée par défaut.
+       Révélée soit en touchant un message (.show-time), soit en glissant la conversation
+       vers la gauche (peek façon Instagram : toutes les heures apparaissent en même temps). */
+    .bubble-time { position: absolute; top: 50%; right: 0; transform: translate(calc(100% + 10px), -50%);
+      font-size: .66rem; color: var(--muted); white-space: nowrap; opacity: 0; transition: opacity .15s; pointer-events: none; }
+    .bubble.show-time .bubble-time, #chatBody.peeking .bubble-time { opacity: .8; }
     /* Cœur de réaction sur un message (double-tap) */
     .bubble { position: relative; }
     .bubble-heart { position: absolute; bottom: -9px; right: 8px; font-size: .82rem; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 0 .28rem; line-height: 1.5; box-shadow: 0 1px 4px rgba(0,0,0,.15); z-index: 3; display: inline-flex; align-items: center; gap: .1rem; }
@@ -2311,10 +2314,11 @@
     .bubble-heart b { font-size: .68rem; color: var(--muted); font-weight: 700; }
     @keyframes heartPop { 0% { transform: scale(0); } 60% { transform: scale(1.3); } 100% { transform: scale(1); } }
     .bubble-heart.pop { animation: heartPop .35s; }
-    /* Indice de swipe pour révéler l'heure */
-    .chat-body.times-on { /* léger décalage façon Insta */ }
-    .chat-body.times-on .bubble { transition: transform .15s; }
-    .bubble.them .bubble-time { text-align: left; }
+    /* Peek façon Insta : on glisse la conversation vers la gauche, TOUTES les bulles
+       suivent le doigt (translateX) et découvrent leur heure dans la gouttière droite. */
+    #chatBody { overflow-x: hidden; }
+    #chatBody .bubble { transform: translateX(calc(var(--peek, 0px) * -1)); transition: transform .18s ease; }
+    #chatBody.peeking .bubble { transition: none; } /* suivi 1:1 du doigt pendant le glissement */
     .bubble-act { display: flex; gap: .3rem; margin-top: .3rem; justify-content: flex-end; opacity: .85; }
     .bubble-act button { background: rgba(255,255,255,.25); border: 0; border-radius: 999px; padding: 0; width: 22px; height: 22px; cursor: pointer; line-height: 1; display: grid; place-items: center; color: #fff; opacity: .8; }
     .bubble.them .bubble-act button { color: var(--muted); background: rgba(0,0,0,.06); }
@@ -3863,6 +3867,7 @@
             <button data-aseg="places">📍 Lieux</button>
             <button data-aseg="reports">🚩 Signal.</button>
             <button data-aseg="quotes">💼 Devis</button>
+            <button data-aseg="feedback">🧪 Bêta</button>
             <button data-aseg="sounds">🔊 Sons</button>
             <button data-aseg="data">🗄️ Données</button>
             <button data-aseg="system">🧰 Système</button>
@@ -3941,6 +3946,13 @@
 
           <div class="aseg hidden" data-asegpanel="quotes">
             <div class="card"><h3 style="margin-top:0">💼 Demandes de devis B2B</h3><div id="adminQuotes"><p class="muted">Chargement…</p></div></div>
+          </div>
+
+          <div class="aseg hidden" data-asegpanel="feedback">
+            <div class="card"><h3 style="margin-top:0">🧪 Retours bêta</h3>
+              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Les retours envoyés par les utilisateurs via « App en bêta · donne ton avis » (bug 🐞 / idée 💡 / pixel 🎨).</p>
+              <div id="adminFeedback"><p class="muted">Chargement…</p></div>
+            </div>
           </div>
 
           <div class="aseg hidden" data-asegpanel="sounds">
@@ -5762,7 +5774,22 @@
       else if (seg === "quotes") loadAdminQuotes();
       else if (seg === "sounds") loadAdminSounds();
       else if (seg === "data") loadAdminData();
+      else if (seg === "feedback") loadAdminFeedback();
       else if (seg === "system") loadAdminSystem();
+    }
+    // Retours bêta (segment dédié) — lit la table app_feedback (best-effort).
+    async function loadAdminFeedback() {
+      const box = $("adminFeedback"); if (!box) return;
+      box.innerHTML = '<p class="muted" style="font-size:.82rem">Chargement…</p>';
+      const ic = { bug: "🐞", idea: "💡", pixel: "🎨" };
+      let rows = null;
+      try { const { data, error } = await db.from("app_feedback").select("type,message,username,app_version,created_at").order("created_at", { ascending: false }).limit(60); if (!error) rows = data || []; } catch (e) {}
+      if (rows === null) { box.innerHTML = '<p class="muted" style="font-size:.8rem">Table <code>app_feedback</code> absente — lance <code>supabase_migration_feedback.sql</code> pour activer la collecte.</p>'; return; }
+      if (!rows.length) { box.innerHTML = '<p class="muted" style="font-size:.82rem">Aucun retour pour l\'instant.</p>'; return; }
+      const cnt = rows.reduce((a, r) => (a[r.type] = (a[r.type] || 0) + 1, a), {});
+      box.innerHTML =
+        `<div class="pgrid" style="margin-bottom:.5rem">${["bug", "idea", "pixel"].map((t) => `<div class="pcell"><div class="k">${ic[t]} ${t}</div><div class="v">${cnt[t] || 0}</div></div>`).join("")}</div>` +
+        rows.map((r) => `<div class="qrow" style="padding:.4rem .2rem;align-items:flex-start"><div class="qico">${ic[r.type] || "📝"}</div><div class="qname" style="flex:1;font-weight:500">${escapeHtml((r.message || "").slice(0, 280))}<div class="meta muted" style="font-size:.72rem;margin-top:.15rem">${escapeHtml(r.username || "anonyme")} · v${escapeHtml(r.app_version || "?")} · ${r.created_at ? new Date(r.created_at).toLocaleDateString("fr-FR") : ""}</div></div></div>`).join("");
     }
     document.querySelectorAll("[data-aseg]").forEach((b) => b.addEventListener("click", () => showAdminSegment(b.dataset.aseg)));
 
@@ -6345,27 +6372,10 @@
           <div>s36 — notes vocales (bucket privé) &nbsp; <b>s37 — badges prestige + secret Légende</b></div>
         </div>`;
 
-      const feedbackBlock = `
-        <div class="set-grouptitle">🧪 Retours bêta (bug / idée / pixel) <span style="font-weight:400;color:var(--muted)">· live</span></div>
-        <div id="adminFeedback"><p class="muted" style="font-size:.82rem">Chargement…</p></div>`;
-
       const refreshBtn = '<button class="btn-ghost btn-block" id="adminDataRefresh" style="margin-bottom:.6rem">↻ Rafraîchir les données</button>';
 
-      el.innerHTML = refreshBtn + sblock + liveActivity + feedbackBlock + citiesBlock + catalog + storageBlock + migrations + stack;
+      el.innerHTML = refreshBtn + sblock + liveActivity + citiesBlock + catalog + storageBlock + migrations + stack;
       el.querySelectorAll("[data-datapop]").forEach((c) => c.addEventListener("click", () => { const p = (window._adminDataPop || {})[c.dataset.datapop]; if (p) popInfo("🗄️", p[0], p[1]); }));
-      // Retours bêta (table app_feedback) — best-effort : si la table n'existe pas encore, message clair.
-      (async () => {
-        const box = $("adminFeedback"); if (!box) return;
-        const ic = { bug: "🐞", idea: "💡", pixel: "🎨" };
-        let rows = null;
-        try { const { data, error } = await db.from("app_feedback").select("type,message,username,app_version,created_at").order("created_at", { ascending: false }).limit(40); if (!error) rows = data || []; } catch (e) {}
-        if (rows === null) { box.innerHTML = '<p class="muted" style="font-size:.8rem">Table <code>app_feedback</code> absente — lance <code>supabase_migration_feedback.sql</code> pour activer la collecte.</p>'; return; }
-        if (!rows.length) { box.innerHTML = '<p class="muted" style="font-size:.82rem">Aucun retour pour l\'instant.</p>'; return; }
-        const cnt = rows.reduce((a, r) => (a[r.type] = (a[r.type] || 0) + 1, a), {});
-        box.innerHTML =
-          `<div class="pgrid" style="margin-bottom:.5rem">${["bug", "idea", "pixel"].map((t) => `<div class="pcell"><div class="k">${ic[t]} ${t}</div><div class="v">${cnt[t] || 0}</div></div>`).join("")}</div>` +
-          rows.map((r) => `<div class="qrow" style="padding:.4rem .2rem;align-items:flex-start"><div class="qico">${ic[r.type] || "📝"}</div><div class="qname" style="flex:1;font-weight:500">${esc(r.message).slice(0, 240)}<div class="meta muted" style="font-size:.72rem;margin-top:.15rem">${esc(r.username || "anonyme")} · v${esc(r.app_version || "?")} · ${r.created_at ? new Date(r.created_at).toLocaleDateString("fr-FR") : ""}</div></div></div>`).join("");
-      })();
       { const rb = $("adminDataRefresh"); if (rb) rb.addEventListener("click", () => loadAdminData()); }
 
       // Activité du jour + derniers inscrits (requêtes légères, en parallèle)
@@ -8402,14 +8412,26 @@
         if (_lastEl === b && (now - _lastTap) < 320) { e.preventDefault(); toggleReaction(b.dataset.mid); _lastTap = 0; _lastEl = null; }
         else { _lastTap = now; _lastEl = b; }
       }, { passive: false });
-      // Swipe horizontal sur la conversation → révèle/masque toutes les heures (façon Insta).
-      let _sx = 0, _sy = 0, _sw = false;
-      cb.addEventListener("touchstart", (e) => { if (e.touches[0]) { _sx = e.touches[0].clientX; _sy = e.touches[0].clientY; _sw = false; } }, { passive: true });
+      // Peek façon INSTAGRAM : on glisse la conversation vers la gauche, toutes les bulles
+      // suivent le doigt et découvrent leur heure ; au relâcher, tout revient en place.
+      let _px = 0, _py = 0, _peeking = false;
+      const MAXPEEK = 62;
+      cb.addEventListener("touchstart", (e) => { if (e.touches[0]) { _px = e.touches[0].clientX; _py = e.touches[0].clientY; _peeking = false; } }, { passive: true });
       cb.addEventListener("touchmove", (e) => {
-        if (!e.touches[0] || _sw) return;
-        const dx = e.touches[0].clientX - _sx, dy = e.touches[0].clientY - _sy;
-        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.6) { _sw = true; cb.classList.toggle("times-on", dx < 0); } // glisser à gauche = montrer
+        if (!e.touches[0]) return;
+        const dx = e.touches[0].clientX - _px, dy = e.touches[0].clientY - _py;
+        if (!_peeking) {
+          // On n'enclenche le peek que pour un geste franchement HORIZONTAL vers la GAUCHE
+          // (sinon on laisse le scroll vertical normal du chat tranquille).
+          if (dx < -10 && Math.abs(dx) > Math.abs(dy) * 1.5) { _peeking = true; cb.classList.add("peeking"); }
+          else return;
+        }
+        const peek = Math.max(0, Math.min(MAXPEEK, -dx));
+        cb.style.setProperty("--peek", peek + "px");
       }, { passive: true });
+      const _endPeek = () => { if (!_peeking) return; _peeking = false; cb.classList.remove("peeking"); cb.style.setProperty("--peek", "0px"); };
+      cb.addEventListener("touchend", _endPeek);
+      cb.addEventListener("touchcancel", _endPeek);
     }
 
     // ---- Conversations d'exemple avec les comptes IA (démo), côté navigateur ----
@@ -9484,15 +9506,21 @@
         homeCluster.on("clusterclick", (a) => {
           const cl = a.layer;
           const curZoom = homeLeaf.getZoom(), maxZoom = homeLeaf.getMaxZoom();
-          // Tant qu'on n'est PAS au zoom max → on ZOOME pour séparer le groupe.
-          // Des lieux différents se scindent en plusieurs points (puis plusieurs rosaces) ;
-          // un même endroit reste groupé et la carte se rapproche jusqu'au max.
+          const kids = cl.getAllChildMarkers();
+          // Groupe "co-localisé" (mêmes coordonnées, ex. plusieurs éléments au même lieu) ?
+          // Zoomer ne les séparera JAMAIS → on ouvre la rosace DIRECTEMENT (1 clic, plus de double-clic chiant).
+          let tiny = true;
+          try { const b = cl.getBounds(); tiny = b.getNorthEast().distanceTo(b.getSouthWest()) < 35; } catch (e) {}
+          if (tiny) {
+            if (kids.length <= 6) cl.spiderfy(); else openColocatedList(cl.getLatLng(), kids, cl);
+            return;
+          }
+          // Sinon (lieux réellement différents) et pas au zoom max → on zoome pour les séparer.
           if (curZoom < maxZoom) {
             try { homeLeaf.fitBounds(cl.getBounds().pad(0.2), { maxZoom: maxZoom }); } catch (e) {}
             return;
           }
           // Au zoom MAX (impossible de séparer davantage) → on ouvre la rosace.
-          const kids = cl.getAllChildMarkers();
           if (kids.length <= 6) { cl.spiderfy(); return; }     // peu d'éléments → éventail
           openColocatedList(cl.getLatLng(), kids, cl);          // beaucoup → liste (jamais 16 côte à côte)
         });
@@ -9926,7 +9954,10 @@
       homeCluster.clearLayers();
       const toAdd = [];
       Object.keys(homeMarkersByType).forEach((k) => { if (homeLayerOn[k]) toAdd.push(...homeMarkersByType[k]); });
-      if (toAdd.length) homeCluster.addLayers(toAdd);
+      // Garde-fou anti « longs traits qui traversent la carte » : un marqueur à coordonnées
+      // invalides (null→0/0, NaN) faisait tirer une ligne (patte de rosace) de part en part.
+      const valid = toAdd.filter((m) => { try { const ll = m.getLatLng(); return ll && isFinite(ll.lat) && isFinite(ll.lng) && !(ll.lat === 0 && ll.lng === 0); } catch (e) { return false; } });
+      if (valid.length) homeCluster.addLayers(valid);
     }
 
     function renderHomeLegend() {
