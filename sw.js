@@ -3,7 +3,7 @@
 // cache à la volée les libs CDN et les images (avatars, tuiles de carte) en
 // "stale-while-revalidate" (on sert le cache tout de suite, on rafraîchit en fond).
 // Les écritures Supabase (POST/PATCH…) ne sont jamais touchées.
-const VER = "v299";
+const VER = "v300";
 const SHELL_CACHE = "sunmates-shell-" + VER;   // coquille (versionnée → purge à chaque déploiement)
 const RUNTIME = "sunmates-rt-" + VER;          // CDN + images (regénéré par version)
 const SHELL = ["./", "./index.html", "./manifest.json", "./icon.svg", "./sunmates-badges.js", "./sunmates-icons.js",
@@ -21,7 +21,8 @@ const CDN_PRECACHE = [
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
-    try { const c = await caches.open(SHELL_CACHE); await c.addAll(SHELL); } catch (e) {}
+    // Best-effort PAR FICHIER (addAll est atomique : 1 asset manquant viderait toute la coquille → offline cassé).
+    try { const c = await caches.open(SHELL_CACHE); await Promise.allSettled(SHELL.map((u) => c.add(u))); } catch (e) {}
     // Les CDN en best-effort (ne bloquent pas l'install si offline/CORS).
     try { const r = await caches.open(RUNTIME); await Promise.allSettled(CDN_PRECACHE.map((u) => r.add(u))); } catch (e) {}
   })());
@@ -73,9 +74,12 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // 3) CDN libs (Supabase, Leaflet, fonts, gstatic…) + images de carte/avatars : SWR runtime.
+  // 3) CDN libs (Leaflet, fonts, gstatic, tuiles de carte) + images : SWR runtime.
+  // IMPORTANT : Supabase n'est PAS dans cette liste → ses GET REST/Auth (profils, messages,
+  // session/token) ne sont JAMAIS servis depuis le cache (données toujours fraîches pour une
+  // app temps réel/sécurité). Seules ses IMAGES Storage (avatars) sont cachées via `isImg`.
   const host = url.hostname;
-  const isCdn = /(^|\.)(jsdelivr\.net|unpkg\.com|cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com|tile\.openstreetmap\.org|basemaps\.cartocdn\.com|supabase\.co)$/i.test(host);
+  const isCdn = /(^|\.)(jsdelivr\.net|unpkg\.com|cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com|tile\.openstreetmap\.org|basemaps\.cartocdn\.com)$/i.test(host);
   const isImg = req.destination === "image";
   if (isCdn || isImg) {
     e.respondWith(staleWhileRevalidate(req, RUNTIME));

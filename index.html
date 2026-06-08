@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=299"></script>
-  <script src="sunmates-icons.js?v=299"></script>
+  <script src="sunmates-badges.js?v=300"></script>
+  <script src="sunmates-icons.js?v=300"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1639,7 +1639,7 @@
     .chat-header { display: flex; align-items: center; gap: .5rem; padding: .2rem 0 1rem; border-bottom: 1px solid var(--line); margin-bottom: 1rem; flex-shrink: 0; }
     .chat-flame { display: inline-flex; align-items: center; gap: .15rem; font-weight: 800; font-size: .82rem; color: #b4480e; flex-shrink: 0; background: linear-gradient(135deg, #fff1e0, #ffe2c4); border: 1px solid #ffcfa0; padding: .12rem .5rem .12rem .42rem; border-radius: 999px; box-shadow: 0 1px 4px rgba(214,108,32,.18); cursor: default; }
     .chat-flame.flame-done { filter: saturate(.7); opacity: .85; } /* poc déjà envoyé aujourd'hui */
-    .chat-flame.flame-done::after { content: "✓"; font-size: .7rem; margin-left: .1rem; color: #2a9d5c; font-weight: 900; }
+    .chat-flame.flame-done::after { content: "✓"; font-size: .7rem; margin-left: .1rem; color: #B5740E; font-weight: 900; }
     body.theme-dusk .chat-flame { background: linear-gradient(135deg, #3a2417, #4a2c15); border-color: #6b3d1c; color: #ffcaa0; }
     .chat-menu { position: absolute; top: 110%; right: 0; z-index: 50; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-pop); padding: .3rem; min-width: 210px; display: flex; flex-direction: column; }
     .chat-menu button { text-align: left; background: none; border: 0; padding: .6rem .7rem; border-radius: 10px; font-size: .85rem; color: var(--ink); cursor: pointer; }
@@ -5252,7 +5252,8 @@
     // ---- Avatar : applique une image OU une initiale dans un élément .avatar ----
     function setAvatarEl(el, url, fallbackChar) {
       if (!el) return;
-      if (url) { el.style.backgroundImage = "url('" + url + "')"; el.textContent = ""; }
+      const safe = _safeImgUrl(url);
+      if (safe) { el.style.backgroundImage = "url('" + safe + "')"; el.textContent = ""; }
       else { el.style.backgroundImage = ""; el.textContent = (fallbackChar || "?").toUpperCase(); } // "" → on revient au dégradé CSS (sinon fond noir)
     }
     // Markup d'avatar pour les listes (photo si dispo, sinon initiale)
@@ -5260,11 +5261,11 @@
     // On ne CHARGE l'image que lorsqu'elle approche de l'écran → temps de chargement
     // initial bien plus court (surtout les listes avec beaucoup de photos de gens).
     const _lazyIO = ("IntersectionObserver" in window) ? new IntersectionObserver((ents, io) => {
-      ents.forEach((en) => { if (!en.isIntersecting) return; const el = en.target; const u = el.getAttribute("data-lazybg"); if (u) { el.style.backgroundImage = "url('" + u + "')"; el.removeAttribute("data-lazybg"); } io.unobserve(el); });
+      ents.forEach((en) => { if (!en.isIntersecting) return; const el = en.target; const u = _safeImgUrl(el.getAttribute("data-lazybg")); if (u) { el.style.backgroundImage = "url('" + u + "')"; } el.removeAttribute("data-lazybg"); io.unobserve(el); });
     }, { rootMargin: "400px 0px" }) : null;
     function observeLazy(root) {
       const nodes = (root || document).querySelectorAll ? (root || document).querySelectorAll("[data-lazybg]") : [];
-      if (!_lazyIO) { nodes.forEach((el) => { const u = el.getAttribute("data-lazybg"); if (u) { el.style.backgroundImage = "url('" + u + "')"; el.removeAttribute("data-lazybg"); } }); return; }
+      if (!_lazyIO) { nodes.forEach((el) => { const u = _safeImgUrl(el.getAttribute("data-lazybg")); if (u) { el.style.backgroundImage = "url('" + u + "')"; } el.removeAttribute("data-lazybg"); }); return; }
       nodes.forEach((el) => _lazyIO.observe(el));
     }
     window.observeLazy = observeLazy;
@@ -7208,6 +7209,14 @@
       return String(s).replace(/[&<>"']/g, (c) =>
         ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     }
+    // URL d'image sûre pour un background-image : n'accepte que http(s)/blob/data:image,
+    // et retire les caractères qui pourraient casser l'attribut HTML ou le url() CSS
+    // (un avatar_url est librement modifiable par l'utilisateur → anti-XSS stockée).
+    function _safeImgUrl(u) {
+      u = String(u == null ? "" : u);
+      if (!/^(https?:|blob:|data:image\/)/i.test(u)) return "";
+      return u.replace(/["'()\\\s<>]/g, "");
+    }
     // ====================== JEUX / QUÊTES / BADGES / COUPONS (réels via Supabase) ======================
     let allQuests = [];          // définitions (table quests)
     const headColors = ["", "blue", "purp", "green"];
@@ -8801,7 +8810,8 @@
       $("tpCity").textContent = "📍 " + (p.city || "Quelque part dans le monde");
       // Photo en bandeau si disponible, sinon emoji
       const hero = $("tpHero");
-      if (p.avatar_url) { hero.classList.add("has-photo"); hero.style.backgroundImage = "url('" + p.avatar_url + "')"; hero.dataset.photo = p.avatar_url; hero.style.cursor = "zoom-in"; }
+      const heroBg = _safeImgUrl(p.avatar_url);
+      if (heroBg) { hero.classList.add("has-photo"); hero.style.backgroundImage = "url('" + heroBg + "')"; hero.dataset.photo = heroBg; hero.style.cursor = "zoom-in"; }
       else { hero.classList.remove("has-photo"); hero.style.backgroundImage = ""; hero.dataset.photo = ""; hero.style.cursor = ""; $("tpEmoji").textContent = "🧑"; }
       // Badges en surimpression sur le hero (résumé premium : match %, vérifié, en ligne)
       { const hb = $("tpHeroBadges"); if (hb) {
@@ -10539,14 +10549,18 @@
     // (throttle mobile, onglet en veille, Realtime non activé). On rafraîchit donc
     // les non-lus + demandes au RETOUR de focus et par petit polling quand l'app est visible.
     let _badgePoll = null, _badgeFocusBound = false;
-    function _refreshBadgesNow() { if (!myUserId) return; try { loadUnread(); } catch (e) {} try { loadConnections(); } catch (e) {} }
+    // Poll fréquent = SEULEMENT loadUnread (requête légère : messages filtrés par destinataire + depuis horodatage).
+    // PAS loadConnections ici : il lit toute la table profiles (lourd) → réservé au retour de focus (rare),
+    // et de toute façon les nouvelles demandes arrivent déjà en temps réel via conn-rt.
+    function _refreshUnreadLight() { if (!myUserId) return; try { loadUnread(); } catch (e) {} }
+    function _refreshBadgesFull() { if (!myUserId) return; try { loadUnread(); } catch (e) {} try { loadConnections(); } catch (e) {} }
     function startBadgeWatch() {
       if (_badgePoll) clearInterval(_badgePoll);
-      _badgePoll = setInterval(() => { if (!document.hidden) _refreshBadgesNow(); }, 20000); // 20 s, seulement onglet visible
+      _badgePoll = setInterval(() => { if (!document.hidden) _refreshUnreadLight(); }, 30000); // 30 s, léger, onglet visible
       if (!_badgeFocusBound) {
         _badgeFocusBound = true;
-        document.addEventListener("visibilitychange", () => { if (!document.hidden) _refreshBadgesNow(); });
-        window.addEventListener("focus", _refreshBadgesNow);
+        document.addEventListener("visibilitychange", () => { if (!document.hidden) _refreshBadgesFull(); }); // retour sur l'app = refresh complet (rare)
+        window.addEventListener("focus", _refreshBadgesFull);
       }
     }
 
@@ -11140,7 +11154,7 @@
       const lbl = $("hmMatesLbl"), row = $("hmMatesRow");
       if (mates.length) {
         if (lbl) lbl.textContent = "Tes Mates d'aventure";
-        row.innerHTML = mates.slice(0, 12).map((p) => '<div class="hm-mate" data-hmmate="' + p.id + '"><div class="avatar"' + (p.avatar_url ? " style=\"background-image:url('" + p.avatar_url + "')\"" : "") + ">" + (p.avatar_url ? "" : escapeHtml((p.username || "?")[0].toUpperCase())) + '</div><div class="hm-mate-n">' + escapeHtml(p.username || "Mate") + "</div></div>").join("");
+        row.innerHTML = mates.slice(0, 12).map((p) => { const bg = _safeImgUrl(p.avatar_url); return '<div class="hm-mate" data-hmmate="' + escapeHtml(p.id) + '"><div class="avatar"' + (bg ? " style=\"background-image:url('" + bg + "')\"" : "") + ">" + (bg ? "" : escapeHtml((p.username || "?")[0].toUpperCase())) + '</div><div class="hm-mate-n">' + escapeHtml(p.username || "Mate") + "</div></div>"; }).join("");
         row.querySelectorAll("[data-hmmate]").forEach((el) => el.addEventListener("click", () => { goToTab("connexions"); if (typeof openChat === "function") openChat(el.dataset.hmmate); }));
       } else { if (lbl) lbl.textContent = ""; row.innerHTML = '<p class="muted" style="font-size:.8rem">Pas encore de Mate — pars à la rencontre sur la carte ✨</p>'; }
       $("hmCities").innerHTML = cities.length
@@ -11379,7 +11393,7 @@
     function _fixCloseGlyphs(root) {
       (root || document).querySelectorAll("button:not([data-xfix])").forEach((b) => {
         const t = (b.textContent || "").trim();
-        if (b.children.length === 0 && (t === "✕" || t === "×" || t === "✖")) { b.dataset.xfix = "1"; b.classList.add("xbtn"); b.innerHTML = _XSVG; }
+        if (b.children.length === 0 && (t === "✕" || t === "×" || t === "✖")) { b.dataset.xfix = "1"; b.classList.add("xbtn"); if (!b.getAttribute("aria-label")) b.setAttribute("aria-label", "Fermer"); b.innerHTML = _XSVG; }
       });
     }
     _fixCloseGlyphs(document);
