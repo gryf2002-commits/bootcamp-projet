@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=274"></script>
-  <script src="sunmates-icons.js?v=274"></script>
+  <script src="sunmates-badges.js?v=275"></script>
+  <script src="sunmates-icons.js?v=275"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -793,6 +793,13 @@
       .player-hero { padding: .55rem .8rem; }
       .souvenir-card { padding: 1rem 1.1rem; }
       #photoLightboxImg { max-height: 84vh; }
+    /* Cropper photo de profil */
+    .crop-stage { position: relative; width: 100%; aspect-ratio: 1; max-width: 300px; margin: 0 auto; border-radius: 16px; overflow: hidden; background: #1a1320; touch-action: none; cursor: grab; }
+    .crop-stage:active { cursor: grabbing; }
+    .crop-stage img { position: absolute; left: 50%; top: 50%; transform-origin: center; user-select: none; -webkit-user-drag: none; max-width: none; }
+    .crop-ring { position: absolute; inset: 0; box-shadow: 0 0 0 2000px rgba(0,0,0,.45); border-radius: 50%; pointer-events: none; }
+    .crop-zoom { display: flex; align-items: center; gap: .6rem; margin-top: .7rem; }
+    .crop-zoom input[type=range] { flex: 1; accent-color: var(--accent); }
     }
     /* Bouton « Plein écran » bien visible (pill accent) */
     .fs-btn { flex-shrink: 0; background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .4rem .8rem; font-weight: 800; font-size: .8rem; cursor: pointer; box-shadow: 0 4px 12px rgba(255,90,77,.32); white-space: nowrap; }
@@ -2637,6 +2644,18 @@
   <!-- Photo en grand (lightbox) -->
   <div id="photoLightbox" class="act-overlay hidden" style="background:rgba(0,0,0,.9)">
     <img id="photoLightboxImg" alt="Photo" style="max-width:94vw;max-height:88vh;border-radius:14px;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.6)" />
+  </div>
+
+  <!-- Recadrage de la photo de profil avant publication (carré, glisser + zoom) -->
+  <div id="cropModal" class="act-overlay hidden">
+    <div class="act-card" style="max-width:380px">
+      <div class="picker-head"><h3 style="margin:0">✂️ Cadre ta photo</h3><button id="cropCancel" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
+      <p class="muted" style="font-size:.8rem;margin:.2rem 0 .6rem">Glisse pour positionner, ajuste le zoom — puis publie.</p>
+      <div id="cropStage" class="crop-stage"><img id="cropImg" alt="" draggable="false" /><div class="crop-ring"></div></div>
+      <div class="crop-zoom"><span>➖</span><input type="range" id="cropZoom" min="1" max="3" step="0.01" value="1" /><span>➕</span></div>
+      <button class="btn-primary btn-block" id="cropApply" style="margin-top:.6rem">✅ Recadrer &amp; publier</button>
+      <div class="msg" id="cropMsg" style="text-align:center"></div>
+    </div>
   </div>
 
   <div id="installModal" class="act-overlay hidden">
@@ -5166,23 +5185,87 @@
       });
     }
     // ---- Upload de la photo de profil vers Supabase Storage ----
-    $("pAvatarFile").addEventListener("change", async (e) => {
-      const file = e.target.files[0];
-      const msg = $("avatarMsg");
-      if (!file || !myUserId) return;
-      if (file.size > 15 * 1024 * 1024) { msg.style.color = "var(--danger)"; msg.textContent = "Fichier trop lourd (max 15 Mo)."; return; }
+    // Upload d'un blob déjà prêt (recadré) vers Supabase (chemin stable → écrase l'ancienne).
+    async function uploadAvatarBlob(srcBlob, msgEl) {
+      const msg = msgEl || $("avatarMsg"); if (!myUserId) return;
       msg.style.color = "var(--muted)"; msg.textContent = "Optimisation & envoi…";
-      let blob = file; try { const c = await _compressImage(file, 720, 0.82); if (c && c.size) blob = c; } catch (er) {}
+      let blob = srcBlob; try { const c = await _compressImage(srcBlob, 720, 0.82); if (c && c.size) blob = c; } catch (er) {}
       const path = myUserId + "/avatar.jpg";
       const up = await db.storage.from("avatars").upload(path, blob, { upsert: true, cacheControl: "3600", contentType: blob.type || "image/jpeg" });
-      if (up.error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + up.error.message; return; }
+      if (up.error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + up.error.message; return false; }
       const pub = db.storage.from("avatars").getPublicUrl(path);
       const url = pub.data.publicUrl + "?t=" + Date.now(); // anti-cache pour voir la nouvelle photo
       const { error } = await db.from("profiles").update({ avatar_url: url }).eq("id", myUserId);
-      if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; return; }
+      if (error) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + error.message; return false; }
       msg.textContent = ""; toast("📷", "Photo de profil mise à jour");
       await Promise.all([loadProfile(), loadConnections()]);
+      return true;
+    }
+    // Sélection d'une photo → on ouvre le CROPPER (recadrage carré) avant d'envoyer.
+    $("pAvatarFile").addEventListener("change", (e) => {
+      const file = e.target.files[0]; const msg = $("avatarMsg");
+      if (!file || !myUserId) return;
+      if (!/^image\//.test(file.type || "")) { msg.style.color = "var(--danger)"; msg.textContent = "Choisis une image."; return; }
+      if (file.size > 15 * 1024 * 1024) { msg.style.color = "var(--danger)"; msg.textContent = "Fichier trop lourd (max 15 Mo)."; return; }
+      openCropper(file);
+      e.target.value = ""; // permet de re-choisir le même fichier
     });
+    // ---- Cropper : positionner (glisser) + zoom, sortie carrée ----
+    let _crop = null;
+    function _applyCrop() {
+      if (!_crop) return; const img = $("cropImg");
+      const s = _crop.base * _crop.scale;
+      const w = _crop.nw * s, h = _crop.nh * s;
+      const maxX = Math.max(0, (w - _crop.sw) / 2), maxY = Math.max(0, (h - _crop.sh) / 2);
+      _crop.x = Math.max(-maxX, Math.min(maxX, _crop.x));
+      _crop.y = Math.max(-maxY, Math.min(maxY, _crop.y));
+      img.style.width = w + "px"; img.style.height = h + "px";
+      img.style.transform = "translate(-50%,-50%) translate(" + _crop.x + "px," + _crop.y + "px)";
+    }
+    function openCropper(file) {
+      const stage = $("cropStage"), img = $("cropImg");
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const sw = stage.clientWidth || 280, sh = stage.clientHeight || 280;
+        const nw = img.naturalWidth, nh = img.naturalHeight;
+        _crop = { url, nw, nh, sw, sh, base: Math.max(sw / nw, sh / nh), scale: 1, x: 0, y: 0 };
+        $("cropZoom").value = "1"; $("cropMsg").textContent = "";
+        _applyCrop();
+        $("cropModal").classList.remove("hidden");
+      };
+      img.src = url;
+    }
+    function _cropExport() {
+      return new Promise((res) => {
+        if (!_crop) { res(null); return; }
+        const OUT = 720, cv = document.createElement("canvas"); cv.width = OUT; cv.height = OUT;
+        const ctx = cv.getContext("2d"); const img = $("cropImg");
+        const s = _crop.base * _crop.scale, w = _crop.nw * s, h = _crop.nh * s;
+        const imageLeft = _crop.sw / 2 + _crop.x - w / 2, imageTop = _crop.sh / 2 + _crop.y - h / 2;
+        const srcX = (0 - imageLeft) / s, srcY = (0 - imageTop) / s, srcSize = _crop.sw / s;
+        try { ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, OUT, OUT); } catch (e) {}
+        cv.toBlob((b) => res(b), "image/jpeg", 0.85);
+      });
+    }
+    { // interactions cropper
+      const stage = $("cropStage");
+      if (stage) {
+        let drag = false, lx = 0, ly = 0;
+        stage.addEventListener("pointerdown", (e) => { if (!_crop) return; drag = true; lx = e.clientX; ly = e.clientY; try { stage.setPointerCapture(e.pointerId); } catch (er) {} });
+        stage.addEventListener("pointermove", (e) => { if (!drag || !_crop) return; _crop.x += e.clientX - lx; _crop.y += e.clientY - ly; lx = e.clientX; ly = e.clientY; _applyCrop(); });
+        stage.addEventListener("pointerup", () => { drag = false; });
+        stage.addEventListener("pointercancel", () => { drag = false; });
+      }
+      const zoom = $("cropZoom"); if (zoom) zoom.addEventListener("input", () => { if (!_crop) return; _crop.scale = parseFloat(zoom.value) || 1; _applyCrop(); });
+      const cancel = $("cropCancel"); if (cancel) cancel.addEventListener("click", () => { $("cropModal").classList.add("hidden"); _crop = null; });
+      const apply = $("cropApply"); if (apply) apply.addEventListener("click", async () => {
+        const blob = await _cropExport(); if (!blob) { $("cropMsg").textContent = "Erreur de recadrage."; return; }
+        apply.disabled = true; $("cropMsg").style.color = "var(--muted)"; $("cropMsg").textContent = "Envoi…";
+        const ok = await uploadAvatarBlob(blob, $("cropMsg"));
+        apply.disabled = false;
+        if (ok) { $("cropModal").classList.add("hidden"); _crop = null; }
+      });
+    }
 
     // ====================== LIEUX SÛRS ======================
     let cafeFilter = { q: "", mode: "all" }; // recherche + filtre actif de l'onglet Lieux
