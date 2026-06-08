@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=296"></script>
-  <script src="sunmates-icons.js?v=296"></script>
+  <script src="sunmates-badges.js?v=297"></script>
+  <script src="sunmates-icons.js?v=297"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -879,6 +879,7 @@
     @keyframes onbFade { from { opacity: 0; } to { opacity: 1; } }
     .onb-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
     .onb-bg .orb { position: absolute; border-radius: 50%; filter: blur(32px); opacity: .55; animation: orbFloat 9s ease-in-out infinite; will-change: transform; }
+    .onb-bg.orb-paused .orb { animation-play-state: paused; } /* fige les orbes pendant le glissement de slide (anti-saccade) */
     .onb-bg .o1 { width: 240px; height: 240px; background: #ff7e5f; top: -40px; left: -30px; }
     .onb-bg .o2 { width: 200px; height: 200px; background: #6a5cff; bottom: -30px; right: -20px; animation-delay: -3s; }
     .onb-bg .o3 { width: 160px; height: 160px; background: #29d8c2; top: 42%; right: 26%; animation-delay: -6s; }
@@ -9937,8 +9938,13 @@
       const d = $("onbDots"); if (!d) return;
       d.innerHTML = Array.from({ length: ONB_STEPS }, (_, i) => `<i class="${i === 0 ? "on" : ""}"></i>`).join("");
     }
+    let _onbOrbT = null;
     function showOnbStep(i) {
       onbStep = Math.max(0, Math.min(ONB_STEPS - 1, i));
+      // Anti-saccade : on fige les orbes floutées (blur 32px = lourd au repaint) pendant
+      // le glissement de la slide, puis on les relance (le GPU ne fait plus 2 anims lourdes à la fois).
+      const bg = document.querySelector(".onb-bg");
+      if (bg) { bg.classList.add("orb-paused"); if (_onbOrbT) clearTimeout(_onbOrbT); _onbOrbT = setTimeout(() => bg.classList.remove("orb-paused"), 480); }
       document.querySelectorAll("#onbStage .onb-step").forEach((s, idx) => {
         s.classList.toggle("active", idx === onbStep);
         s.classList.toggle("left", idx < onbStep);
@@ -10503,6 +10509,20 @@
       if (!myUserId) return;
       localStorage.setItem(seenKey(), new Date().toISOString());
       unreadList = []; unreadMsgCount = 0; updateNotifBadges();
+    }
+    // Filet anti-délai des pastilles (item 20) : le realtime peut être lent/coupé
+    // (throttle mobile, onglet en veille, Realtime non activé). On rafraîchit donc
+    // les non-lus + demandes au RETOUR de focus et par petit polling quand l'app est visible.
+    let _badgePoll = null, _badgeFocusBound = false;
+    function _refreshBadgesNow() { if (!myUserId) return; try { loadUnread(); } catch (e) {} try { loadConnections(); } catch (e) {} }
+    function startBadgeWatch() {
+      if (_badgePoll) clearInterval(_badgePoll);
+      _badgePoll = setInterval(() => { if (!document.hidden) _refreshBadgesNow(); }, 20000); // 20 s, seulement onglet visible
+      if (!_badgeFocusBound) {
+        _badgeFocusBound = true;
+        document.addEventListener("visibilitychange", () => { if (!document.hidden) _refreshBadgesNow(); });
+        window.addEventListener("focus", _refreshBadgesNow);
+      }
     }
 
     // ---- Pastilles (barre du bas + cloche) ----
@@ -12893,6 +12913,7 @@
       _smSessUid = uid;
       startPresence();
       subscribeMatches();
+      startBadgeWatch(); // filet anti-délai des pastilles de notif (item 20)
       loadMyVouchCount();
       renderSpotComposer();
       // Lien profond ?mate=<id> (QR scanné depuis un autre appareil / partagé)
