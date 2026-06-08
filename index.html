@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=271"></script>
-  <script src="sunmates-icons.js?v=271"></script>
+  <script src="sunmates-badges.js?v=272"></script>
+  <script src="sunmates-icons.js?v=272"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -8117,8 +8117,15 @@
       const f = _flameGet(id);
       if (f.active && f.count > 0) { el.classList.remove("hidden"); n.textContent = f.count; } else el.classList.add("hidden");
     }
+    let _lastPocAt = 0, _pocLock = false;
     function sendPoc() {
       const id = currentChatUserId; if (!id) return;
+      // Anti-spam : un poc max toutes les 4 s + verrou pendant l'envoi (évite le flood de messages).
+      const t = Date.now();
+      if (_pocLock || (t - _lastPocAt) < 4000) { if (typeof toast === "function") toast("🔥", "Doucement ! Un poc à la fois 😄"); return; }
+      _pocLock = true; _lastPocAt = t;
+      const pc = $("chatPoc"); if (pc) { pc.disabled = true; pc.style.opacity = ".5"; }
+      setTimeout(() => { _pocLock = false; const b = $("chatPoc"); if (b) { b.disabled = false; b.style.opacity = ""; } }, 4000);
       const f = _flameGet(id); const now = Date.now();
       let count = f.count;
       if (f.last && (now - f.last) < 35 * 3600 * 1000) {
@@ -8916,6 +8923,10 @@
     async function renderHomeMap() {
       if (typeof L === "undefined") return;
       const el = $("homeMap"); if (!el) return;
+      // Mode Maison : la carte voyage est cachée (display:none) → ne pas la (re)dimensionner
+      // sur un conteneur 0px (sinon tuiles coupées au retour). setHomeMode('travel') la rerendra.
+      const tm = $("homeTravelMap");
+      if (tm && (tm.style.display === "none" || el.offsetParent === null)) return;
       ensureIaPersonas();
       if (!homeLeaf) {
         homeLeaf = L.map(el, { scrollWheelZoom: false, zoomSnap: 0.5, wheelPxPerZoomLevel: 140, zoomControl: true }).setView([46.6, 2.3], 4);
@@ -10320,19 +10331,20 @@
     let _lastCities = -1;
 
     // ===== Radar « quête la plus proche » (onglet Jeux) : géoloc → quête Paris la + proche =====
-    function _questGeoList() {
+    function _questGeoList(ignoreCity) {
       const dbGeo = (typeof allQuests !== "undefined" ? allQuests : [])
         .filter((q) => q.kind === "quest" && q.lat != null && q.lng != null)
         .map((q) => ({ key: q.key, emoji: q.emoji || "🎯", lat: q.lat, lng: q.lng, title: q.title, xp: q.points || 0, badge: q.badge_name || "un badge", city: q.city || "Autre" }));
       const all = dbGeo.length ? dbGeo : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS.map((q) => Object.assign({ city: "Paris, France" }, q)) : []);
-      // Si une ville est choisie, le radar se concentre dessus (sinon national).
-      if (_questCity) { const f = all.filter((q) => (q.city || "") === _questCity); if (f.length) return f; }
+      // Le « plus proche » (radar / me localiser) ignore le filtre ville (sinon coincé sur la
+      // capitale du jour). Le sélecteur de carte, lui, passe ignoreCity=false.
+      if (!ignoreCity && _questCity) { const f = all.filter((q) => (q.city || "") === _questCity); if (f.length) return f; }
       return all;
     }
     function _fmtDist(km) { return km < 1 ? Math.round(km * 1000) + " m" : (km < 10 ? km.toFixed(1) : Math.round(km)) + " km"; }
     function renderNearestQuest() {
       const card = $("nearQuestCard"); if (!card) return;
-      const pts = _questGeoList();
+      const pts = _questGeoList(true); // vraie quête la plus proche (ignore le filtre ville)
       if (!pts.length) { card.style.display = "none"; return; }
       card.style.display = "flex";
       const fill = (q, meta) => {
@@ -10355,7 +10367,7 @@
     }
     // Radar dépliable : touche la carte radar (hors bouton) → liste des quêtes les plus proches.
     function showNearestQuests() {
-      const pts = _questGeoList();
+      const pts = _questGeoList(true); // ignore le filtre ville → vraies plus proches
       if (!pts.length) return;
       if (!lastKnownGeo) { if (typeof getGeo === "function") getGeo(() => showNearestQuests(), () => toast("⚠️", "Position indisponible")); return; }
       const sorted = pts.map((q) => ({ q: q, km: haversineKm(lastKnownGeo, { lat: q.lat, lng: q.lng }) })).sort((a, b) => a.km - b.km).slice(0, 6);
