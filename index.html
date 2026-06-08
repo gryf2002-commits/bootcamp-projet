@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=281"></script>
-  <script src="sunmates-icons.js?v=281"></script>
+  <script src="sunmates-badges.js?v=282"></script>
+  <script src="sunmates-icons.js?v=282"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -805,7 +805,11 @@
       .souvenir-card { padding: 1rem 1.1rem; }
       #photoLightboxImg { max-height: 84vh; }
     /* Cropper photo de profil */
-    .crop-stage { position: relative; width: 100%; aspect-ratio: 1; max-width: 300px; margin: 0 auto; border-radius: 16px; overflow: hidden; background: #1a1320; touch-action: none; cursor: grab; }
+    /* Carte de recadrage : bornée + scrollable (sinon le bouton publier passe hors écran → on est coincé) */
+    .crop-card { max-height: 92vh; overflow-y: auto; display: flex; flex-direction: column; }
+    .crop-stage { position: relative; width: 100%; aspect-ratio: 1; max-width: 260px; margin: 0 auto; border-radius: 16px; overflow: hidden; background: #1a1320; touch-action: none; cursor: grab; flex-shrink: 0; }
+    /* Fallback si aspect-ratio non géré (vieux navigateurs) : on force une hauteur carrée via padding */
+    @supports not (aspect-ratio: 1) { .crop-stage { height: 0; padding-bottom: min(260px, 80vw); } }
     .crop-stage:active { cursor: grabbing; }
     .crop-stage img { position: absolute; left: 50%; top: 50%; transform-origin: center; user-select: none; -webkit-user-drag: none; max-width: none; pointer-events: none; }
     .crop-ring { position: absolute; inset: 0; box-shadow: 0 0 0 2000px rgba(0,0,0,.45); border-radius: 50%; pointer-events: none; }
@@ -828,11 +832,11 @@
     .homemap-card.fs .homemap { height: 100% !important; border-radius: 12px; }
     .homemap-card.fs .homemap-fsclose { display: inline-flex; position: absolute; top: calc(.7rem + env(safe-area-inset-top, 0px)); right: .7rem; z-index: 1400;
       background: var(--card); color: var(--ink); border: 0; border-radius: 999px; padding: .5rem .9rem; font-weight: 800; font-size: .82rem; box-shadow: var(--shadow); cursor: pointer; }
-    /* En plein écran : les outils passent EN HAUT à gauche (la zone basse mobile = barre
-       gestuelle du navigateur, qui « mangeait » les taps). Top-gauche = toujours cliquable,
-       et on ne chevauche ni la croix (top-droite) ni le zoom (déplacé en bas-droite). */
-    .homemap-card.fs .homemap-tools { top: calc(.7rem + env(safe-area-inset-top, 0px)); left: .7rem;
-      right: auto; bottom: auto; align-items: flex-start; z-index: 1500; max-width: calc(100% - 7.5rem); }
+    /* En plein écran : outils EN BAS À GAUCHE (équilibré avec le zoom en bas-droite ; rien
+       en haut-gauche). On les remonte BIEN au-dessus de la safe-area / barre gestuelle mobile
+       pour que les taps passent toujours. La croix reste en haut-droite. */
+    .homemap-card.fs .homemap-tools { bottom: calc(1.4rem + env(safe-area-inset-bottom, 0px)); left: .7rem;
+      right: auto; top: auto; align-items: flex-start; z-index: 1500; max-width: calc(60% - 1rem); }
     .homemap-card.fs .homemap-fsclose { z-index: 1600; }
     .homemap-tools { position: absolute; right: .55rem; bottom: .55rem; z-index: 1100; display: flex; flex-direction: column; gap: .4rem; align-items: flex-end; pointer-events: auto; }
     .homemap-tools button { background: var(--card); color: var(--ink); border: 1px solid rgba(0,0,0,.08); border-radius: 999px; padding: .4rem .7rem; font-size: .76rem; font-weight: 700; box-shadow: var(--shadow-sm); cursor: pointer; }
@@ -1832,8 +1836,12 @@
        Dégradés coucher de soleil, effets verre, ombres douces,
        micro-animations. N'affecte que l'apparence.
        =================================================================== */
-    /* PAS de background-attachment:fixed (repeint à chaque frame de scroll = gros lag mobile). */
+    /* Fond : sur MOBILE pas de background-attachment:fixed (repeint à chaque frame = lag, et de
+       toute façon le fond est masqué par l'app-shell qui prend toute la largeur).
+       Sur DESKTOP, on FIXE le fond → les marges gauche/droite restent statiques (plus de scroll
+       bizarre de "longue page web"). Le desktop gère le fixed sans souci de FPS. */
     body { background: var(--bg-grad); }
+    @media (min-width: 480px) { body { background-attachment: fixed !important; } }
     /* Taps instantanés (supprime le délai/zoom mobile) sur tout ce qui est interactif. */
     button, a, label, input[type=range], .tile, .cat-tile, .chip, .qrow, .fc-chip, .spot-quick button, .stat-box, .stat-click, [role="button"], [data-goto], [data-jeuxnav], [data-jeuxopen] { touch-action: manipulation; }
     .app-shell { background: transparent; }
@@ -2665,9 +2673,9 @@
 
   <!-- Recadrage de la photo de profil avant publication (carré, glisser + zoom) -->
   <div id="cropModal" class="act-overlay hidden">
-    <div class="act-card" style="max-width:380px">
+    <div class="act-card crop-card" style="max-width:360px">
       <div class="picker-head"><h3 style="margin:0">✂️ Cadre ta photo</h3><button id="cropCancel" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
-      <p class="muted" style="font-size:.8rem;margin:.2rem 0 .6rem">Glisse pour positionner, ajuste le zoom — puis publie.</p>
+      <p class="muted" style="font-size:.78rem;margin:.2rem 0 .5rem">Glisse pour positionner, zoome — puis publie.</p>
       <div id="cropStage" class="crop-stage"><img id="cropImg" alt="" draggable="false" /><div class="crop-ring"></div></div>
       <div class="crop-zoom"><span>➖</span><input type="range" id="cropZoom" min="1" max="3" step="0.01" value="1" /><span>➕</span></div>
       <button class="btn-primary btn-block" id="cropApply" style="margin-top:.6rem">✅ Recadrer &amp; publier</button>
@@ -9080,8 +9088,11 @@
       if (tm && (tm.style.display === "none" || el.offsetParent === null)) return;
       ensureIaPersonas();
       if (!homeLeaf) {
-        homeLeaf = L.map(el, { scrollWheelZoom: false, zoomSnap: 0.5, wheelPxPerZoomLevel: 140, zoomControl: true }).setView([46.6, 2.3], 4);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap", maxZoom: 19 }).addTo(homeLeaf);
+        homeLeaf = L.map(el, { scrollWheelZoom: false, zoomSnap: 0.5, wheelPxPerZoomLevel: 120, zoomControl: true,
+          preferCanvas: true, tap: false, zoomAnimation: true, fadeAnimation: true, inertiaDeceleration: 2600 }).setView([46.6, 2.3], 4);
+        // Tuiles : buffer plus large + mises à jour pendant le pan → déplacement bien plus fluide.
+        // (Le service worker les met en cache → instantanées au retour.)
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap", maxZoom: 19, keepBuffer: 4, updateWhenIdle: false, updateWhenZooming: false }).addTo(homeLeaf);
         homeLeaf.attributionControl.setPrefix(false).setPosition("bottomleft"); // retire le logo Leaflet, déplace à gauche
         try { if (homeLeaf.zoomControl) homeLeaf.zoomControl.setPosition("bottomright"); } catch (e) {} // libère le haut-gauche pour les outils en plein écran
         // ★ Correctif plein écran DÉFINITIF : un ResizeObserver resynchronise Leaflet avec la
