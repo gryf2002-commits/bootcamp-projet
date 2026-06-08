@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=293"></script>
-  <script src="sunmates-icons.js?v=293"></script>
+  <script src="sunmates-badges.js?v=294"></script>
+  <script src="sunmates-icons.js?v=294"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1644,6 +1644,11 @@
     body.theme-dusk .chat-menu { background: #241b35; } body.theme-dusk .chat-menu button { color: #f3e9f3; }
     .chat-mic { font-size: 1.2rem; flex-shrink: 0; }
     /* Chips de type de feedback bêta */
+    /* Chips de portée de recherche (Tout / Voyageurs / Lieux / Vérifiés) */
+    .search-scopes { display: flex; gap: .4rem; margin: .5rem 0 .2rem; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .search-scopes::-webkit-scrollbar { display: none; }
+    .sscope { flex: 0 0 auto; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .35rem .75rem; font-size: .78rem; font-weight: 700; cursor: pointer; transition: .12s; white-space: nowrap; }
+    .sscope.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 7px rgba(255,111,60,.28); }
     .fb-chip { flex: 1; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: .45rem .3rem; font-size: .8rem; font-weight: 700; cursor: pointer; transition: .12s; }
     .fb-chip.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 8px rgba(255,111,60,.3); }
     /* Bouton poc rafraîchi : pastille chaude vivante (avant : simple 🔥 plat « vieux »). */
@@ -3038,6 +3043,12 @@
         <div class="search">
           <span class="ico">🔍</span>
           <input id="homeSearch" type="text" placeholder="Rechercher un lieu ou un·e voyageur·se…" />
+        </div>
+        <div class="search-scopes" id="searchScopes">
+          <button class="sscope on" data-scope="all">Tout</button>
+          <button class="sscope" data-scope="people">🧑 Voyageurs</button>
+          <button class="sscope" data-scope="places">🛟 Lieux</button>
+          <button class="sscope" data-scope="verified">✓ Vérifiés</button>
         </div>
         <div id="searchResults"></div>
 
@@ -9085,21 +9096,27 @@
 
     // ---- Recherche globale de l'accueil (lieux sûrs + voyageurs) ----
     let allCafes = [];
+    let _searchScope = "all";
     async function renderSearch(q) {
       q = (q || "").trim();
       const box = $("searchResults"); if (!box) return;
       if (!q) { box.innerHTML = ""; return; }
       const ql = q.toLowerCase();
-      const places = allCafes.filter((c) => (c.name || "").toLowerCase().includes(ql) || (c.city || "").toLowerCase().includes(ql)).slice(0, 5);
+      const wantPlaces = _searchScope === "all" || _searchScope === "places";
+      const wantPeople = _searchScope === "all" || _searchScope === "people" || _searchScope === "verified";
+      let places = wantPlaces ? allCafes.filter((c) => (c.name || "").toLowerCase().includes(ql) || (c.city || "").toLowerCase().includes(ql)).slice(0, 5) : [];
       // Recherche de pseudo CÔTÉ SERVEUR (fiable : trouve n'importe quel·le voyageur·se, pas que le cache local).
       let people = [];
-      try {
-        const { data } = await db.from("profiles").select("id,username,avatar_url,city,is_verified,banned")
-          .ilike("username", "%" + q + "%").limit(8);
-        people = (data || []).filter((p) => p.id !== myUserId && !p.banned);
-        people.forEach((p) => { if (!travelerMap[p.id]) travelerMap[p.id] = p; }); // cache → ouverture de la fiche
-      } catch (e) {
-        people = Object.values(travelerMap).filter((p) => p.id !== myUserId && !p.banned && (p.username || "").toLowerCase().includes(ql)).slice(0, 6);
+      if (wantPeople) {
+        try {
+          const { data } = await db.from("profiles").select("id,username,avatar_url,city,is_verified,banned")
+            .ilike("username", "%" + q + "%").limit(8);
+          people = (data || []).filter((p) => p.id !== myUserId && !p.banned);
+          people.forEach((p) => { if (!travelerMap[p.id]) travelerMap[p.id] = p; }); // cache → ouverture de la fiche
+        } catch (e) {
+          people = Object.values(travelerMap).filter((p) => p.id !== myUserId && !p.banned && (p.username || "").toLowerCase().includes(ql)).slice(0, 6);
+        }
+        if (_searchScope === "verified") people = people.filter((p) => p.is_verified); // portée « Vérifiés »
       }
       let html = "";
       if (people.length) html += '<div class="card" style="margin-top:.6rem"><h3 style="margin-top:0">Voyageurs</h3>' +
@@ -9113,6 +9130,13 @@
     // Debounce générique : évite de relancer un render lourd à CHAQUE frappe (anti-jank).
     function _debounce(fn, ms) { let t; return function () { const a = arguments, c = this; clearTimeout(t); t = setTimeout(() => fn.apply(c, a), ms || 250); }; }
     $("homeSearch").addEventListener("input", _debounce((e) => renderSearch(e.target.value), 250));
+    // Chips de portée : affinent la recherche (Tout / Voyageurs / Lieux / Vérifiés) → résultats précis (item 18).
+    { const sc = $("searchScopes"); if (sc) sc.querySelectorAll(".sscope").forEach((b) => b.addEventListener("click", () => {
+        _searchScope = b.dataset.scope;
+        sc.querySelectorAll(".sscope").forEach((x) => x.classList.toggle("on", x === b));
+        const hs = $("homeSearch"); renderSearch(hs ? hs.value : "");
+        if (hs && !hs.value.trim()) hs.focus();
+      })); }
 
     // ---- Carte interactive des lieux sûrs (Leaflet) ----
     let leafMap = null, mapMarkers = [], mapMarkerById = {};
