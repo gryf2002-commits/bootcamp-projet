@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=283"></script>
-  <script src="sunmates-icons.js?v=283"></script>
+  <script src="sunmates-badges.js?v=284"></script>
+  <script src="sunmates-icons.js?v=284"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -3612,8 +3612,8 @@
               <div class="avatar-edit">
                 <div class="avatar lg" id="pAvatarPreview">😎</div>
                 <div style="flex:1">
-                  <label for="pAvatarFile" class="btn-accent" style="display:inline-block;cursor:pointer;padding:.6rem 1rem">📷 Choisir une photo</label>
-                  <input id="pAvatarFile" type="file" accept="image/*" style="display:none" />
+                  <button type="button" id="pAvatarPick" class="btn-accent" style="cursor:pointer;padding:.6rem 1rem">📷 Choisir une photo</button>
+                  <input id="pAvatarFile" type="file" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none" />
                   <div class="msg" id="avatarMsg" style="margin-top:.3rem"></div>
                 </div>
               </div>
@@ -3811,7 +3811,7 @@
             </div>
 
             <!-- Recherche UNIQUE : filtre la visite (chapitres) ET le catalogue d'un coup -->
-            <div class="search kb-search" style="margin:.6rem 0"><span class="ico">🔍</span><input id="kbSearch" type="text" placeholder="Rechercher une fonctionnalité, un écran, un chapitre…" /><button class="kb-clear" id="kbClear" type="button" aria-label="Effacer" style="display:none">✕</button></div>
+            <div class="search kb-search" style="margin:.6rem 0"><span class="ico">🔍</span><input id="kbSearch" type="text" placeholder="Rechercher une fonctionnalité, un écran, un chapitre…" /></div>
             <div class="section-head"><h3 style="margin:.4rem 0 .2rem">📚 Les chapitres de la visite</h3></div>
             <p class="muted" style="font-size:.8rem;margin:.1rem 0 .6rem">Touche « ▶ Jouer depuis ici » pour lancer la visite à un chapitre précis.</p>
             <div id="demoSteps"></div>
@@ -5231,6 +5231,8 @@
       return true;
     }
     // Sélection d'une photo → on ouvre le CROPPER (recadrage carré) avant d'envoyer.
+    // Déclencheur fiable du sélecteur de fichier (label[for] + display:none échouait sur certains mobiles).
+    { const pick = $("pAvatarPick"), inp = $("pAvatarFile"); if (pick && inp) pick.addEventListener("click", () => inp.click()); }
     $("pAvatarFile").addEventListener("change", (e) => {
       const file = e.target.files[0]; const msg = $("avatarMsg");
       if (!file || !myUserId) return;
@@ -5265,8 +5267,13 @@
           stage.style.width = sq + "px"; stage.style.height = sq + "px";
           stage.style.backgroundImage = "url('" + url + "')";  // affichage clippé garanti
           const nw = img.naturalWidth, nh = img.naturalHeight;
-          _crop = { url, nw, nh, sw: sq, sh: sq, base: Math.max(sq / nw, sq / nh), scale: 1, x: 0, y: 0 };
-          $("cropZoom").value = "1"; $("cropMsg").textContent = "";
+          // base = COVER (remplit). On démarre néanmoins ZOOM MINI = la photo ENTIÈRE visible
+          // (sinon elle arrive déjà très zoomée et la jauge ne sert à rien). On peut zoomer IN ensuite.
+          const coverS = Math.max(sq / nw, sq / nh), containS = Math.min(sq / nw, sq / nh);
+          const minScale = containS / coverS; // < 1 → permet de dézoomer jusqu'à voir toute la photo
+          _crop = { url, nw, nh, sw: sq, sh: sq, base: coverS, scale: minScale, x: 0, y: 0 };
+          const zoom = $("cropZoom"); if (zoom) { zoom.min = minScale.toFixed(3); zoom.max = "3"; zoom.step = "0.01"; zoom.value = minScale.toFixed(3); }
+          $("cropMsg").textContent = "";
           _applyCrop();
         });
       };
@@ -5707,10 +5714,10 @@
       box.querySelectorAll("[data-demojump]").forEach((b) => b.addEventListener("click", () => startAutoDemo(Number(b.dataset.demojump))));
       renderFeatureCatalog(q);
     }
-    // Recherche UNIQUE : filtre visite + catalogue d'un coup.
-    { const ks = $("kbSearch"), kc = $("kbClear");
-      if (ks) ks.addEventListener("input", () => { renderDemoScript(ks.value); if (kc) kc.style.display = ks.value ? "" : "none"; });
-      if (kc) kc.addEventListener("click", () => { if (ks) { ks.value = ""; ks.focus(); } renderDemoScript(""); kc.style.display = "none"; });
+    // Recherche UNIQUE : filtre visite + catalogue. (Le bouton « effacer » ✕ est ajouté
+    // automatiquement à tous les .search → pas de bouton manuel, sinon DOUBLE croix.)
+    { const ks = $("kbSearch");
+      if (ks) ks.addEventListener("input", () => renderDemoScript(ks.value));
     }
     // Catalogue exhaustif des fonctionnalités (knowledge base). À enrichir quand on push.
     const SM_FEATURES = [
@@ -6207,8 +6214,45 @@
         <div id="adminStorageLive"><p class="muted" style="font-size:.82rem">Mesure en cours…</p></div>
         <p class="muted" style="font-size:.74rem;margin:.4rem 0 0">Free tier : Storage 1 Go · Base 500 Mo · Egress 5 Go/mois.</p>`;
 
-      el.innerHTML = sblock + citiesBlock + catalog + storageBlock + stack;
+      const liveActivity = `
+        <div class="set-grouptitle">📡 Activité (live) <span style="font-weight:400;color:var(--muted)">· 24 h</span></div>
+        <div id="adminLiveAct" class="pgrid"><div class="pcell"><div class="k">Chargement…</div><div class="v">…</div></div></div>
+        <div class="set-grouptitle">🆕 Derniers inscrits</div>
+        <div id="adminRecentUsers"><p class="muted" style="font-size:.82rem">Chargement…</p></div>`;
+
+      const migrations = `
+        <div class="set-grouptitle">🧱 Migrations SQL lancées</div>
+        <div style="font-size:.8rem;line-height:1.7">
+          <div>s30 — 45 quêtes géoloc (10 villes FR) &nbsp; s31 — admin_stats (bannis exclus)</div>
+          <div>s32 — parrainage + coupons &nbsp; s33 — classement par ville</div>
+          <div>s34 — badges villes/Tour de France &nbsp; s35 — feed communautaire</div>
+          <div>s36 — notes vocales (bucket privé) &nbsp; <b>s37 — badges prestige + secret Légende</b></div>
+        </div>`;
+
+      const refreshBtn = '<button class="btn-ghost btn-block" id="adminDataRefresh" style="margin-bottom:.6rem">↻ Rafraîchir les données</button>';
+
+      el.innerHTML = refreshBtn + sblock + liveActivity + citiesBlock + catalog + storageBlock + migrations + stack;
       el.querySelectorAll("[data-datapop]").forEach((c) => c.addEventListener("click", () => { const p = (window._adminDataPop || {})[c.dataset.datapop]; if (p) popInfo("🗄️", p[0], p[1]); }));
+      { const rb = $("adminDataRefresh"); if (rb) rb.addEventListener("click", () => loadAdminData()); }
+
+      // Activité du jour + derniers inscrits (requêtes légères, en parallèle)
+      (async () => {
+        const since = new Date(Date.now() - 86400000).toISOString();
+        const cnt = async (table, col) => { try { const { count } = await db.from(table).select("id", { count: "exact", head: true }).gte(col || "created_at", since); return count || 0; } catch (e) { return "—"; } };
+        try {
+          const [nUsers, nMsg, nCk, nQuests] = await Promise.all([cnt("profiles"), cnt("messages"), cnt("checkpoints"), cnt("user_quests", "completed_at")]);
+          const box = $("adminLiveAct"); if (box) box.innerHTML =
+            `<div class="pcell"><div class="k">Inscrits</div><div class="v">${nUsers}</div></div>` +
+            `<div class="pcell"><div class="k">Messages</div><div class="v">${nMsg}</div></div>` +
+            `<div class="pcell"><div class="k">Check-ins</div><div class="v">${nCk}</div></div>` +
+            `<div class="pcell"><div class="k">Quêtes finies</div><div class="v">${nQuests}</div></div>`;
+        } catch (e) {}
+        try {
+          const { data } = await db.from("profiles").select("username,city,created_at,is_verified").order("created_at", { ascending: false }).limit(6);
+          const box = $("adminRecentUsers");
+          if (box) box.innerHTML = (data && data.length) ? data.map((u) => `<div class="qrow" style="padding:.35rem .2rem"><div class="qico">${u.is_verified ? "✓" : "🧑"}</div><div class="qname" style="flex:1">${esc(u.username || "Voyageur")}<div class="meta muted" style="font-size:.72rem">${esc((u.city || "").split(",")[0] || "—")} · ${u.created_at ? new Date(u.created_at).toLocaleDateString("fr-FR") : ""}</div></div></div>`).join("") : '<p class="muted" style="font-size:.82rem">—</p>';
+        } catch (e) {}
+      })();
 
       // Stockage live (asynchrone, ne bloque pas l'affichage)
       _liveStorage().then((s) => {
