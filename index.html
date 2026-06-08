@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=285"></script>
-  <script src="sunmates-icons.js?v=285"></script>
+  <script src="sunmates-badges.js?v=286"></script>
+  <script src="sunmates-icons.js?v=286"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -818,8 +818,12 @@
     .fs-btn { flex-shrink: 0; background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .4rem .8rem; font-weight: 800; font-size: .8rem; cursor: pointer; box-shadow: 0 4px 12px rgba(255,90,77,.32); white-space: nowrap; }
     .fs-btn:active { transform: scale(.96); }
     /* Aussi un bouton flottant ⛶ dans le coin de la carte (toujours visible) */
-    .homemap-fsopen { position: absolute; top: .5rem; right: .5rem; z-index: 500; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 11px; background: rgba(255,255,255,.95); color: var(--accent); line-height: 0; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,.2); display: flex; align-items: center; justify-content: center; }
+    .homemap-fsopen { position: absolute; top: .5rem; right: .5rem; z-index: 500; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 11px; background: var(--accent-grad); color: #fff; line-height: 0; cursor: pointer; box-shadow: 0 4px 12px rgba(255,90,77,.4); display: flex; align-items: center; justify-content: center; }
     .homemap-fsopen svg { display: block; }
+    /* Filtres de la carte : UNE seule ligne compacte qui défile (au lieu d'un gros paquet sur plusieurs lignes) */
+    #homeMapFilters { flex-wrap: nowrap !important; overflow-x: auto; overflow-y: hidden; gap: .35rem; margin-bottom: .55rem; padding-bottom: .15rem; scrollbar-width: none; }
+    #homeMapFilters::-webkit-scrollbar { display: none; }
+    #homeMapFilters .chip { padding: .34rem .62rem; font-size: .76rem; flex: 0 0 auto; }
     body.theme-dusk .homemap-fsopen { background: rgba(40,30,55,.95); }
     .homemap-card.fs .homemap-fsopen { display: none; }
     /* Plein écran : TOUTE la carte (filtres + carte + légende) passe en plein écran */
@@ -1923,9 +1927,13 @@
     }
 
     /* --- Accueil : titre dégradé, vignettes en relief --- */
-    /* « Bonjour {pseudo} » en corail/rouge (l'âme SunMates). */
-    #homeHello { color: var(--accent); }
-    #homeHello .hello-name { color: var(--accent); }
+    /* « Bonjour {pseudo} » et le « Sun » du logo aux COULEURS DU SOLEIL (or → ambre), jour ET nuit. */
+    :root { --sun-grad: linear-gradient(120deg, #FFC93C 0%, #FF9F1C 55%, #FF7E3D 100%); }
+    body.theme-dusk { --sun-grad: linear-gradient(120deg, #FFD96B 0%, #FFB347 58%, #FF9A4D 100%); }
+    #homeHello, #homeHello .hello-name, .brand b .sun {
+      background: var(--sun-grad) !important; -webkit-background-clip: text !important; background-clip: text !important;
+      color: transparent !important; -webkit-text-fill-color: transparent !important;
+    }
     /* Série de jours (streak), gamification douce près du Bonjour */
     .hello-row { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-top: .1rem; flex-wrap: wrap; }
     .hello-row #homeSubtitle { min-width: 0; flex: 1; }
@@ -2200,7 +2208,7 @@
     .pf-pct.done { color: #B5740E; background: rgba(255,177,60,.18); }
     .pf-head .chev { transition: transform .2s; color: var(--muted); }
     .pf-section.open .pf-head .chev { transform: rotate(90deg); }
-    .pf-body { max-height: 0; overflow: hidden; padding: 0 1rem; transition: max-height .32s ease; }
+    .pf-body { max-height: 0; overflow: hidden; padding: 0 1rem; transition: max-height .24s cubic-bezier(.4, 0, .2, 1); }
     .pf-section.open .pf-body { padding-bottom: 1rem; }
 
     /* ===== SESSION 4, sous-onglets Mates, feed "posts", recherche ===== */
@@ -3109,8 +3117,8 @@
         <div id="homeTravelMap">
 
         <!-- ===== Carte « tout-en-un » : lieux, Mates, activités, check-ins ===== -->
-        <div class="section-head"><h3 style="margin-top:.4rem">Explore autour de toi 🗺️</h3><button id="hmFull" class="fs-btn" type="button">⛶ Plein écran</button></div>
-        <p class="muted" style="margin:-.2rem 0 .6rem;font-size:.84rem">Filtre, puis <b>touche une pastille</b> pour agir 👇</p>
+        <div class="section-head"><h3 style="margin-top:.4rem">Explore autour de toi 🗺️</h3></div>
+        <p class="muted" style="margin:-.2rem 0 .6rem;font-size:.84rem">Touche une pastille pour voir un lieu, un Mate ou une activité autour de toi ✨</p>
         <div class="card homemap-card">
           <!-- Sélecteur de ville (menu déroulant) : concentre la carte sur une ville de jeu -->
           <div class="city-pick"><select id="questCitySelect" aria-label="Choisir une ville"><option value="">Toutes les villes</option></select><button class="todo-toggle" id="questTodoToggle" type="button" title="N'afficher que les quêtes pas encore faites"><span class="tt-ic">🎯</span><span class="tt-lbl">À faire</span><span class="tt-state" id="todoState">OFF</span></button></div>
@@ -5364,6 +5372,33 @@
       document.querySelectorAll("#cafeFilters .chip").forEach((b) => b.classList.toggle("active", b.dataset.cf === mode));
     }
 
+    // Fiche d'un lieu (pop) : présente mieux le lieu au clic sur sa tuile.
+    function showCafeDetail(c) {
+      if (!c) return;
+      const nCk = (typeof cafeCheckins !== "undefined" && cafeCheckins[c.id]) || 0;
+      const rate = (typeof cafeRatings !== "undefined") ? cafeRatings[c.id] : null;
+      const km = (myGeo && c.lat != null && c.lng != null) ? haversineKm(myGeo, { lat: c.lat, lng: c.lng }) : null;
+      const html = "<div style='text-align:left'>" +
+        "<div style='height:150px;border-radius:14px;background:var(--cream);background-size:cover;background-position:center;background-repeat:no-repeat;background-image:url(\"" + cafeImage(c) + "\");margin-bottom:.6rem'></div>" +
+        "<div style='font-size:.84rem;color:var(--muted);margin-bottom:.5rem'>" + escapeHtml(c.category || "Lieu sûr") + " · " + escapeHtml(c.city || "") + (km != null ? " · 📍 à " + _fmtDist(km) : "") + "</div>" +
+        "<div style='font-size:.88rem;line-height:1.7'>" +
+          (c.is_eco ? "🌱 Éco-responsable<br>" : "") +
+          "✅ <b>" + nCk + "</b> check-in" + (nCk > 1 ? "s" : "") + (rate && rate.cnt ? " &nbsp;·&nbsp; ⭐ " + rate.avg.toFixed(1) + " (" + rate.cnt + " avis)" : "") +
+          (c.safety_note ? "<br>🛟 " + escapeHtml(c.safety_note) : "") +
+        "</div>" +
+        "<button class='btn-accent btn-block' id='cdCheckin' style='margin-top:.9rem'>🔒 Check-in (+10)</button>" +
+        "<div style='display:flex;gap:.5rem;margin-top:.5rem'>" +
+          "<button class='btn-ghost' id='cdReviews' style='flex:1'>⭐ Avis</button>" +
+          (c.lat != null && c.lng != null ? "<button class='btn-ghost' id='cdMap' style='flex:1'>📍 Sur la carte</button>" : "") +
+        "</div></div>";
+      popInfo("📍", c.name, html);
+      setTimeout(() => {
+        const close = () => { const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); };
+        const ci = $("cdCheckin"); if (ci) ci.onclick = () => { close(); checkIn(c.id, c.name); };
+        const rv = $("cdReviews"); if (rv) rv.onclick = () => { close(); openReviews(c.id, c.name); };
+        const mp = $("cdMap"); if (mp) mp.onclick = () => { close(); focusHomeMapOn(c.id); };
+      }, 40);
+    }
     function renderCafesList() {
       const list = $("cafesList"); if (!list) return;
       if (!allCafes.length) { list.innerHTML = '<p class="muted">Aucun lieu pour l\'instant.</p>'; $("cafesCount").textContent = ""; return; }
@@ -5431,9 +5466,9 @@
       }).join("") : '<p class="muted">Aucun lieu ne correspond. Essaie un autre filtre.</p>');
       list.querySelectorAll("[data-checkin]").forEach((b) =>
         b.addEventListener("click", () => checkIn(Number(b.dataset.checkin), b.dataset.name)));
-      // TOUTE la tuile est cliquable → check-in (le clic sur les boutons garde leur action propre).
+      // Clic sur la tuile (hors boutons) → FICHE du lieu qui présente mieux (photo, infos, actions).
       list.querySelectorAll("[data-cafecard]").forEach((card) =>
-        card.addEventListener("click", (e) => { if (e.target.closest("button, a")) return; const cb = card.querySelector("[data-checkin]"); if (cb) cb.click(); }));
+        card.addEventListener("click", (e) => { if (e.target.closest("button, a")) return; const c = allCafes.find((x) => x.id === Number(card.dataset.cafecard)); if (c) showCafeDetail(c); }));
       list.querySelectorAll("[data-mapcafe]").forEach((b) =>
         b.addEventListener("click", () => focusHomeMapOn(Number(b.dataset.mapcafe))));
       observeLazy(list); // active le lazy-loading des photos de lieux
@@ -6532,7 +6567,7 @@
       const cities = [...new Set((typeof allQuests !== "undefined" ? allQuests : []).filter((q) => q.kind === "quest" && q.city).map((q) => q.city.replace(/, France$/, "")))].sort();
       const sig = cities.join("|"); if (sig === _lbCitiesSig) return;
       _lbCitiesSig = sig;
-      sel.innerHTML = '<option value="">🏙️ Toutes les villes</option>' + cities.map((c) => '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + "</option>").join("");
+      sel.innerHTML = '<option value="">Toutes les villes</option>' + cities.map((c) => '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + "</option>").join("");
       sel.value = (_lbCity && cities.includes(_lbCity)) ? _lbCity : "";
     }
     { const lc = $("lbCitySelect"); if (lc) lc.addEventListener("change", () => { _lbCity = lc.value || ""; renderLeaderboard(); if (window.SMSound) SMSound.play("tap"); }); }
@@ -9118,7 +9153,7 @@
       const sig = cities.join("|");
       if (sig === _questCitiesSig) return; // pas de changement → on garde le menu (et la sélection)
       _questCitiesSig = sig;
-      sel.innerHTML = '<option value="">🗺️ Toutes les villes</option>' + cities.map((c) => '<option value="' + escapeHtml(c) + '">' + escapeHtml(c.replace(/, France$/, "")) + "</option>").join("");
+      sel.innerHTML = '<option value="">Toutes les villes</option>' + cities.map((c) => '<option value="' + escapeHtml(c) + '">' + escapeHtml(c.replace(/, France$/, "")) + "</option>").join("");
       sel.value = (_questCity && cities.includes(_questCity)) ? _questCity : "";
     }
     { const cs = $("questCitySelect"); if (cs) cs.addEventListener("change", () => {
