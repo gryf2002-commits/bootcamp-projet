@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=284"></script>
-  <script src="sunmates-icons.js?v=284"></script>
+  <script src="sunmates-badges.js?v=285"></script>
+  <script src="sunmates-icons.js?v=285"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -864,18 +864,19 @@
     .onb.show { animation: onbFade .4s ease; }
     @keyframes onbFade { from { opacity: 0; } to { opacity: 1; } }
     .onb-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-    .onb-bg .orb { position: absolute; border-radius: 50%; filter: blur(42px); opacity: .55; animation: orbFloat 9s ease-in-out infinite; }
+    .onb-bg .orb { position: absolute; border-radius: 50%; filter: blur(32px); opacity: .55; animation: orbFloat 9s ease-in-out infinite; will-change: transform; }
     .onb-bg .o1 { width: 240px; height: 240px; background: #ff7e5f; top: -40px; left: -30px; }
     .onb-bg .o2 { width: 200px; height: 200px; background: #6a5cff; bottom: -30px; right: -20px; animation-delay: -3s; }
     .onb-bg .o3 { width: 160px; height: 160px; background: #29d8c2; top: 42%; right: 26%; animation-delay: -6s; }
-    @keyframes orbFloat { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-26px) scale(1.08); } }
+    /* translate SEUL (pas de scale) : le flou n'est plus recalculé à chaque frame → fluide. */
+    @keyframes orbFloat { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-22px,0); } }
     .onb-card { position: relative; width: 100%; max-width: 420px; background: rgba(22,15,42,.30);
       backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,.22);
       border-radius: 28px; padding: 2.4rem 1.6rem 1.4rem; color: #fff; box-shadow: 0 30px 80px rgba(0,0,0,.45); text-align: center; }
     .onb-skip { position: absolute; top: 1rem; right: 1.1rem; background: none; border: 0; color: rgba(255,255,255,.7); font-size: .82rem; cursor: pointer; }
     .onb-stage { position: relative; min-height: 280px; }
     .onb-step { position: absolute; inset: 0; opacity: 0; transform: translateX(34px); transition: opacity .42s ease, transform .42s ease;
-      pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; will-change: transform, opacity; backface-visibility: hidden; }
     .onb-step.active { opacity: 1; transform: none; pointer-events: auto; }
     .onb-step.left { transform: translateX(-34px); }
     .onb-emoji { font-size: 72px; margin-bottom: .8rem; filter: drop-shadow(0 10px 18px rgba(0,0,0,.4)); animation: floaty 3s ease-in-out infinite; }
@@ -5187,11 +5188,23 @@
       else { el.style.backgroundImage = "none"; el.textContent = (fallbackChar || "?").toUpperCase(); }
     }
     // Markup d'avatar pour les listes (photo si dispo, sinon initiale)
+    // ===== Lazy-loading des images de fond (avatars, photos de lieux) =====
+    // On ne CHARGE l'image que lorsqu'elle approche de l'écran → temps de chargement
+    // initial bien plus court (surtout les listes avec beaucoup de photos de gens).
+    const _lazyIO = ("IntersectionObserver" in window) ? new IntersectionObserver((ents, io) => {
+      ents.forEach((en) => { if (!en.isIntersecting) return; const el = en.target; const u = el.getAttribute("data-lazybg"); if (u) { el.style.backgroundImage = "url('" + u + "')"; el.removeAttribute("data-lazybg"); } io.unobserve(el); });
+    }, { rootMargin: "400px 0px" }) : null;
+    function observeLazy(root) {
+      const nodes = (root || document).querySelectorAll ? (root || document).querySelectorAll("[data-lazybg]") : [];
+      if (!_lazyIO) { nodes.forEach((el) => { const u = el.getAttribute("data-lazybg"); if (u) { el.style.backgroundImage = "url('" + u + "')"; el.removeAttribute("data-lazybg"); } }); return; }
+      nodes.forEach((el) => _lazyIO.observe(el));
+    }
+    window.observeLazy = observeLazy;
     function avatarMarkup(name, url, cls, online) {
       const c = "avatar" + (cls ? " " + cls : "");
       const dot = online ? '<span class="pdot" title="En ligne"></span>' : "";
       return url
-        ? `<div class="${c}" style="background-image:url('${escapeHtml(url)}')">${dot}</div>`
+        ? `<div class="${c}" data-lazybg="${escapeHtml(url)}">${dot}</div>`
         : `<div class="${c}">${(name?.[0] || "?").toUpperCase()}${dot}</div>`;
     }
 
@@ -5395,8 +5408,8 @@
         const rt = cafeRatings[c.id];
         const isTop = rt && rt.avg >= 4.5 && rt.cnt >= 3;
         const rateBadge = (rt && rt.cnt) ? `<span class="pcard-chip pcard-rate">⭐ ${rt.avg.toFixed(1)} <b>(${rt.cnt})</b></span>` : '<span class="pcard-chip pcard-new">✨ Nouveau</span>';
-        return `<div class="place pcard" data-cafecard="${c.id}">
-          <div class="pcard-photo" style="background-image:url('${cafeImage(c)}')">
+        return `<div class="place pcard" data-cafecard="${c.id}" style="cursor:pointer">
+          <div class="pcard-photo" data-lazybg="${cafeImage(c)}">
             <div class="pcard-chips-l">${c.is_eco ? '<span class="pcard-chip pcard-eco">🌱 Éco</span>' : ''}${isTop ? '<span class="pcard-chip pcard-top">🏆 Top noté</span>' : ''}</div>
             ${rateBadge}
             <div class="pcard-grad"></div>
@@ -5418,8 +5431,12 @@
       }).join("") : '<p class="muted">Aucun lieu ne correspond. Essaie un autre filtre.</p>');
       list.querySelectorAll("[data-checkin]").forEach((b) =>
         b.addEventListener("click", () => checkIn(Number(b.dataset.checkin), b.dataset.name)));
+      // TOUTE la tuile est cliquable → check-in (le clic sur les boutons garde leur action propre).
+      list.querySelectorAll("[data-cafecard]").forEach((card) =>
+        card.addEventListener("click", (e) => { if (e.target.closest("button, a")) return; const cb = card.querySelector("[data-checkin]"); if (cb) cb.click(); }));
       list.querySelectorAll("[data-mapcafe]").forEach((b) =>
         b.addEventListener("click", () => focusHomeMapOn(Number(b.dataset.mapcafe))));
+      observeLazy(list); // active le lazy-loading des photos de lieux
       list.querySelectorAll("[data-reviews]").forEach((b) =>
         b.addEventListener("click", () => openReviews(Number(b.dataset.reviews), b.dataset.name)));
       const gc = list.querySelector("[data-goldcheckin]");
@@ -11018,7 +11035,7 @@
     // et on ne corrige les croix qu'une fois au repos (idle).
     try {
       let _xQueue = [], _xT = null;
-      const _xFlush = () => { _xT = null; const q = _xQueue; _xQueue = []; q.forEach((n) => { try { if (n.isConnected) _fixCloseGlyphs(n); } catch (e) {} }); };
+      const _xFlush = () => { _xT = null; const q = _xQueue; _xQueue = []; q.forEach((n) => { try { if (n.isConnected) { _fixCloseGlyphs(n); if (typeof observeLazy === "function") observeLazy(n); } } catch (e) {} }); };
       new MutationObserver((muts) => {
         let added = false;
         muts.forEach((m) => m.addedNodes && m.addedNodes.forEach((n) => { if (n.nodeType === 1) { _xQueue.push(n); added = true; } }));
