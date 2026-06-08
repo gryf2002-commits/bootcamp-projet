@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=289"></script>
-  <script src="sunmates-icons.js?v=289"></script>
+  <script src="sunmates-badges.js?v=290"></script>
+  <script src="sunmates-icons.js?v=290"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1518,7 +1518,13 @@
     .sp-next-name{ font-weight:800; font-size:.92rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .sp-bar{ height:9px; margin-top:.4rem; border-radius:999px; background:rgba(120,40,10,.18); overflow:hidden; }
     .sp-bar span{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#FFF2C2,#FFD15C 60%,#FFE9A8); box-shadow:0 0 8px rgba(255,209,92,.6); transition:width .6s cubic-bezier(.22,1,.36,1); }
-    body.theme-dusk .solo-prog{ background:linear-gradient(135deg, rgba(255,201,60,.12), rgba(122,92,255,.16)); border-color:rgba(255,255,255,.08); box-shadow:0 16px 40px rgba(0,0,0,.45); }
+    body.theme-dusk .solo-prog{ background:linear-gradient(135deg, rgba(255,138,61,.16), rgba(255,90,77,.10)); border-color:rgba(255,255,255,.08); box-shadow:0 16px 40px rgba(0,0,0,.45); }
+    /* Sombre : tuiles de stats lisibles (plus de blanc translucide délavé) */
+    body.theme-dusk .sp-stat{ background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.1); }
+    body.theme-dusk .sp-stat span{ color:#e7dff2; }
+    body.theme-dusk .sp-stat b{ color:#FFCB6E; }
+    body.theme-dusk .sp-next{ background:rgba(255,138,61,.14); border-color:rgba(255,138,61,.24); }
+    body.theme-dusk .sp-next-lbl{ color:#FFB36B; }
     body.theme-dusk .sp-stat{ background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.08); }
     body.theme-dusk .sp-streak{ color:#ffce8a; background:linear-gradient(135deg, rgba(255,201,60,.18), rgba(255,138,61,.14)); }
     body.theme-dusk .sp-next{ background:rgba(122,92,255,.18); border-color:rgba(155,123,255,.30); } body.theme-dusk .sp-next-lbl{ color:#b8a3ff; }
@@ -6813,7 +6819,8 @@
         db.from("blocks").select("blocked").eq("blocker", myId),
       ]);
       blockedIds = new Set((blk || []).map((b) => b.blocked));
-      const all = profiles || [];
+      // BANNIS exclus à la SOURCE → ils ne peuplent ni travelerMap, ni la carte, ni la recherche, ni les chats.
+      const all = (profiles || []).filter((p) => p.id === myId || !p.banned);
       const list = conns || [];
       // Dernier message échangé avec chaque interlocuteur (pour l'aperçu)
       const lastByPeer = {};
@@ -6884,7 +6891,8 @@
         if (c.user_a === myId) related.add(c.user_b);
         if (c.user_b === myId) related.add(c.user_a);
       });
-      travelersCache = all.filter((p) => p.id !== myId && !related.has(p.id) && !blockedIds.has(p.id));
+      // Les comptes BANNIS ne doivent apparaître NULLE PART (découvrir, recherche, carte…).
+      travelersCache = all.filter((p) => p.id !== myId && !related.has(p.id) && !blockedIds.has(p.id) && !p.banned);
       renderTravelers($("travSearch") ? $("travSearch").value : "");
       const mc = $("matesCount"); if (mc) mc.textContent = connectedIds.size;
       { const ml = $("matesStatLbl"); if (ml) ml.textContent = connectedIds.size ? "Mates de confiance ›" : "Trouve tes premiers Mates 🌍 ›"; }
@@ -8982,12 +8990,22 @@
 
     // ---- Recherche globale de l'accueil (lieux sûrs + voyageurs) ----
     let allCafes = [];
-    function renderSearch(q) {
-      q = (q || "").trim().toLowerCase();
+    async function renderSearch(q) {
+      q = (q || "").trim();
       const box = $("searchResults"); if (!box) return;
       if (!q) { box.innerHTML = ""; return; }
-      const places = allCafes.filter((c) => (c.name || "").toLowerCase().includes(q) || (c.city || "").toLowerCase().includes(q)).slice(0, 5);
-      const people = Object.values(travelerMap).filter((p) => p.id !== myUserId && (p.username || "").toLowerCase().includes(q)).slice(0, 6);
+      const ql = q.toLowerCase();
+      const places = allCafes.filter((c) => (c.name || "").toLowerCase().includes(ql) || (c.city || "").toLowerCase().includes(ql)).slice(0, 5);
+      // Recherche de pseudo CÔTÉ SERVEUR (fiable : trouve n'importe quel·le voyageur·se, pas que le cache local).
+      let people = [];
+      try {
+        const { data } = await db.from("profiles").select("id,username,avatar_url,city,is_verified,banned")
+          .ilike("username", "%" + q + "%").limit(8);
+        people = (data || []).filter((p) => p.id !== myUserId && !p.banned);
+        people.forEach((p) => { if (!travelerMap[p.id]) travelerMap[p.id] = p; }); // cache → ouverture de la fiche
+      } catch (e) {
+        people = Object.values(travelerMap).filter((p) => p.id !== myUserId && !p.banned && (p.username || "").toLowerCase().includes(ql)).slice(0, 6);
+      }
       let html = "";
       if (people.length) html += '<div class="card" style="margin-top:.6rem"><h3 style="margin-top:0">Voyageurs</h3>' +
         people.map((p) => `<div class="sresult" data-sp="${p.id}">${avatarMarkup(p.username, p.avatar_url)}<div class="info"><div class="sname">${escapeHtml(p.username || "Voyageur")} ${p.is_verified ? '<span class="vchip" title="Vérifié">✓</span>' : ""}</div><div class="smeta">${escapeHtml(p.city || "")}</div></div></div>`).join("") + "</div>";
