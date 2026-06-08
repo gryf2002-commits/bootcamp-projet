@@ -65,8 +65,8 @@
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=268"></script>
-  <script src="sunmates-icons.js?v=268"></script>
+  <script src="sunmates-badges.js?v=269"></script>
+  <script src="sunmates-icons.js?v=269"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -6719,6 +6719,13 @@
       const _qCity = {}; (typeof allQuests !== "undefined" ? allQuests : []).forEach((q) => { if (q.key) _qCity[q.key] = q.city || ""; });
       const _citiesDone = new Set(Object.keys(myQuestStatus).filter((k) => myQuestStatus[k] === "completed").map((k) => _qCity[k]).filter(Boolean)).size;
       want("badge_tour_de_france", _citiesDone >= 10);
+      // Badges PRESTIGE (s37) : paliers endgame bien plus exigeants
+      const _totalCities = new Set((typeof allQuests !== "undefined" ? allQuests : []).filter((q) => q.kind === "quest" && q.city).map((q) => q.city)).size;
+      want("badge_quest100", questsDone >= 100);
+      want("badge_explorer100", ck >= 100);
+      want("badge_globe", _totalCities > 0 && _citiesDone >= _totalCities);
+      // SECRET « Légende de SunMates » : le Graal (vérifié + 50 quêtes + 10 villes + 50 check-ins)
+      want("badge_legend_secret", !!(myProfile && myProfile.is_verified) && questsDone >= 50 && _citiesDone >= 10 && ck >= 50);
       if (!toGrant.length) return;
       for (const key of toGrant) {
         const def = allBadgeDefs.find((b) => b.key === key) || {};
@@ -7015,41 +7022,60 @@
       decide: null, // géré à part (pile ou face / oui-non)
       bingo: ["Parler à un inconnu", "Goûter un plat local", "Prendre une photo de coucher de soleil", "Visiter un lieu gratuit", "Apprendre un mot en langue locale", "Marcher +5 000 pas", "Boire un café en terrasse", "Découvrir une ruelle cachée", "Aider un·e voyageur·se"],
     };
+    // Tirage aléatoire SANS répétition immédiate (mémorise le dernier index par jeu).
+    const _gameLast = {};
+    function _pickNoRepeat(arr, key) {
+      if (arr.length <= 1) return arr[0];
+      let i; do { i = Math.floor(Math.random() * arr.length); } while (i === _gameLast[key]);
+      _gameLast[key] = i; return arr[i];
+    }
+    let _quizScore = 0;   // bonnes réponses d'affilée dans la session de quiz
     function playGame(key) {
       const g = CLIENT_GAMES.find((x) => x.key === key); if (!g) return;
-      const pick = (arr) => arr[Math.floor((Date.now() / 7 + (window._gameSpin = (window._gameSpin || 0) + 1)) % arr.length)];
       const reBtn = "<button class='btn-accent btn-block' id='gameAgain' style='margin-top:1rem'>🔄 Rejouer</button>";
-      if (key === "wheel" || key === "ice") {
-        popInfo(g.emoji, g.name, "<p style='font-size:1.02rem;line-height:1.5;margin:.3rem 0'>" + escapeHtml(pick(_GD[key])) + "</p>" + reBtn);
-        setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); }, 30);
-      } else if (key === "twolies") {
-        popInfo(g.emoji, g.name, "<p style='font-size:.96rem;line-height:1.5'>" + escapeHtml(pick(_GD.twolies)) + "</p>" + reBtn);
+      if (window.SMSound) SMSound.play("pop");
+      if (key === "wheel" || key === "ice" || key === "twolies") {
+        popInfo(g.emoji, g.name, "<p style='font-size:1.04rem;line-height:1.5;margin:.3rem 0'>" + escapeHtml(_pickNoRepeat(_GD[key], key)) + "</p>" + reBtn);
         setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); }, 30);
       } else if (key === "decide") {
-        const opts = ["✅ Fonce, c'est oui !", "❌ Pas cette fois.", "🤷 À toi de voir… relance !", "🔥 Carrément, vas-y à fond !", "⏳ Attends un peu."];
-        popInfo("🪙", "Décide pour moi", "<p style='font-size:1.1rem;font-weight:800;margin:.4rem 0'>" + escapeHtml(opts[Math.floor((Date.now() / 3 + (window._gameSpin = (window._gameSpin || 0) + 1)) % opts.length)]) + "</p>" + reBtn);
+        const opts = ["✅ Fonce, c'est oui !", "❌ Pas cette fois.", "🤷 À toi de voir… relance !", "🔥 Carrément, vas-y à fond !", "⏳ Attends un peu.", "💯 Aucun doute, go !"];
+        popInfo("🪙", "Décide pour moi", "<p style='font-size:1.25rem;font-weight:900;margin:.5rem 0;color:var(--accent)'>" + escapeHtml(_pickNoRepeat(opts, "decide")) + "</p>" + reBtn);
         setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); }, 30);
       } else if (key === "quiz") {
-        const qz = _GD.quiz[Math.floor((Date.now() / 11 + (window._gameSpin = (window._gameSpin || 0) + 1)) % _GD.quiz.length)];
-        popInfo("❓", "Quiz du voyageur", "<p style='font-weight:700;margin:.2rem 0 .7rem'>" + escapeHtml(qz.q) + "</p>" +
-          qz.c.map((c, i) => "<button class='btn-ghost btn-block qzc' data-i='" + i + "' style='margin:.25rem 0'>" + escapeHtml(c) + "</button>").join(""));
-        setTimeout(() => { document.querySelectorAll(".qzc").forEach((b) => b.onclick = () => {
+        const qz = _pickNoRepeat(_GD.quiz, "quiz");
+        popInfo("❓", "Quiz du voyageur", "<div style='font-size:.78rem;color:var(--muted);margin-bottom:.3rem'>Série : <b>" + _quizScore + "</b> ✅</div>" +
+          "<p style='font-weight:700;margin:.2rem 0 .7rem'>" + escapeHtml(qz.q) + "</p>" +
+          qz.c.map((c, i) => "<button class='btn-ghost btn-block qzc' data-i='" + i + "' style='margin:.25rem 0'>" + escapeHtml(c) + "</button>").join("") +
+          "<div id='qzFb' style='text-align:center;font-weight:700;margin-top:.6rem;min-height:1.2rem'></div>");
+        setTimeout(() => { let answered = false; document.querySelectorAll(".qzc").forEach((b) => b.onclick = () => {
+          if (answered) return; answered = true;
           const ok = Number(b.dataset.i) === qz.a;
-          b.style.background = ok ? "var(--accent-grad)" : "#e0463b"; b.style.color = "#fff";
-          if (!ok) { const good = document.querySelector(".qzc[data-i='" + qz.a + "']"); if (good) { good.style.background = "var(--accent-grad)"; good.style.color = "#fff"; } }
-          setTimeout(() => playGame("quiz"), 1100);
+          document.querySelectorAll(".qzc").forEach((x) => x.style.opacity = ".55");
+          const good = document.querySelector(".qzc[data-i='" + qz.a + "']");
+          if (good) { good.style.background = "var(--accent-grad)"; good.style.color = "#fff"; good.style.opacity = "1"; }
+          if (!ok) { b.style.background = "#e0463b"; b.style.color = "#fff"; b.style.opacity = "1"; }
+          const fb = $("qzFb"); if (fb) { fb.textContent = ok ? "Bravo ! 🎉" : "Raté 😅"; fb.style.color = ok ? "var(--accent)" : "#e0463b"; }
+          if (ok) { _quizScore++; if (window.SMSound) SMSound.play("success"); } else { _quizScore = 0; }
+          setTimeout(() => playGame("quiz"), 1200);
         }); }, 30);
       } else if (key === "bingo") {
         let st = {}; try { st = JSON.parse(localStorage.getItem("sm_bingo_" + (myUserId || "x")) || "{}") || {}; } catch (e) {}
         const cells = _GD.bingo.map((t, i) => "<button class='bingo-cell" + (st[i] ? " on" : "") + "' data-bi='" + i + "'>" + escapeHtml(t) + "</button>").join("");
-        const n = Object.keys(st).filter((k) => st[k]).length;
-        popInfo("🗺️", "Bingo de voyage", "<div class='bingo-grid'>" + cells + "</div><p class='muted' style='font-size:.8rem;margin:.6rem 0 0'>" + n + "/9 cases · coche ce que tu as vécu !</p>");
-        setTimeout(() => { document.querySelectorAll(".bingo-cell").forEach((b) => b.onclick = () => {
-          const i = b.dataset.bi; st[i] = !st[i]; try { localStorage.setItem("sm_bingo_" + (myUserId || "x"), JSON.stringify(st)); } catch (e) {}
-          b.classList.toggle("on", !!st[i]);
-          const done = Object.keys(st).filter((k) => st[k]).length;
-          if (done === 9 && typeof celebrate === "function") celebrate();
-        }); }, 30);
+        const n0 = Object.keys(st).filter((k) => st[k]).length;
+        popInfo("🗺️", "Bingo de voyage", "<div class='bingo-grid'>" + cells + "</div>" +
+          "<p class='muted' style='font-size:.8rem;margin:.6rem 0 0'><b id='bingoN'>" + n0 + "</b>/9 cases · coche ce que tu as vécu !</p>" +
+          (n0 ? "<button class='btn-ghost btn-block' id='bingoReset' style='margin-top:.5rem'>↩️ Réinitialiser</button>" : ""));
+        setTimeout(() => {
+          const save = () => { try { localStorage.setItem("sm_bingo_" + (myUserId || "x"), JSON.stringify(st)); } catch (e) {} };
+          document.querySelectorAll(".bingo-cell").forEach((b) => b.onclick = () => {
+            const i = b.dataset.bi; st[i] = !st[i]; save(); b.classList.toggle("on", !!st[i]);
+            const done = Object.keys(st).filter((k) => st[k]).length;
+            const nEl = $("bingoN"); if (nEl) nEl.textContent = done;
+            if (window.SMSound) SMSound.play("tap");
+            if (done === 9) { if (typeof celebrate === "function") celebrate(); if (typeof toast === "function") toast("🗺️", "BINGO ! Grille complète, bravo 🎉"); }
+          });
+          const rs = $("bingoReset"); if (rs) rs.onclick = () => { st = {}; save(); playGame("bingo"); };
+        }, 30);
       }
     }
     window.playGame = playGame;
@@ -7109,9 +7135,11 @@
           </div>
           <div class="gbody"><div class="gname">${escapeHtml(g.name)}</div><div class="gdesc">${escapeHtml(g.desc)}</div></div>
         </div>`).join("");
+      // Jeux BDD : MÊME DA que les mini-jeux (tête en dégradé + emoji centré, plus de photos hétéroclites)
+      const ghCol = ["gh-gold", "gh-teal", "gh-indigo", "gh-coral", "gh-purp", "gh-rose"];
       const dbCards = games.map((g, i) => `
-        <div class="gcard" data-qkey="${g.key}">
-          <div class="ghead ${headColors[i % 4]}" style="background-image:url('${questImage(g)}')">
+        <div class="gcard gcard-play" data-qkey="${g.key}">
+          <div class="ghead ${ghCol[i % ghCol.length]}">
             <span class="gemoji">${g.emoji || "🎮"}</span>
             <span class="grate">+${g.points || 0} XP</span>
             ${myQuestStatus[g.key] === "completed" ? '<span class="gdone">✅ Fait</span>' : ""}
