@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=277"></script>
-  <script src="sunmates-icons.js?v=277"></script>
+  <script src="sunmates-badges.js?v=278"></script>
+  <script src="sunmates-icons.js?v=278"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -807,7 +807,7 @@
     /* Cropper photo de profil */
     .crop-stage { position: relative; width: 100%; aspect-ratio: 1; max-width: 300px; margin: 0 auto; border-radius: 16px; overflow: hidden; background: #1a1320; touch-action: none; cursor: grab; }
     .crop-stage:active { cursor: grabbing; }
-    .crop-stage img { position: absolute; left: 50%; top: 50%; transform-origin: center; user-select: none; -webkit-user-drag: none; max-width: none; }
+    .crop-stage img { position: absolute; left: 50%; top: 50%; transform-origin: center; user-select: none; -webkit-user-drag: none; max-width: none; pointer-events: none; }
     .crop-ring { position: absolute; inset: 0; box-shadow: 0 0 0 2000px rgba(0,0,0,.45); border-radius: 50%; pointer-events: none; }
     .crop-zoom { display: flex; align-items: center; gap: .6rem; margin-top: .7rem; }
     .crop-zoom input[type=range] { flex: 1; accent-color: var(--accent); }
@@ -1840,7 +1840,7 @@
     /* Header & nav en verre dépoli */
     /* Pas de backdrop-filter sur les barres fixes (topbar/nav) : il repeint à CHAQUE frame de
        scroll = jank mobile. Fonds plus opaques à la place → bien plus fluide. */
-    .topbar { background: rgba(251,238,233,.96); border-bottom: 1px solid rgba(255,90,77,.07); }
+    .topbar { background: #fbeee9; border-bottom: 1px solid rgba(255,90,77,.07); }
     .bottom-nav { background: rgba(255,255,255,.97); box-shadow: 0 -10px 34px rgba(20,20,40,.10); }
     .bottom-nav button { transition: color .2s; }
     .bottom-nav button .ni { transition: transform .22s cubic-bezier(.2,.8,.3,1), filter .2s; }
@@ -2481,7 +2481,7 @@
     .thumb.rose  { background: linear-gradient(135deg,#FF9CC2,#F0568F) !important; }
 
     /* Navigation : icônes vives */
-    .bottom-nav { background: rgba(255,255,255,.9); box-shadow: 0 -8px 28px rgba(255,90,77,.10); }
+    .bottom-nav { background: #fff7f2; box-shadow: 0 -8px 28px rgba(255,90,77,.10); }
     .bottom-nav button { color: var(--muted); }
     .bottom-nav button.active { color: var(--accent); }
     .bottom-nav button.active::before { background: var(--accent); }
@@ -2526,7 +2526,7 @@
     body.theme-dusk .feed-card, body.theme-dusk .pcell, body.theme-dusk .pprompt, body.theme-dusk .stat-box,
     body.theme-dusk .dstat, body.theme-dusk .tile, body.theme-dusk .gcard, body.theme-dusk .chip,
     body.theme-dusk .mseg, body.theme-dusk .coupon, body.theme-dusk .reco { background: #2E1B4C !important; }
-    body.theme-dusk .bottom-nav { background: rgba(25,14,46,.9); }
+    body.theme-dusk .bottom-nav { background: #190e2e; }
     body.theme-dusk .topbar { background: linear-gradient(rgba(25,14,46,.88), rgba(25,14,46,0)); }
     body.theme-dusk .bubble.them { background: #2E1B4C; color: #f3e9f3; }
     body.theme-dusk .iconbtn { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.14); }
@@ -5257,15 +5257,20 @@
       };
       img.src = url;
     }
+    // Export BULLETPROOF : on lit les positions RÉELLES à l'écran (getBoundingClientRect)
+    // au lieu de refaire le calcul → le résultat correspond EXACTEMENT à ce qui est affiché.
     function _cropExport() {
       return new Promise((res) => {
-        if (!_crop) { res(null); return; }
+        const stage = $("cropStage"), img = $("cropImg");
+        if (!stage || !img || !img.naturalWidth) { res(null); return; }
+        const sr = stage.getBoundingClientRect(), ir = img.getBoundingClientRect();
+        if (!ir.width || !ir.height) { res(null); return; }
+        const scaleX = img.naturalWidth / ir.width, scaleY = img.naturalHeight / ir.height;
+        const srcX = (sr.left - ir.left) * scaleX, srcY = (sr.top - ir.top) * scaleY;
+        const srcW = sr.width * scaleX, srcH = sr.height * scaleY;
         const OUT = 720, cv = document.createElement("canvas"); cv.width = OUT; cv.height = OUT;
-        const ctx = cv.getContext("2d"); const img = $("cropImg");
-        const s = _crop.base * _crop.scale, w = _crop.nw * s, h = _crop.nh * s;
-        const imageLeft = _crop.sw / 2 + _crop.x - w / 2, imageTop = _crop.sh / 2 + _crop.y - h / 2;
-        const srcX = (0 - imageLeft) / s, srcY = (0 - imageTop) / s, srcSize = _crop.sw / s;
-        try { ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, OUT, OUT); } catch (e) {}
+        const ctx = cv.getContext("2d");
+        try { ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, OUT, OUT); } catch (e) { res(null); return; }
         cv.toBlob((b) => res(b), "image/jpeg", 0.85);
       });
     }
@@ -10950,7 +10955,17 @@
       });
     }
     _fixCloseGlyphs(document);
-    try { new MutationObserver((muts) => { muts.forEach((m) => m.addedNodes && m.addedNodes.forEach((n) => { if (n.nodeType === 1) _fixCloseGlyphs(n); })); }).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+    // Observer DEBOUNCÉ (ne pèse pas pendant les gros rendus) : on agrège les nœuds ajoutés
+    // et on ne corrige les croix qu'une fois au repos (idle).
+    try {
+      let _xQueue = [], _xT = null;
+      const _xFlush = () => { _xT = null; const q = _xQueue; _xQueue = []; q.forEach((n) => { try { if (n.isConnected) _fixCloseGlyphs(n); } catch (e) {} }); };
+      new MutationObserver((muts) => {
+        let added = false;
+        muts.forEach((m) => m.addedNodes && m.addedNodes.forEach((n) => { if (n.nodeType === 1) { _xQueue.push(n); added = true; } }));
+        if (added && !_xT) _xT = (window.requestIdleCallback ? requestIdleCallback(_xFlush, { timeout: 500 }) : setTimeout(_xFlush, 250));
+      }).observe(document.body, { childList: true, subtree: true });
+    } catch (e) {}
 
     // Son « tap » discret sur tous les éléments interactifs de l'interface
     document.addEventListener("click", (e) => {
