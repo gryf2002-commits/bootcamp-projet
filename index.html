@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=306"></script>
-  <script src="sunmates-icons.js?v=306"></script>
+  <script src="sunmates-badges.js?v=307"></script>
+  <script src="sunmates-icons.js?v=307"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -2317,9 +2317,11 @@
     .msg-row { position: relative; display: flex; width: 100%; }
     .msg-row.me { justify-content: flex-end; }
     .msg-row.them { justify-content: flex-start; }
-    .msg-row .bubble-time { position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-      font-size: .66rem; color: var(--muted); white-space: nowrap; opacity: 0; transition: opacity .15s; pointer-events: none; }
-    .msg-row .bubble.show-time ~ .bubble-time, #chatBody.peeking .msg-row .bubble-time { opacity: .8; }
+    .msg-row .bubble-time { position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+      font-size: .66rem; color: var(--muted); white-space: nowrap; opacity: 0; transition: opacity .15s; pointer-events: none;
+      z-index: 4; background: var(--bg); padding: 1px 5px; border-radius: 7px; } /* pastille = lisible, jamais superposée à la bulle */
+    body.theme-dusk .msg-row .bubble-time { background: #160f24; }
+    .msg-row .bubble.show-time ~ .bubble-time, #chatBody.peeking .msg-row .bubble-time { opacity: 1; }
     /* Cœur de réaction sur un message (double-tap) */
     .bubble { position: relative; }
     .bubble-heart { position: absolute; bottom: -9px; right: 8px; font-size: .82rem; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 0 .28rem; line-height: 1.5; box-shadow: 0 1px 4px rgba(0,0,0,.15); z-index: 3; display: inline-flex; align-items: center; gap: .1rem; }
@@ -3211,7 +3213,6 @@
             <div class="homemap-hint hidden" id="homeMapHint">👆 Touche la carte pour placer ton activité · <a id="homeMapHintCancel">Annuler</a></div>
             <div class="homemap-tools">
               <button id="hmAdd" title="Partager une activité sur la carte">➕ Partager</button>
-              <button id="hmTonight" title="Qui est dans le coin maintenant">🌃 Qui est là ?</button>
               <button id="hmLocate" title="Centrer sur ma position">📍 Autour de moi</button>
               <button id="hmFit" title="Tout afficher">🌍 Tout voir</button>
             </div>
@@ -9467,15 +9468,6 @@
 
     // Beaucoup d'éléments au MÊME endroit (>6) : au lieu d'une spirale illisible, une petite
     // carte qui résume par type, avec un bouton pour déplier en éventail si on le souhaite.
-    // « Qui est là ce soir ? » : liste les Mates actuellement repérés sur la carte (avec un lieu).
-    function whoIsOutTonight() {
-      const list = (window._presentMates || []);
-      const city = (typeof myProfile !== "undefined" && myProfile && myProfile.city) ? String(myProfile.city).split(",")[0].trim() : "ta zone";
-      if (!list.length) { popInfo("🌙", "Personne dans le coin", "<p style='text-align:center'>Aucun Mate repéré autour de toi là tout de suite. Reviens plus tard, ou pars à la rencontre sur la carte ✨</p>"); return; }
-      const rows = list.slice(0, 25).map(({ p, cafe }) => `<div class="qrow" data-wmate="${escapeHtml(p.id)}" style="cursor:pointer;padding:.45rem .2rem">${avatarMarkup(p.username, p.avatar_url)}<div class="qname" style="flex:1">${escapeHtml(p.username || "Voyageur")}${p.is_verified ? ' <span class="vchip" title="Vérifié">✓</span>' : ""}<div class="meta muted" style="font-size:.72rem">📍 ${escapeHtml(cafe.name)}</div></div><div class="qarrow">›</div></div>`).join("");
-      popInfo("🌃", "Qui est dans le coin ?", `<p class="muted" style="font-size:.82rem;margin:0 0 .5rem;text-align:center">${list.length} Mate${list.length > 1 ? "s" : ""} repéré${list.length > 1 ? "s" : ""} autour de <b>${escapeHtml(city)}</b> 👇</p><div style="text-align:left;max-height:46vh;overflow:auto">${rows}</div>`);
-      setTimeout(() => { document.querySelectorAll("[data-wmate]").forEach((el) => el.addEventListener("click", () => { if (typeof closePopInfo === "function") closePopInfo(); goToTab("connexions"); const p = travelerMap[el.dataset.wmate]; if (p && typeof openTravelerProfile === "function") openTravelerProfile(p); })); }, 30);
-    }
     function openColocatedList(latlng, markers, cluster) {
       const counts = {}; markers.forEach((m) => { const t = m.smType || "places"; counts[t] = (counts[t] || 0) + 1; });
       const LABELS = { places: "📍 lieu", mates: "🧑 Mates", activities: "🎉 activités", checkins: "✅ check-ins" };
@@ -9694,8 +9686,6 @@
         }
         return null;
       }
-      // Snapshot pour le bouton « Qui est là ce soir ? » : Mates présents (avec un lieu connu).
-      try { window._presentMates = mates.map((p) => ({ p, cafe: cafeForMember(p) })).filter((x) => x.cafe); } catch (e) {}
 
       // 📍 Lieux sûrs, à leurs vraies coordonnées
       places.forEach((c) => {
@@ -10046,7 +10036,6 @@
       }));
       const loc = $("hmLocate"); if (loc) loc.addEventListener("click", homeLocateMe);
       const fit = $("hmFit"); if (fit) fit.addEventListener("click", homeFitAll);
-      const ton = $("hmTonight"); if (ton) ton.addEventListener("click", whoIsOutTonight);
       const add = $("hmAdd"); if (add) add.addEventListener("click", () => setHomeAddMode(!homeAddMode));
       const hc = $("homeMapHintCancel"); if (hc) hc.addEventListener("click", () => setHomeAddMode(false));
       // La couche de capture transforme le tap (même sur un marqueur) en position
@@ -10188,14 +10177,16 @@
       // La BULLE est toujours masquée le temps du placement (sinon « apparaît en haut puis redescend »).
       // Le SPOTLIGHT n'est masqué qu'à la 1re étape (ensuite il GLISSE de façon fluide vers la cible).
       { const sp = $("tourSpot"), pp = $("tourPop"); if (pp) pp.style.opacity = "0"; if (sp && i === 0) { sp.style.opacity = "0"; sp.classList.add("no-anim"); } }
-      setTimeout(() => positionTour(st, i === 0), 140);
+      // Délai CONSTANT (que l'étape change d'onglet ou pas) → vitesse de transition uniforme.
+      setTimeout(() => positionTour(st, i === 0), 210);
     }
     function positionTour(st, isFirst) {
       const el = document.querySelector(st.sel), spot = $("tourSpot"), pop = $("tourPop");
       if (!spot || !pop) return;
       if (!el) { spot.style.opacity = "0"; pop.style.top = "auto"; pop.style.bottom = "42%"; pop.style.opacity = "1"; return; }
-      // On amène l'élément dans la vue (scroll instantané), on attend que la mise en page se stabilise (double rAF).
-      try { el.scrollIntoView({ block: "center", behavior: "auto" }); } catch (e) {}
+      // On n'amène l'élément dans la vue QUE s'il n'y est pas déjà ~centré (évite un re-scroll
+      // inutile qui rendait certaines transitions plus saccadées que d'autres).
+      try { const rr = el.getBoundingClientRect(); const vh = window.innerHeight; if (rr.top < vh * 0.18 || rr.bottom > vh * 0.82) el.scrollIntoView({ block: "center", behavior: "auto" }); } catch (e) {}
       requestAnimationFrame(() => requestAnimationFrame(() => {
         const r = el.getBoundingClientRect(), pad = 8;
         spot.style.left = (r.left - pad) + "px"; spot.style.top = (r.top - pad) + "px";
@@ -11103,9 +11094,19 @@
     }
     { const c = $("nearQuestCard"); if (c) c.addEventListener("click", (e) => { if (e.target.closest("#nqGo")) return; showNearestQuests(); }); }
     function focusHomeMapOnQuest(lat, lng) {
+      if (!isFinite(lat) || !isFinite(lng)) return; // coords invalides → on ne touche pas la carte
       if (typeof setHomeMode === "function") setHomeMode("travel");
       goToTab("accueil");
-      setTimeout(() => { if (!homeLeaf) return; try { homeLeaf.setView([lat, lng], 15, { animate: true }); homeLeaf.invalidateSize(); } catch (e) {} }, 160);
+      // La mini-carte vient d'apparaître : on lui laisse le temps de se rendre, on RECALCULE sa
+      // taille (sinon tuiles grises / rendu cassé), PUIS on cadre — sans animation (plus stable).
+      setTimeout(() => {
+        if (!homeLeaf) return;
+        try {
+          homeLeaf.invalidateSize();
+          homeLeaf.setView([lat, lng], 15, { animate: false });
+          setTimeout(() => { try { homeLeaf.invalidateSize(); } catch (e) {} }, 220); // 2e passe anti-tuiles grises
+        } catch (e) {}
+      }, 280);
     }
 
     /* ===== Helper UNIQUE d'affichage des badges (cohérence partout) =====
