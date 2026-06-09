@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=330"></script>
-  <script src="sunmates-icons.js?v=330"></script>
+  <script src="sunmates-badges.js?v=331"></script>
+  <script src="sunmates-icons.js?v=331"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -4200,6 +4200,11 @@
           <input id="setPassword" type="password" placeholder="Au moins 6 caractères" />
           <button class="btn-accent btn-block" id="savePasswordBtn" style="margin-top:.4rem">Changer le mot de passe</button>
           <div class="msg" id="settingsMsg"></div>
+
+          <!-- RGPD : suppression de compte (droit à l'effacement) — P2.50 -->
+          <div class="set-grouptitle" style="margin-top:1.2rem">Données personnelles (RGPD)</div>
+          <p class="muted" style="font-size:.78rem;margin:.2rem 0 .5rem">Tu peux supprimer définitivement ton compte et toutes tes données. Cette action est <b>irréversible</b>.</p>
+          <button class="btn-ghost btn-block" id="deleteAccountBtn" style="color:var(--danger);border-color:var(--danger)">🗑️ Supprimer mon compte</button>
         </div>
       </div>
 
@@ -11088,6 +11093,21 @@
     });
     $("replayOnbBtn").addEventListener("click", () => { if (typeof openOnboarding === "function") openOnboarding(); });
     { const ia = $("installAppBtn"); if (ia) ia.addEventListener("click", () => { if (typeof window.openInstallHelp === "function") window.openInstallHelp(); }); }
+    // P2.50 RGPD : suppression de compte (irréversible) → double confirmation, RPC, déconnexion.
+    { const da = $("deleteAccountBtn"); if (da) da.addEventListener("click", () => once("delete-account", async () => {
+      if (!confirm("Supprimer DÉFINITIVEMENT ton compte et toutes tes données ?\n\nCette action est irréversible.")) return;
+      const typed = prompt("Pour confirmer, écris SUPPRIMER :");
+      if ((typed || "").trim().toUpperCase() !== "SUPPRIMER") { toast("🙅", "Suppression annulée"); return; }
+      const m = $("settingsMsg"); if (m) { m.style.color = "var(--muted)"; m.textContent = "Suppression en cours…"; }
+      try {
+        const { error } = await db.rpc("sm_delete_my_account");
+        if (error) { if (m) { m.style.color = "var(--danger)"; m.textContent = "Erreur : " + error.message; } return; }
+        try { await db.auth.signOut(); } catch (e) {}
+        try { localStorage.clear(); } catch (e) {}
+        alert("Ton compte et tes données ont été supprimés. À bientôt 🌅");
+        location.replace(location.pathname);
+      } catch (e) { if (m) { m.style.color = "var(--danger)"; m.textContent = "Erreur : réessaie."; } }
+    })); }
     $("saveEmailBtn").addEventListener("click", async () => {
       const m = $("settingsMsg"); const email = $("setEmail").value.trim();
       if (!email) { m.style.color = "var(--danger)"; m.textContent = "Entre un nouvel email."; return; }
