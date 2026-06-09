@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=313"></script>
-  <script src="sunmates-icons.js?v=313"></script>
+  <script src="sunmates-badges.js?v=314"></script>
+  <script src="sunmates-icons.js?v=314"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -4108,6 +4108,7 @@
             <button class="btn-accent" id="showQrBtn" data-i18n="set.myQr">🪪 Mon QR</button>
             <button class="btn-ghost" id="scanQrBtn" data-i18n="set.scanQr">📷 Scanner</button>
           </div>
+          <button class="btn-ghost btn-block" id="shareRecapBtn" style="margin-top:.5rem">📸 Mon récap à partager (story)</button>
 
           <!-- Aide & support : FAQ retirée (revient quand la démo guidée sera finie) ;
                contact = bientôt dispo (pas d'email perso affiché). -->
@@ -5007,6 +5008,51 @@
       } catch (e) { if (typeof toast === "function") toast("✈️", "Voyage ajouté ✨"); }
     }
     { const a = $("tripAddLink"); if (a) a.addEventListener("click", openAddTrip); }
+
+    // ===== 📸 Mon récap partageable (image story, façon « Wrapped ») =====
+    function _roundRect(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+    function _recapStats() {
+      let streak = 0; try { streak = (JSON.parse(localStorage.getItem("sm_streak_" + (myUserId || "x")) || "{}") || {}).count || 0; } catch (e) {}
+      const mates = (typeof connectedIds !== "undefined" && connectedIds) ? connectedIds.size : 0;
+      const badges = (typeof myBadgeKeys !== "undefined" && myBadgeKeys) ? myBadgeKeys.size : 0;
+      const xp = (myProfile && myProfile.xp) || 0;
+      return [["🔥", streak, "jours de série"], ["🤝", mates, "Mates"], ["🏅", badges, "badges"], ["⭐", xp, "XP"]];
+    }
+    async function generateRecapCanvas(withPhoto) {
+      const W = 1080, Hc = 1350, cv = document.createElement("canvas"); cv.width = W; cv.height = Hc; const c = cv.getContext("2d");
+      const g = c.createLinearGradient(0, 0, 0, Hc); g.addColorStop(0, "#FFB347"); g.addColorStop(.45, "#FF6F3C"); g.addColorStop(1, "#B23A2E"); c.fillStyle = g; c.fillRect(0, 0, W, Hc);
+      c.fillStyle = "rgba(255,255,255,.08)"; c.beginPath(); c.arc(W / 2, 250, 520, 0, 7); c.fill();
+      c.textAlign = "center"; c.fillStyle = "#fff"; c.font = "800 66px system-ui,Arial"; c.fillText("☀️ SunMates", W / 2, 150);
+      const name = (myProfile && myProfile.username) || "Voyageur"; const cx = W / 2, cy = 440, rad = 150;
+      c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.fillStyle = "rgba(255,255,255,.2)"; c.fill();
+      const url = (myProfile && myProfile.avatar_url) || ""; let drewPhoto = false;
+      if (withPhoto && url) {
+        await new Promise((res) => { const img = new Image(); img.crossOrigin = "anonymous"; img.onload = () => { try { c.save(); c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.clip(); c.drawImage(img, cx - rad, cy - rad, rad * 2, rad * 2); c.restore(); drewPhoto = true; } catch (e) {} res(); }; img.onerror = () => res(); img.src = url; });
+      }
+      if (!drewPhoto) { c.fillStyle = "#fff"; c.font = "800 140px system-ui,Arial"; c.textBaseline = "middle"; c.fillText((name[0] || "?").toUpperCase(), cx, cy); c.textBaseline = "alphabetic"; }
+      c.lineWidth = 10; c.strokeStyle = "rgba(255,255,255,.85)"; c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.stroke();
+      c.fillStyle = "#fff"; c.font = "800 72px system-ui,Arial"; c.fillText(name, W / 2, 690);
+      c.font = "500 36px system-ui,Arial"; c.fillStyle = "rgba(255,255,255,.92)"; c.fillText("Mon aventure SunMates", W / 2, 740);
+      const items = _recapStats(); const gx = 90, gy = 830, gap = 40, gw = (W - gx * 2 - gap) / 2, gh = 200;
+      items.forEach((it, i) => { const col = i % 2, row = (i / 2) | 0, x = gx + col * (gw + gap), y = gy + row * (gh + gap); c.fillStyle = "rgba(255,255,255,.16)"; _roundRect(c, x, y, gw, gh, 28); c.fill(); c.fillStyle = "#fff"; c.font = "800 78px system-ui,Arial"; c.fillText(it[0] + " " + it[1], x + gw / 2, y + 108); c.font = "500 34px system-ui,Arial"; c.fillStyle = "rgba(255,255,255,.92)"; c.fillText(it[2], x + gw / 2, y + 158); });
+      c.fillStyle = "rgba(255,255,255,.95)"; c.font = "600 42px system-ui,Arial"; c.fillText("pars solo, trouve ta bande ☀️", W / 2, Hc - 90);
+      return cv;
+    }
+    function _canvasToBlob(cv) { return new Promise((res) => { try { cv.toBlob((b) => res(b), "image/png"); } catch (e) { res(null); } }); }
+    async function shareRecap() {
+      if (typeof toast === "function") toast("📸", "Génération de ton récap…");
+      let blob = null;
+      try { blob = await _canvasToBlob(await generateRecapCanvas(true)); } catch (e) {}
+      if (!blob) { try { blob = await _canvasToBlob(await generateRecapCanvas(false)); } catch (e) {} } // repli sans photo (anti-CORS)
+      if (!blob) { if (typeof toast === "function") toast("⚠️", "Impossible de générer l'image."); return; }
+      const file = new File([blob], "sunmates-recap.png", { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title: "Mon récap SunMates", text: "Mon aventure SunMates ☀️" }); return; } catch (e) { if (e && e.name === "AbortError") return; }
+      }
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "sunmates-recap.png"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      if (typeof toast === "function") toast("📸", "Récap téléchargé ! Partage-le en story ☀️");
+    }
+    { const b = $("shareRecapBtn"); if (b) b.addEventListener("click", shareRecap); }
 
     // Récap hebdo (le DIMANCHE, une seule fois) : ramène l'utilisateur avec un bilan motivant.
     function maybeWeeklyRecap() {
