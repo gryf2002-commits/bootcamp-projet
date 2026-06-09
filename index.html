@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=312"></script>
-  <script src="sunmates-icons.js?v=312"></script>
+  <script src="sunmates-badges.js?v=313"></script>
+  <script src="sunmates-icons.js?v=313"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -347,6 +347,16 @@
     #safeTimerBar .stb-txt { flex: 1; }
     #safeTimerBar #safeArrivedBtn { background: rgba(255,255,255,.95); color: #c2410c; border: 0; border-radius: 999px; padding: .4rem .7rem; font-weight: 800; font-size: .8rem; cursor: pointer; flex-shrink: 0; }
     #safeTimerBar #safeArrivedBtn:active { transform: scale(.95); }
+    /* 📊 Sondages du fil */
+    .poll-box { margin-top: .5rem; display: flex; flex-direction: column; gap: .35rem; }
+    .poll-opt { position: relative; overflow: hidden; display: flex; align-items: center; gap: .5rem; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: .5rem .7rem; font-size: .86rem; font-weight: 600; color: var(--ink); cursor: pointer; }
+    .poll-opt:active { transform: scale(.99); }
+    .poll-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--accent-soft); z-index: 0; transition: width .4s ease; }
+    .poll-opt-mine { border-color: var(--accent); }
+    .poll-opt-mine .poll-fill { background: linear-gradient(90deg, rgba(255,138,61,.30), rgba(255,90,77,.20)); }
+    .poll-lbl { position: relative; z-index: 1; flex: 1; min-width: 0; }
+    .poll-pct { position: relative; z-index: 1; font-weight: 800; color: var(--accent); font-size: .8rem; flex-shrink: 0; }
+    .poll-total { font-size: .74rem; color: var(--muted); margin-top: .1rem; }
     /* ⭐ Mate du jour (suggestion quotidienne, sunset) */
     .mod-card { background: var(--accent-grad); color: #fff; border-radius: 16px; padding: .7rem .85rem; margin-bottom: .7rem; box-shadow: 0 8px 20px rgba(255,90,77,.28); cursor: pointer; }
     .mod-card:active { transform: scale(.99); }
@@ -3297,10 +3307,13 @@
           <!-- Tuiles de sélection rapides (humeur ou spot) -->
           <div class="fc-hint" id="feedChipsHint">👇 Touche une humeur, puis personnalise</div>
           <div class="fc-chips" id="feedChips"></div>
+          <!-- Options du sondage (visibles seulement en mode Sondage) -->
+          <div id="feedPollOptions" class="hidden"></div>
           <div class="fc-bottom">
             <div class="fc-kinds">
               <button class="fc-kind active" data-fkind="post" type="button">✨ Humeur</button>
               <button class="fc-kind" data-fkind="spot" type="button">📍 Spot</button>
+              <button class="fc-kind" data-fkind="poll" type="button">📊 Sondage</button>
             </div>
             <button class="btn-primary fc-send" id="feedPostBtn" type="button">Publier</button>
           </div>
@@ -11028,7 +11041,7 @@
         feed.innerHTML = '<div class="fpost-empty"><span class="fe-emoji">🌅</span><div class="fe-title">Le fil est calme…</div><div class="fe-sub">Sois le premier à publier quelque chose ✨</div></div>';
         return;
       }
-      const kindTag = { spot: "📍 Spot", quest: "🎯 Quête", post: "" };
+      const kindTag = { spot: "📍 Spot", quest: "🎯 Quête", poll: "📊 Sondage", post: "" };
       feed.innerHTML = rows.map((r) => {
         const isMe = r.user_id === myUserId;
         const name = isMe ? "Toi" : (r.username || "Voyageur");
@@ -11037,6 +11050,7 @@
             <div class="fpost-who"><b>${escapeHtml(name)}${r.is_verified ? ' <span class="vchip" title="Vérifié">✓</span>' : ""}</b><span>${escapeHtml(r.city || "")}${kindTag[r.kind] ? '<span class="fpost-kindtag">' + kindTag[r.kind] + "</span>" : ""}</span></div>
             <span class="fpost-time">${timeAgo(r.created_at)}</span></div>
           <div class="fpost-body">${escapeHtml(r.body || "")}</div>
+          ${r.kind === "poll" ? `<div class="poll-box" data-pollbox="${r.id}"><p class="muted" style="font-size:.8rem;margin:.4rem 0 0">Chargement du sondage…</p></div>` : ""}
           <div class="fpost-actions">
             <button class="fpost-like${r.liked ? " liked" : ""}" data-like="${r.id}">${r.liked ? "❤️" : "🤍"} <span>${r.likes || 0}</span></button>
             <button class="fpost-like fpost-cmt" data-cmt="${r.id}">💬 <span data-cmtn="${r.id}">0</span></button>
@@ -11050,6 +11064,16 @@
         try { const { data } = await db.rpc("feed_comment_counts", { p_ids: ids }); (data || []).forEach((c) => { const s = feed.querySelector('[data-cmtn="' + c.post_id + '"]'); if (s) s.textContent = c.n; }); } catch (e) {}
       })();
       feed.querySelectorAll("[data-cmt]").forEach((el) => el.addEventListener("click", (e) => { e.stopPropagation(); openFeedComments(Number(el.dataset.cmt)); }));
+      // Sondages : options (feed_posts) + décomptes (RPC) + mon vote → on garnit chaque poll-box.
+      (async () => {
+        const pollRows = rows.filter((r) => r.kind === "poll"); if (!pollRows.length) return;
+        const ids = pollRows.map((r) => Number(r.id));
+        const opts = {}, counts = {}, mine = {};
+        try { const { data } = await db.from("feed_posts").select("id,poll_options").in("id", ids); (data || []).forEach((p) => { opts[p.id] = p.poll_options || []; }); } catch (e) {}
+        try { const { data } = await db.rpc("feed_poll_counts", { p_ids: ids }); (data || []).forEach((c) => { (counts[c.post_id] = counts[c.post_id] || {})[c.choice] = c.n; }); } catch (e) {}
+        if (myUserId) { try { const { data } = await db.from("feed_poll_votes").select("post_id,choice").eq("user_id", myUserId).in("post_id", ids); (data || []).forEach((v) => { mine[v.post_id] = v.choice; }); } catch (e) {} }
+        pollRows.forEach((r) => _renderPollBox(r.id, opts[r.id] || [], counts[r.id] || {}, mine[r.id]));
+      })();
       feed.querySelectorAll("[data-like]").forEach((el) => el.addEventListener("click", async (e) => {
         e.stopPropagation();
         try { const { data } = await db.rpc("toggle_feed_like", { p_post: Number(el.dataset.like) }); if (data && data.ok) { el.classList.toggle("liked", data.liked); el.innerHTML = (data.liked ? "❤️" : "🤍") + " <span>" + data.likes + "</span>"; if (window.SMSound) SMSound.play("tap"); } } catch (er) {}
@@ -11120,18 +11144,50 @@
     async function _syncCmtCount(postId) {
       try { const { data } = await db.rpc("feed_comment_counts", { p_ids: [postId] }); const n = (data && data[0]) ? data[0].n : 0; const s = document.querySelector('[data-cmtn="' + postId + '"]'); if (s) s.textContent = n; } catch (e) {}
     }
+    // Rend un sondage : barres de votes, % et mon choix surligné. Touche une option = voter.
+    function _renderPollBox(postId, options, countMap, myChoice) {
+      const box = document.querySelector('[data-pollbox="' + postId + '"]'); if (!box) return;
+      if (!options || !options.length) { box.innerHTML = '<p class="muted" style="font-size:.8rem;margin:.4rem 0 0">Sondage indisponible (lance <code>supabase_migration_polls.sql</code>).</p>'; return; }
+      const total = Object.values(countMap || {}).reduce((a, b) => a + Number(b), 0);
+      const voted = myChoice != null;
+      box.innerHTML = options.map((opt, i) => {
+        const n = Number((countMap || {})[i] || 0);
+        const pct = total ? Math.round(n / total * 100) : 0;
+        return `<button type="button" class="poll-opt${i === myChoice ? " poll-opt-mine" : ""}" data-pollvote="${postId}" data-choice="${i}">
+          <span class="poll-fill" style="width:${voted ? pct : 0}%"></span>
+          <span class="poll-lbl">${escapeHtml(opt)}${i === myChoice ? " ✓" : ""}</span>
+          <span class="poll-pct">${voted ? pct + "%" : ""}</span></button>`;
+      }).join("") + `<div class="poll-total">${total} vote${total > 1 ? "s" : ""}${voted ? "" : " · touche pour voter"}</div>`;
+      box.querySelectorAll("[data-pollvote]").forEach((el) => el.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (!myUserId) { if (typeof toast === "function") toast("🔑", "Connecte-toi pour voter."); return; }
+        const choice = Number(el.dataset.choice);
+        try { await db.from("feed_poll_votes").upsert({ post_id: postId, user_id: myUserId, choice }, { onConflict: "post_id,user_id" }); } catch (er) { if (typeof toast === "function") toast("⚠️", "Réessaie."); return; }
+        if (window.SMSound) SMSound.play("tap");
+        let counts = {}; try { const { data } = await db.rpc("feed_poll_counts", { p_ids: [postId] }); (data || []).forEach((c) => { counts[c.choice] = c.n; }); } catch (er) {}
+        _renderPollBox(postId, options, counts, choice);
+      }));
+    }
     // Composer : publier sur le fil
     { const pb = $("feedPostBtn"); if (pb) pb.addEventListener("click", async () => {
         const ta = $("feedInput"); const body = ((ta && ta.value) || "").trim(); const msg = $("feedComposerMsg");
-        if (!body) { if (msg) { msg.style.color = "var(--danger)"; msg.textContent = "Écris quelque chose ✏️"; } return; }
+        if (!body) { if (msg) { msg.style.color = "var(--danger)"; msg.textContent = _feedKind === "poll" ? "Écris ta question ✏️" : "Écris quelque chose ✏️"; } return; }
         if (!myUserId) return;
-        pb.disabled = true;
         const city = (myProfile && myProfile.city) ? String(myProfile.city).split(",")[0].trim() : null;
-        const { error } = await db.from("feed_posts").insert({ user_id: myUserId, kind: _feedKind, body: body.slice(0, 280), city });
+        const row = { user_id: myUserId, kind: _feedKind, body: body.slice(0, 280), city };
+        if (_feedKind === "poll") {
+          const opts = [...document.querySelectorAll("#feedPollOptions .fpo-in")].map((i) => i.value.trim()).filter(Boolean).slice(0, 4);
+          if (opts.length < 2) { if (msg) { msg.style.color = "var(--danger)"; msg.textContent = "Mets au moins 2 options."; } return; }
+          row.poll_options = opts;
+        }
+        pb.disabled = true;
+        const { error } = await db.from("feed_posts").insert(row);
         pb.disabled = false;
         if (error) { if (msg) { msg.style.color = "var(--danger)"; msg.textContent = "Erreur, réessaie."; } return; }
-        ta.value = ""; if (msg) msg.textContent = ""; if (window.SMSound) SMSound.play("success");
+        ta.value = ""; ta.style.height = "auto"; if (msg) msg.textContent = ""; if (window.SMSound) SMSound.play("success");
         try { if (typeof track === "function") track("feed_post", { kind: _feedKind }); } catch (e) {}
+        // On revient en mode Humeur après une publication de sondage (composer propre).
+        if (_feedKind === "poll") { const hb = document.querySelector('.fc-kind[data-fkind="post"]'); if (hb) hb.click(); }
         buildHomeFeed();
       }); }
     // Tuiles de sélection rapides : humeur (ressenti) ou spot (lieu) → pré-remplissent le champ.
@@ -11153,12 +11209,26 @@
         ta.dispatchEvent(new Event("input")); // pas de .focus() → on n'ouvre pas le clavier de force
       }));
     }
+    // UI des options de sondage (2 à 4 options, ajout dynamique).
+    function renderPollOptionsUIWith(vals) {
+      const box = $("feedPollOptions"); if (!box) return;
+      const n = Math.min(4, Math.max(2, vals.length));
+      let html = "";
+      for (let i = 0; i < n; i++) html += `<input type="text" class="fpo-in" maxlength="60" placeholder="Option ${i + 1}" value="${escapeHtml(vals[i] || "")}" style="${_trIn};margin-top:.35rem" />`;
+      if (n < 4) html += `<button type="button" id="fpoAdd" class="btn-ghost" style="margin-top:.4rem;font-size:.8rem;padding:.35rem .7rem">+ Ajouter une option</button>`;
+      box.innerHTML = html;
+      const add = $("fpoAdd"); if (add) add.addEventListener("click", () => { const cur = [...box.querySelectorAll(".fpo-in")].map((i) => i.value); cur.push(""); renderPollOptionsUIWith(cur); });
+    }
     document.querySelectorAll(".fc-kind").forEach((b) => b.addEventListener("click", () => {
       _feedKind = b.dataset.fkind;
       document.querySelectorAll(".fc-kind").forEach((x) => x.classList.toggle("active", x === b));
-      const ta = $("feedInput"); if (ta) { ta.placeholder = _feedKind === "spot" ? "Ton spot du moment (ou touche une tuile) 📍" : "Ton humeur du jour (ou touche une tuile) ✨"; }
-      const av = $("feedComposerAv"); if (av && !(myProfile && myProfile.avatar_url)) av.textContent = _feedKind === "spot" ? "📍" : "🙂";
-      renderFeedChips();
+      const poll = _feedKind === "poll";
+      const ta = $("feedInput"); if (ta) { ta.placeholder = poll ? "Ta question (ex : Plage ou montagne ?)" : (_feedKind === "spot" ? "Ton spot du moment (ou touche une tuile) 📍" : "Ton humeur du jour (ou touche une tuile) ✨"); }
+      const av = $("feedComposerAv"); if (av && !(myProfile && myProfile.avatar_url)) av.textContent = poll ? "📊" : (_feedKind === "spot" ? "📍" : "🙂");
+      // En mode sondage : on cache les tuiles d'humeur/spot et on montre les options.
+      show($("feedChips"), !poll); show($("feedChipsHint"), !poll);
+      const po = $("feedPollOptions"); if (po) po.classList.toggle("hidden", !poll);
+      if (poll) renderPollOptionsUIWith(["", ""]); else renderFeedChips();
     }));
     renderFeedChips();  // tuiles d'humeur affichées d'emblée
     // Auto-grandissement du champ (évite tout débordement / barre qui dépasse)
