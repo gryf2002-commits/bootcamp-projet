@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=309"></script>
-  <script src="sunmates-icons.js?v=309"></script>
+  <script src="sunmates-badges.js?v=310"></script>
+  <script src="sunmates-icons.js?v=310"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -347,6 +347,22 @@
     #safeTimerBar .stb-txt { flex: 1; }
     #safeTimerBar #safeArrivedBtn { background: rgba(255,255,255,.95); color: #c2410c; border: 0; border-radius: 999px; padding: .4rem .7rem; font-weight: 800; font-size: .8rem; cursor: pointer; flex-shrink: 0; }
     #safeTimerBar #safeArrivedBtn:active { transform: scale(.95); }
+    /* ✈️ Mes voyages */
+    .trip-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: .75rem .85rem; margin-bottom: .6rem; box-shadow: var(--shadow-sm); }
+    .trip-top { display: flex; align-items: center; gap: .6rem; }
+    .trip-city { flex: 1; font-weight: 800; color: var(--ink); font-size: .98rem; min-width: 0; }
+    .trip-dates { flex-shrink: 0; font-size: .74rem; font-weight: 800; color: #6b3d00; background: linear-gradient(135deg, #FFD15C, #FF9F1C); border-radius: 999px; padding: .18rem .55rem; }
+    .trip-del { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: .95rem; flex-shrink: 0; }
+    .trip-note { font-size: .82rem; color: var(--muted); margin-top: .35rem; }
+    .trip-matches { margin-top: .55rem; border-top: 1px dashed var(--line); padding-top: .5rem; }
+    .trip-matches .tm-lbl { font-size: .76rem; font-weight: 800; color: var(--accent); margin-bottom: .35rem; }
+    .trip-mate { display: flex; align-items: center; gap: .55rem; padding: .35rem .15rem; cursor: pointer; border-radius: 10px; }
+    .trip-mate:active { background: var(--accent-soft); }
+    .trip-mate .tmn { flex: 1; min-width: 0; font-size: .86rem; font-weight: 600; color: var(--ink); }
+    .trip-mate .tmn .meta { font-size: .72rem; color: var(--muted); font-weight: 500; }
+    .trip-mate .tm-compat { flex-shrink: 0; font-size: .74rem; font-weight: 800; color: var(--accent); }
+    .trip-empty { text-align: center; padding: 1.2rem 1rem; background: var(--card); border: 1px dashed var(--line); border-radius: 16px; color: var(--muted); font-size: .86rem; }
+    #tripMatchBanner .tmb { display: flex; align-items: center; gap: .5rem; background: var(--accent-grad); color: #fff; border-radius: 14px; padding: .7rem .85rem; margin-bottom: .6rem; box-shadow: 0 8px 20px rgba(255,90,77,.28); font-weight: 700; font-size: .88rem; cursor: pointer; }
     .fpost { cursor: default; position: relative; } /* le corps blanc n'est PAS cliquable (anti mis-clic) */
     /* Burst de cœur au double-tap d'un post (façon Insta) */
     .fp-heartburst { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) scale(0); font-size: 3.4rem; pointer-events: none; z-index: 5; filter: drop-shadow(0 4px 10px rgba(0,0,0,.3)); animation: fpHeart .75s ease-out forwards; }
@@ -3283,6 +3299,11 @@
         </div>
         <div id="homeFeed"><div class="skel-row"><div class="skel skel-av"></div><div class="skel-lines"><div class="skel skel-line m"></div><div class="skel skel-line s"></div></div></div></div>
 
+        <!-- ✈️ Mes voyages : matching dans le temps + l'espace (feature signature) -->
+        <div class="section-head"><h3>Mes voyages ✈️</h3><a id="tripAddLink" style="cursor:pointer">+ Ajouter</a></div>
+        <div id="tripMatchBanner"></div>
+        <div id="myTrips"></div>
+
         <div class="section-head"><h3>Accès rapide</h3></div>
         <div class="grid2">
           <div class="tile" data-goto="connexions"><div class="thumb purp">🤝</div><div class="t-name">Mes Mates</div><div class="t-meta" id="qaMates">Rencontre &amp; discute</div></div>
@@ -4859,6 +4880,88 @@
     }
     { const c = $("availChip"); if (c) c.addEventListener("click", toggleAvailable); }
 
+    // ===== ✈️ « Mon voyage » : matching dans le temps + l'espace =====
+    function _fmtTripDates(s, e) {
+      try {
+        const ds = new Date(s + "T00:00:00"), de = new Date(e + "T00:00:00");
+        const md = (d) => d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+        const sameMonth = ds.getMonth() === de.getMonth() && ds.getFullYear() === de.getFullYear();
+        return sameMonth ? (ds.getDate() + "–" + md(de)) : (md(ds) + " – " + md(de));
+      } catch (e) { return s + " → " + e; }
+    }
+    async function loadMyTrips() { try { return (await db.from("trips").select("*").eq("user_id", myUserId).order("start_date")).data || []; } catch (e) { return null; } }
+    async function addTrip(t) { return db.from("trips").insert({ user_id: myUserId, ...t }); }
+    async function deleteTrip(id) { return db.from("trips").delete().eq("id", id); }
+    async function loadTripMatches() { try { const { data } = await db.rpc("overlapping_travelers"); return data || []; } catch (e) { return []; } }
+    async function renderTrips() {
+      const box = $("myTrips"); if (!box || !myUserId) return;
+      const trips = await loadMyTrips();
+      if (trips === null) { box.innerHTML = '<div class="trip-empty">Lance <code>supabase_migration_trips.sql</code> pour activer tes voyages ✈️</div>'; const bn = $("tripMatchBanner"); if (bn) bn.innerHTML = ""; return; }
+      const matches = await loadTripMatches();
+      // Profils des voyageurs qui chevauchent (1 requête)
+      const ids = [...new Set(matches.map((m) => m.user_id))];
+      const profById = {};
+      if (ids.length) { try { const { data } = await db.from("profiles").select("*").in("id", ids); (data || []).forEach((p) => { profById[p.id] = p; if (!travelerMap[p.id]) travelerMap[p.id] = p; }); } catch (e) {} }
+      // Accroche en haut
+      const bn = $("tripMatchBanner");
+      if (bn) {
+        if (matches.length) {
+          const cities = [...new Set(matches.map((m) => m.city))];
+          const total = new Set(matches.map((m) => m.user_id)).size;
+          bn.innerHTML = `<div class="tmb" id="tmbJump">✨ <span><b>${total}</b> voyageur${total > 1 ? "s" : ""} ser${total > 1 ? "ont" : "a"} au même endroit que toi (${escapeHtml(cities.slice(0, 2).join(", "))})</span></div>`;
+          const j = $("tmbJump"); if (j) j.addEventListener("click", () => { const f = box.querySelector(".trip-matches"); if (f) f.scrollIntoView({ behavior: "smooth", block: "center" }); });
+        } else bn.innerHTML = "";
+      }
+      if (!trips.length) {
+        box.innerHTML = '<div class="trip-empty">Ajoute ton prochain voyage et trouve ta bande sur place ☀️<br><button class="btn-primary" id="tripEmptyAdd" style="margin-top:.7rem">➕ Ajouter un voyage</button></div>';
+        const b = $("tripEmptyAdd"); if (b) b.addEventListener("click", openAddTrip); return;
+      }
+      box.innerHTML = trips.map((t) => {
+        const tm = matches.filter((m) => (m.city || "").toLowerCase().trim() === (t.city || "").toLowerCase().trim() && m.start_date <= t.end_date && m.end_date >= t.start_date);
+        const matesHtml = tm.length ? `<div class="trip-matches"><div class="tm-lbl">🤝 ${tm.length} voyageur${tm.length > 1 ? "s" : ""} sur place en même temps</div>${tm.map((m) => {
+          const p = profById[m.user_id] || {};
+          const compat = (typeof compatibility === "function" && typeof myMatchProfile !== "undefined" && myMatchProfile) ? compatibility(myMatchProfile, p) : null;
+          return `<div class="trip-mate" data-tmate="${escapeHtml(m.user_id)}">${avatarMarkup(p.username, p.avatar_url)}<div class="tmn">${escapeHtml(p.username || "Voyageur")}${p.is_verified ? ' <span class="vchip" title="Vérifié">✓</span>' : ""}<div class="meta">${_fmtTripDates(m.start_date, m.end_date)}</div></div>${compat != null ? `<span class="tm-compat">❤️ ${compat}%</span>` : ""}</div>`;
+        }).join("")}</div>` : "";
+        return `<div class="trip-card"><div class="trip-top"><div class="trip-city">📍 ${escapeHtml(t.city)}</div><span class="trip-dates">${_fmtTripDates(t.start_date, t.end_date)}</span><button class="trip-del" data-tdel="${t.id}" title="Supprimer">🗑️</button></div>${t.note ? `<div class="trip-note">${escapeHtml(t.note)}</div>` : ""}${matesHtml}</div>`;
+      }).join("");
+      box.querySelectorAll("[data-tdel]").forEach((el) => el.addEventListener("click", async () => { if (!confirm("Supprimer ce voyage ?")) return; await deleteTrip(Number(el.dataset.tdel)); renderTrips(); }));
+      box.querySelectorAll("[data-tmate]").forEach((el) => el.addEventListener("click", () => { const p = profById[el.dataset.tmate] || travelerMap[el.dataset.tmate]; if (p) { goToTab("connexions"); if (typeof openTravelerProfile === "function") openTravelerProfile(p); } }));
+    }
+    const _trIn = "width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:.5rem .6rem;font:inherit;background:var(--card);color:var(--ink);margin-top:.15rem";
+    const _trLbl = "font-size:.76rem;font-weight:700;color:var(--muted);margin-top:.5rem;display:block";
+    function openAddTrip() {
+      const today = new Date(); const t0 = ymd(today);
+      popInfo("✈️", "Ajouter un voyage", `<div style="text-align:left">
+        <label style="${_trLbl};margin-top:0">Ville</label>
+        <input id="tripCity" type="text" placeholder="Ex : Lisbonne" maxlength="60" style="${_trIn}" />
+        <div style="display:flex;gap:.5rem">
+          <div style="flex:1"><label style="${_trLbl}">Du</label><input id="tripStart" type="date" min="${t0}" style="${_trIn}" /></div>
+          <div style="flex:1"><label style="${_trLbl}">Au</label><input id="tripEnd" type="date" min="${t0}" style="${_trIn}" /></div>
+        </div>
+        <label style="${_trLbl}">Note (optionnel)</label>
+        <input id="tripNote" type="text" maxlength="120" placeholder="Ce que tu cherches sur place…" style="${_trIn}" />
+        <button class="btn-primary btn-block" id="tripSave" style="margin-top:.8rem">Enregistrer</button>
+        <div class="msg" id="tripMsg" style="text-align:center;margin-top:.4rem"></div></div>`);
+      setTimeout(() => { const b = $("tripSave"); if (b) b.addEventListener("click", saveTrip); }, 30);
+    }
+    async function saveTrip() {
+      const city = ($("tripCity").value || "").trim(), start = $("tripStart").value, end = $("tripEnd").value, note = ($("tripNote").value || "").trim();
+      const msg = $("tripMsg"); const fail = (txt) => { if (msg) { msg.style.color = "var(--danger)"; msg.textContent = txt; } };
+      if (!city) return fail("Indique une ville.");
+      if (!start || !end) return fail("Choisis les dates.");
+      if (end < start) return fail("La date de fin doit être après le début.");
+      const btn = $("tripSave"); if (btn) btn.disabled = true;
+      const { error } = await addTrip({ city, start_date: start, end_date: end, note: note || null });
+      if (error) { fail("Erreur, réessaie."); if (btn) btn.disabled = false; return; }
+      if (typeof closePopInfo === "function") closePopInfo();
+      if (typeof toast === "function") toast("✈️", "Voyage ajouté ! On te montre qui sera là ✨");
+      if (typeof celebrate === "function") celebrate();
+      try { if (typeof track === "function") track("trip_added", {}); } catch (e) {}
+      renderTrips();
+    }
+    { const a = $("tripAddLink"); if (a) a.addEventListener("click", openAddTrip); }
+
     // Récap hebdo (le DIMANCHE, une seule fois) : ramène l'utilisateur avec un bilan motivant.
     function maybeWeeklyRecap() {
       try {
@@ -5278,6 +5381,7 @@
       $("homeHello").innerHTML = 'Bonjour <span class="hello-name">' + escapeHtml(uname) + "</span>";
       if (typeof updateStreak === "function") updateStreak();
       if (typeof renderAvailChip === "function") renderAvailChip();
+      if (typeof renderTrips === "function") renderTrips();
       if (typeof maybeWeeklyRecap === "function") maybeWeeklyRecap();
       if (typeof renderGameHub === "function") renderGameHub();
       if (typeof claimReferralIfAny === "function") claimReferralIfAny(); // parrainage : crédite le 1er verre si arrivé via un lien ?ref
