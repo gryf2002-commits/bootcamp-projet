@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=310"></script>
-  <script src="sunmates-icons.js?v=310"></script>
+  <script src="sunmates-badges.js?v=311"></script>
+  <script src="sunmates-icons.js?v=311"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -347,6 +347,16 @@
     #safeTimerBar .stb-txt { flex: 1; }
     #safeTimerBar #safeArrivedBtn { background: rgba(255,255,255,.95); color: #c2410c; border: 0; border-radius: 999px; padding: .4rem .7rem; font-weight: 800; font-size: .8rem; cursor: pointer; flex-shrink: 0; }
     #safeTimerBar #safeArrivedBtn:active { transform: scale(.95); }
+    /* ⭐ Mate du jour (suggestion quotidienne, sunset) */
+    .mod-card { background: var(--accent-grad); color: #fff; border-radius: 16px; padding: .7rem .85rem; margin-bottom: .7rem; box-shadow: 0 8px 20px rgba(255,90,77,.28); cursor: pointer; }
+    .mod-card:active { transform: scale(.99); }
+    .mod-lbl { font-size: .72rem; font-weight: 800; opacity: .95; margin-bottom: .4rem; letter-spacing: .03em; }
+    .mod-row { display: flex; align-items: center; gap: .6rem; }
+    .mod-info { flex: 1; min-width: 0; }
+    .mod-name { font-weight: 800; font-size: .98rem; }
+    .mod-meta { font-size: .78rem; opacity: .92; }
+    .mod-go { font-weight: 800; font-size: .82rem; flex-shrink: 0; }
+    .mod-card .avatar { border: 2px solid rgba(255,255,255,.6); flex-shrink: 0; }
     /* ✈️ Mes voyages */
     .trip-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: .75rem .85rem; margin-bottom: .6rem; box-shadow: var(--shadow-sm); }
     .trip-top { display: flex; align-items: center; gap: .6rem; }
@@ -3393,6 +3403,7 @@
 
           <!-- Sous-onglet : Découvrir -->
           <div class="mates-seg hidden" data-msegpanel="discover">
+            <div id="mateOfDay"></div>
             <div class="card">
               <div class="search"><span class="ico">🔍</span><input id="travSearch" type="text" placeholder="Rechercher par pseudo ou ville…" /></div>
               <div class="chips wrap" id="travFilters" style="margin-bottom:.5rem">
@@ -7370,7 +7381,28 @@
     let travelersCache = [];
     const travFilters = { verified: false, active: false, city: false, affinity: false };
     let travSortKey = "compat";
+    // ⭐ Mate du jour : suggestion compatible, STABLE sur la journée (tourne chaque jour).
+    function renderMateOfDay() {
+      const box = $("mateOfDay"); if (!box) return;
+      const pool = (travelersCache || []).filter((p) => p && p.id !== myUserId && !p.banned);
+      if (!pool.length) { box.innerHTML = ""; return; }
+      const ranked = pool
+        .map((p) => ({ p, pct: (typeof compatibility === "function" && typeof myMatchProfile !== "undefined" && myMatchProfile) ? compatibility(myMatchProfile, p) : 0 }))
+        .sort((a, b) => b.pct - a.pct).slice(0, Math.min(12, pool.length));
+      if (!ranked.length) { box.innerHTML = ""; return; }
+      const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+      const pick = ranked[doy % ranked.length]; const p = pick.p;
+      box.innerHTML = `<div class="mod-card" data-modprofile="${escapeHtml(p.id)}">
+        <div class="mod-lbl">⭐ TON MATE DU JOUR</div>
+        <div class="mod-row">${avatarMarkup(p.username, p.avatar_url)}
+          <div class="mod-info"><div class="mod-name">${escapeHtml(p.username || "Voyageur")}${p.is_verified ? ' <span class="vchip" style="background:rgba(255,255,255,.3);color:#fff">✓</span>' : ""}</div>
+          <div class="mod-meta">${escapeHtml((p.city || "En voyage").split(",")[0])}${pick.pct ? " · ❤️ " + pick.pct + "%" : ""}</div></div>
+          <div class="mod-go">Voir ›</div></div></div>`;
+      const c = box.querySelector("[data-modprofile]");
+      if (c) c.addEventListener("click", () => { const pr = travelerMap[p.id] || p; if (typeof openTravelerProfile === "function") openTravelerProfile(pr); });
+    }
     function renderTravelers(query) {
+      renderMateOfDay();
       const q = (query || "").trim().toLowerCase();
       let list = travelersCache
         .filter((p) => {
