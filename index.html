@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=325"></script>
-  <script src="sunmates-icons.js?v=325"></script>
+  <script src="sunmates-badges.js?v=326"></script>
+  <script src="sunmates-icons.js?v=326"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -4243,17 +4243,10 @@
             <div id="groupConfirmList"></div>
           </div>
 
-          <!-- Aperçu : on ouvre les listes en feuille (overlay) pour éviter de scroller -->
-          <div class="jeux-open" data-jeuxopen="quests">
-            <div class="jo-ic c-sun" data-smicon="quest" data-smicon-size="27">🎯</div>
-            <div class="jo-txt"><div class="jo-name">Quêtes du jour</div><div class="jo-meta quest-counter" id="questCounter">—</div></div>
-            <div class="jo-arr">›</div>
-          </div>
-          <div class="jeux-open" data-jeuxopen="games">
-            <div class="jo-ic c-purp" data-smicon="games" data-smicon-size="27">🎮</div>
-            <div class="jo-txt"><div class="jo-name">Jeux populaires</div><div class="jo-meta" id="gamesCount">—</div></div>
-            <div class="jo-arr">›</div>
-          </div>
+          <!-- P2.18/19 : les lignes « Quêtes du jour » et « Jeux populaires » étaient des DOUBLONS exacts
+               des tuiles « Quêtes » et « Jeux » de la grille (même openJeuxSheet) → retirées pour épurer.
+               Le compteur de quêtes du jour est conservé ici en discret (info utile, sans doublonner l'accès). -->
+          <div class="quest-counter-line muted" id="questCounter" style="font-size:.8rem;text-align:center;margin:.4rem 0 .2rem">—</div>
         </div>
 
         <!-- Feuille (overlay) : liste des quêtes OU des jeux (anti-scroll) -->
