@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=304"></script>
-  <script src="sunmates-icons.js?v=304"></script>
+  <script src="sunmates-badges.js?v=305"></script>
+  <script src="sunmates-icons.js?v=305"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -2308,12 +2308,15 @@
     /* Actions sur ses propres messages (éditer / supprimer) */
     .msg-quest { display: inline-block; margin-top: .4rem; background: rgba(255,255,255,.25); color: inherit; border: 1px solid rgba(255,255,255,.4); border-radius: 999px; padding: .2rem .7rem; font-size: .76rem; font-weight: 700; cursor: pointer; }
     .bubble.them .msg-quest { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
-    /* Heure : placée dans la gouttière À DROITE de chaque bulle, cachée par défaut.
-       Révélée soit en touchant un message (.show-time), soit en glissant la conversation
-       vers la gauche (peek façon Instagram : toutes les heures apparaissent en même temps). */
-    .bubble-time { position: absolute; top: 50%; right: 0; transform: translate(calc(100% + 10px), -50%);
+    /* Chaque message vit dans une LIGNE pleine largeur. L'heure est posée dans une COLONNE
+       fixe au bord droit (mêmes coordonnées pour tous → alignées, jamais collées à la bulle).
+       Cachée par défaut ; révélée en touchant un message OU en glissant (peek façon Insta). */
+    .msg-row { position: relative; display: flex; width: 100%; }
+    .msg-row.me { justify-content: flex-end; }
+    .msg-row.them { justify-content: flex-start; }
+    .msg-row .bubble-time { position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
       font-size: .66rem; color: var(--muted); white-space: nowrap; opacity: 0; transition: opacity .15s; pointer-events: none; }
-    .bubble.show-time .bubble-time, #chatBody.peeking .bubble-time { opacity: .8; }
+    .msg-row .bubble.show-time ~ .bubble-time, #chatBody.peeking .msg-row .bubble-time { opacity: .8; }
     /* Cœur de réaction sur un message (double-tap) */
     .bubble { position: relative; }
     .bubble-heart { position: absolute; bottom: -9px; right: 8px; font-size: .82rem; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 0 .28rem; line-height: 1.5; box-shadow: 0 1px 4px rgba(0,0,0,.15); z-index: 3; display: inline-flex; align-items: center; gap: .1rem; }
@@ -8319,9 +8322,11 @@
     function bubbleHtml(m) {
       const mine = m.sender_id === myUserId;
       const act = mine ? `<div class="bubble-act"><button class="msg-del" data-mid="${m.id}" aria-label="Supprimer" title="Supprimer"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div>` : "";
+      const side = mine ? "me" : "them";
+      const time = `<span class="bubble-time">${msgTime(m.created_at)}</span>`;
       // Note vocale : lecteur (lecture via URL signée au clic)
       if (m.audio_path) {
-        return `<div class="bubble ${mine ? "me" : "them"}" data-mid="${m.id}"><span class="bubble-audio"><button data-vplay="${escapeHtml(m.audio_path)}">▶</button><span>${escapeHtml(m.content || "🎤 Note vocale")}</span></span><span class="bubble-time">${msgTime(m.created_at)}</span>${act}</div>`;
+        return `<div class="msg-row ${side}"><div class="bubble ${side}" data-mid="${m.id}"><span class="bubble-audio"><button data-vplay="${escapeHtml(m.audio_path)}">▶</button><span>${escapeHtml(m.content || "🎤 Note vocale")}</span></span>${act}</div>${time}</div>`;
       }
       // Si le message propose une quête/activité → petit bouton pour la visualiser
       let questBtn = "";
@@ -8333,7 +8338,7 @@
       const trLbl = (typeof t === "function") ? t("chat.translate") : "Traduire";
       // Pas de bouton « Traduire » si le Mate parle déjà ta langue (pollution visuelle inutile).
       const trBtn = (_chatTranslatable && (m.content || "").trim()) ? `<button class="bubble-translate" data-tr="1">🌐 ${trLbl}</button>` : "";
-      return `<div class="bubble ${mine ? "me" : "them"}" data-mid="${m.id}"><span class="bubble-txt">${escapeHtml(m.content)}</span>${questBtn}<span class="bubble-time">${msgTime(m.created_at)}</span>${trBtn}${act}</div>`;
+      return `<div class="msg-row ${side}"><div class="bubble ${side}" data-mid="${m.id}"><span class="bubble-txt">${escapeHtml(m.content)}</span>${questBtn}${trBtn}${act}</div>${time}</div>`;
     }
     // Étiquette de jour pour les séparateurs du chat (« Aujourd'hui », « Hier », sinon la date).
     function chatDayLabel(iso) {
@@ -8373,12 +8378,11 @@
         if (!confirm("Supprimer ce message ?")) return;
         const { error } = await db.from("messages").delete().eq("id", id);
         if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); return; }
-        const b = document.querySelector(`.bubble[data-mid="${id}"]`); if (b) b.remove();
+        const b = document.querySelector(`.bubble[data-mid="${id}"]`); if (b) (b.closest(".msg-row") || b).remove();
         return;
       }
-      // Toucher un message (hors bouton) révèle/masque son heure d'envoi.
-      const bub = e.target.closest(".bubble");
-      if (bub && !e.target.closest("button")) bub.classList.toggle("show-time");
+      // (L'heure se révèle en GLISSANT la conversation vers la gauche — peek façon Insta —
+      //  pas au simple tap, pour ne pas chevaucher ses propres bulles.)
     });
 
     // ===== Item 12 — Liker un message (double-tap ❤️) + swipe pour voir l'heure (façon Insta) =====
@@ -8473,7 +8477,7 @@
     function renderDemoChat(id) {
       const body = $("chatBody"); if (!body) return;
       const log = demoChats[id] || [];
-      body.innerHTML = log.map((m) => `<div class="bubble ${m.them ? "them" : "me"}"><span class="bubble-txt">${escapeHtml(m.text)}</span><span class="bubble-time">${msgTime(m.t)}</span></div>`).join("");
+      body.innerHTML = log.map((m) => { const s = m.them ? "them" : "me"; return `<div class="msg-row ${s}"><div class="bubble ${s}"><span class="bubble-txt">${escapeHtml(m.text)}</span></div><span class="bubble-time">${msgTime(m.t)}</span></div>`; }).join("");
       scrollChatBottom();
     }
     // Ajoute les conversations IA (démo) en haut de la liste Messages des Mates
@@ -8750,7 +8754,7 @@
       const tempId = "temp-" + (++_tempMsgSeq);
       const ph0 = $("chatBody").querySelector("p.muted"); if (ph0) $("chatBody").innerHTML = "";
       $("chatBody").insertAdjacentHTML("beforeend",
-        `<div class="bubble me" data-mid="${tempId}" data-pending="1"><span class="bubble-txt">${escapeHtml(text)}</span><span class="bubble-time">⏳ envoi…</span></div>`);
+        `<div class="msg-row me"><div class="bubble me" data-mid="${tempId}" data-pending="1"><span class="bubble-txt">${escapeHtml(text)}</span></div><span class="bubble-time">⏳ envoi…</span></div>`);
       scrollChatBottom();
 
       const result = await once("msg:" + recipient + ":" + text, async () =>
@@ -8758,14 +8762,14 @@
       );
       const bubble = $("chatBody").querySelector(`.bubble[data-mid="${tempId}"]`);
       if (result === undefined) {
-        // Doublon ignoré par once() (clic en double) → on retire la bulle en trop.
-        if (bubble) bubble.remove();
+        // Doublon ignoré par once() (clic en double) → on retire la ligne en trop.
+        if (bubble) (bubble.closest(".msg-row") || bubble).remove();
       } else if (result.error) {
         // Échec d'envoi → la bulle optimiste devient une bulle d'erreur (le message N'a PAS été envoyé).
         if (bubble) {
           bubble.removeAttribute("data-pending");
           bubble.classList.add("msg-failed");
-          const t = bubble.querySelector(".bubble-time"); if (t) t.textContent = "⚠️ non envoyé";
+          const row = bubble.closest(".msg-row"); const t = row ? row.querySelector(".bubble-time") : null; if (t) t.textContent = "⚠️ non envoyé";
         }
       } else if (bubble) {
         // Succès → on remplace "⏳ envoi…" par l'heure réelle (le temps réel finira le travail).
@@ -8800,7 +8804,7 @@
               const pendings = $("chatBody").querySelectorAll('.bubble[data-pending="1"]');
               for (const pb of pendings) {
                 const txt = pb.querySelector(".bubble-txt");
-                if (txt && txt.textContent === m.content) { pb.remove(); break; }
+                if (txt && txt.textContent === m.content) { (pb.closest(".msg-row") || pb).remove(); break; }
               }
             }
             $("chatBody").insertAdjacentHTML("beforeend", bubbleHtml(m));
