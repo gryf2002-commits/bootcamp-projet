@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=326"></script>
-  <script src="sunmates-icons.js?v=326"></script>
+  <script src="sunmates-badges.js?v=327"></script>
+  <script src="sunmates-icons.js?v=327"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -1371,6 +1371,12 @@
     .shop-name { font-size: .82rem; font-weight: 700; line-height: 1.2; }
     .shop-meta { font-size: .72rem; color: var(--muted); }
     .shop-item.on .shop-meta { color: var(--accent); font-weight: 700; }
+    /* SunCoins (P2.17) : solde dans la bannière + états achetable/verrouillé des items. */
+    .shop-coins { font-weight: 800; color: #B5740E; } .shop-coins b { font-family: "Fraunces", serif; }
+    body.theme-dusk .shop-coins { color: #ffce8a; }
+    .shop-item.buyable .shop-meta { color: #B5740E; font-weight: 800; } /* prix abordable = mis en avant */
+    body.theme-dusk .shop-item.buyable .shop-meta { color: #ffd58a; }
+    .shop-item.locked .shop-meta { color: var(--muted); } /* pas assez de coins → prix grisé (item reste teasé) */
     /* Cadres d'avatar (appliqués à .avatar) */
     /* Cadres d'avatar (s'appliquent à l'avatar ET à l'aperçu boutique), distincts + glow */
     .avatar.frame-gold, .shop-frame-prev.frame-gold { box-shadow: 0 0 0 3px #f5c451, 0 0 12px rgba(245,196,81,.55); }
@@ -4341,8 +4347,8 @@
         <!-- Vue Boutique XP (cosmétiques débloqués par paliers d'XP, 100% local) -->
         <div id="jeuxShop" class="jeux-view hidden">
           <button class="backbtn" data-back>‹ Retour</button>
-          <h1>🛍️ Boutique XP</h1>
-          <p class="muted" style="margin-top:0">Ton XP débloque des <b>cosmétiques</b> pour personnaliser ton profil. Rien à payer : tu débloques en jouant. Ton XP n'est <b>jamais dépensé</b>, il sert de palier.</p>
+          <h1>🛍️ Boutique</h1>
+          <p class="muted" style="margin-top:0">Dépense tes <b>🪙 SunCoins</b> en <b>cosmétiques</b> pour personnaliser ton profil. Tu en gagnes en accomplissant des quêtes (+15) et chaque jour (+10). Ton <b>⭐ XP</b>, lui, reste ta progression (niveau & classement) et n'est jamais dépensé.</p>
           <div class="xp-banner" id="shopXpBanner"></div>
           <div class="section-head"><h3 style="margin:.6rem 0 .2rem">🏷️ Titres de profil</h3></div>
           <p class="muted" style="font-size:.78rem;margin:.1rem 0 .5rem">Affiché sous ton pseudo. Un seul actif.</p>
@@ -5508,7 +5514,8 @@
       { const pc = $("profileCity"); if (pc) pc.textContent = [data.city, data.hometown].filter(Boolean)[0] ? ("📍 " + [data.city, data.hometown].filter(Boolean)[0]) : ""; }
       setAvatarEl($("profileAvatar"), data.avatar_url, uname[0] || "😎");
       setAvatarEl($("pAvatarPreview"), data.avatar_url, uname[0] || "😎");
-      if (typeof applyProfileCosmetics === "function") applyProfileCosmetics(); // titre + cadre boutique XP
+      if (typeof applyProfileCosmetics === "function") applyProfileCosmetics(); // titre + cadre boutique
+      if (typeof claimDailyCoins === "function") claimDailyCoins(); // bonus SunCoins du jour (+10, 1x/jour)
       // Accueil : « Bonjour {pseudo} ». Seul le pseudo reçoit le dégradé ; « Bonjour » reste en texte normal.
       $("homeHello").innerHTML = 'Bonjour <span class="hello-name">' + escapeHtml(uname) + "</span>";
       if (typeof updateStreak === "function") updateStreak();
@@ -8308,39 +8315,43 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // ====================== BOUTIQUE XP (cosmétiques par paliers, 100% local) ======================
-    // Aucune migration : l'XP n'est PAS dépensé (anti-triche préservé). Chaque item se débloque
-    // à un palier d'XP atteint. Le choix actif est mémorisé en localStorage par utilisateur.
+    // ====================== BOUTIQUE SUNCOINS 🪙 (cosmétiques achetés, P2.17) ======================
+    // Modèle 2 monnaies : l'XP ⭐ reste la PROGRESSION (niveau/classement, jamais dépensée), les
+    // SunCoins 🪙 sont la monnaie DÉPENSABLE. On ACHÈTE un cosmétique (coût en coins) → possession
+    // PERSISTÉE côté serveur (profiles.cosmetics_owned). Le choix ÉQUIPÉ reste en localStorage.
     // Titres = FLAIR/vibe affiché sous le pseudo (différent des badges = accomplissements).
     const SHOP_TITLES = [
-      { id: "none", name: "Aucun titre", xp: 0, label: "", emoji: "🚫" },
-      { id: "freebird", name: "Esprit libre", xp: 0, label: "🦋 Esprit libre", emoji: "🦋" },
-      { id: "sunheart", name: "Cœur nomade", xp: 50, label: "🧡 Cœur nomade", emoji: "🧡" },
-      { id: "sunchaser", name: "Chasseur·euse de soleil", xp: 120, label: "🌅 Chasseur·euse de soleil", emoji: "🌅" },
-      { id: "wildsoul", name: "Âme aventurière", xp: 250, label: "🔥 Âme aventurière", emoji: "🔥" },
-      { id: "shootingstar", name: "Étoile filante", xp: 500, label: "🌠 Étoile filante", emoji: "🌠" },
-      { id: "globetrotter", name: "Globe-trotter", xp: 1000, label: "🌍 Globe-trotter", emoji: "🌍" },
-      { id: "pathfinder", name: "Éclaireur·euse", xp: 2000, label: "🧭 Éclaireur·euse", emoji: "🧭" },
-      { id: "citylegend", name: "Légende urbaine", xp: 3500, label: "🏙️ Légende urbaine", emoji: "🏙️" },
-      { id: "sunlegend", name: "Légende SunMates", xp: 5000, label: "👑 Légende SunMates", emoji: "👑" },
-      { id: "mythic", name: "Mythe vivant", xp: 9000, label: "🌟 Mythe vivant", emoji: "🌟" },
+      { id: "none", name: "Aucun titre", cost: 0, label: "", emoji: "🚫" },
+      { id: "freebird", name: "Esprit libre", cost: 0, label: "🦋 Esprit libre", emoji: "🦋" },
+      { id: "sunheart", name: "Cœur nomade", cost: 40, label: "🧡 Cœur nomade", emoji: "🧡" },
+      { id: "sunchaser", name: "Chasseur·euse de soleil", cost: 90, label: "🌅 Chasseur·euse de soleil", emoji: "🌅" },
+      { id: "wildsoul", name: "Âme aventurière", cost: 180, label: "🔥 Âme aventurière", emoji: "🔥" },
+      { id: "shootingstar", name: "Étoile filante", cost: 320, label: "🌠 Étoile filante", emoji: "🌠" },
+      { id: "globetrotter", name: "Globe-trotter", cost: 550, label: "🌍 Globe-trotter", emoji: "🌍" },
+      { id: "pathfinder", name: "Éclaireur·euse", cost: 850, label: "🧭 Éclaireur·euse", emoji: "🧭" },
+      { id: "citylegend", name: "Légende urbaine", cost: 1300, label: "🏙️ Légende urbaine", emoji: "🏙️" },
+      { id: "sunlegend", name: "Légende SunMates", cost: 2000, label: "👑 Légende SunMates", emoji: "👑" },
+      { id: "mythic", name: "Mythe vivant", cost: 3500, label: "🌟 Mythe vivant", emoji: "🌟" },
     ];
     const SHOP_FRAMES = [
-      { id: "none", name: "Classique", xp: 0, cls: "" },
-      { id: "gold", name: "Doré", xp: 100, cls: "frame-gold" },
-      { id: "coral", name: "Corail", xp: 200, cls: "frame-coral" },
-      { id: "sunset", name: "Coucher de soleil", xp: 400, cls: "frame-sunset" },
-      { id: "aurora", name: "Aurore", xp: 800, cls: "frame-aurora" },
-      { id: "emerald", name: "Émeraude", xp: 1800, cls: "frame-emerald" },
-      { id: "royal", name: "Royal", xp: 4000, cls: "frame-royal" },
+      { id: "none", name: "Classique", cost: 0, cls: "" },
+      { id: "gold", name: "Doré", cost: 60, cls: "frame-gold" },
+      { id: "coral", name: "Corail", cost: 130, cls: "frame-coral" },
+      { id: "sunset", name: "Coucher de soleil", cost: 260, cls: "frame-sunset" },
+      { id: "aurora", name: "Aurore", cost: 480, cls: "frame-aurora" },
+      { id: "emerald", name: "Émeraude", cost: 900, cls: "frame-emerald" },
+      { id: "royal", name: "Royal", cost: 1800, cls: "frame-royal" },
     ];
     const SHOP_FRAME_CLASSES = SHOP_FRAMES.map((f) => f.cls).filter(Boolean);
     function myXp() { return (myProfile && myProfile.xp) || 0; }
+    function myCoins() { return (myProfile && myProfile.coins) || 0; }
+    function ownedCosmetics() { return (myProfile && Array.isArray(myProfile.cosmetics_owned)) ? myProfile.cosmetics_owned : []; }
+    function isCosmeticOwned(it) { return (it.cost || 0) === 0 || ownedCosmetics().indexOf(it.id) !== -1; }
     function shopKey() { return "sm_shop_" + (myUserId || "x"); }
     function getShopState() {
       let s = {};
       try { s = JSON.parse(localStorage.getItem(shopKey()) || "{}") || {}; } catch (e) { s = {}; }
-      if (!s.title) s.title = "globe";
+      if (!s.title) s.title = "none"; // (corrige l'ancien défaut "globe" qui ne matchait aucun titre)
       if (!s.frame) s.frame = "none";
       return s;
     }
@@ -8349,14 +8360,25 @@
       try { localStorage.setItem(shopKey(), JSON.stringify(s)); } catch (e) {}
       return s;
     }
-    function selectShopItem(kind, id) {
+    // Possédé → on ÉQUIPE (gratuit). Pas possédé → on ACHÈTE avec des SunCoins (RPC atomique), puis on équipe.
+    async function selectShopItem(kind, id) {
       const list = kind === "title" ? SHOP_TITLES : SHOP_FRAMES;
       const it = list.find((x) => x.id === id); if (!it) return;
-      if (myXp() < it.xp) { toast("Encore " + (it.xp - myXp()) + " XP pour débloquer « " + it.name + " » ⭐"); return; }
-      setShopState(kind === "title" ? { title: id } : { frame: id });
-      applyProfileCosmetics();
-      renderShop();
-      toast(kind === "title" ? "Titre équipé ✨" : "Cadre équipé ✨");
+      const equip = () => { setShopState(kind === "title" ? { title: id } : { frame: id }); applyProfileCosmetics(); renderShop(); };
+      if (isCosmeticOwned(it)) { equip(); if (window.SMSound) SMSound.play("select"); toast(kind === "title" ? "Titre équipé ✨" : "Cadre équipé ✨"); return; }
+      if (myCoins() < it.cost) { toast("🪙", "Encore " + (it.cost - myCoins()) + " SunCoins pour « " + it.name + " » — gagne-en en quête !"); return; }
+      await once("buy:" + kind + ":" + id, async () => {
+        try {
+          const { data, error } = await db.rpc("sm_spend_coins", { p_amount: it.cost, p_item: id });
+          const res = (data && data[0]) || data || {};
+          if (error || !res.ok) { toast("🪙", (res && res.message) || "Achat impossible — réessaie."); return; }
+          if (myProfile) { myProfile.coins = res.balance; const ow = ownedCosmetics(); if (ow.indexOf(id) === -1) myProfile.cosmetics_owned = ow.concat(id); }
+          equip();
+          if (window.SMSound) SMSound.play("coin");
+          if (typeof celebrate === "function") celebrate();
+          toast("🎉", (kind === "title" ? "Titre" : "Cadre") + " « " + it.name + " » acheté & équipé !");
+        } catch (e) { toast("🪙", "Achat impossible — réessaie."); }
+      });
     }
     // Applique le titre + le cadre choisis sur la carte profil (et l'aperçu).
     function applyProfileCosmetics() {
@@ -8371,26 +8393,42 @@
         if (f && f.cls) av.classList.add(f.cls);
       });
     }
+    // Bonus SunCoins quotidien (+10, 1x/jour, borné serveur). Toast discret seulement si on l'a gagné.
+    let _dailyCoinsTried = false;
+    async function claimDailyCoins() {
+      if (_dailyCoinsTried || !myUserId) return; _dailyCoinsTried = true;
+      try {
+        const { data, error } = await db.rpc("sm_claim_daily_coins");
+        if (error) return; // migration pas encore lancée → silencieux
+        const res = (data && data[0]) || data || {};
+        if (myProfile && typeof res.balance === "number") myProfile.coins = res.balance;
+        if (res.granted > 0) { if (typeof toast === "function") toast("🪙", "+" + res.granted + " SunCoins, bonus du jour ! Reviens demain ✨"); if (window.SMSound) SMSound.play("coin"); }
+        if (typeof renderShop === "function" && !$("jeuxShop").classList.contains("hidden")) renderShop();
+      } catch (e) {}
+    }
     function renderShop() {
-      const xp = myXp();
+      const coins = myCoins();
       const xb = $("shopXpBanner");
       if (xb) {
-        const lvl = Math.floor(xp / 100) + 1, inLvl = xp % 100;
+        const lvl = Math.floor(myXp() / 100) + 1;
         xb.classList.add("xpl-card");
-        xb.innerHTML = `<div class="xpl-top"><span class="xpl-lvl">⭐ Niveau ${lvl}</span><span class="xpl-xp">${xp} XP dispo</span></div>
-          <div class="xpl-bar"><span style="width:${inLvl}%"></span></div>
-          <div class="xpl-next">Gagne de l'XP en quête pour débloquer plus de cosmétiques 🎨</div>`;
+        // Bannière 2 monnaies : XP (progression, à gauche) + SunCoins (à dépenser, à droite).
+        xb.innerHTML = `<div class="xpl-top"><span class="xpl-lvl">⭐ Niveau ${lvl}</span><span class="shop-coins">🪙 <b>${coins}</b> SunCoins</span></div>
+          <div class="xpl-next">Gagne des <b>🪙 SunCoins</b> en quête (+15) et chaque jour (+10), puis dépense-les ici 🎨</div>`;
       }
       const state = getShopState();
       const card = (kind, it, selected) => {
-        const locked = xp < it.xp;
+        const owned = isCosmeticOwned(it);
+        const affordable = coins >= it.cost;
         const swatch = kind === "title"
           ? `<div class="shop-ic shop-ic-title${it.id === "none" ? " shop-ic-none" : ""}">${it.emoji || "🏷️"}</div>`
           : `<div class="shop-ic shop-frame-prev ${it.cls}">🙂</div>`;
-        return `<button class="shop-item${selected ? " on" : ""}${locked ? " locked" : ""}" data-shopkind="${kind}" data-shopid="${escapeHtml(it.id)}"${locked ? " aria-disabled=\"true\"" : ""}>
+        // Possédé → "Équipé"/"Équiper". Pas possédé → prix en SunCoins (grisé si pas assez).
+        const meta = owned ? (selected ? "✓ Équipé" : "Équiper") : ("🪙 " + it.cost);
+        return `<button class="shop-item${selected ? " on" : ""}${owned ? "" : (affordable ? " buyable" : " locked")}" data-shopkind="${kind}" data-shopid="${escapeHtml(it.id)}">
           ${swatch}
           <div class="shop-name">${escapeHtml(it.name)}</div>
-          <div class="shop-meta">${locked ? "🔒 " + it.xp + " XP" : (selected ? "✓ Équipé" : (it.xp === 0 ? "Gratuit" : "Débloqué"))}</div>
+          <div class="shop-meta">${meta}</div>
         </button>`;
       };
       const tBox = $("shopTitles");
