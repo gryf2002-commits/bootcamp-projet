@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=303"></script>
-  <script src="sunmates-icons.js?v=303"></script>
+  <script src="sunmates-badges.js?v=304"></script>
+  <script src="sunmates-icons.js?v=304"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -194,6 +194,9 @@
       width: 30px; height: 30px; border-radius: 9px; background: var(--accent-grad);
       display: grid; place-items: center; font-size: 16px; box-shadow: var(--shadow-sm);
     }
+    /* Les 3 glyphes de la barre du haut (soleil-logo, cloche, lune/soleil-thème) rendus à la
+       MÊME taille exacte (22px) quelle que soit leur source SVG (évite l'effet « tailles différentes »). */
+    .brand .mark svg, #notifBell svg, #themeToggle svg { width: 22px !important; height: 22px !important; display: block; }
     .brand b { font-weight: 800; }
     .brand b .sun { color: var(--accent); }
     /* Marque « SunMates Pro » : soleil doré distinct + badge PRO (espace B2B) */
@@ -913,10 +916,12 @@
     /* --------------------- Visite guidée (spotlights) -------------------- */
     .tour { position: fixed; inset: 0; z-index: var(--z-tour); }
     .tour-catch { position: absolute; inset: 0; }                  /* avale les clics pendant la visite */
-    /* On déplace le spotlight pendant qu'il est INVISIBLE (opacity 0) puis on le ré-affiche →
-       plus de glissement depuis le coin. Seule l'opacité est animée (fondu doux entre étapes). */
+    /* Le spotlight GLISSE doucement d'une étape à l'autre (left/top/width/height animés) ;
+       au TOUT premier placement on coupe la transition (sinon glissement disgracieux depuis le coin). */
     .tour-spot { position: absolute; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(12,7,32,.72);
-      border: 2px solid rgba(255,255,255,.9); transition: opacity .2s ease; pointer-events: none; opacity: 0; }
+      border: 2px solid rgba(255,255,255,.9); pointer-events: none; opacity: 0;
+      transition: left .32s cubic-bezier(.4,0,.2,1), top .32s cubic-bezier(.4,0,.2,1), width .32s cubic-bezier(.4,0,.2,1), height .32s cubic-bezier(.4,0,.2,1), opacity .22s ease; }
+    .tour-spot.no-anim { transition: opacity .22s ease; }
     .tour-pop { position: absolute; left: 50%; transform: translateX(-50%); width: calc(100% - 2rem); max-width: 360px;
       background: var(--card); color: var(--ink); border-radius: 20px; padding: 1.1rem 1.2rem; box-shadow: 0 24px 60px rgba(0,0,0,.5);
       text-align: center; opacity: 0; transition: opacity .2s ease; }
@@ -970,11 +975,12 @@
       transition: transform .15s ease;
     }
     .tile:hover .thumb { transform: translateY(-2px) scale(1.02); }
-    /* POLISH VERRE : reflet diagonal doux + liseré clair en haut (effet verre, plus le halo blanc moche) */
-    .tile .thumb { position: relative; overflow: hidden; }
+    /* POLISH VERRE + PEPS : reflet glossy marqué (verre brillant) + liseré clair + ombre interne
+       basse pour le volume (fini le rendu pastel/plat), sans le halo blanc vertical moche. */
+    .tile .thumb { position: relative; overflow: hidden; filter: saturate(1.16) brightness(1.03); }
     .tile .thumb::before { content: ""; position: absolute; inset: 0; border-radius: inherit;
-      background: linear-gradient(157deg, rgba(255,255,255,.34) 0%, rgba(255,255,255,.08) 24%, rgba(255,255,255,0) 52%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
+      background: linear-gradient(158deg, rgba(255,255,255,.62) 0%, rgba(255,255,255,.22) 15%, rgba(255,255,255,.03) 36%, rgba(255,255,255,0) 58%);
+      box-shadow: inset 0 1.5px 0 rgba(255,255,255,.65), inset 0 -16px 26px rgba(0,0,0,.12);
       pointer-events: none; }
     .tile .thumb.green { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#8fe6a6,#34c77b); box-shadow: 0 6px 16px rgba(52,199,123,.24); }
     .tile .thumb.blue  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#8ed0ff,#3aa0f0); box-shadow: 0 6px 16px rgba(58,160,240,.24); }
@@ -1773,8 +1779,8 @@
     .tab-panel[data-panel="accueil"] .tile .thumb::after,
     .tab-panel[data-panel="securite"] .tile .thumb::after {
       content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
-      /* léger voile retiré (faisait doublon avec le reflet verre ::before = halo blanc) ; on garde juste une ombre interne basse pour le volume */
-      background:linear-gradient(180deg, rgba(255,255,255,0) 62%, rgba(0,0,0,.06) 100%); }
+      /* reflet glossy diagonal (peps) + ombre basse pour le volume — chute rapide = brillance, pas halo */
+      background:linear-gradient(150deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.10) 26%, rgba(255,255,255,0) 50%), linear-gradient(180deg, rgba(255,255,255,0) 64%, rgba(0,0,0,.07) 100%); }
     .tab-panel[data-panel="accueil"] .tile:active .thumb,
     .tab-panel[data-panel="securite"] .tile:active .thumb { transform: scale(.96); }
     /* Quête du jour : aura calmée sur l'accueil (moins « jeu ») */
@@ -9518,21 +9524,14 @@
         homeCluster.on("clusterclick", (a) => {
           const cl = a.layer;
           const curZoom = homeLeaf.getZoom(), maxZoom = homeLeaf.getMaxZoom();
-          const kids = cl.getAllChildMarkers();
-          // Groupe "co-localisé" (mêmes coordonnées, ex. plusieurs éléments au même lieu) ?
-          // Zoomer ne les séparera JAMAIS → on ouvre la rosace DIRECTEMENT (1 clic, plus de double-clic chiant).
-          let tiny = true;
-          try { const b = cl.getBounds(); tiny = b.getNorthEast().distanceTo(b.getSouthWest()) < 35; } catch (e) {}
-          if (tiny) {
-            if (kids.length <= 6) cl.spiderfy(); else openColocatedList(cl.getLatLng(), kids, cl);
-            return;
-          }
-          // Sinon (lieux réellement différents) et pas au zoom max → on zoome pour les séparer.
+          // On ZOOME d'abord pour séparer le groupe (évite d'ouvrir une rosace géante de
+          // marqueurs dispersés = superpositions horribles). La rosace ne s'ouvre qu'au zoom max,
+          // quand c'est vraiment un même endroit qu'on ne peut plus séparer.
           if (curZoom < maxZoom) {
             try { homeLeaf.fitBounds(cl.getBounds().pad(0.2), { maxZoom: maxZoom }); } catch (e) {}
             return;
           }
-          // Au zoom MAX (impossible de séparer davantage) → on ouvre la rosace.
+          const kids = cl.getAllChildMarkers();
           if (kids.length <= 6) { cl.spiderfy(); return; }     // peu d'éléments → éventail
           openColocatedList(cl.getLatLng(), kids, cl);          // beaucoup → liste (jamais 16 côte à côte)
         });
@@ -10125,17 +10124,16 @@
       $("tourProg").textContent = (i + 1) + " / " + _activeTour.length;
       $("tourNext").textContent = i === _activeTour.length - 1 ? "Terminer 🎉" : "Suivant →";
       show($("tourPrev"), i > 0); // « Précédent » caché à la 1re étape
-      // On MASQUE la bulle + le spotlight le temps de calculer leur place → fini le « apparaît
-      // en haut puis redescend ». Délai court juste pour laisser l'onglet/la vue se rendre.
-      { const sp = $("tourSpot"), pp = $("tourPop"); if (sp) sp.style.opacity = "0"; if (pp) pp.style.opacity = "0"; }
-      setTimeout(() => positionTour(st), 150);
+      // La BULLE est toujours masquée le temps du placement (sinon « apparaît en haut puis redescend »).
+      // Le SPOTLIGHT n'est masqué qu'à la 1re étape (ensuite il GLISSE de façon fluide vers la cible).
+      { const sp = $("tourSpot"), pp = $("tourPop"); if (pp) pp.style.opacity = "0"; if (sp && i === 0) { sp.style.opacity = "0"; sp.classList.add("no-anim"); } }
+      setTimeout(() => positionTour(st, i === 0), 140);
     }
-    function positionTour(st) {
+    function positionTour(st, isFirst) {
       const el = document.querySelector(st.sel), spot = $("tourSpot"), pop = $("tourPop");
       if (!spot || !pop) return;
       if (!el) { spot.style.opacity = "0"; pop.style.top = "auto"; pop.style.bottom = "42%"; pop.style.opacity = "1"; return; }
-      // On amène l'élément dans la vue (scroll instantané), on attend que la mise en page se
-      // stabilise (double rAF), puis on place spotlight + bulle ENCORE invisibles, et on ré-affiche.
+      // On amène l'élément dans la vue (scroll instantané), on attend que la mise en page se stabilise (double rAF).
       try { el.scrollIntoView({ block: "center", behavior: "auto" }); } catch (e) {}
       requestAnimationFrame(() => requestAnimationFrame(() => {
         const r = el.getBoundingClientRect(), pad = 8;
@@ -10145,6 +10143,7 @@
         else if (r.top > 240) { pop.style.bottom = (window.innerHeight - r.top + 14) + "px"; pop.style.top = "auto"; }
         else { pop.style.top = "auto"; pop.style.bottom = "16px"; } // élément plein écran → bulle en bas
         spot.style.opacity = "1"; pop.style.opacity = "1"; // placés → on révèle (fondu doux)
+        if (isFirst) { void spot.offsetWidth; spot.classList.remove("no-anim"); } // réactive le glissement pour les étapes suivantes
       }));
     }
     function endTour() {
