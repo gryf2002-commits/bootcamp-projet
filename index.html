@@ -4221,7 +4221,9 @@
 
           <!-- RGPD : suppression de compte (droit à l'effacement) — P2.50 -->
           <div class="set-grouptitle" style="margin-top:1.2rem">Données personnelles (RGPD)</div>
-          <p class="muted" style="font-size:.78rem;margin:.2rem 0 .5rem">Tu peux supprimer définitivement ton compte et toutes tes données. Cette action est <b>irréversible</b>.</p>
+          <p class="muted" style="font-size:.78rem;margin:.2rem 0 .5rem">Télécharge une copie de toutes tes données, ou supprime définitivement ton compte (<b>irréversible</b>).</p>
+          <button class="btn-ghost btn-block" id="exportDataBtn" style="margin-bottom:.5rem">📦 Exporter mes données</button>
+          <button class="btn-ghost btn-block" id="privacyBtn" style="margin-bottom:.5rem">🔒 Confidentialité &amp; données</button>
           <button class="btn-ghost btn-block" id="deleteAccountBtn" style="color:var(--danger);border-color:var(--danger)">🗑️ Supprimer mon compte</button>
         </div>
       </div>
@@ -11150,6 +11152,44 @@
         setTimeout(() => location.replace(location.pathname), 1900);
       } catch (e) { if (m) { m.style.color = "var(--danger)"; m.textContent = "Erreur : réessaie."; } }
     })); }
+    // RGPD : export de mes données (droit à la portabilité) — bundle JSON téléchargé localement.
+    function _downloadJson(obj, filename) {
+      const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+    { const eb = $("exportDataBtn"); if (eb) eb.addEventListener("click", () => once("export-data", async () => {
+      const m = $("settingsMsg"); if (m) { m.style.color = "var(--muted)"; m.textContent = "Préparation de tes données…"; }
+      const out = { export_le: new Date().toISOString(), compte: { id: myUserId, email: (typeof myEmail !== "undefined" ? myEmail : null) } };
+      const grab = async (key, q) => { try { const { data } = await q; out[key] = data || []; } catch (e) { out[key] = { erreur: String((e && e.message) || e) }; } };
+      await Promise.all([
+        grab("profil", db.from("profiles").select("*").eq("id", myUserId)),
+        grab("messages_envoyes", db.from("messages").select("*").eq("sender_id", myUserId)),
+        grab("connexions", db.from("matches_connections").select("*").or(`user_a.eq.${myUserId},user_b.eq.${myUserId}`)),
+        grab("check_ins", db.from("checkpoints").select("*").eq("user_id", myUserId)),
+        grab("quetes", db.from("user_quests").select("*").eq("user_id", myUserId)),
+        grab("coupons", db.from("user_coupons").select("*").eq("user_id", myUserId)),
+        grab("publications", db.from("feed_posts").select("*").eq("user_id", myUserId)),
+        grab("positions_partagees", db.from("locations_realtime").select("*").eq("user_id", myUserId)),
+      ]);
+      try { out.cosmetiques = JSON.parse(localStorage.getItem("sm_cosmetics_owned") || "null"); } catch (e) {}
+      _downloadJson(out, "sunmates-mes-donnees.json");
+      if (m) { m.style.color = "var(--ok)"; m.textContent = "Tes données ont été téléchargées 📦"; }
+      if (typeof track === "function") track("data_exported");
+    })); }
+    { const pb = $("privacyBtn"); if (pb) pb.addEventListener("click", () => popInfo("🔒", "Confidentialité & données",
+      "<div style='font-size:.84rem;line-height:1.5;text-align:left'>" +
+      "<p style='margin:.2rem 0 .55rem'>SunMates ne collecte que le nécessaire :</p>" +
+      "<ul style='margin:.2rem 0 .55rem;padding-left:1.1rem'>" +
+      "<li><b>Profil</b> : pseudo, ville, bio, photo, langues.</li>" +
+      "<li><b>Activité</b> : check-ins, quêtes, badges, messages, connexions.</li>" +
+      "<li><b>Position</b> : partagée <b>uniquement</b> quand tu le décides (cercle de confiance ou alerte).</li>" +
+      "</ul>" +
+      "<p style='margin:.2rem 0 .55rem'>Tes données sont hébergées chez <b>Supabase (UE)</b> et protégées par des règles d'accès : personne d'autre que toi ne lit tes données privées.</p>" +
+      "<p style='margin:.2rem 0'>Conformément au <b>RGPD</b>, tu peux <b>exporter</b> ou <b>supprimer</b> toutes tes données à tout moment, juste au-dessus.</p>" +
+      "</div>")); }
     $("saveEmailBtn").addEventListener("click", async () => {
       const m = $("settingsMsg"); const email = $("setEmail").value.trim();
       if (!email) { m.style.color = "var(--danger)"; m.textContent = "Entre un nouvel email."; return; }
