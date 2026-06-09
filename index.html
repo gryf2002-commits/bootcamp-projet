@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=307"></script>
-  <script src="sunmates-icons.js?v=307"></script>
+  <script src="sunmates-badges.js?v=308"></script>
+  <script src="sunmates-icons.js?v=308"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // Mise à jour FORCÉE pour tous : dès qu'une nouvelle version du service worker
@@ -335,6 +335,18 @@
     .fpost-del { margin-left: auto; background: none; border: 0; cursor: pointer; color: var(--muted); font-size: .9rem; }
     .fpost-kindtag { font-size: .7rem; font-weight: 800; padding: .1rem .45rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); margin-left: .4rem; }
     .fpost { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: .8rem .9rem; margin-bottom: .7rem; box-shadow: var(--shadow-sm); transition: transform .15s ease, box-shadow .15s ease; }
+    /* Chip « Dispo ? » : intention de rencontre. État actif = ambre/sunset (jamais vert vif, DA). */
+    .avail-chip { flex-shrink: 0; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .3rem .6rem; font-size: .74rem; font-weight: 800; cursor: pointer; transition: .12s; }
+    .avail-chip:active { transform: scale(.95); }
+    .avail-chip.on { background: linear-gradient(135deg, #FFC93C, #FF8A3D); color: #6b3d00; border-color: transparent; box-shadow: 0 2px 8px rgba(255,138,61,.35); }
+    /* Pastille « Dispo maintenant » affichée sur la fiche d'un voyageur */
+    .avail-badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .72rem; font-weight: 800; color: #6b3d00; background: linear-gradient(135deg, #FFD15C, #FF9F1C); border-radius: 999px; padding: .15rem .5rem; }
+    /* Barre minuteur « Rentrée en sécurité » : sunset, fixée au-dessus de la nav, visible partout */
+    #safeTimerBar { position: fixed; left: 0; right: 0; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); z-index: 1200; margin: 0 auto; max-width: 460px; width: calc(100% - 1.4rem); display: flex; align-items: center; gap: .55rem; padding: .55rem .7rem; border-radius: 14px; background: linear-gradient(135deg, #FF8A3D, #FF5A4D); color: #fff; box-shadow: 0 8px 22px rgba(255,90,77,.4); font-size: .85rem; font-weight: 700; }
+    #safeTimerBar .stb-ic { font-size: 1.1rem; }
+    #safeTimerBar .stb-txt { flex: 1; }
+    #safeTimerBar #safeArrivedBtn { background: rgba(255,255,255,.95); color: #c2410c; border: 0; border-radius: 999px; padding: .4rem .7rem; font-weight: 800; font-size: .8rem; cursor: pointer; flex-shrink: 0; }
+    #safeTimerBar #safeArrivedBtn:active { transform: scale(.95); }
     .fpost { cursor: default; position: relative; } /* le corps blanc n'est PAS cliquable (anti mis-clic) */
     /* Burst de cœur au double-tap d'un post (façon Insta) */
     .fp-heartburst { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) scale(0); font-size: 3.4rem; pointer-events: none; z-index: 5; filter: drop-shadow(0 4px 10px rgba(0,0,0,.3)); animation: fpHeart .75s ease-out forwards; }
@@ -3059,6 +3071,8 @@
       </div>
     </header>
     <div id="goldPreviewBanner">👁️ Aperçu « mode Gratuit » : les fonctions 👑 Gold sont grisées</div>
+    <!-- Barre flottante du minuteur « Rentrée en sécurité » (visible sur tous les onglets quand actif) -->
+    <div id="safeTimerBar" class="hidden"><span class="stb-ic">⏱️</span><span class="stb-txt">Minuteur sécurité · <b id="safeTimerCount">--:--</b></span><button id="safeArrivedBtn" type="button">✅ Bien arrivé·e</button></div>
 
     <main>
       <!-- ---------------- Onglet ACCUEIL ---------------- -->
@@ -3066,6 +3080,7 @@
         <h1 id="homeHello">Bonjour</h1>
         <div class="hello-row">
           <p class="muted" id="homeSubtitle" style="margin:0">Regarde qui traîne dans le coin 👀</p>
+          <button id="availChip" class="avail-chip" type="button" title="Signale que tu es dispo pour une rencontre">☕ Dispo ?</button>
           <button id="homeStreak" class="streak-chip hidden" title="Ta série de jours sur SunMates"></button>
         </div>
 
@@ -3554,6 +3569,7 @@
             <div class="tile" data-secuquick="signal"><div class="thumb gold" data-smicon="signal" data-smicon-size="30">🔦</div><div class="t-name">Signal d'aide</div><div class="t-meta">Se signaler</div></div>
             <div class="tile" data-secuquick="position"><div class="thumb blue" data-smicon="near" data-smicon-size="30">📍</div><div class="t-name">Partager ma position</div><div class="t-meta">À mon cercle</div></div>
             <div class="tile" data-secuquick="emergency"><div class="thumb red" data-smicon="alert" data-smicon-size="30">🚨</div><div class="t-name">Alerte d'urgence</div><div class="t-meta">Diffuser ma position</div></div>
+            <div class="tile" data-secuquick="safearrival"><div class="thumb gold" data-smicon="clock" data-smicon-size="30">⏱️</div><div class="t-name">Rentrée en sécurité</div><div class="t-meta">Minuteur « bien arrivé·e »</div></div>
             <div class="tile" data-secuquick="circle"><div class="thumb teal" data-smicon="users" data-smicon-size="30">🛟</div><div class="t-name">Mon cercle</div><div class="t-meta">Positions partagées</div></div>
             <div class="tile" data-secuquick="lieux"><div class="thumb coral" data-smicon="aid" data-smicon-size="30">🏛️</div><div class="t-name">Aide à proximité</div><div class="t-meta">Police · hôpital</div></div>
           </div>
@@ -4819,6 +4835,30 @@
         <p style="font-size:.82rem;margin:.1rem 0">🧊 Joker hebdo : <b style="color:${jokerOk ? "#2a9d5c" : "var(--muted)"}">${jokerOk ? "disponible" : "utilisé cette semaine"}</b> <span class="muted">· rattrape 1 jour manqué/semaine</span></p>
         <p class="muted" style="font-size:.82rem">🏆 Ton record : <b>${best} jour${best > 1 ? "s" : ""}</b></p></div>`);
     }); }
+
+    // ===== « Dispo maintenant » : intention de rencontre (expire toute seule, ~3 h) =====
+    function _availActive() { return !!(myProfile && myProfile.available_until && new Date(myProfile.available_until).getTime() > Date.now()); }
+    function renderAvailChip() {
+      const c = $("availChip"); if (!c) return;
+      const on = _availActive();
+      c.classList.toggle("on", on);
+      c.textContent = on ? "☕ Dispo !" : "☕ Dispo ?";
+    }
+    async function toggleAvailable() {
+      if (!myUserId) return;
+      const on = _availActive();
+      const val = on ? null : new Date(Date.now() + 3 * 3600 * 1000).toISOString(); // dispo 3 h
+      try {
+        const { error } = await db.from("profiles").update({ available_until: val }).eq("id", myUserId);
+        if (error) { if (typeof toast === "function") toast("⚠️", "Réessaie dans un instant."); return; }
+        if (myProfile) myProfile.available_until = val;
+        renderAvailChip();
+        if (window.SMSound) SMSound.play("tap");
+        if (typeof toast === "function") toast(on ? "☕" : "🟡", on ? "Tu n'es plus signalé·e comme dispo." : "Tu es <b>dispo</b> pour une rencontre (3 h) ☕ Tes Mates le voient.");
+      } catch (e) {}
+    }
+    { const c = $("availChip"); if (c) c.addEventListener("click", toggleAvailable); }
+
     // Récap hebdo (le DIMANCHE, une seule fois) : ramène l'utilisateur avec un bilan motivant.
     function maybeWeeklyRecap() {
       try {
@@ -5237,6 +5277,7 @@
       // Accueil : « Bonjour {pseudo} ». Seul le pseudo reçoit le dégradé ; « Bonjour » reste en texte normal.
       $("homeHello").innerHTML = 'Bonjour <span class="hello-name">' + escapeHtml(uname) + "</span>";
       if (typeof updateStreak === "function") updateStreak();
+      if (typeof renderAvailChip === "function") renderAvailChip();
       if (typeof maybeWeeklyRecap === "function") maybeWeeklyRecap();
       if (typeof renderGameHub === "function") renderGameHub();
       if (typeof claimReferralIfAny === "function") claimReferralIfAny(); // parrainage : crédite le 1er verre si arrivé via un lien ?ref
@@ -6797,6 +6838,61 @@
         }, () => { msg.textContent = ""; toast("📍", "Autorise la géolocalisation pour partager ta position."); resolve(); });
       }));
     }
+
+    // ===== « Rentrée en sécurité » : minuteur « je suis bien arrivé·e » =====
+    // Version locale (l'app doit rester ouverte/en arrière-plan) : si non confirmé à temps,
+    // on diffuse la position au cercle de confiance (réutilise sendLocation d'urgence).
+    let _safeTimerInt = null;
+    function _safeState() { try { return JSON.parse(localStorage.getItem("sm_safe") || "null"); } catch (e) { return null; } }
+    function openSafeArrival() {
+      const active = _safeState();
+      if (active && active.deadline > Date.now()) {
+        popInfo("⏱️", "Minuteur en cours", `<p style="text-align:center">Ton minuteur de rentrée est <b>actif</b>. Touche « Bien arrivé·e » pour l'arrêter, sinon ta position sera diffusée à ton cercle.</p><button class="btn-primary btn-block" id="saConfirmNow" style="margin-top:.6rem">✅ Je suis bien arrivé·e</button>`);
+        setTimeout(() => { const b = $("saConfirmNow"); if (b) b.addEventListener("click", () => { confirmSafeArrival(); if (typeof closePopInfo === "function") closePopInfo(); }); }, 30);
+        return;
+      }
+      const opts = [[30, "30 min"], [60, "1 h"], [120, "2 h"]].map(([m, l]) => `<button class="btn-ghost sadur" data-min="${m}" style="flex:1">${l}</button>`).join("");
+      popInfo("⏱️", "Rentrée en sécurité", `
+        <p class="muted" style="font-size:.84rem;margin:0 0 .6rem;text-align:center">Lance un minuteur avant de rentrer. Si tu ne confirmes pas « bien arrivé·e » à temps, ta position est <b>diffusée à ton cercle de confiance</b> 🛟</p>
+        <div style="display:flex;gap:.4rem;margin-bottom:.6rem">${opts}</div>
+        <p class="muted" style="font-size:.72rem;text-align:center">⚠️ Garde SunMates ouvert (même en arrière-plan) pour que le minuteur veille.</p>`);
+      setTimeout(() => { document.querySelectorAll(".sadur").forEach((b) => b.addEventListener("click", () => { startSafeTimer(Number(b.dataset.min)); if (typeof closePopInfo === "function") closePopInfo(); })); }, 30);
+    }
+    function startSafeTimer(mins) {
+      try { localStorage.setItem("sm_safe", JSON.stringify({ deadline: Date.now() + mins * 60000 })); } catch (e) {}
+      if (typeof toast === "function") toast("⏱️", "Minuteur lancé. Confirme « bien arrivé·e » avant la fin 🛟");
+      _safeRender();
+    }
+    function confirmSafeArrival() {
+      try { localStorage.removeItem("sm_safe"); } catch (e) {}
+      if (_safeTimerInt) { clearInterval(_safeTimerInt); _safeTimerInt = null; }
+      const bar = $("safeTimerBar"); if (bar) bar.classList.add("hidden");
+      if (typeof toast === "function") toast("💛", "Bien arrivé·e ! Minuteur arrêté.");
+      if (window.SMSound) SMSound.play("success");
+    }
+    function _triggerSafeAlert() {
+      try { localStorage.removeItem("sm_safe"); } catch (e) {}
+      if (_safeTimerInt) { clearInterval(_safeTimerInt); _safeTimerInt = null; }
+      const bar = $("safeTimerBar"); if (bar) bar.classList.add("hidden");
+      if (typeof sendLocation === "function") sendLocation(true, $("emergencyMsg") || document.createElement("div"), "🚨 Minuteur écoulé : position diffusée à ton cercle");
+      if (typeof popInfo === "function") popInfo("🚨", "Minuteur écoulé", "<p style='text-align:center'>Tu n'as pas confirmé ton arrivée à temps. Ta position vient d'être <b>partagée avec ton cercle de confiance</b> pour qu'il veille sur toi 🛟</p>");
+      if (window.SMSound) SMSound.play("pop");
+    }
+    function _safeRender() {
+      const st = _safeState(); const bar = $("safeTimerBar"); if (!bar) return;
+      if (!st || !st.deadline) { bar.classList.add("hidden"); if (_safeTimerInt) { clearInterval(_safeTimerInt); _safeTimerInt = null; } return; }
+      bar.classList.remove("hidden");
+      const tick = () => {
+        const s = _safeState(); if (!s) { _safeRender(); return; }
+        const left = Math.round((s.deadline - Date.now()) / 1000);
+        if (left <= 0) { _triggerSafeAlert(); return; }
+        const c = $("safeTimerCount"); if (c) c.textContent = String(Math.floor(left / 60)).padStart(2, "0") + ":" + String(left % 60).padStart(2, "0");
+      };
+      tick();
+      if (_safeTimerInt) clearInterval(_safeTimerInt);
+      _safeTimerInt = setInterval(tick, 1000);
+    }
+    { const b = $("safeArrivedBtn"); if (b) b.addEventListener("click", confirmSafeArrival); }
 
     // Positions partagées par mon cercle de confiance (RLS : seules les connexions
     // acceptées peuvent lire mes positions, et inversement).
@@ -8913,6 +9009,7 @@
         if (p.id !== myUserId) chips.push(`<span class="tph-chip tph-match">❤️ ${pctHero}%</span>`);
         if (p.is_verified) chips.push('<span class="tph-chip tph-verif"><span class="vchip" style="width:14px;height:14px;font-size:9px;vertical-align:-1px">✓</span> Vérifié</span>');
         if (isActive(p)) chips.push('<span class="tph-chip tph-online">● En ligne</span>');
+        if (p.available_until && new Date(p.available_until).getTime() > Date.now()) chips.push('<span class="avail-badge">☕ Dispo maintenant</span>');
         hb.innerHTML = chips.join("");
       } }
       $("tpBio").textContent = p.bio || "Voyageur·se SunMates en quête de belles rencontres et d'aventures en sécurité. ✨";
@@ -11577,6 +11674,7 @@
         // Faux appel / signal : pas besoin d'aller dans « Besoin d'aide »
         if (a === "fakecall") { $("fakeCallBtn").click(); return; }
         if (a === "signal") { $("signalBtn").click(); return; }
+        if (a === "safearrival") { openSafeArrival(); return; }
         showSecuView("secuHelp");
         if (a === "position") $("shareLocBtn").click();
         else if (a === "emergency") $("emergencyBtn").click();
@@ -11629,7 +11727,10 @@
       const st = $("setThemeToggle"); if (st) st.checked = dusk; // garde le toggle des Réglages synchro
       const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", dusk ? "#171026" : "#fbeee9");
     }
-    applyTheme(localStorage.getItem("sm_theme") || "day");
+    // Thème AUTO au coucher du soleil (clin d'œil DA) : si l'utilisateur n'a jamais choisi
+    // manuellement, on passe en « nuit tropicale » le soir (19h→7h), sinon mode jour.
+    // Dès qu'il touche le bouton thème, son choix (sm_theme) prime et l'auto est désactivé.
+    { const saved = localStorage.getItem("sm_theme"); const h = new Date().getHours(); const auto = (h >= 19 || h < 7) ? "dusk" : "day"; applyTheme(saved || auto); }
     $("themeToggle").addEventListener("click", () => {
       const next = document.body.classList.contains("theme-dusk") ? "day" : "dusk";
       localStorage.setItem("sm_theme", next); applyTheme(next);
@@ -13083,6 +13184,7 @@
       _smSessUid = uid;
       startPresence();
       subscribeMatches();
+      if (typeof _safeRender === "function") _safeRender(); // reprend le minuteur « rentrée en sécurité » s'il était actif
       startBadgeWatch(); // filet anti-délai des pastilles de notif (item 20)
       loadMyVouchCount();
       renderSpotComposer();
