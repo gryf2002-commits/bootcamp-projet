@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=369"></script>
-  <script src="sunmates-icons.js?v=369"></script>
+  <script src="sunmates-badges.js?v=370"></script>
+  <script src="sunmates-icons.js?v=370"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -7270,7 +7270,8 @@
       }));
       wrap.querySelectorAll("[data-ap-del]").forEach((b) => b.addEventListener("click", () => {
         smConfirm("🗑️", "Supprimer ce lieu ?", "Ce lieu partenaire sera supprimé.", "Supprimer", async () => {
-          await db.from("partner_cafes").delete().eq("id", Number(b.dataset.apDel));
+          const { error } = await db.from("partner_cafes").delete().eq("id", Number(b.dataset.apDel));
+          if (typeof toast === "function") toast(error ? "⚠️" : "🗑️", error ? "Erreur à la suppression" : "Lieu supprimé");
           loadAdminPlaces(); loadCafes();
         });
       }));
@@ -9319,6 +9320,7 @@
         const { error } = await db.from("messages").delete().eq("id", id);
         if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); return; }
         const b = document.querySelector(`.bubble[data-mid="${id}"]`); if (b) (b.closest(".msg-row") || b).remove();
+        if (typeof toast === "function") toast("🗑️", "Message supprimé");
         return;
       }
       // (L'heure se révèle en GLISSANT la conversation vers la gauche — peek façon Insta —
@@ -11892,7 +11894,7 @@
       }));
       feed.querySelectorAll("[data-del]").forEach((el) => el.addEventListener("click", async (e) => {
         e.stopPropagation(); if (!(await smConfirmP("🗑️", "Supprimer ce post ?", "Ce post sera retiré du fil.", "Supprimer"))) return;
-        once("delpost:" + el.dataset.del, async () => { try { await db.from("feed_posts").delete().eq("id", Number(el.dataset.del)); buildHomeFeed(); } catch (er) {} });
+        once("delpost:" + el.dataset.del, async () => { try { await db.from("feed_posts").delete().eq("id", Number(el.dataset.del)); buildHomeFeed(); if (typeof toast === "function") toast("🗑️", "Post supprimé"); } catch (er) {} });
       }));
       // On ouvre le profil SEULEMENT via l'en-tête (avatar + pseudo), pas en touchant le blanc
       // du post → fini les mis-clics quand on veut liker/commenter (le corps n'est plus cliquable).
@@ -11936,7 +11938,7 @@
           const mine = c.user_id === myUserId;
           return `<div class="qrow" style="padding:.45rem .2rem;align-items:flex-start">${avatarMarkup(p.username, p.avatar_url)}<div class="qname" style="flex:1;font-weight:500"><b style="font-size:.82rem">${escapeHtml(name)}</b> <span class="muted" style="font-size:.7rem">${timeAgo(c.created_at)}</span><div style="font-size:.86rem;margin-top:.1rem">${escapeHtml(c.body)}</div></div>${mine ? '<button class="fpost-del" data-cdel="' + c.id + '">🗑️</button>' : ""}</div>`;
         }).join("");
-        box.querySelectorAll("[data-cdel]").forEach((b) => b.addEventListener("click", () => once("cdel:" + b.dataset.cdel, async () => { try { await db.from("feed_comments").delete().eq("id", Number(b.dataset.cdel)); load(); _syncCmtCount(postId); } catch (e) {} })));
+        box.querySelectorAll("[data-cdel]").forEach((b) => b.addEventListener("click", () => once("cdel:" + b.dataset.cdel, async () => { try { await db.from("feed_comments").delete().eq("id", Number(b.dataset.cdel)); load(); _syncCmtCount(postId); if (typeof toast === "function") toast("🗑️", "Commentaire supprimé"); } catch (e) {} })));
       }
       setTimeout(() => {
         load();
