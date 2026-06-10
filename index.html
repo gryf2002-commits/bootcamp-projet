@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=390"></script>
-  <script src="sunmates-icons.js?v=390"></script>
+  <script src="sunmates-badges.js?v=391"></script>
+  <script src="sunmates-icons.js?v=391"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -7608,13 +7608,13 @@
         "<button class='btn-ghost btn-block' id='cancelShareLoc' style='margin-top:.5rem'>Annuler</button>");
       setTimeout(() => {
         const close = () => { const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); };
-        const c = $("confirmShareLoc"); if (c) c.onclick = () => { close(); sendLocation(false, $("locMsg"), "Position partagée avec ton cercle ✅"); };
+        const c = $("confirmShareLoc"); if (c) c.onclick = () => { close(); sendLocation(false, $("locMsg"), i18nT("Position partagée avec ton cercle ✅")); };
         const x = $("cancelShareLoc"); if (x) x.onclick = close;
       }, 40);
     });
     $("emergencyBtn").addEventListener("click", () => {
       smConfirm("🚨", "Déclencher une alerte d'urgence ?", "Ta position sera diffusée aussitôt à ton cercle de confiance.", "Déclencher l'alerte", () => {
-        sendLocation(true, $("emergencyMsg"), "🚨 ALERTE diffusée à ton cercle de confiance !");
+        sendLocation(true, $("emergencyMsg"), i18nT("🚨 ALERTE diffusée à ton cercle de confiance !"));
       });
     });
 
@@ -7641,7 +7641,7 @@
             }
           }
           resolve();
-        }, () => { msg.textContent = ""; toast("📍", "Autorise la géolocalisation pour partager ta position."); resolve(); });
+        }, () => { msg.textContent = ""; toast("📍", i18nT("Autorise la géolocalisation pour partager ta position.")); resolve(); });
       }));
     }
 
@@ -7666,21 +7666,21 @@
     }
     function startSafeTimer(mins) {
       try { localStorage.setItem("sm_safe", JSON.stringify({ deadline: Date.now() + mins * 60000 })); } catch (e) {}
-      if (typeof toast === "function") toast("⏱️", "Minuteur lancé. Confirme « bien arrivé·e » avant la fin 🛟");
+      if (typeof toast === "function") toast("⏱️", i18nT("Minuteur lancé. Confirme « bien arrivé·e » avant la fin 🛟"));
       _safeRender();
     }
     function confirmSafeArrival() {
       try { localStorage.removeItem("sm_safe"); } catch (e) {}
       if (_safeTimerInt) { clearInterval(_safeTimerInt); _safeTimerInt = null; }
       const bar = $("safeTimerBar"); if (bar) bar.classList.add("hidden");
-      if (typeof toast === "function") toast("💛", "Bien arrivé·e ! Minuteur arrêté.");
+      if (typeof toast === "function") toast("💛", i18nT("Bien arrivé·e ! Minuteur arrêté."));
       if (window.SMSound) SMSound.play("success");
     }
     function _triggerSafeAlert() {
       try { localStorage.removeItem("sm_safe"); } catch (e) {}
       if (_safeTimerInt) { clearInterval(_safeTimerInt); _safeTimerInt = null; }
       const bar = $("safeTimerBar"); if (bar) bar.classList.add("hidden");
-      if (typeof sendLocation === "function") sendLocation(true, $("emergencyMsg") || document.createElement("div"), "🚨 Minuteur écoulé : position diffusée à ton cercle");
+      if (typeof sendLocation === "function") sendLocation(true, $("emergencyMsg") || document.createElement("div"), i18nT("🚨 Minuteur écoulé : position diffusée à ton cercle"));
       if (typeof popInfo === "function") popInfo("🚨", "Minuteur écoulé", "<p style='text-align:center'>Tu n'as pas confirmé ton arrivée à temps. Ta position vient d'être <b>partagée avec ton cercle de confiance</b> pour qu'il veille sur toi 🛟</p>");
       if (window.SMSound) SMSound.play("pop");
     }
@@ -7718,14 +7718,19 @@
       $("circleLocList").innerHTML = circle.length
         ? circle.map((l) => `<div class="place${l.is_emergency ? ' place-sos' : ''}">
             <div class="name">${escapeHtml(nameOf(l.user_id))}
-            ${l.is_emergency ? '<span class="sos-tag">🚨 URGENCE</span>' : ''}</div>
+            ${l.is_emergency ? '<span class="sos-tag">' + i18nT("🚨 URGENCE") + '</span>' : ''}</div>
             <div class="meta">${timeAgo(l.created_at)} · ${new Date(l.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</div>
-            <a href="https://www.google.com/maps?q=${l.lat},${l.lng}" target="_blank" rel="noopener" style="color:var(--accent);font-size:.85rem;font-weight:600">Voir sur la carte 📍</a>
+            <a href="https://www.google.com/maps?q=${l.lat},${l.lng}" target="_blank" rel="noopener" style="color:var(--accent);font-size:.85rem;font-weight:600">${i18nT("Voir sur la carte 📍")}</a>
           </div>`).join("")
-        : '<p class="muted">Personne de ton cercle n\'a partagé de position dans les dernières 24 h.</p>';
+        : '<p class="muted">' + i18nT("Personne de ton cercle n'a partagé de position dans les dernières 24 h.") + "</p>";
     }
 
-    $("refreshCircleBtn").addEventListener("click", loadCircleLocations);
+    // Feedback pendant le rafraîchissement (avant : bouton inerte → re-clics dans le vide)
+    $("refreshCircleBtn").addEventListener("click", async () => {
+      const b = $("refreshCircleBtn");
+      b.disabled = true; b.textContent = "⏳";
+      try { await loadCircleLocations(); } finally { b.disabled = false; b.textContent = i18nT("↻ Rafraîchir"); }
+    });
 
     // ---- Alerte en cours : après avoir déclenché une alerte d'urgence, la carte
     //      « Je vais bien » apparaît (+ pastille onglet) pour rassurer son cercle une
@@ -7739,7 +7744,7 @@
     function setAlertActive(on) { try { localStorage.setItem("sm_alert_active", on ? "1" : "0"); } catch (e) {} updateSafetyBadge(); }
     function markSafetyOk(silent) {
       setAlertActive(false);
-      if (!silent && typeof toast === "function") toast("✅", "Ton cercle est rassuré, content de te savoir en sécurité 🌞");
+      if (!silent && typeof toast === "function") toast("✅", i18nT("Ton cercle est rassuré, content de te savoir en sécurité 🌞"));
     }
     { const ag = $("allGoodBtn"); if (ag) ag.addEventListener("click", () => markSafetyOk(false)); }
     { const sl = $("sosLogo"); if (sl) sl.addEventListener("click", () => showSecuView("secuHelp")); }
@@ -7755,9 +7760,16 @@
             <a href="tel:${encodeURIComponent(c.phone)}" class="ice-call"><span class="ice-ic">📞</span><div class="ice-info"><div class="ice-name">${escapeHtml(c.name)}</div><div class="ice-num muted">${escapeHtml(c.phone)}</div></div></a>
             <button class="ice-del" data-ice="${i}" aria-label="Supprimer">✕</button>
           </div>`).join("")
-        : '<p class="muted" style="font-size:.82rem">Aucun contact. Ajoute un proche à prévenir en cas de besoin.</p>';
-      el.querySelectorAll("[data-ice]").forEach((b) => b.addEventListener("click", () => { const a = loadIce(); a.splice(Number(b.dataset.ice), 1); saveIce(a); renderIce(); toast("🗑️", "Contact supprimé"); }));
-      const add = $("iceAddBtn"); if (add) add.style.display = arr.length >= 3 ? "none" : "";
+        : '<p class="muted" style="font-size:.82rem">' + i18nT("Aucun contact. Ajoute un proche à prévenir en cas de besoin.") + "</p>";
+      el.querySelectorAll("[data-ice]").forEach((b) => b.addEventListener("click", () => { const a = loadIce(); a.splice(Number(b.dataset.ice), 1); saveIce(a); renderIce(); toast("🗑️", i18nT("Contact supprimé")); }));
+      // 3 contacts max : bouton gardé VISIBLE et grisé avec l'explication (avant : il
+      // disparaissait sans raison apparente → incompréhensible)
+      const add = $("iceAddBtn");
+      if (add) {
+        const full = arr.length >= 3;
+        add.style.display = ""; add.disabled = full; add.style.opacity = full ? ".55" : "1";
+        add.textContent = full ? i18nT("3 contacts max · supprime-en un pour en ajouter") : i18nT("+ Ajouter un contact");
+      }
     }
     // Ajout d'un contact d'urgence : formulaire EN DA (popInfo), fini les prompt() natifs « moches » et hors-app.
     function openIceForm() {
@@ -10399,7 +10411,7 @@
       }
       if (action === "signaler") {
         const people = Object.values(travelerMap).filter((p) => p.id !== myUserId && (p.is_demo || connectedIds.has(p.id)) && !blockedIds.has(p.id));
-        if (!people.length) { m.style.color = "var(--danger)"; m.textContent = "Aucun voyageur à signaler pour l'instant."; return; }
+        if (!people.length) { m.style.color = "var(--danger)"; m.textContent = i18nT("Aucun voyageur à signaler pour l'instant."); return; }
         openPicker("Signaler un voyageur", people.map((p) => ({ label: p.username || "Voyageur", avatar: p.avatar_url, id: p.id })), async (it) => {
           closePicker();
           const reason = await smPromptP("🚩", "Signaler « " + escapeHtml(it.label) + " »", "Pour quelle raison ? (comportement déplacé, faux profil, spam…)", { placeholder: "Motif du signalement", okLabel: "Signaler", maxlength: 200 });
@@ -10423,26 +10435,29 @@
         });
       } else if (action === "mysignals") {
         const { data, error } = await db.rpc("my_reports");
-        if (error) { showInfo("Mes signalements", '<p class="muted" style="text-align:center;padding:1rem">Indisponible pour l\'instant.</p>'); return; }
+        if (error) { showInfo(i18nT("Mes signalements"), '<p class="muted" style="text-align:center;padding:1rem">' + i18nT("Indisponible pour l'instant.") + "</p>"); return; }
         const rows = data || [];
-        if (!rows.length) { showInfo("Mes signalements", '<p class="muted" style="text-align:center;padding:1rem">Tu n\'as signalé personne. 👍</p>'); return; }
-        const statusLabel = (s, h) => h ? '<span class="badge ok">✅ Traité</span>' : '<span class="badge warn">🕒 En attente</span>';
-        showInfo("Mes signalements", rows.map((r) => `<div class="qrow" style="cursor:default">
+        if (!rows.length) { showInfo(i18nT("Mes signalements"), '<p class="muted" style="text-align:center;padding:1rem">' + i18nT("Tu n'as signalé personne. 👍") + "</p>"); return; }
+        const _dloc = (typeof currentLang !== "undefined" && currentLang === "en") ? "en-GB" : "fr-FR";
+        const statusLabel = (s, h) => h ? '<span class="badge ok">' + i18nT("✅ Traité") + "</span>" : '<span class="badge warn">' + i18nT("🕒 En attente") + "</span>";
+        showInfo(i18nT("Mes signalements"), rows.map((r) => `<div class="qrow" style="cursor:default">
             <div class="qico">🚩</div>
-            <div class="qname">${escapeHtml(r.username || "Voyageur")}<div class="meta muted" style="font-size:.74rem">${escapeHtml((r.reason || "").slice(0, 60))} · ${new Date(r.created_at).toLocaleDateString("fr-FR")}</div></div>
+            <div class="qname">${escapeHtml(r.username || "Voyageur")}<div class="meta muted" style="font-size:.74rem">${escapeHtml((r.reason || "").slice(0, 60))} · ${new Date(r.created_at).toLocaleDateString(_dloc)}</div></div>
             ${statusLabel(r.status, r.handled)}
           </div>`).join(""));
       } else if (action === "historique") {
-        if (!connHistory.length) { showInfo("Historique des rencontres", '<p class="muted" style="text-align:center;padding:1rem">Aucune rencontre pour l\'instant. Connecte-toi avec des voyageurs !</p>'); return; }
+        if (!connHistory.length) { showInfo(i18nT("Historique des rencontres"), '<p class="muted" style="text-align:center;padding:1rem">' + i18nT("Aucune rencontre pour l'instant. Connecte-toi avec des voyageurs !") + "</p>"); return; }
+        const _dloc = (typeof currentLang !== "undefined" && currentLang === "en") ? "en-GB" : "fr-FR";
         const rows = connHistory.slice().sort((a, b) => (b.since || "").localeCompare(a.since || "")).map((h) => {
           const p = travelerMap[h.uid] || {};
-          const since = h.since ? new Date(h.since).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—";
+          const since = h.since ? new Date(h.since).toLocaleDateString(_dloc, { day: "numeric", month: "long", year: "numeric" }) : "—";
+          const meta = h.msgs > 1 ? i18nT("Connecté·e le {d} · {n} messages échangés", { d: since, n: h.msgs }) : i18nT("Connecté·e le {d} · {n} message échangé", { d: since, n: h.msgs });
           return `<div class="notif-item" data-hist="${h.uid}">${avatarMarkup(p.username, p.avatar_url)}
               <div class="info"><div class="name">${escapeHtml(p.username || "Voyageur")}</div>
-              <div class="meta muted" style="font-size:.76rem">Connecté·e le ${since} · ${h.msgs} message${h.msgs > 1 ? "s" : ""} échangé${h.msgs > 1 ? "s" : ""}</div></div>
+              <div class="meta muted" style="font-size:.76rem">${meta}</div></div>
               <div class="qarrow">›</div></div>`;
         }).join("");
-        showInfo("Historique des rencontres", rows);
+        showInfo(i18nT("Historique des rencontres"), rows);
         $("pickerBody").querySelectorAll("[data-hist]").forEach((el) => el.addEventListener("click", () => {
           const p = travelerMap[el.dataset.hist]; closePicker();
           if (p) {
@@ -10462,7 +10477,7 @@
         if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); }
         else {
           const row = document.querySelector('[data-secu="contact"]'); const nm = row && row.querySelector(".qname");
-          if (nm) { const base = "Qui peut me contacter"; nm.innerHTML = base + ' <span style="color:var(--accent);font-weight:700;font-size:.8rem">· ' + (next === "connections" ? "connexions seulement ✓" : "tout le monde ✓") + "</span>"; setTimeout(() => { nm.textContent = base; }, 2600); }
+          if (nm) { const base = i18nT("Qui peut me contacter"); nm.innerHTML = base + ' <span style="color:var(--accent);font-weight:700;font-size:.8rem">· ' + (next === "connections" ? i18nT("connexions seulement ✓") : i18nT("tout le monde ✓")) + "</span>"; setTimeout(() => { nm.textContent = base; }, 5200); }
         }
       } else if (action === "secours") {
         showInfo("Premiers secours · l'essentiel 🩺", `<div class="faq-secu">
@@ -14294,6 +14309,19 @@
       "Salut {n} ! Partant pour une quête SunMates ensemble ? 🎯": "Hi {n}! Up for a SunMates quest together? 🎯",
       "Salut {n} ! Partant·e pour une quête SunMates ensemble ? 🎯": "Hi {n}! Up for a SunMates quest together? 🎯",
       "Hey {n} 👋 qu'est-ce qui t'amène à voyager en ce moment ?": "Hey {n} 👋 what's got you travelling these days?",
+      "🚨 Minuteur écoulé : position diffusée à ton cercle": "🚨 Timer's up: location shared with your circle",
+      "Personne de ton cercle n'a partagé de position dans les dernières 24 h.": "No one in your circle has shared a location in the last 24 hours.",
+      "🚨 URGENCE": "🚨 EMERGENCY",
+      "Voir sur la carte 📍": "See on the map 📍",
+      "3 contacts max · supprime-en un pour en ajouter": "3 contacts max · remove one to add another",
+      "Indisponible pour l'instant.": "Unavailable for now.",
+      "Tu n'as signalé personne. 👍": "You haven't reported anyone. 👍",
+      "✅ Traité": "✅ Handled",
+      "🕒 En attente": "🕒 Pending",
+      "Connecté·e le {d} · {n} messages échangés": "Connected on {d} · {n} messages exchanged",
+      "Connecté·e le {d} · {n} message échangé": "Connected on {d} · {n} message exchanged",
+      "connexions seulement ✓": "connections only ✓",
+      "tout le monde ✓": "everyone ✓",
       "Aucune connexion pour l'instant": "No failed logins yet.",
       "Toucher pour discuter 💬": "Tap to chat 💬",
       "Pas encore de conversation": "No conversation yet!",
