@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=356"></script>
-  <script src="sunmates-icons.js?v=356"></script>
+  <script src="sunmates-badges.js?v=357"></script>
+  <script src="sunmates-icons.js?v=357"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -5194,7 +5194,7 @@
         if (typeof toast === "function") toast(on ? "☕" : "🟡", on ? "Tu n'es plus signalé·e comme dispo." : "Tu es <b>dispo</b> pour une rencontre (3 h) ☕ Tes Mates le voient.");
       } catch (e) {}
     }
-    { const c = $("availChip"); if (c) c.addEventListener("click", toggleAvailable); }
+    { const c = $("availChip"); if (c) c.addEventListener("click", () => once("avail", toggleAvailable)); }
 
     // ===== ✈️ « Mon voyage » : matching dans le temps + l'espace =====
     function _fmtTripDates(s, e) {
@@ -6358,18 +6358,18 @@
         const id = el.dataset.banrep; let p = travelerMap[id];
         if (!p) { try { const { data: d } = await db.from("profiles").select("*").eq("id", id).maybeSingle(); if (d) p = d; } catch (e) {} }
         if (!p) { toast("🤷", "Profil introuvable"); return; }
-        const upd = async (uid, patch) => { await db.from("profiles").update(patch).eq("id", uid); await db.from("reports").update({ handled: true, status: "reviewed" }).eq("id", Number(el.dataset.banrepid)); toast("🚫", "Membre suspendu, signalement traité"); loadReports(); };
+        const upd = (uid, patch) => once("banrep:" + el.dataset.banrepid, async () => { await db.from("profiles").update(patch).eq("id", uid); await db.from("reports").update({ handled: true, status: "reviewed" }).eq("id", Number(el.dataset.banrepid)); toast("🚫", "Membre suspendu, signalement traité"); loadReports(); });
         if (typeof banChooser === "function") banChooser(p, upd); else upd(id, { banned: true });
       }));
-      wrap.querySelectorAll("[data-handle]").forEach((el) => el.addEventListener("click", async () => {
+      wrap.querySelectorAll("[data-handle]").forEach((el) => el.addEventListener("click", () => once("handle:" + el.dataset.handle, async () => {
         await db.from("reports").update({ handled: true, status: "reviewed" }).eq("id", Number(el.dataset.handle));
         toast("✅", "Signalement traité"); loadReports();
-      }));
+      })));
       wrap.querySelectorAll("[data-delreport]").forEach((el) => el.addEventListener("click", () => {
-        smConfirm("🗑️", "Supprimer ce signalement ?", "Suppression définitive de ce signalement.", "Supprimer", async () => {
+        smConfirm("🗑️", "Supprimer ce signalement ?", "Suppression définitive de ce signalement.", "Supprimer", () => once("delreport:" + el.dataset.delreport, async () => {
           await db.from("reports").delete().eq("id", Number(el.dataset.delreport));
           toast("🗑️", "Signalement supprimé"); loadReports();
-        });
+        }));
       }));
       wrap.querySelectorAll("[data-viewrep]").forEach((el) => el.addEventListener("click", async () => {
         const id = el.dataset.viewrep; let p = travelerMap[id];
@@ -7165,7 +7165,7 @@
         <div class="pgrid" style="margin:.7rem 0">${cell("Check-ins", a.checkins)}${cell("Connexions", a.connections)}${cell("Quêtes", a.quests)}${cell("Badges", a.badges)}${cell("Messages", a.messages)}${cell("Signalé", a.reported)}</div>
         <div class="row"><button class="btn-ghost" data-ua-verify>${u.is_verified ? "Dévérifier" : "Vérifier ✅"}</button><button class="btn-ghost" data-ua-ban style="color:var(--danger)">${u.banned ? "Débannir" : "Bannir 🚫"}</button></div>
         <div class="row" style="margin-top:.4rem"><button class="btn-ghost" data-ua-score="-10">Score −10</button><button class="btn-ghost" data-ua-score="0">Score = 0</button><button class="btn-ghost" data-ua-admin>${u.is_admin ? "− admin" : "+ admin 🛡️"}</button></div>`);
-      const refresh = async (patch) => { const r = await db.from("profiles").update(patch).eq("id", uid); if (r.error) { toast("⚠️", escapeHtml(r.error.message)); return; } closePicker(); await loadAdminUsers(); };
+      const refresh = (patch) => once("adminUserAction:" + uid, async () => { const r = await db.from("profiles").update(patch).eq("id", uid); if (r.error) { toast("⚠️", escapeHtml(r.error.message)); return; } closePicker(); await loadAdminUsers(); });
       const pb = $("pickerBody");
       pb.querySelector("[data-ua-verify]")?.addEventListener("click", () => refresh({ is_verified: !u.is_verified }));
       pb.querySelector("[data-ua-ban]")?.addEventListener("click", () => { if (typeof banChooser === "function") banChooser({ id: uid, username: p.username, banned: p.banned }, (id, patch) => refresh(patch)); });
@@ -7259,7 +7259,7 @@
             <div class="meta" style="font-size:.82rem;margin-top:.2rem">« ${escapeHtml(q.need || "")} »</div></div>
           ${q.status === "traité" ? '<span class="badge ok">traité</span>' : `<button class="btn-accent" data-quote="${q.id}" style="padding:.4rem .6rem;font-size:.78rem">Traiter</button>`}
         </div>`).join("") : '<p class="muted">Aucune demande de devis.</p>';
-      wrap.querySelectorAll("[data-quote]").forEach((el) => el.addEventListener("click", async () => { await db.from("quote_requests").update({ status: "traité" }).eq("id", Number(el.dataset.quote)); loadAdminQuotes(); }));
+      wrap.querySelectorAll("[data-quote]").forEach((el) => el.addEventListener("click", () => once("quote:" + el.dataset.quote, async () => { await db.from("quote_requests").update({ status: "traité" }).eq("id", Number(el.dataset.quote)); loadAdminQuotes(); })));
     }
     if ($("adminUserSearch")) $("adminUserSearch").addEventListener("input", (e) => renderAdminUsers(e.target.value));
     if ($("apSave")) $("apSave").addEventListener("click", adminSavePlace);
@@ -11802,13 +11802,15 @@
         if (myUserId) { try { const { data } = await db.from("feed_poll_votes").select("post_id,choice").eq("user_id", myUserId).in("post_id", ids); (data || []).forEach((v) => { mine[v.post_id] = v.choice; }); } catch (e) {} }
         pollRows.forEach((r) => _renderPollBox(r.id, opts[r.id] || [], counts[r.id] || {}, mine[r.id]));
       })();
-      feed.querySelectorAll("[data-like]").forEach((el) => el.addEventListener("click", async (e) => {
+      feed.querySelectorAll("[data-like]").forEach((el) => el.addEventListener("click", (e) => {
         e.stopPropagation();
-        try { const { data } = await db.rpc("toggle_feed_like", { p_post: Number(el.dataset.like) }); if (data && data.ok) { el.classList.toggle("liked", data.liked); el.innerHTML = (data.liked ? "❤️" : "🤍") + " <span>" + data.likes + "</span>"; if (window.SMSound) SMSound.play("tap"); } } catch (er) {}
+        once("like:" + el.dataset.like, async () => {
+          try { const { data } = await db.rpc("toggle_feed_like", { p_post: Number(el.dataset.like) }); if (data && data.ok) { el.classList.toggle("liked", data.liked); el.innerHTML = (data.liked ? "❤️" : "🤍") + " <span>" + data.likes + "</span>"; if (window.SMSound) SMSound.play("tap"); } } catch (er) {}
+        });
       }));
       feed.querySelectorAll("[data-del]").forEach((el) => el.addEventListener("click", async (e) => {
         e.stopPropagation(); if (!(await smConfirmP("🗑️", "Supprimer ce post ?", "Ce post sera retiré du fil.", "Supprimer"))) return;
-        try { await db.from("feed_posts").delete().eq("id", Number(el.dataset.del)); buildHomeFeed(); } catch (er) {}
+        once("delpost:" + el.dataset.del, async () => { try { await db.from("feed_posts").delete().eq("id", Number(el.dataset.del)); buildHomeFeed(); } catch (er) {} });
       }));
       // On ouvre le profil SEULEMENT via l'en-tête (avatar + pseudo), pas en touchant le blanc
       // du post → fini les mis-clics quand on veut liker/commenter (le corps n'est plus cliquable).
@@ -11852,7 +11854,7 @@
           const mine = c.user_id === myUserId;
           return `<div class="qrow" style="padding:.45rem .2rem;align-items:flex-start">${avatarMarkup(p.username, p.avatar_url)}<div class="qname" style="flex:1;font-weight:500"><b style="font-size:.82rem">${escapeHtml(name)}</b> <span class="muted" style="font-size:.7rem">${timeAgo(c.created_at)}</span><div style="font-size:.86rem;margin-top:.1rem">${escapeHtml(c.body)}</div></div>${mine ? '<button class="fpost-del" data-cdel="' + c.id + '">🗑️</button>' : ""}</div>`;
         }).join("");
-        box.querySelectorAll("[data-cdel]").forEach((b) => b.addEventListener("click", async () => { try { await db.from("feed_comments").delete().eq("id", Number(b.dataset.cdel)); load(); _syncCmtCount(postId); } catch (e) {} }));
+        box.querySelectorAll("[data-cdel]").forEach((b) => b.addEventListener("click", () => once("cdel:" + b.dataset.cdel, async () => { try { await db.from("feed_comments").delete().eq("id", Number(b.dataset.cdel)); load(); _syncCmtCount(postId); } catch (e) {} })));
       }
       setTimeout(() => {
         load();
@@ -11886,14 +11888,16 @@
           <span class="poll-lbl">${escapeHtml(opt)}${i === myChoice ? " ✓" : ""}</span>
           <span class="poll-pct">${voted ? pct + "%" : ""}</span></button>`;
       }).join("") + `<div class="poll-total">${total} vote${total > 1 ? "s" : ""}${voted ? "" : " · touche pour voter"}</div>`;
-      box.querySelectorAll("[data-pollvote]").forEach((el) => el.addEventListener("click", async (e) => {
+      box.querySelectorAll("[data-pollvote]").forEach((el) => el.addEventListener("click", (e) => {
         e.stopPropagation();
         if (!myUserId) { if (typeof toast === "function") toast("🔑", "Connecte-toi pour voter."); return; }
         const choice = Number(el.dataset.choice);
-        try { await db.from("feed_poll_votes").upsert({ post_id: postId, user_id: myUserId, choice }, { onConflict: "post_id,user_id" }); } catch (er) { if (typeof toast === "function") toast("⚠️", "Réessaie."); return; }
-        if (window.SMSound) SMSound.play("tap");
-        let counts = {}; try { const { data } = await db.rpc("feed_poll_counts", { p_ids: [postId] }); (data || []).forEach((c) => { counts[c.choice] = c.n; }); } catch (er) {}
-        _renderPollBox(postId, options, counts, choice);
+        once("pollvote:" + postId, async () => {
+          try { await db.from("feed_poll_votes").upsert({ post_id: postId, user_id: myUserId, choice }, { onConflict: "post_id,user_id" }); } catch (er) { if (typeof toast === "function") toast("⚠️", "Réessaie."); return; }
+          if (window.SMSound) SMSound.play("tap");
+          let counts = {}; try { const { data } = await db.rpc("feed_poll_counts", { p_ids: [postId] }); (data || []).forEach((c) => { counts[c.choice] = c.n; }); } catch (er) {}
+          _renderPollBox(postId, options, counts, choice);
+        });
       }));
     }
     // Composer : publier sur le fil
