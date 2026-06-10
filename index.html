@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=361"></script>
-  <script src="sunmates-icons.js?v=361"></script>
+  <script src="sunmates-badges.js?v=362"></script>
+  <script src="sunmates-icons.js?v=362"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -2706,8 +2706,12 @@
       --sunset-grad: linear-gradient(150deg, #FFC93C 0%, #FF7A3D 38%, #FF4F6D 72%, #B25CC9 100%);
       --ring:      0 0 0 4px rgba(255,90,77,.18);
     }
-    body { background: var(--bg-grad); color: var(--text); }
-    .app-shell { background: radial-gradient(125% 48% at 50% -8%, rgba(255,201,60,.42) 0%, rgba(255,138,61,.10) 38%, rgba(255,255,255,0) 64%), #FFF7EE !important; }
+    /* #8 + bug fond admin : le body (degrade) et l app-shell (#FFF7EE) avaient une base DIFFERENTE
+       -> jointure « scindee en couleurs distinctes » la ou le contenu s arrete (page longue / rebond).
+       On aligne les DEUX sur la meme couleur de base par theme (var(--bg)) ; le halo radial reste en
+       decoration par-dessus. Fond uniforme partout (login Pro, admin, etc.). */
+    body { background: var(--bg); color: var(--text); }
+    .app-shell { background: radial-gradient(125% 48% at 50% -8%, rgba(255,201,60,.42) 0%, rgba(255,138,61,.10) 38%, rgba(255,255,255,0) 64%), var(--bg) !important; }
 
     h1, h2, h3 { color: var(--ink); }
     .topbar { background: linear-gradient(var(--bg) 70%, rgba(255,244,230,0)); }
