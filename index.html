@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=381"></script>
-  <script src="sunmates-icons.js?v=381"></script>
+  <script src="sunmates-badges.js?v=382"></script>
+  <script src="sunmates-icons.js?v=382"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -8341,7 +8341,8 @@
       const s = parcoursStats();
       const uname = (myProfile && myProfile.username) || "Voyageur";
       const av = $("svAvatar");
-      if (myProfile && myProfile.avatar_url) { av.style.backgroundImage = `url('${myProfile.avatar_url}')`; av.textContent = ""; av.classList.add("has-img"); }
+      const safeAv = myProfile && _safeImgUrl(myProfile.avatar_url);
+      if (safeAv) { av.style.backgroundImage = `url('${safeAv}')`; av.textContent = ""; av.classList.add("has-img"); }
       else { av.style.backgroundImage = ""; av.textContent = (uname[0] || "😎").toUpperCase(); av.classList.remove("has-img"); }
       $("svName").textContent = uname;
       const _lvl = Math.floor(((myProfile && myProfile.xp) || 0) / 100) + 1;
@@ -8879,6 +8880,7 @@
           if (error || !res.ok) { toast("🪙", (res && res.message) || "Achat impossible — réessaie."); return; }
           if (myProfile) { myProfile.coins = res.balance; const ow = ownedCosmetics(); if (ow.indexOf(id) === -1) myProfile.cosmetics_owned = ow.concat(id); }
           equip();
+          if (typeof renderGameHub === "function") renderGameHub(); // resynchronise le solde 🪙 partout (bannière XP, hub)
           if (window.SMSound) SMSound.play("coin");
           if (typeof celebrate === "function") celebrate();
           toast("🎉", (kind === "title" ? "Titre" : "Cadre") + " « " + it.name + " » acheté & équipé !");
@@ -12051,7 +12053,7 @@
     async function buildHomeFeed() {
       const feed = $("homeFeed"); if (!feed) return;
       // Avatar du composer
-      { const av = $("feedComposerAv"); if (av) { if (myProfile && myProfile.avatar_url) { av.textContent = ""; av.style.cssText = "width:36px;height:36px;border-radius:50%;background-size:cover;background-position:center;display:inline-block;flex-shrink:0;background-image:url('" + myProfile.avatar_url + "')"; } else { av.textContent = (myProfile && myProfile.username) ? myProfile.username[0].toUpperCase() : "🙂"; } } }
+      { const av = $("feedComposerAv"); const safeAv = myProfile && _safeImgUrl(myProfile.avatar_url); if (av) { if (safeAv) { av.textContent = ""; av.style.cssText = "width:36px;height:36px;border-radius:50%;background-size:cover;background-position:center;display:inline-block;flex-shrink:0;background-image:url('" + safeAv + "')"; } else { av.textContent = (myProfile && myProfile.username) ? myProfile.username[0].toUpperCase() : "🙂"; } } }
       // SWR : on AFFICHE le dernier fil connu tout de suite (cache local 15 min) et on
       // rafraîchit en arrière-plan → le feed apparaît en ~50 ms au lieu d'attendre le réseau.
       const CK = "sm_feed_cache_" + (myUserId || "x");
