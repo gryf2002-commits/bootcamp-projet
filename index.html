@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=348"></script>
-  <script src="sunmates-icons.js?v=348"></script>
+  <script src="sunmates-badges.js?v=349"></script>
+  <script src="sunmates-icons.js?v=349"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -337,7 +337,7 @@
     .feed-composer .fc-bottom { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .4rem; flex-wrap: wrap; }
     .feed-composer .fc-kinds { display: flex; gap: .25rem; background: var(--cream); border-radius: 999px; padding: .2rem; }
     body.theme-dusk .feed-composer .fc-kinds { background: #2a2140; }
-    .fc-chips { display: flex; flex-wrap: wrap; gap: .35rem; overflow-x: visible; padding: .5rem 0 .2rem; scrollbar-width: none; }
+    .fc-chips { display: flex; gap: .35rem; overflow-x: auto; padding: .5rem 0 .2rem; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .fc-chips::-webkit-scrollbar { display: none; }
     .fc-chip { flex: 0 0 auto; font-size: .78rem; font-weight: 600; padding: .35rem .65rem; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); color: var(--ink); cursor: pointer; white-space: nowrap; }
     .fc-chip:active { transform: scale(.96); }
@@ -592,7 +592,7 @@
     .spot-ring { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5.5px var(--accent) !important; }
     .spot-compose { display: flex; gap: .5rem; align-items: center; }
     .spot-compose input[type="text"] { flex: 1; }
-    .spot-emoji-pick { display: flex; gap: .3rem; flex-wrap: wrap; overflow-x: visible; margin: .5rem 0; padding-bottom: .15rem; scrollbar-width: none; }
+    .spot-emoji-pick { display: flex; gap: .3rem; flex-wrap: nowrap; overflow-x: auto; margin: .5rem 0; padding-bottom: .15rem; scrollbar-width: none; }
     .spot-emoji-pick::-webkit-scrollbar { display: none; }
     .spot-emoji-pick button { flex: 0 0 auto; background: var(--accent-soft); border: 1.5px solid transparent; border-radius: 10px; padding: .25rem .45rem; font-size: 1.05rem; cursor: pointer; }
     .spot-emoji-pick button.active { border-color: var(--accent); background: #fff; }
@@ -908,8 +908,7 @@
     .homemap-fsopen { position: absolute; top: .5rem; right: .5rem; z-index: 500; width: 38px; height: 38px; padding: 0; border: 1.5px solid rgba(255,255,255,.9); border-radius: 11px; background: var(--accent-grad); color: #fff; line-height: 0; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.22); display: flex; align-items: center; justify-content: center; }
     .homemap-fsopen svg { display: block; }
     /* Filtres de la carte : UNE seule ligne compacte qui défile (au lieu d'un gros paquet sur plusieurs lignes) */
-    /* #6 : on WRAP au lieu de scroller à droite (sélection plus intuitive, on voit tout d'un coup). */
-    #homeMapFilters { flex-wrap: wrap !important; overflow-x: visible; overflow-y: visible; gap: .35rem; margin-bottom: .55rem; padding-bottom: .15rem; scrollbar-width: none; background: none !important; }
+    #homeMapFilters { flex-wrap: nowrap !important; overflow-x: auto; overflow-y: hidden; gap: .35rem; margin-bottom: .55rem; padding-bottom: .15rem; scrollbar-width: none; background: none !important; }
     #homeMapFilters::-webkit-scrollbar { display: none; }
     #homeMapFilters .chip { padding: .34rem .62rem; font-size: .76rem; flex: 0 0 auto; }
     /* (bouton plein écran : on garde l'accent-grad PLEIN même en sombre → plus de translucide) */
@@ -2888,22 +2887,6 @@
     .tile.soon .thumb { background: linear-gradient(135deg,#d9cdb8,#b3a079) !important; }
     .tile.soon .t-meta { color: var(--accent); font-weight: 700; }
 
-    /* ===== Menus déroulants en DA SunMates (placé en FIN de CSS pour gagner sur les
-       « background:#fff !important » des blocs thème) : on retire la flèche native de l'OS
-       (qui faisait « pas fini / hors-DA ») et on pose un chevron sunset maison. Le fond/couleur
-       restent gérés par les règles thème ; on n'override QUE l'image de fond (le chevron). ===== */
-    select {
-      -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important;
-      padding-right: 2.3rem !important;
-      background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23FF5A4D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
-      background-repeat: no-repeat !important;
-      background-position: right .95rem center !important;
-      background-size: 12px 8px !important;
-      cursor: pointer;
-    }
-    body.theme-dusk select {
-      background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23FFB37A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
-    }
   </style>
 </head>
 <body>
@@ -3463,7 +3446,7 @@
             </div>
             <button class="btn-primary fc-send" id="feedPostBtn" type="button">Publier</button>
           </div>
-          <div class="muted" style="font-size:.72rem;margin-top:.4rem;display:flex;align-items:center;gap:.3rem">🌍 Visible par <b>toute la communauté</b> SunMates.</div>
+          <div class="muted" style="font-size:.72rem;margin-top:.4rem;display:flex;align-items:center;gap:.3rem">🌍 Visible par <b>toute la communauté</b> SunMates.<span id="feedCount" style="margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700">0/280</span></div>
           <div class="msg" id="feedComposerMsg" style="text-align:center"></div>
         </div>
         <div id="homeFeed"><div class="skel-row"><div class="skel skel-av"></div><div class="skel-lines"><div class="skel skel-line m"></div><div class="skel skel-line s"></div></div></div></div>
@@ -3927,7 +3910,7 @@
               <label>Ville actuelle</label>
               <input id="pCity" placeholder="Lisbonne" />
               <label>Bio</label>
-              <textarea id="pBio" rows="3" placeholder="Exploratrice solo, fan de cafés calmes ☕"></textarea>
+              <textarea id="pBio" rows="3" maxlength="300" placeholder="Exploratrice solo, fan de cafés calmes ☕"></textarea>
               <small class="char-count" id="pBioCount" data-for="pBio" data-max="300">0/300</small>
             </div>
           </div>
@@ -4037,7 +4020,7 @@
               <label>Destinations de rêve <span class="muted" style="font-weight:400">(séparées par des virgules)</span></label>
               <input id="pFavPlaces" placeholder="Japon, Patagonie, Islande" />
               <label>Ma bucket list de voyage</label>
-              <textarea id="pBucket" rows="2" placeholder="Voir une aurore boréale, plonger à Bali…"></textarea>
+              <textarea id="pBucket" rows="2" maxlength="200" placeholder="Voir une aurore boréale, plonger à Bali…"></textarea>
               <label>Instagram <span class="muted" style="font-weight:400">(sans @)</span></label>
               <input id="pInstagram" placeholder="chloe.travels" />
             </div>
@@ -4550,7 +4533,7 @@
         <label>Nom de l'établissement</label><input id="b2bCompany" placeholder="Ex. Le Comptoir Solaire" />
         <label>Nom du contact</label><input id="b2bName" placeholder="Prénom Nom" />
         <label>Email professionnel</label><input id="b2bEmail" type="email" placeholder="contact@etablissement.com" />
-        <label>Votre projet / message</label><textarea id="b2bNeed" rows="3" placeholder="Ville, type d'offre souhaitée, questions…"></textarea>
+        <label>Votre projet / message</label><textarea id="b2bNeed" rows="3" maxlength="500" placeholder="Ville, type d'offre souhaitée, questions…"></textarea>
         <button class="btn-primary btn-block" id="b2bSubmit" style="margin-top:.8rem">📩 Envoyer ma demande</button>
         <div class="msg" id="b2bMsg" style="text-align:center"></div>
         <p class="muted" style="font-size:.76rem;text-align:center;margin:.5rem 0 0">Réponse sous 48 h ouvrées · sans engagement</p>
@@ -4979,7 +4962,7 @@
           .concat(PROMPT_QUESTIONS.map((q) => `<option ${pr[0] === q ? "selected" : ""}>${escapeHtml(q)}</option>`)).join("");
         return `<div style="margin-bottom:.7rem">
             <select id="promptQ${i}">${opts}</select>
-            <textarea id="promptA${i}" rows="2" placeholder="Ta réponse…" style="margin-top:.3rem">${escapeHtml(pr[1] || "")}</textarea>
+            <textarea id="promptA${i}" rows="2" maxlength="160" placeholder="Ta réponse…" style="margin-top:.3rem">${escapeHtml(pr[1] || "")}</textarea>
           </div>`;
       }).join("");
       wrap.querySelectorAll("textarea,select").forEach((el) => el.addEventListener("input", updateCompletion));
@@ -9409,7 +9392,7 @@
       popInfo("🧪", "App en bêta · ton avis compte", `
         <p class="muted" style="font-size:.82rem;margin:0 0 .7rem;text-align:center">SunMates est en <b>bêta</b> : chaque retour file droit à l'équipe 💛</p>
         <div class="fb-chips" style="display:flex;gap:.4rem;margin-bottom:.7rem">${chips}</div>
-        <textarea id="fbText" rows="4" placeholder="Décris le bug, l'idée ou le détail visuel à corriger…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.6rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea>
+        <textarea id="fbText" rows="4" maxlength="2000" placeholder="Décris le bug, l'idée ou le détail visuel à corriger…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.6rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea>
         <button class="btn-primary btn-block" id="fbSend" style="margin-top:.7rem">Envoyer mon retour</button>
         <p class="muted" style="font-size:.7rem;margin:.5rem 0 0;text-align:center">Anonymisé si tu n'es pas connecté · version ${typeof _appBuild === "function" ? _appBuild() : ""}</p>`);
       setTimeout(() => {
@@ -9465,7 +9448,7 @@
       _fbType = "question"; _fbFlavor = "support";
       popInfo("💬", "Support SunMates", `
         <p class="muted" style="font-size:.82rem;margin:0 0 .7rem;text-align:center">Une question, un souci, une idée ? Écris-nous : l'équipe te répond <b>directement dans l'app</b> 💛</p>
-        <textarea id="fbText" rows="4" placeholder="Explique-nous en quelques mots…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.6rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea>
+        <textarea id="fbText" rows="4" maxlength="2000" placeholder="Explique-nous en quelques mots…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.6rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea>
         <button class="btn-primary btn-block" id="fbSend" style="margin-top:.7rem">Envoyer à l'équipe</button>
         <p style="font-size:.78rem;margin:.7rem 0 0;text-align:center">En cas d'<b>urgence</b> : le <b>112</b>, tes <b>contacts d'urgence</b> ou ton <b>cercle de confiance</b>.</p>
         <p class="muted" style="font-size:.7rem;margin:.4rem 0 0;text-align:center">Ta réponse arrivera par une notif dans l'app · version ${typeof _appBuild === "function" ? _appBuild() : ""}</p>`);
@@ -9767,7 +9750,7 @@
     // « Pourquoi vous matchez » → désormais intégré à la tuile % Compatibilité (voir openTravelerProfile)
     // Score de confiance d'un voyageur → cliquable (explication)
     { const td = $("tpTrust"); const box = td && td.closest(".dstat"); if (box) { box.style.cursor = "pointer"; box.addEventListener("click", () => showInfo("🛡️ Score de confiance", "<p style='line-height:1.6'>Le score de confiance reflète des <b>preuves réelles</b> de fiabilité : profil vérifié ✅, check-ins dans des lieux sûrs 📍, recommandations de Mates 👍. Plus il est élevé, plus la personne est fiable pour se rencontrer en sécurité 🛡️</p>")); } }
-    $("tpBffBtn").addEventListener("click", () => { if (currentTravelerId) setBff(currentTravelerId); });
+    $("tpBffBtn").addEventListener("click", () => { if (currentTravelerId) once("bff:" + currentTravelerId, () => setBff(currentTravelerId)); });
     // Proposer un défi à CE voyageur (doit être une connexion acceptée)
     $("tpChallengeBtn").addEventListener("click", () => {
       const m = $("tpMsg");
@@ -11801,6 +11784,10 @@
       box.innerHTML = html;
       const add = $("fpoAdd"); if (add) add.addEventListener("click", () => { const cur = [...box.querySelectorAll(".fpo-in")].map((i) => i.value); cur.push(""); renderPollOptionsUIWith(cur); });
     }
+    // Compteur de caractères du composer du feed (rend la limite 280 VISIBLE).
+    { const fi = $("feedInput"), fc = $("feedCount");
+      const updFeedCount = () => { if (fc && fi) { const max = fi.getAttribute("maxlength") || 280; const n = (fi.value || "").length; fc.textContent = n + "/" + max; fc.style.color = (n >= max * 0.9) ? "var(--accent)" : ""; } };
+      if (fi) { fi.addEventListener("input", updFeedCount); updFeedCount(); } }
     document.querySelectorAll(".fc-kind").forEach((b) => b.addEventListener("click", () => {
       _feedKind = b.dataset.fkind;
       document.querySelectorAll(".fc-kind").forEach((x) => x.classList.toggle("active", x === b));
