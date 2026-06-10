@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=336"></script>
-  <script src="sunmates-icons.js?v=336"></script>
+  <script src="sunmates-badges.js?v=339"></script>
+  <script src="sunmates-icons.js?v=339"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -3771,11 +3771,12 @@
             <div class="qrow" data-secu="contact"><div class="qico" data-smicon="contact" data-smicon-size="27">📢</div><div class="qname">Qui peut me contacter</div><div class="qarrow" id="contactPrefVal">›</div></div>
           </div>
 
-          <!-- Support SunMates : bientôt disponible (grisé, non cliquable) -->
-          <div class="card qrow-soon" aria-disabled="true" title="Bientôt disponible">
-            <div class="qrow" style="padding:0">
+          <!-- Support SunMates : vrai canal de contact (écrit à l'équipe → réponse dans l'app) -->
+          <div class="card">
+            <div class="qrow" data-help="support" style="cursor:pointer">
               <div class="qico">💬</div>
-              <div class="qname">Support SunMates <span class="soon-badge">Bientôt</span><div class="meta muted" style="font-size:.76rem">Une équipe pour t'aider en direct, très vite.</div></div>
+              <div class="qname">Support SunMates<div class="meta muted" style="font-size:.76rem">Une question, un souci ? Écris-nous, on te répond.</div></div>
+              <div class="qarrow">›</div>
             </div>
           </div>
 
@@ -6204,7 +6205,7 @@
     async function loadAdminFeedback() {
       const box = $("adminFeedback"); if (!box) return;
       box.innerHTML = '<p class="muted" style="font-size:.82rem">Chargement…</p>';
-      const ic = { bug: "⚠️", idea: "💡", pixel: "🎨" };
+      const ic = { bug: "⚠️", idea: "💡", pixel: "🎨", question: "💬" };
       let rows = null;
       // P2.34 : on lit aussi id + réponse + statut pour permettre de répondre.
       try { const { data, error } = await db.from("app_feedback").select("id,type,message,username,app_version,created_at,admin_reply,status").order("created_at", { ascending: false }).limit(60); if (!error) rows = data || []; } catch (e) {}
@@ -6212,7 +6213,7 @@
       if (!rows.length) { box.innerHTML = '<p class="muted" style="font-size:.82rem">Aucun retour pour l\'instant.</p>'; return; }
       const cnt = rows.reduce((a, r) => (a[r.type] = (a[r.type] || 0) + 1, a), {});
       box.innerHTML =
-        `<div class="pgrid" style="margin-bottom:.5rem">${["bug", "idea", "pixel"].map((t) => `<div class="pcell"><div class="k">${ic[t]} ${t}</div><div class="v">${cnt[t] || 0}</div></div>`).join("")}</div>` +
+        `<div class="pgrid" style="margin-bottom:.5rem">${["bug", "idea", "pixel", "question"].map((t) => `<div class="pcell"><div class="k">${ic[t]} ${t}</div><div class="v">${cnt[t] || 0}</div></div>`).join("")}</div>` +
         rows.map((r) => {
           const resolved = r.status === "resolved";
           const replyBlock = resolved
@@ -9321,8 +9322,9 @@
     { const pc = $("chatPoc"); if (pc) pc.addEventListener("click", sendPoc); }
 
     // ===== Feedback bêta (bug / idée / pixel) → table Supabase app_feedback (lue dans l'admin) =====
-    let _fbType = "bug";
+    let _fbType = "bug", _fbFlavor = "beta";
     function openBetaFeedback() {
+      _fbFlavor = "beta";
       const types = [["bug", "⚠️", "Problème"], ["idea", "💡", "Idée"], ["pixel", "🎨", "Pixel/design"]];
       _fbType = "bug";
       const chips = types.map((t) => `<button class="fb-chip${t[0] === "bug" ? " on" : ""}" data-fbt="${t[0]}">${t[1]} ${t[2]}</button>`).join("");
@@ -9358,10 +9360,22 @@
       }
       try { if (typeof track === "function") track("beta_feedback", { type: _fbType }); } catch (e) {}
       closePopInfo(); // ferme la modale de feedback après envoi
-      if (typeof toast === "function") toast("💛", "Merci ! Ton retour est bien arrivé.");
+      if (typeof toast === "function") toast(_fbFlavor === "support" ? "✉️" : "💛", _fbFlavor === "support" ? "Message envoyé — l'équipe te répond vite 💛" : "Merci ! Ton retour est bien arrivé.");
       if (window.SMSound) SMSound.play("pop");
     }
     { const bf = $("betaFeedbackBtn"); if (bf) bf.addEventListener("click", openBetaFeedback); }
+
+    // ===== Support SunMates : vrai canal de contact (réutilise app_feedback → réponse admin dans l'app) =====
+    function openSupport() {
+      _fbType = "question"; _fbFlavor = "support";
+      popInfo("💬", "Support SunMates", `
+        <p class="muted" style="font-size:.82rem;margin:0 0 .7rem;text-align:center">Une question, un souci, une idée ? Écris-nous : l'équipe te répond <b>directement dans l'app</b> 💛</p>
+        <textarea id="fbText" rows="4" placeholder="Explique-nous en quelques mots…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.6rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea>
+        <button class="btn-primary btn-block" id="fbSend" style="margin-top:.7rem">Envoyer à l'équipe</button>
+        <p style="font-size:.78rem;margin:.7rem 0 0;text-align:center">En cas d'<b>urgence</b> : le <b>112</b>, tes <b>contacts d'urgence</b> ou ton <b>cercle de confiance</b>.</p>
+        <p class="muted" style="font-size:.7rem;margin:.4rem 0 0;text-align:center">Ta réponse arrivera par une notif dans l'app · version ${typeof _appBuild === "function" ? _appBuild() : ""}</p>`);
+      setTimeout(() => { const sb = $("fbSend"); if (sb) sb.addEventListener("click", submitBetaFeedback); }, 30);
+    }
 
     // ===== Notes vocales (30 s max, Opus léger pour rester dans le free tier Supabase) =====
     let _mediaRec = null, _voiceChunks = [], _voiceTimer = null, _voiceSecs = 0, _voiceStream = null;
@@ -9846,7 +9860,7 @@
           <details><summary>🍹 C'est quoi le parrainage ?</summary><p>Invite un ami via « Inviter tes amis » : vous recevez tous les deux un coupon <b>1er verre offert</b> 🍹</p></details>
         </div>`);
       } else if (action === "contactus" || action === "support2") {
-        showInfo("Nous contacter ✉️", '<div style="text-align:center;line-height:1.6;padding:.4rem"><div style="font-size:2rem;margin-bottom:.4rem">🛠️</div><b>Le support arrive bientôt</b><p class="muted" style="font-size:.85rem;margin:.5rem 0 0">Un espace pour nous écrire (questions, idées, soucis) sera disponible très vite.</p><p style="font-size:.85rem;margin:.8rem 0 0">En cas d\'<b>urgence</b> : le <b>112</b>, tes <b>contacts d\'urgence</b> ou ton <b>cercle de confiance</b>.</p></div>');
+        if (typeof openSupport === "function") openSupport();
       } else if (action === "voyage") {
         showInfo("Voyager en sécurité ✈️", `<div class="faq-secu">
           <p class="muted" style="font-size:.8rem;margin:0 0 .7rem">Le guide essentiel du voyage solo serein. Touche chaque thème pour le déplier 👇</p>
@@ -9871,7 +9885,7 @@
         else if (action === "hopital") { window.open("https://www.google.com/maps/search/hopital", "_blank"); }
         else if (action === "lieux") { showSecuView("secuHome"); goToTab("lieux"); }
         else if (action === "mate") { showSecuView("secuHome"); goToTab("connexions"); }
-        else if (action === "support") { showInfo("Support SunMates", '<p style="text-align:center;line-height:1.6;padding:.4rem">🛠️ Le support arrive bientôt.<br><br>En cas d\'urgence, utilise le <b>112</b>, tes <b>contacts d\'urgence</b> ou ton <b>cercle de confiance</b>.</p>'); }
+        else if (action === "support") { if (typeof openSupport === "function") openSupport(); }
         else if (action === "numeros") { if (typeof openNumbers === "function") openNumbers(); }
         else if (action === "position") { showSecuView("secuHome"); $("shareLocBtn").click(); }
         else { m.textContent = "Action bientôt disponible 🙂"; }
