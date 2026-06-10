@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=344"></script>
-  <script src="sunmates-icons.js?v=344"></script>
+  <script src="sunmates-badges.js?v=345"></script>
+  <script src="sunmates-icons.js?v=345"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -332,7 +332,7 @@
     body.theme-dusk .feed-composer .fc-av { background: #2a2140; }
     /* min-height 42px + padding .5rem .4rem : la ligne (≈21px) tient SANS être rognée et reste
        centrée face à l'avatar (P1.4/P1.14). overflow-y:auto seulement quand ça dépasse plusieurs lignes. */
-    .feed-composer textarea { flex: 1 1 auto; min-width: 0; width: 100%; box-sizing: border-box; border: 0; background: transparent; resize: none; font: inherit; color: var(--ink); padding: .5rem .4rem; min-height: 42px; max-height: 7rem; overflow-y: auto; line-height: 1.4; word-break: break-word; }
+    .feed-composer textarea { flex: 1 1 auto; min-width: 0; width: 100%; box-sizing: border-box; border: 0; background: transparent; resize: none; font: inherit; color: var(--ink); padding: .5rem .4rem; min-height: 52px; max-height: 7rem; overflow-y: auto; line-height: 1.4; word-break: break-word; }
     .feed-composer textarea:focus { outline: none; }
     .feed-composer .fc-bottom { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .4rem; flex-wrap: wrap; }
     .feed-composer .fc-kinds { display: flex; gap: .25rem; background: var(--cream); border-radius: 999px; padding: .2rem; }
@@ -2802,9 +2802,11 @@
     /* Fond des posts du feed en sombre (fini le kaki) */
     body.theme-dusk .post-body { background: rgba(255,255,255,.06) !important; }
     /* Logo : soleil le jour, lune la nuit */
-    .mark .logo-night { display: none; }
-    body.theme-dusk .mark .logo-day { display: none; }
-    body.theme-dusk .mark .logo-night { display: block; }
+    /* Spécificité renforcée (svg.logo-*) : sinon « .brand .mark svg{display:block} » (l.208) gagnait
+       et affichait les DEUX soleils (jour+nuit) superposés → le reflet/horizon nuit débordait du carré. */
+    .brand .mark svg.logo-night { display: none; }
+    body.theme-dusk .brand .mark svg.logo-day { display: none; }
+    body.theme-dusk .brand .mark svg.logo-night { display: block; }
     body.theme-dusk .brand .mark { background: linear-gradient(150deg, #7A2E5E, #C2502E) !important; } /* coucher de soleil sombre */
     /* Hero de connexion : ambiance NUIT en mode sombre */
     body.theme-dusk .auth-hero { background: linear-gradient(160deg, rgba(58,42,110,.74), rgba(40,24,78,.82) 58%, rgba(18,26,86,.86)), url('https://picsum.photos/seed/sunmates-night/820/740') center/cover !important; }
@@ -6966,7 +6968,7 @@
         .filter((u) => !q || (u.username || "").toLowerCase().includes(q));
       const upd = async (id, patch) => { const r = await db.from("profiles").update(patch).eq("id", id); if (r.error) toast("⚠️", escapeHtml(r.error.message)); await loadAdminUsers(); };
       wrap.innerHTML = header + (list.length ? list.map((u) => `
-        <div class="qrow" style="align-items:flex-start;flex-wrap:wrap;gap:.4rem;${u.banned ? "opacity:.55" : ""}">
+        <div class="qrow" style="align-items:flex-start;flex-wrap:wrap;gap:.4rem;cursor:pointer;${u.banned ? "opacity:.55" : ""}" data-au-row="${u.id}">
           <div class="qico">${u.is_admin ? "🛡️" : (u.is_demo ? "🤖" : "🧑")}</div>
           <div class="qname" style="flex:1;min-width:110px;cursor:pointer" data-au-open="${u.id}">${escapeHtml(u.username || "Voyageur")} ${u.is_verified ? "✅" : ""}${u.is_gold ? " 👑" : ""}${u.recovery_requested ? " 📨" : ""}
             <div class="meta muted" style="font-size:.74rem">${escapeHtml(u.city || "")} · score ${u.trust_score ?? 0}${u.banned ? " · SUSPENDU" : ""}${u.recovery_requested ? " · révision demandée" : ""} · voir ›</div></div>
@@ -6980,7 +6982,8 @@
       wrap.querySelectorAll("[data-au-verify]").forEach((b) => b.addEventListener("click", () => { const u = adminUsersCache.find((x) => x.id === b.dataset.auVerify); upd(b.dataset.auVerify, { is_verified: !u.is_verified }); }));
       wrap.querySelectorAll("[data-au-ban]").forEach((b) => b.addEventListener("click", () => { const u = adminUsersCache.find((x) => x.id === b.dataset.auBan); if (typeof banChooser === "function") banChooser(u, upd); }));
       wrap.querySelectorAll("[data-au-admin]").forEach((b) => b.addEventListener("click", () => { const u = adminUsersCache.find((x) => x.id === b.dataset.auAdmin); upd(b.dataset.auAdmin, { is_admin: !u.is_admin }); }));
-      wrap.querySelectorAll("[data-au-open]").forEach((b) => b.addEventListener("click", () => openAdminUser(b.dataset.auOpen)));
+      // Toute la ligne ouvre la fiche (sauf clic sur un bouton d'action) → tuile bien cliquable.
+      wrap.querySelectorAll("[data-au-row]").forEach((r) => r.addEventListener("click", (e) => { if (e.target.closest("button")) return; openAdminUser(r.dataset.auRow); }));
     }
     // Chooser de bannissement : temporaire (révision possible) ou définitif (sans recours).
     function banChooser(u, upd) {
@@ -11780,7 +11783,7 @@
       _feedKind = b.dataset.fkind;
       document.querySelectorAll(".fc-kind").forEach((x) => x.classList.toggle("active", x === b));
       const poll = _feedKind === "poll";
-      const ta = $("feedInput"); if (ta) { ta.placeholder = poll ? "Ta question (ex : Plage ou montagne ?)" : (_feedKind === "spot" ? "Ton spot du moment (ou touche une tuile) 📍" : "Ton humeur du jour (ou touche une tuile) ✨"); }
+      const ta = $("feedInput"); if (ta) { ta.placeholder = poll ? "Ta question (ex : Plage ou montagne ?)" : (_feedKind === "spot" ? "Ton spot du moment 📍" : "Ton humeur du jour ✨"); }
       const av = $("feedComposerAv"); if (av && !(myProfile && myProfile.avatar_url)) av.textContent = poll ? "📊" : (_feedKind === "spot" ? "📍" : "🙂");
       // En mode sondage : on cache les tuiles d'humeur/spot et on montre les options.
       show($("feedChips"), !poll); show($("feedChipsHint"), !poll);
