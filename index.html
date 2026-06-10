@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=375"></script>
-  <script src="sunmates-icons.js?v=375"></script>
+  <script src="sunmates-badges.js?v=376"></script>
+  <script src="sunmates-icons.js?v=376"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -5179,7 +5179,7 @@
           else if (selectedSet.has(v)) { selectedSet.delete(v); }
           else {
             if (cap && selectedSet.size >= cap) { // plafond atteint -> on bloque proprement
-              if (typeof toast === "function") toast("✋", "Tu peux en choisir " + cap + " au maximum ici.");
+              if (typeof toast === "function") toast("✋", i18nT("Tu peux en choisir {n} au maximum ici.", { n: cap }));
               return;
             }
             selectedSet.add(v);
@@ -5247,7 +5247,7 @@
       if (st._celebrated !== n && MILESTONES.includes(n)) {
         st._celebrated = n;
         try { localStorage.setItem("sm_streak_" + (myUserId || "x"), JSON.stringify(st)); } catch (e) {}
-        if (typeof toast === "function") toast("🔥", n + " jours de série, tu es en feu ! Continue 🌟");
+        if (typeof toast === "function") toast("🔥", i18nT("{n} jours de série, tu es en feu ! Continue 🌟", { n: n }));
         if (typeof celebrate === "function") celebrate();
       }
     }
@@ -5294,7 +5294,7 @@
         if (myProfile) myProfile.available_until = val;
         renderAvailChip();
         if (window.SMSound) SMSound.play("tap");
-        if (typeof toast === "function") toast(on ? "☕" : "🟡", on ? "Tu n'es plus signalé·e comme dispo." : "Tu es <b>dispo</b> pour une rencontre (3 h) ☕ Tes Mates le voient.");
+        if (typeof toast === "function") toast(on ? "☕" : "🟡", on ? i18nT("Tu n'es plus signalé·e comme dispo.") : i18nT("Tu es <b>dispo</b> pour une rencontre (3 h) ☕ Tes Mates le voient."));
       } catch (e) {}
     }
     { const c = $("availChip"); if (c) c.addEventListener("click", () => once("avail", toggleAvailable)); }
@@ -5398,7 +5398,7 @@
         const ms = await loadTripMatches();
         const here = ms.filter((m) => (m.city || "").toLowerCase().trim() === city.toLowerCase().trim() && m.start_date <= end && m.end_date >= start);
         const n = new Set(here.map((m) => m.user_id)).size;
-        if (typeof toast === "function") toast("✈️", n > 0 ? ("Voyage ajouté ! <b>" + n + "</b> voyageur" + (n > 1 ? "s seront" : " sera") + " là en même temps ✨") : "Voyage ajouté ! On te préviendra quand un Mate croisera ta route ✨");
+        if (typeof toast === "function") toast("✈️", n > 0 ? i18nT(n > 1 ? "Voyage ajouté ! <b>{n}</b> voyageurs seront là en même temps ✨" : "Voyage ajouté ! <b>{n}</b> voyageur sera là en même temps ✨", { n: n }) : i18nT("Voyage ajouté ! On te préviendra quand un Mate croisera ta route ✨"));
       } catch (e) { if (typeof toast === "function") toast("✈️", "Voyage ajouté ✨"); }
     }
     { const a = $("tripAddLink"); if (a) a.addEventListener("click", openAddTrip); }
@@ -5485,7 +5485,7 @@
       if (home) {
         const c = (myProfile && myProfile.city) || "";
         const cn = $("hmCityName"); if (cn) cn.textContent = c || "ta ville";
-        const hc = $("hmHomeCity"); if (hc) hc.textContent = c ? ("De retour à " + c) : "De retour chez toi";
+        const hc = $("hmHomeCity"); if (hc) hc.textContent = c ? i18nT("De retour à {c}", { c: c }) : i18nT("De retour chez toi");
         if (typeof renderSoloHome === "function") renderSoloHome();
         renderInspo(); renderNextTrip(); renderTripPrep(); renderWishlist(); renderTripsDone(); renderVisitors(); renderHost();
         if (typeof renderHomeMates === "function") renderHomeMates();
@@ -6195,7 +6195,7 @@
           if (!item || !myUserId) return;
           try {
             await db.from("messages").insert({ sender_id: myUserId, recipient_id: item.id, content: PLACE_MSG_PREFIX + c.name });
-            if (typeof toast === "function") toast("📍", "Lieu recommandé à " + (item.label || "ton Mate") + " ✅");
+            if (typeof toast === "function") toast("📍", i18nT("Lieu recommandé à {n} ✅", { n: item.label || i18nT("ton Mate") }));
             if (window.SMSound) SMSound.play("success");
           } catch (e) { if (typeof toast === "function") toast("⚠️", "Réessaie dans un instant."); }
         });
@@ -7487,7 +7487,7 @@
           if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); }
           else {
             // Confirmation VISIBLE en haut (toast), pas seulement un message en bas.
-            toast(isEmergency ? "🚨" : "📍", okText + " (visible 1 h sur la carte)");
+            toast(isEmergency ? "🚨" : "📍", i18nT("{t} (visible 1 h sur la carte)", { t: okText }));
             await loadCircleLocations();
             if (typeof renderHomeMap === "function" && homeLeaf) renderHomeMap();
             if (isEmergency && typeof setAlertActive === "function") setAlertActive(true); // alerte → carte « Je vais bien » + pastille onglet
@@ -8255,7 +8255,7 @@
       if (ckToday) bits.push(`📍 ${ckToday}`);
       if (qToday) bits.push(`🎯 ${qToday}`);
       if (bToday) bits.push(`🏅 ${bToday}`);
-      el.textContent = bits.length ? "✨ aujourd'hui : " + bits.join(" · ") : "Prêt·e pour de nouvelles aventures 🌞";
+      el.textContent = bits.length ? i18nT("✨ aujourd'hui : {b}", { b: bits.join(" · ") }) : i18nT("Prêt·e pour de nouvelles aventures 🌞");
     }
     function parcoursStats() {
       const trips = (typeof loadTripsDone === "function") ? loadTripsDone().length : 0;
@@ -8270,7 +8270,7 @@
       else { av.style.backgroundImage = ""; av.textContent = (uname[0] || "😎").toUpperCase(); av.classList.remove("has-img"); }
       $("svName").textContent = uname;
       const _lvl = Math.floor(((myProfile && myProfile.xp) || 0) / 100) + 1;
-      { const sl = $("svLevel"); if (sl) sl.textContent = "⭐ Niveau " + _lvl + (typeof _hubTitle === "function" ? " · " + _hubTitle(_lvl) : ""); }
+      { const sl = $("svLevel"); if (sl) sl.textContent = i18nT("⭐ Niveau {n}", { n: _lvl }) + (typeof _hubTitle === "function" ? " · " + _hubTitle(_lvl) : ""); }
       const svRows = [["📍", "near", s.ck, "check-ins"], ["🎯", "quest", s.q, "quêtes"], ["🏅", "medal", s.b, "badges"], ["⭐", "rating", s.xp, "XP"]];
       if (s.trips > 0) svRows.push(["🧳", "trip", s.trips, s.trips > 1 ? "voyages" : "voyage"]);
       $("svStats").innerHTML = svRows.map(([e, name, n, l]) => { const ic = (window.SMIcon && SMIcon.has(name)) ? `<span class="sv-ico smgem">${SMIcon(name, { size: 14 })}</span>` : (e + " "); return `<div class="sv-stat"><div class="sv-n">${ic}${n}</div><div class="sv-l">${l}</div></div>`; }).join("");
@@ -8349,7 +8349,7 @@
           const days = Math.floor((now - parseInt(last, 10)) / 86400000);
           if (days >= 3) {
             const hasMates = (typeof connectedIds !== "undefined" && connectedIds && connectedIds.size > 0);
-            setTimeout(() => { if (typeof toast === "function") toast(hasMates ? "👀" : "☀️", hasMates ? "Ça fait " + days + " jours ! Un Mate t'attend peut-être." : "Content de te revoir — prêt·e pour une nouvelle quête ?"); }, 1600);
+            setTimeout(() => { if (typeof toast === "function") toast(hasMates ? "👀" : "☀️", hasMates ? i18nT("Ça fait {d} jours ! Un Mate t'attend peut-être.", { d: days }) : i18nT("Content de te revoir — prêt·e pour une nouvelle quête ?")); }, 1600);
           }
         }
         localStorage.setItem(k, String(now));
@@ -8899,7 +8899,7 @@
         const lvl = Math.floor(myXp() / 100) + 1;
         xb.classList.add("xpl-card");
         // Bannière 2 monnaies : XP (progression, à gauche) + SunCoins (à dépenser, à droite).
-        xb.innerHTML = `<div class="xpl-top"><span class="xpl-lvl">⭐ Niveau ${lvl}</span><span class="shop-coins">🪙 <b>${coins}</b> SunCoins</span></div>
+        xb.innerHTML = `<div class="xpl-top"><span class="xpl-lvl">${i18nT("⭐ Niveau {n}", { n: lvl })}</span><span class="shop-coins">🪙 <b>${coins}</b> SunCoins</span></div>
           <div class="xpl-next">Gagne des <b>🪙 SunCoins</b> en quête (+15) et chaque jour (+10), puis dépense-les ici 🎨</div>`;
       }
       const state = getShopState();
@@ -9648,7 +9648,7 @@
       if (_pocSentToday(f)) {
         const tmr = new Date(now); tmr.setHours(24, 0, 0, 0);
         const hLeft = Math.ceil((tmr - now) / 3600000);
-        if (typeof toast === "function") toast("🔥", "Poc déjà envoyé aujourd'hui ! Reviens dans ~" + hLeft + " h pour faire grandir ta flamme 🔥" + f.count);
+        if (typeof toast === "function") toast("🔥", i18nT("Poc déjà envoyé aujourd'hui ! Reviens dans ~{h} h pour faire grandir ta flamme 🔥", { h: hLeft }));
         return;
       }
       // Jour consécutif (la flamme était encore active = poc d'hier) → elle grandit ; sinon (jour
@@ -9660,7 +9660,7 @@
       if (typeof sendChatMessage === "function") sendChatMessage();
       if (window.SMSound) SMSound.play("pop");
       if (typeof celebrate === "function" && count >= 2) {} // (pas de confettis, on reste sobre)
-      if (typeof toast === "function") toast("🔥", count > 1 ? ("Poc ! Votre flamme grandit : x" + count + " 🔥") : "Poc envoyé ! Flamme allumée 🔥");
+      if (typeof toast === "function") toast("🔥", count > 1 ? i18nT("Poc ! Ta flamme grandit : x{n} 🔥", { n: count }) : i18nT("Poc envoyé ! Flamme allumée 🔥"));
     }
     { const pc = $("chatPoc"); if (pc) pc.addEventListener("click", sendPoc); }
 
@@ -10219,6 +10219,14 @@
             <p>Refroidis à l'<b>eau tiède 15–20 min</b>, ne perce pas les cloques, couvre d'un linge propre. 112 si étendue ou profonde.</p></details>
           <a href="tel:112" class="btn-danger btn-block" style="text-decoration:none;text-align:center;display:block;margin-top:.7rem">☎️ Appeler le 112</a>
           <p class="muted" style="font-size:.72rem;margin:.6rem 0 0">Ces tips ne remplacent pas une formation aux premiers secours (PSC1).</p>
+        </div>`);
+      } else if (action === "aide" && typeof currentLang !== "undefined" && currentLang === "en") {
+        // Version EN rédigée (ton SunMates) — data-no-tr : on coupe le filet auto (sinon il "re-traduirait" l'anglais)
+        showInfo("Help center ❓", `<div class="faq-secu" data-no-tr>
+          <details open><summary>🎯 How do I earn XP and badges?</summary><p>Complete <b>quests</b> (Games tab or straight from the map), take on <b>solo challenges</b> and <b>rituals</b> in Home mode. Each quest asks for a quick <b>note</b> (anti-cheat).</p></details>
+          <details><summary>🛟 How does location sharing work?</summary><p>Your location is only shared with your <b>trusted circle</b> (accepted connections), visible for 24 h. The emergency alert broadcasts it instantly.</p></details>
+          <details><summary>🤝 How do I meet Mates safely?</summary><p>Go for <b>verified</b> profiles (the small round logo), meet up in <b>validated places</b>, and you can <b>block/report</b> anytime.</p></details>
+          <details><summary>🍹 What's the referral perk?</summary><p>Invite a friend via "Invite your friends": you both get a <b>first drink on us</b> coupon 🍹</p></details>
         </div>`);
       } else if (action === "aide") {
         showInfo("Centre d'aide ❓", `<div class="faq-secu">
@@ -12285,7 +12293,7 @@
     // Vignette de niveau cliquable → explique les niveaux, ce qu'ils débloquent, + lien classement.
     function showLevelInfo() {
       const xp = (myProfile && myProfile.xp) || 0, lvl = Math.floor(xp / 100) + 1, inLvl = xp % 100;
-      showInfo("⭐ Niveau " + lvl + " · tes récompenses", `<div style="line-height:1.6;font-size:.9rem">
+      showInfo(i18nT("⭐ Niveau {n} · tes récompenses", { n: lvl }), `<div style="line-height:1.6;font-size:.9rem">
         <p style="margin:.2rem 0">Tu es <b>Niveau ${lvl}</b> (${inLvl}/100 XP) — plus que <b>${100 - inLvl} XP</b> pour le suivant 🚀</p>
         <p style="margin:.2rem 0">Chaque <b>100 XP</b> (gagnés en quêtes) = un niveau. Tes <b>titres</b> évoluent :</p>
         <p style="margin:.2rem 0">🧭 Tes titres évoluent : Touriste → Explorateur·rice → Routard·e → Aventurier·ère → Globe-trotter → Grand·e voyageur·se → Légende… <b>et bien au-delà</b> 🌟</p>
@@ -12940,7 +12948,7 @@
           if (payload.eventType === "INSERT" && row.user_b === myUserId && notifyOnce("conn-new:" + row.id)) {
             if (window.SMSound) SMSound.play("notify");
             toast("📨", `<b>${escapeHtml(nameById(row.user_a))}</b> souhaite se connecter`, () => goToTab("connexions"));
-            sysNotify("Nouvelle demande 📨", nameById(row.user_a) + " souhaite se connecter", "connexions");
+            sysNotify(i18nT("Nouvelle demande 📨"), i18nT("{n} souhaite se connecter", { n: nameById(row.user_a) }), "connexions");
           }
           if (payload.eventType === "UPDATE" && row.status === "accepted" && (row.user_a === myUserId || row.user_b === myUserId) && notifyOnce("conn-acc:" + row.id)) {
             const other = row.user_a === myUserId ? row.user_b : row.user_a;
@@ -13543,12 +13551,35 @@
       "Mon prochain défi": "My next challenge",
       "Le truc dont je ne me lasse pas": "The thing I don't get tired of",
       "Ce qui me fait vibrer en voyage": "What makes me tick on a trip",
-      "Tu peux en choisir ": "You can choose one of them.",
-      " au maximum ici.": "as far as possible.",
-      "Ta réponse…": "Tu respuesta",
-      " jours de série, tu es en feu ! Continue 🌟": "series days, you're on fire! Keep it up! 🌟",
-      "🔥 Ta série": "🔥 Your series",
-      "De retour à ": "Return to:",
+      "Tu peux en choisir {n} au maximum ici.": "You can pick up to {n} here.",
+      "Ta réponse…": "Your answer…",
+      "{n} jours de série, tu es en feu ! Continue 🌟": "{n}-day streak — you're on fire! Keep it going 🌟",
+      "🔥 Ta série": "🔥 Your streak",
+      "De retour à {c}": "Back in {c}",
+      "Poc déjà envoyé aujourd'hui ! Reviens dans ~{h} h pour faire grandir ta flamme 🔥": "Poc already sent today! Come back in ~{h} h to grow your flame 🔥",
+      "Poc ! Ta flamme grandit : x{n} 🔥": "Poc! Your flame is growing: x{n} 🔥",
+      "Poc envoyé ! Flamme allumée 🔥": "Poc sent — flame lit 🔥",
+      "Tu n'es plus signalé·e comme dispo.": "You're no longer shown as available.",
+      "Tu es <b>dispo</b> pour une rencontre (3 h) ☕ Tes Mates le voient.": "You're <b>up for meeting</b> (3 h) ☕ Your Mates can see it.",
+      "Voyage ajouté ! <b>{n}</b> voyageur sera là en même temps ✨": "Trip added! <b>{n}</b> traveler will be there at the same time ✨",
+      "Voyage ajouté ! <b>{n}</b> voyageurs seront là en même temps ✨": "Trip added! <b>{n}</b> travelers will be there at the same time ✨",
+      "Voyage ajouté ! On te préviendra quand un Mate croisera ta route ✨": "Trip added! We'll ping you when a Mate crosses your path ✨",
+      "Lieu recommandé à {n} ✅": "Spot recommended to {n} ✅",
+      "Activité proposée à {n} ✅": "Activity suggested to {n} ✅",
+      "Ça fait {d} jours ! Un Mate t'attend peut-être.": "It's been {d} days! A Mate might be waiting for you.",
+      "Content de te revoir — prêt·e pour une nouvelle quête ?": "Good to see you again — ready for a new quest?",
+      "✨ aujourd'hui : {b}": "✨ today: {b}",
+      "Prêt·e pour de nouvelles aventures 🌞": "Ready for new adventures 🌞",
+      "⭐ Niveau {n}": "⭐ Level {n}",
+      "⭐ Niveau {n} · tes récompenses": "⭐ Level {n} · your rewards",
+      "souhaite se connecter": "wants to connect",
+      "{n} souhaite se connecter": "{n} wants to connect",
+      "{t} (visible 1 h sur la carte)": "{t} (visible 1 h on the map)",
+      "✨ Choisir une humeur": "✨ Pick a mood",
+      "📍 Choisir un spot": "📍 Pick a spot",
+      "🗂️ Filtres": "🗂️ Filters",
+      "🗂️ Filtres de la carte": "🗂️ Map filters",
+      "Nouvelle demande 📨": "New request 📨",
       "tramways jaunes, fado et couchers de soleil sur le Tage": "yellow trams, fado and sunsets on the Tagus",
       "temples zen, ruelles de geishas et érables flamboyants": "zen temples, geisha lanes and flamboyant maples",
       "souks colorés, riads et désert à perte de vue": "colourful souks, riads and desert as far as the eye can see",
@@ -13800,7 +13831,6 @@
       "Déclencher une alerte d'urgence ? Ta position sera diffusée à ton cercle de confiance.": "Trigger an emergency alert? Your position will be disseminated to your circle of trust.",
       "🚨 ALERTE diffusée à ton cercle de confiance !": "🚨 ALERT broadcast to your circle of trust!",
       "Localisation en cours…": "Fetching Location",
-      " (visible 1 h sur la carte)": "(visible 1 hour on the map)",
       "Autorise la géolocalisation pour partager ta position.": "Allow geolocation to share your location.",
       "Nom du contact (ex : Maman, Léa…)": "Contact name (ex: Mom, Léa...)",
       "Son numéro de téléphone (avec l'indicatif, ex : +33 6 12 34 56 78)": "His telephone number (with the code, e.g.: +33 6 12 34 56 78)",
@@ -14019,7 +14049,6 @@
       "une quête": "A quest",
       "as débloqué un badge": "has unlocked a badge",
       "a débloqué un badge": "unlocked a badge",
-      " souhaite se connecter": "wants to log in",
       "Nouveau défi 🎯": "New challenge",
       "🌠 Add to my wishlist": "Ajouter à la liste d'envies",
       "I want to help": "¡Quiero ayudar!\"",
@@ -14082,6 +14111,15 @@
       }
     };
     function t(key) { return (I18N[currentLang] && I18N[currentLang][key]) || I18N.fr[key] || key; }
+    // Chaînes DYNAMIQUES (avec variables) : le gabarit FR ENTIER est la clé du dico, avec des
+    // placeholders {x}. Ex : i18nT("⭐ Niveau {n}", {n: 7}). En FR on rend le gabarit tel quel.
+    // (Le MutationObserver ne matche que des nœuds de texte entiers → il ne peut pas traduire
+    // une concaténation "texte"+variable ; ce helper traduit AVANT l'injection dans le DOM.)
+    function i18nT(fr, vars) {
+      let s = (typeof currentLang !== "undefined" && currentLang === "en" && I18N_DICT[fr]) ? I18N_DICT[fr] : fr;
+      if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]);
+      return s;
+    }
     function applyI18n() {
       document.querySelectorAll("[data-i18n]").forEach((el) => { const k = el.getAttribute("data-i18n"); const v = t(k); if (v) el.textContent = v; });
       document.querySelectorAll("[data-i18n-ph]").forEach((el) => { const v = t(el.getAttribute("data-i18n-ph")); if (v) el.setAttribute("placeholder", v); });
