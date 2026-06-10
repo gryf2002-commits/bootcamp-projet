@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=386"></script>
-  <script src="sunmates-icons.js?v=386"></script>
+  <script src="sunmates-badges.js?v=387"></script>
+  <script src="sunmates-icons.js?v=387"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -506,7 +506,7 @@
     .pcard .pcard-chip { font-size: .72rem; font-weight: 800; padding: .26rem .55rem; border-radius: 999px; box-shadow: 0 3px 8px rgba(0,0,0,.2); white-space: nowrap; }
     .pcard .pcard-chips-l { position: absolute; top: .6rem; left: .6rem; z-index: 2; display: flex; gap: .3rem; flex-wrap: wrap; }
     .pcard .pcard-rate, .pcard .pcard-new { position: absolute; top: .6rem; right: .6rem; z-index: 2; }
-    .pcard-eco { background: #1f9e72; color: #fff; }
+    .pcard-eco { background: linear-gradient(135deg,#4ED8B8,#179E8C); color: #fff; } /* DA : turquoise bijou (pas de vert émeraude vif) */
     .pcard-top { background: linear-gradient(135deg,#FFC93C,#FF8A3D); color: #fff; }
     .pcard-rate { background: rgba(255,255,255,.96); color: #B5740E; }
     .pcard-rate b { opacity: .6; font-weight: 700; }
@@ -6475,6 +6475,9 @@
         if (!res.ok) { msg.style.color = "var(--danger)"; msg.textContent = res.message || "Échec."; return; }
         msg.textContent = "";
         cafeCheckins[cafeId] = (cafeCheckins[cafeId] || 0) + 1; // maj immédiate du compteur
+        // Si la FICHE du lieu est ouverte, on la ferme : elle afficherait un compteur périmé
+        // (le flash sur la tuile + confettis + toast portent le feedback).
+        { const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); }
         if (typeof renderCafesList === "function") renderCafesList();
         // Flash sur la TUILE du lieu validé.
         const card = document.querySelector(`[data-cafecard="${cafeId}"]`);
