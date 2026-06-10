@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=383"></script>
-  <script src="sunmates-icons.js?v=383"></script>
+  <script src="sunmates-badges.js?v=384"></script>
+  <script src="sunmates-icons.js?v=384"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -7480,7 +7480,18 @@
           <div style="font-size:.82rem;margin:.2rem 0 .5rem">Tu n'apparais <b>pas</b> dans le classement public. En participant, ton <b>pseudo et ta ville</b> deviennent visibles et les autres pourront te <b>rechercher</b>. Tu peux te retirer à tout moment dans les Réglages.</div>
           <button class="btn-primary btn-block" id="lbJoinBtn">🏆 Je veux participer au classement</button>
         </div>` : "";
-      box.innerHTML = optIn + (rows.length ? rows.map((r, i) => {
+      // Ma position + TENDANCE depuis la dernière visite (📈/📉, stockée par métrique+ville)
+      let meLine = "";
+      { const myIdx = rows.findIndex((r) => r.id === myUserId);
+        if (myIdx >= 0) {
+          const rk = myIdx + 1, tk = "sm_lbrank_" + lbMetric + "_" + (_lbCity || "all");
+          let prev = null; try { prev = parseInt(localStorage.getItem(tk) || "", 10) || null; } catch (e) {}
+          try { localStorage.setItem(tk, String(rk)); } catch (e) {}
+          const trend = (prev && prev !== rk) ? (rk < prev ? ' <span style="color:#1E7A5A;font-weight:800">📈 +' + (prev - rk) + "</span>" : ' <span style="color:var(--danger);font-weight:800">📉 −' + (rk - prev) + "</span>") : "";
+          meLine = '<div class="lb-meline" style="text-align:center;font-weight:800;font-size:.9rem;background:linear-gradient(135deg,rgba(255,201,60,.16),rgba(255,138,61,.1));border:1px solid rgba(232,150,31,.25);border-radius:12px;padding:.5rem .7rem;margin-bottom:.55rem">🌟 ' + i18nT("Tu es {r} dans ce classement", { r: "#" + rk }) + trend + "</div>";
+        }
+      }
+      box.innerHTML = optIn + meLine + (rows.length ? rows.map((r, i) => {
         const me = r.id === myUserId;
         const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i + 1);
         return `<div class="lb-row${me ? " lb-me" : ""}" data-lbrow="${r.id}" style="cursor:pointer">
@@ -8558,20 +8569,36 @@
       _gameLast[key] = i; return arr[i];
     }
     let _quizScore = 0;   // bonnes réponses d'affilée dans la session de quiz
+    // Records LOCAUX des mini-jeux (compétition avec soi-même → envie de revenir)
+    const _gmBest = (k) => { try { return parseInt(localStorage.getItem("sm_best_" + k + "_" + (myUserId || "x")) || "0", 10) || 0; } catch (e) { return 0; } };
+    const _gmSetBest = (k, v) => { try { if (v > _gmBest(k)) localStorage.setItem("sm_best_" + k + "_" + (myUserId || "x"), String(v)); } catch (e) {} };
+    // 🤝 Défier un Mate : choisir un Mate → chat ouvert avec un message prêt à envoyer (boucle jeu → social)
+    function challengeMate(gameName, scoreTxt) {
+      const mates = (typeof connectedIds !== "undefined" && connectedIds ? [...connectedIds] : []).map((id) => travelerMap[id]).filter(Boolean);
+      if (!mates.length) { if (typeof toast === "function") toast("🤝", "Connecte-toi d'abord à un Mate pour le défier 🙂"); return; }
+      const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden");
+      openPicker(i18nT("Défier un Mate"), mates.map((p) => ({ label: p.username || "Voyageur", avatar: p.avatar_url, id: p.id })), (item) => {
+        closePicker(); goToTab("connexions"); if (typeof openChat === "function") openChat(item.id);
+        setTimeout(() => { const inp = $("chatInput"); if (inp) { inp.value = i18nT("🎮 Je te défie : « {g} » sur SunMates{s} — à toi de jouer !", { g: gameName, s: scoreTxt ? " · " + scoreTxt : "" }); inp.focus(); } }, 450);
+      });
+    }
     function playGame(key) {
       const g = CLIENT_GAMES.find((x) => x.key === key); if (!g) return;
-      const reBtn = "<button class='btn-accent btn-block' id='gameAgain' style='margin-top:1rem'>🔄 Rejouer</button>";
+      const reBtn = "<button class='btn-accent btn-block' id='gameAgain' style='margin-top:1rem'>🔄 Rejouer</button>"
+        + "<button class='btn-ghost btn-block' id='gameChallenge' style='margin-top:.4rem'>🤝 " + i18nT("Défier un Mate") + "</button>";
+      const wireChallenge = (scoreTxt) => { const c = $("gameChallenge"); if (c) c.onclick = () => challengeMate(g.name, scoreTxt || ""); };
       if (window.SMSound) SMSound.play("pop");
       if (key === "wheel" || key === "ice" || key === "twolies") {
         popInfo(g.emoji, g.name, "<p style='font-size:1.04rem;line-height:1.5;margin:.3rem 0'>" + escapeHtml(_pickNoRepeat(_GD[key], key)) + "</p>" + reBtn);
-        setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); }, 30);
+        setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); wireChallenge(""); }, 30);
       } else if (key === "decide") {
         const opts = ["✅ Fonce, c'est oui !", "❌ Pas cette fois.", "🤷 À toi de voir… relance !", "🔥 Carrément, vas-y à fond !", "⏳ Attends un peu.", "💯 Aucun doute, go !"];
         popInfo("🪙", "Décide pour moi", "<p style='font-size:1.25rem;font-weight:900;margin:.5rem 0;color:var(--accent)'>" + escapeHtml(_pickNoRepeat(opts, "decide")) + "</p>" + reBtn);
-        setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); }, 30);
+        setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); wireChallenge(""); }, 30);
       } else if (key === "quiz") {
         const qz = _pickNoRepeat(_GD.quiz, "quiz");
-        popInfo("❓", "Quiz du voyageur", "<div style='font-size:.78rem;color:var(--muted);margin-bottom:.3rem'>Série : <b>" + _quizScore + "</b> ✅</div>" +
+        const bq = _gmBest("quiz");
+        popInfo("❓", "Quiz du voyageur", "<div style='font-size:.78rem;color:var(--muted);margin-bottom:.3rem'>Série : <b>" + _quizScore + "</b> ✅" + (bq ? " · 🏆 " + i18nT("Record : {n}", { n: bq }) : "") + "</div>" +
           "<p style='font-weight:700;margin:.2rem 0 .7rem'>" + escapeHtml(qz.q) + "</p>" +
           qz.c.map((c, i) => "<button class='btn-ghost btn-block qzc' data-i='" + i + "' style='margin:.25rem 0'>" + escapeHtml(c) + "</button>").join("") +
           "<div id='qzFb' style='text-align:center;font-weight:700;margin-top:.6rem;min-height:1.2rem'></div>");
@@ -8583,26 +8610,30 @@
           if (good) { good.style.background = "var(--accent-grad)"; good.style.color = "#fff"; good.style.opacity = "1"; }
           if (!ok) { b.style.background = "#e0463b"; b.style.color = "#fff"; b.style.opacity = "1"; }
           const fb = $("qzFb"); if (fb) { fb.textContent = ok ? "Bravo ! 🎉" : "Raté 😅"; fb.style.color = ok ? "var(--accent)" : "#e0463b"; }
-          if (ok) { _quizScore++; if (window.SMSound) SMSound.play("success"); } else { _quizScore = 0; }
+          if (ok) { _quizScore++; _gmSetBest("quiz", _quizScore); if (window.SMSound) SMSound.play("success"); } else { _quizScore = 0; }
           setTimeout(() => playGame("quiz"), 1200);
-        }); }, 30);
+        }); wireChallenge(_gmBest("quiz") ? i18nT("Record : {n}", { n: _gmBest("quiz") }) : ""); }, 30);
       } else if (key === "bingo") {
         let st = {}; try { st = JSON.parse(localStorage.getItem("sm_bingo_" + (myUserId || "x")) || "{}") || {}; } catch (e) {}
         const cells = _GD.bingo.map((t, i) => "<button class='bingo-cell" + (st[i] ? " on" : "") + "' data-bi='" + i + "'>" + escapeHtml(t) + "</button>").join("");
         const n0 = Object.keys(st).filter((k) => st[k]).length;
+        const bb = _gmBest("bingo");
         popInfo("🗺️", "Bingo de voyage", "<div class='bingo-grid'>" + cells + "</div>" +
-          "<p class='muted' style='font-size:.8rem;margin:.6rem 0 0'><b id='bingoN'>" + n0 + "</b>/9 cases · coche ce que tu as vécu !</p>" +
-          (n0 ? "<button class='btn-ghost btn-block' id='bingoReset' style='margin-top:.5rem'>↩️ Réinitialiser</button>" : ""));
+          "<p class='muted' style='font-size:.8rem;margin:.6rem 0 0'><b id='bingoN'>" + n0 + "</b>/9 cases · coche ce que tu as vécu !" + (bb ? " · 🏆 " + i18nT("Record : {n}", { n: bb }) + "/9" : "") + "</p>" +
+          (n0 ? "<button class='btn-ghost btn-block' id='bingoReset' style='margin-top:.5rem'>↩️ Réinitialiser</button>" : "") +
+          "<button class='btn-ghost btn-block' id='gameChallenge' style='margin-top:.4rem'>🤝 " + i18nT("Défier un Mate") + "</button>");
         setTimeout(() => {
           const save = () => { try { localStorage.setItem("sm_bingo_" + (myUserId || "x"), JSON.stringify(st)); } catch (e) {} };
           document.querySelectorAll(".bingo-cell").forEach((b) => b.onclick = () => {
             const i = b.dataset.bi; st[i] = !st[i]; save(); b.classList.toggle("on", !!st[i]);
             const done = Object.keys(st).filter((k) => st[k]).length;
+            _gmSetBest("bingo", done);
             const nEl = $("bingoN"); if (nEl) nEl.textContent = done;
             if (window.SMSound) SMSound.play("tap");
             if (done === 9) { if (typeof celebrate === "function") celebrate(); if (typeof toast === "function") toast("🗺️", "BINGO ! Grille complète, bravo 🎉"); }
           });
           const rs = $("bingoReset"); if (rs) rs.onclick = () => { st = {}; save(); playGame("bingo"); };
+          wireChallenge(_gmBest("bingo") ? _gmBest("bingo") + "/9" : "");
         }, 30);
       }
     }
@@ -9120,6 +9151,11 @@
           const q = questByKey(qkey); if (q) openDetail(q);
           if (typeof celebrate === "function") celebrate();
           if (typeof renderGameHub === "function") renderGameHub();
+          // Moment de victoire MIS EN SCÈNE (avant : la modale se mettait juste à jour discrètement)
+          if (q) {
+            const badgeLine = q.badge_name ? "<div style='margin-top:.3rem'>🏅 <b>" + escapeHtml(q.badge_name) + "</b> " + i18nT("débloqué !") + "</div>" : "";
+            popInfo("🎉", i18nT("Quête accomplie !"), "<div style='text-align:center;line-height:1.6'><div style='font-size:2.6rem;filter:var(--relief)'>" + (q.emoji || "🎯") + "</div><b>" + escapeHtml(q.title || "") + "</b><div style='color:var(--accent);font-weight:800;font-size:1.05rem;margin-top:.3rem'>+" + (q.points || 0) + " XP</div>" + badgeLine + "</div>");
+          }
         }
       });
     }
@@ -13798,6 +13834,12 @@
       "💫 Encore {x} XP pour le niveau {n}": "💫 {x} XP to go for level {n}",
       "+{x} XP · 👥 +{g} à deux ✨": "+{x} XP · 👥 +{g} together ✨",
       "🔮 {a}/{b} découverts": "🔮 {a}/{b} discovered",
+      "Quête accomplie !": "Quest completed!",
+      "débloqué !": "unlocked!",
+      "Tu es {r} dans ce classement": "You're {r} in this ranking",
+      "Défier un Mate": "Challenge a Mate",
+      "Record : {n}": "Best: {n}",
+      "🎮 Je te défie : « {g} » sur SunMates{s} — à toi de jouer !": "🎮 I challenge you: \"{g}\" on SunMates{s} — your turn!",
       "tramways jaunes, fado et couchers de soleil sur le Tage": "yellow trams, fado and sunsets on the Tagus",
       "temples zen, ruelles de geishas et érables flamboyants": "zen temples, geisha lanes and flamboyant maples",
       "souks colorés, riads et désert à perte de vue": "colourful souks, riads and desert as far as the eye can see",
