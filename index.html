@@ -15,7 +15,7 @@
         if (window.Sentry && Sentry.init) {
           Sentry.init({
             dsn: "https://383baae639ccef902adb48a8439570b8@o4511521167638528.ingest.de.sentry.io/4511521207746640",
-            release: "sunmates@v273",
+            release: "sunmates@v372",
             sampleRate: 1.0,
             beforeSend: function (event) { if (event.user) { delete event.user.email; delete event.user.ip_address; } return event; }
           });
@@ -28,15 +28,38 @@
   <script>
     // PostHog (cloud EU) — mesure d'audience anonymisée (RGPD : mask_all_text + pas d'email).
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-    try {
-      posthog.init("phc_AR6vTGSce85wFtsRFswiU3Vqz9rxifZ9ED3uDeSSgjEN", {
-        api_host: "https://eu.i.posthog.com",
-        autocapture: true,
-        mask_all_text: true,      // ne capture jamais le texte saisi (vie privée)
-        capture_pageview: true,
-        persistence: "localStorage"
-      });
-    } catch (e) {}
+    // RGPD : PostHog ne démarre QU'APRÈS consentement explicite (bannière cookies).
+    // Tant que l'utilisateur n'a pas accepté, aucun traceur n'est déposé, rien n'est envoyé.
+    window._phInit = function () {
+      try {
+        posthog.init("phc_AR6vTGSce85wFtsRFswiU3Vqz9rxifZ9ED3uDeSSgjEN", {
+          api_host: "https://eu.i.posthog.com",
+          autocapture: true,
+          mask_all_text: true,      // ne capture jamais le texte saisi (vie privée)
+          capture_pageview: true,
+          persistence: "localStorage"
+        });
+      } catch (e) {}
+    };
+    try { if (localStorage.getItem("sm_consent_analytics") === "yes") window._phInit(); } catch (e) {}
+    // Bannière de consentement (affichée une seule fois, choix mémorisé).
+    document.addEventListener("DOMContentLoaded", function () {
+      var c = null; try { c = localStorage.getItem("sm_consent_analytics"); } catch (e) { c = "no"; }
+      if (c === "yes" || c === "no") return;
+      var b = document.createElement("div");
+      b.id = "consentBanner";
+      b.setAttribute("role", "dialog");
+      b.setAttribute("aria-label", "Consentement mesure d'audience");
+      b.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:calc(.8rem + env(safe-area-inset-bottom,0px));z-index:var(--z-consent,5500);width:calc(100% - 1.6rem);max-width:430px;background:var(--card,#fff);color:var(--ink,#1d2230);border:1px solid var(--line,#f0e2da);border-radius:18px;box-shadow:0 18px 50px rgba(255,90,77,.22);padding:.9rem 1rem;font:600 .85rem/1.45 Manrope,system-ui,sans-serif";
+      b.innerHTML = '🍪 <b>Mesure d\'audience</b><br>On aimerait mesurer l\'usage de SunMates (anonymisé, jamais tes textes) pour améliorer l\'app. C\'est toi qui choisis.'
+        + '<div style="display:flex;gap:.5rem;margin-top:.6rem">'
+        + '<button id="consentYes" style="flex:1;border:0;border-radius:999px;padding:.55rem;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#FFC93C,#FF8A3D,#FF5A4D);color:#fff">D\'accord ☀️</button>'
+        + '<button id="consentNo" style="flex:1;border:1.5px solid var(--line,#f0e2da);border-radius:999px;padding:.55rem;font-weight:800;cursor:pointer;background:transparent;color:inherit">Refuser</button></div>';
+      document.body.appendChild(b);
+      function done(v) { try { localStorage.setItem("sm_consent_analytics", v); } catch (e) {} b.remove(); if (v === "yes") window._phInit(); }
+      document.getElementById("consentYes").addEventListener("click", function () { done("yes"); });
+      document.getElementById("consentNo").addEventListener("click", function () { done("no"); });
+    });
     // Helper unique : trace un événement sans JAMAIS planter l'app si PostHog est bloqué.
     window.track = function (name, props) {
       try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); } catch (e) {}
@@ -72,8 +95,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=371"></script>
-  <script src="sunmates-icons.js?v=371"></script>
+  <script src="sunmates-badges.js?v=372"></script>
+  <script src="sunmates-icons.js?v=372"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -155,7 +178,11 @@
       --z-tour:     4200;  /* visite guidée */
       --z-modal:    4300;  /* fenêtres modales (création d'activité…) */
       --z-demo:     5000;  /* barre de la démo auto-pilotée */
-      --z-confetti: 6000;  /* confettis (au-dessus de tout) */
+      --z-consent:  5500;  /* bannière de consentement RGPD */
+      --z-confetti: 6000;  /* confettis (au-dessus du contenu) */
+      --z-signal:   6400;  /* écran signal lumineux SOS */
+      --z-popinfo:  6500;  /* tuile explicative centrée */
+      --z-sheet:    6600;  /* bottom-sheet du sélecteur DA */
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -318,21 +345,20 @@
     .jnav-primary .cat-tile { padding: .75rem .5rem; }
     .jnav-primary .cat-tile .cic { width: 50px; height: 50px; font-size: 1.55rem; border-radius: 14px; }
     .jnav-primary .cat-tile .clbl { font-size: .82rem; }
-    /* #13 : widgets de progression en TUILES CARRÉES (+ 1 tuile scindée en 2 : quête proche | ville). */
-    .prog-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: .5rem; margin-bottom: .5rem; }
-    .prog-split { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: .5rem; }
-    .prog-tile, .prog-half { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; text-align: center;
-      cursor: pointer; padding: .95rem .5rem; color: var(--ink); font: inherit; min-height: 86px; transition: transform .12s ease; }
-    .prog-tile { border: 1.5px solid var(--line); border-radius: 16px; background: var(--card); }
+    /* #13/#6 : tuiles de progression au MÊME style joaillerie que la nav (cic + label, carte blanche),
+       + 1 tuile scindée en 2 (quête proche | ville à l'honneur). */
+    .prog-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: .55rem; margin-bottom: .55rem; }
+    .prog-split { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: .55rem; }
+    .prog-tile, .prog-half { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem; text-align: center;
+      cursor: pointer; padding: .85rem .5rem; color: var(--ink); font: inherit; min-height: 88px; transition: transform .12s ease; background: var(--card); }
+    .prog-tile { border: 1.5px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-sm); }
     .prog-half { border: 0; }
+    .prog-half.ps-city { background: linear-gradient(135deg, rgba(255,201,60,.18), rgba(255,138,61,.12)); } /* ville à l'honneur : nuance chaude gardée (dénote un peu, voulu) */
     .prog-tile:active, .prog-half:active { transform: scale(.97); }
-    .prog-tile .pt-ic, .prog-half .pt-ic { font-size: 1.65rem; line-height: 1; }
-    .prog-tile .pt-lbl, .prog-half .pt-lbl { font-size: .78rem; font-weight: 700; line-height: 1.18; }
-    .pt-obj  { background: linear-gradient(135deg, rgba(255,201,60,.18), rgba(255,138,61,.12)) !important; border-color: rgba(240,169,58,.4) !important; }
-    .pt-coll { background: linear-gradient(135deg, rgba(122,92,255,.14), rgba(98,56,214,.10)) !important; border-color: rgba(122,92,255,.32) !important; }
-    .ps-quest { background: linear-gradient(135deg, rgba(255,90,77,.14), rgba(255,138,61,.10)); }
-    .ps-city  { background: linear-gradient(135deg, rgba(255,201,60,.26), rgba(255,138,61,.2)); } /* ville à l'honneur : couleur chaude gardée (dénote un peu, voulu) */
-    body.theme-dusk .prog-tile { background: #2a2140; }
+    .prog-tile .clbl, .prog-half .clbl { font-size: .76rem; font-weight: 700; color: var(--ink); white-space: normal; }
+    .prog-tile .cic, .prog-half .cic { width: 44px; height: 44px; font-size: 1.4rem; border-radius: 13px; }
+    body.theme-dusk .prog-tile, body.theme-dusk .prog-half { background: #2a2140; }
+    body.theme-dusk .prog-half.ps-city { background: linear-gradient(135deg, rgba(255,201,60,.14), rgba(255,138,61,.10)); }
 
     /* ---- Carte « N éléments au même endroit » (>6 marqueurs co-localisés) ---- */
     .coloc-card { min-width: 180px; }
@@ -797,7 +823,7 @@
     .prof-trust:active { transform: scale(.97); }
     .stat-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .5rem; }
     /* popInfo : tuile explicative qui pop au centre (DA sunset) */
-    .popinfo-ov { position: fixed; inset: 0; z-index: 100000; display: grid; place-items: center; padding: 1.2rem; background: rgba(20,8,30,.55); backdrop-filter: blur(3px); animation: popinfoFade .18s ease; }
+    .popinfo-ov { position: fixed; inset: 0; z-index: var(--z-popinfo); display: grid; place-items: center; padding: 1.2rem; background: rgba(20,8,30,.55); backdrop-filter: blur(3px); animation: popinfoFade .18s ease; }
     .fc-gear { position: absolute; top: calc(1rem + env(safe-area-inset-top)); right: 1rem; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,.16); color: #fff; font-size: 1.1rem; cursor: pointer; display: grid; place-items: center; }
     .popinfo-ov.hidden { display: none; }
     .popinfo-card { position: relative; width: 100%; max-width: 340px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 1.5rem 1.3rem 1.3rem; box-shadow: 0 18px 50px rgba(0,0,0,.32); text-align: center; animation: popinfoPop .22s cubic-bezier(.2,1.2,.4,1); }
@@ -1527,11 +1553,12 @@
        halo statique discret (plus de « respiration »), avatar et titre plus petits. */
     /* #12 : en-tête Jeux avec badge rond de niveau (cliquable). */
     .jh-head{ display:flex; align-items:center; justify-content:space-between; gap:.6rem; }
-    .player-badge{ position:relative; flex-shrink:0; width:52px; height:52px; border-radius:50%; border:0; cursor:pointer;
+    .player-badge{ position:relative; flex-shrink:0; width:52px; height:52px; border-radius:50%; border:0; cursor:pointer; overflow:visible;
       background:var(--accent-grad); display:grid; place-items:center; box-shadow:0 6px 16px rgba(255,90,77,.34); transition:transform .12s ease; }
     .player-badge:active{ transform:scale(.94); }
-    .player-badge .pb-av{ width:44px; height:44px; border-radius:50%; display:grid; place-items:center; font-size:1.45rem; line-height:1;
-      background:rgba(255,255,255,.22); background-size:cover; background-position:center; }
+    /* #5 : la photo REMPLIT le badge (centrée), fini l'anneau coral qui la décalait. */
+    .player-badge .pb-av{ width:100%; height:100%; border-radius:50%; display:grid; place-items:center; font-size:1.55rem; line-height:1; overflow:hidden;
+      background-color:rgba(255,255,255,.18); background-size:cover; background-position:center center; background-repeat:no-repeat; }
     .player-badge .pb-lvl{ position:absolute; bottom:-3px; right:-4px; min-width:20px; height:20px; padding:0 4px; border-radius:999px;
       background:#fff; color:var(--accent); font-weight:900; font-size:.72rem; display:grid; place-items:center; border:2px solid var(--accent); box-shadow:0 2px 5px rgba(0,0,0,.2); }
     .player-hero{ position:relative; overflow:hidden; border-radius:var(--radius); padding:.8rem .95rem .9rem; margin:.2rem 0 .85rem;
@@ -2737,7 +2764,13 @@
        On aligne les DEUX sur la meme couleur de base par theme (var(--bg)) ; le halo radial reste en
        decoration par-dessus. Fond uniforme partout (login Pro, admin, etc.). */
     body { background: var(--bg); color: var(--text); }
-    .app-shell { background: radial-gradient(125% 48% at 50% -8%, rgba(255,201,60,.42) 0%, rgba(255,138,61,.10) 38%, rgba(255,255,255,0) 64%), var(--bg) !important; }
+    /* #3+#4 : le halo chaud passe sur un CALQUE FIXE (#bgFx) derrière tout, plus sur l'app-shell qui
+       défile → fini le « changement de couleur de fond » au scroll / au clic premium-admin, et fond
+       de login cohérent. App-shell transparent (le calque porte le fond). Garde la chaleur DA (jour)
+       et la richesse (nuit) sans uniformiser ni laguer (calque composité fixe). */
+    .app-shell { background: transparent !important; }
+    #bgFx { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(125% 48% at 50% -8%, rgba(255,201,60,.42) 0%, rgba(255,138,61,.10) 38%, rgba(255,255,255,0) 64%), var(--bg); }
+    body.theme-dusk #bgFx { background: radial-gradient(125% 50% at 50% -8%, rgba(255,138,61,.34) 0%, rgba(255,79,109,.10) 40%, rgba(0,0,0,0) 66%), var(--bg); }
 
     h1, h2, h3 { color: var(--ink); }
     .topbar { background: linear-gradient(var(--bg) 70%, rgba(255,244,230,0)); }
@@ -2773,7 +2806,7 @@
     .thumb.blue  { background: linear-gradient(135deg,#5BC0FF,#2D8FE0) !important; }
     .thumb.purp  { background: linear-gradient(135deg,#C77DFF,#8A4FE0) !important; }
     .thumb.coral { background: linear-gradient(135deg,#FFB37A,#FF6F3D) !important; }
-    .thumb.lime  { background: linear-gradient(135deg,#CFE86B,#86B520) !important; }
+    .thumb.lime  { background: linear-gradient(135deg,#FFD15C,#E8961F) !important; } /* ex-vert lime : ambre DA */
     .thumb.indigo{ background: linear-gradient(135deg,#9FA8FF,#5B63E0) !important; }
     .thumb.rose  { background: linear-gradient(135deg,#FF9CC2,#F0568F) !important; }
 
@@ -2820,7 +2853,7 @@
       color: var(--text);
       background: radial-gradient(120% 70% at 50% -6%, #FF7A3D40 0%, #6A2A6E 24%, #34164F 52%, #190E2E 100%);
     }
-    body.theme-dusk .app-shell { background: radial-gradient(125% 50% at 50% -8%, rgba(255,138,61,.34) 0%, rgba(255,79,109,.10) 40%, rgba(0,0,0,0) 66%), var(--bg) !important; }
+    body.theme-dusk .app-shell { background: transparent !important; } /* #3+#4 : halo nuit porté par #bgFx (fixe) */
     body.theme-dusk .card, body.theme-dusk .post, body.theme-dusk .pf-section { background: linear-gradient(180deg,#2A1846,#22123A) !important; border-color: rgba(255,255,255,.08) !important; }
     body.theme-dusk input, body.theme-dusk textarea, body.theme-dusk select, body.theme-dusk .search input { background: #2E1B4C !important; color: #f3e9f3; }
     body.theme-dusk .feed-card, body.theme-dusk .pcell, body.theme-dusk .pprompt, body.theme-dusk .stat-box,
@@ -2910,7 +2943,7 @@
     .ice-fin:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
     body.theme-dusk .ice-fin { background: #241b35; color: #f3e9f3; border-color: rgba(255,255,255,.1); }
     /* Signal lumineux d'aide (pulsation LENTE 1.6s = sans danger photosensible) */
-    .signal-screen { position: fixed; inset: 0; z-index: 99999; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: signalPulse 1.6s ease-in-out infinite; }
+    .signal-screen { position: fixed; inset: 0; z-index: var(--z-signal); background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: signalPulse 1.6s ease-in-out infinite; }
     .signal-screen.hidden { display: none; }
     @keyframes signalPulse { 0%, 100% { background: #fff; } 50% { background: #FFD15C; } }
     .signal-inner { text-align: center; color: #111; padding: 1rem; }
@@ -2947,7 +2980,7 @@
     /* Contextes flex (le select était enfant flex direct) : le wrapper reprend le flex. */
     .city-pick .sm-sel, #advFilters .sm-sel { flex: 1 1 auto; min-width: 0; }
 
-    .sm-selsheet-ov { position: fixed; inset: 0; z-index: 100010; background: rgba(20,8,30,.5); backdrop-filter: blur(2px);
+    .sm-selsheet-ov { position: fixed; inset: 0; z-index: var(--z-sheet); background: rgba(20,8,30,.5); backdrop-filter: blur(2px);
       display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .18s; }
     .sm-selsheet-ov.show { opacity: 1; pointer-events: auto; }
     .sm-selsheet { width: 100%; max-width: 480px; background: var(--paper); border-radius: 22px 22px 0 0; max-height: 46vh;
@@ -2983,6 +3016,8 @@
   </style>
 </head>
 <body>
+  <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
+  <div id="bgFx" aria-hidden="true"></div>
   <!-- Bannière d'alerte temps réel (cachée par défaut) -->
   <div id="alertBanner" class="hidden"></div>
 
@@ -4417,12 +4452,12 @@
                remplissent toujours ; les tuiles lisent/ouvrent leur contenu. Fonctionnement inchangé. -->
           <div class="jnav-cap">🎯 Ta progression</div>
           <div class="prog-tiles">
-            <button type="button" class="prog-tile pt-obj" data-prog="goals"><span class="pt-ic">🎯</span><span class="pt-lbl">Objectifs<br>de la semaine</span></button>
-            <button type="button" class="prog-tile pt-coll" data-prog="collection"><span class="pt-ic">🗺️</span><span class="pt-lbl">Collection<br>de quêtes</span></button>
+            <button type="button" class="prog-tile" data-prog="goals"><div class="cic c-gold">🎯</div><div class="clbl">Objectifs</div></button>
+            <button type="button" class="prog-tile" data-prog="collection"><div class="cic c-purp">🗺️</div><div class="clbl">Collection</div></button>
           </div>
           <div class="prog-split">
-            <button type="button" class="prog-half ps-quest" data-prog="nearquest"><span class="pt-ic">📍</span><span class="pt-lbl">Quête<br>la plus proche</span></button>
-            <button type="button" class="prog-half ps-city" data-prog="capitale"><span class="pt-ic">🏙️</span><span class="pt-lbl">Ville<br>à l'honneur</span></button>
+            <button type="button" class="prog-half" data-prog="nearquest"><div class="cic c-sun">📍</div><div class="clbl">Quête proche</div></button>
+            <button type="button" class="prog-half ps-city" data-prog="capitale"><div class="cic c-gold">🏙️</div><div class="clbl">Ville à l'honneur</div></button>
           </div>
           <div id="progSources" style="display:none">
             <div id="weeklyGoals"></div>
@@ -4822,6 +4857,8 @@
       const password = $("authPassword").value;
       const msg = $("authMsg");
       if (!email || !password) { msg.style.color = "var(--danger)"; msg.textContent = "Remplis l'email et le mot de passe."; return; }
+      // Sécurité : minimum 8 caractères à l'inscription (aligner aussi le réglage Supabase Auth).
+      if (authMode === "signup" && password.length < 8) { msg.style.color = "var(--danger)"; msg.textContent = "Mot de passe trop court : 8 caractères minimum."; return; }
       await once("auth:" + authMode, async () => {
         msg.style.color = "var(--muted)"; msg.textContent = "Un instant…";
         const { data, error } = authMode === "login"
@@ -7713,12 +7750,27 @@
       skelFirst("convList", skelRows(4));
       skelFirst("requestsList", skelRows(2));
       try { hiddenConvs = new Set(JSON.parse(localStorage.getItem("sm_hidden_convs_" + myUserId) || "[]")); } catch (e) { hiddenConvs = new Set(); }
-      const [{ data: profiles }, { data: conns }, { data: msgs }, { data: blk }] = await Promise.all([
-        db.from("profiles").select("*"),
-        db.from("matches_connections").select("*"),
+      // Scalabilité : on ne charge plus TOUTE la table profiles ni TOUTES les connexions.
+      // - matches_connections : uniquement MES lignes (filtre serveur).
+      // - profiles : cap à 1000 (les plus récemment actifs) pour l'annuaire Découvrir,
+      //   complété ensuite par les profils manquants de mes connexions (toujours exacts).
+      const [{ data: profilesRaw }, { data: conns }, { data: msgs }, { data: blk }] = await Promise.all([
+        db.from("profiles").select("*").order("last_seen_at", { ascending: false, nullsFirst: false }).limit(1000),
+        db.from("matches_connections").select("*").or(`user_a.eq.${myId},user_b.eq.${myId}`),
         db.from("messages").select("sender_id,recipient_id,content,created_at").order("created_at", { ascending: false }).limit(300),
         db.from("blocks").select("blocked").eq("blocker", myId),
       ]);
+      let profiles = profilesRaw || [];
+      { // garantit que MON profil + ceux de mes connexions/demandes sont toujours présents
+        const have = new Set(profiles.map((p) => p.id));
+        const need = new Set([myId]);
+        (conns || []).forEach((c) => { need.add(c.user_a); need.add(c.user_b); });
+        const missing = [...need].filter((id) => id && !have.has(id));
+        if (missing.length) {
+          const { data: extra } = await db.from("profiles").select("*").in("id", missing);
+          profiles = profiles.concat(extra || []);
+        }
+      }
       blockedIds = new Set((blk || []).map((b) => b.blocked));
       // BANNIS exclus à la SOURCE → ils ne peuplent ni travelerMap, ni la carte, ni la recherche, ni les chats.
       const bannedIds = new Set((profiles || []).filter((p) => p.banned && p.id !== myId).map((p) => p.id));
@@ -9000,10 +9052,12 @@
     // Proposer la quête à un Mate (section dédiée + message dans le chat)
     $("detailMapBtn").addEventListener("click", () => {
       if (!currentQuest) return;
-      const places = (allCafes || []).filter((c) => c.lat != null && c.lng != null);
-      if (!places.length) { if (typeof toast === "function") toast("📍", "Aucun lieu géolocalisé pour l'instant."); return; }
-      let h = 0; const s = String(currentQuest.key); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100000;
-      focusHomeMapOn(places[h % places.length].id);
+      // #1 : on va à la VRAIE position de la quête (avant : un lieu ALÉATOIRE via hash de la clé → ville random !).
+      const lat = currentQuest.lat, lng = currentQuest.lng;
+      if (lat != null && lng != null && isFinite(lat) && isFinite(lng) && typeof focusHomeMapOnQuest === "function") {
+        focusHomeMapOnQuest(lat, lng); return;
+      }
+      if (typeof toast === "function") toast("📍", "Cette quête n'a pas encore de position précise.");
     });
     // P2.10 : la tuile récompense (badge) avait l'air cliquable mais ne faisait rien → elle ouvre
     // maintenant la collection de badges (on y voit le badge à débloquer en grand).
@@ -9488,9 +9542,12 @@
         return;
       }
       // Historique : messages échangés entre moi et cet interlocuteur (RLS = uniquement les miens)
-      const { data, error } = await db.from("messages").select("*")
+      // Scalabilité : on charge les 200 derniers (desc + limit) puis on remet dans l'ordre.
+      const { data: dataDesc, error } = await db.from("messages").select("*")
         .or(`and(sender_id.eq.${myUserId},recipient_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},recipient_id.eq.${myUserId})`)
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: false })
+        .limit(200);
+      const data = (dataDesc || []).reverse();
       const body = $("chatBody");
       if (error) { body.innerHTML = '<p class="muted">Erreur de chargement.</p>'; return; }
       body.innerHTML = data.length ? chatHtml(data) : _iceBreakerHtml(p);
@@ -9702,7 +9759,7 @@
       const up = await db.storage.from("voicenotes").upload(path, blob, { contentType: blob.type || "audio/webm" });
       if (up.error) { toast("⚠️", "Échec envoi vocal (lance la migration s36 ?)"); return; }
       const { error } = await db.from("messages").insert({ sender_id: myUserId, recipient_id: recipient, content: "🎤 Note vocale (" + secs + "s)", audio_path: path });
-      if (error) { toast("⚠️", "Erreur : " + error.message); return; }
+      if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); return; }
       if (window.SMSound) SMSound.play("success");
       openChat(recipient);
     }
@@ -9779,10 +9836,13 @@
 
     // Temps réel : nouveaux messages. La RLS garantit qu'on ne reçoit QUE
     // les messages dont on est l'expéditeur ou le destinataire.
+    // Scalabilité : filtre SERVEUR (recipient/sender = moi) → Supabase n'évalue plus
+    // chaque INSERT de la table contre la RLS de tous les abonnés (goulot connu).
+    let _lcDebounce = null;
+    function _refreshConnsSoon() { clearTimeout(_lcDebounce); _lcDebounce = setTimeout(() => loadConnections(), 800); }
     function subscribeMessages() {
       if (messageChannel) return;
-      messageChannel = db.channel("messages-rt")
-        .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
+      const onMsg = (payload) => {
           const m = payload.new;
           const inOpenChat = currentChatUserId && (
             (m.sender_id === myUserId && m.recipient_id === currentChatUserId) ||
@@ -9815,9 +9875,14 @@
             toast("💬", `<b>${escapeHtml(nameById(m.sender_id))}</b> t'a envoyé un message`,
               () => { goToTab("connexions"); openChat(m.sender_id); markMsgsSeen(); });
             sysNotify("Nouveau message 💬", nameById(m.sender_id) + " t'a écrit sur SunMates", "connexions");
-            loadConnections();
+            _refreshConnsSoon(); // débounce : pas un rechargement complet par message
           }
-        })
+      };
+      // Deux abonnements filtrés côté serveur (reçus + envoyés) → même handler.
+      // Les messages envoyés restent écoutés pour remplacer la bulle optimiste "pending".
+      messageChannel = db.channel("messages-rt")
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `recipient_id=eq.${myUserId}` }, onMsg)
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `sender_id=eq.${myUserId}` }, onMsg)
         .subscribe();
     }
 
@@ -10468,8 +10533,26 @@
     }
     { const cs = $("questCitySelect"); if (cs) cs.addEventListener("change", () => {
       _questCity = cs.value || "";
+      // #1+#2 : on prend la main sur le cadrage (sinon centerHomeMapOnUser async peut envoyer ailleurs
+      // = « ville random ») ; ville choisie → cadre cette ville ; « Toutes les villes » → dézoome sur
+      // TOUTE la carte (tous les marqueurs), pas seulement les quêtes.
+      homeFitDone = true; _homeForceCenter = true;
       if (typeof renderHomeMap === "function") renderHomeMap();
       if (typeof renderNearestQuest === "function") renderNearestQuest();
+      setTimeout(() => {
+        try {
+          if (!homeLeaf) return;
+          const valid = (arr) => (arr || []).filter((m) => { try { const ll = m.getLatLng(); return ll && isFinite(ll.lat) && isFinite(ll.lng) && !(ll.lat === 0 && ll.lng === 0); } catch (e) { return false; } });
+          if (_questCity) {
+            const qs = valid(homeMarkersByType.quests);
+            if (qs.length) homeLeaf.fitBounds(L.featureGroup(qs).getBounds().pad(0.3), { maxZoom: 14 });
+          } else {
+            const all = valid(homeAllMarkers);
+            if (all.length) homeLeaf.fitBounds(L.featureGroup(all).getBounds().pad(0.2));
+          }
+        } catch (e) {}
+        setTimeout(() => { _homeForceCenter = null; }, 1200);
+      }, 220);
       if (window.SMSound) SMSound.play("tap");
     }); }
     { const tt = $("questTodoToggle"); if (tt) tt.addEventListener("click", () => {
@@ -10960,7 +11043,7 @@
       if (!(await smConfirmP("🗑️", "Supprimer cette activité ?", "Elle sera retirée de la carte.", "Supprimer"))) return;
       if (homeLeaf) homeLeaf.closePopup();
       const { error } = await db.from("map_activities").delete().eq("id", id);
-      if (error) { if (typeof toast === "function") toast("⚠️", "Erreur : " + error.message); return; }
+      if (error) { if (typeof toast === "function") toast("⚠️", "Erreur : " + escapeHtml(error.message)); return; }
       if (typeof toast === "function") toast("🗑️", "Activité supprimée");
       renderHomeMap();
     }
@@ -12181,7 +12264,7 @@
     document.querySelectorAll("[data-prog]").forEach((b) => b.addEventListener("click", () => {
       const k = b.dataset.prog;
       if (k === "goals") { const w = $("weeklyGoals"); const has = w && w.innerHTML.trim(); showInfo("🎯 Objectifs de la semaine", has ? '<div style="text-align:left">' + w.innerHTML + '</div>' : '<p class="muted" style="text-align:center;padding:1rem">Pas d\'objectif cette semaine — reviens bientôt ✨</p>'); }
-      else if (k === "collection") { const w = $("questCollection"); const has = w && w.innerHTML.trim() && w.style.display !== "none"; showInfo("🗺️ Collection de quêtes", has ? '<div style="text-align:left">' + w.innerHTML + '</div>' : '<p class="muted" style="text-align:center;padding:1rem">Aucune quête géolocalisée pour l\'instant — joue une quête sur la carte 📍</p>'); }
+      else if (k === "collection") { if (typeof showCollectionSheet === "function") showCollectionSheet(); }
       else if (k === "nearquest") { if (typeof showNearestQuests === "function") showNearestQuests(); }
       else if (k === "capitale") { const c = $("capitaleDuJour"); if (c && c.onclick) c.onclick(); else showInfo("🏙️ Ville à l'honneur", '<p class="muted" style="text-align:center;padding:1rem">Pas de ville à l\'honneur pour l\'instant (il faut des quêtes dans plusieurs villes).</p>'); }
       if (window.SMSound) { try { SMSound.play("tap"); } catch (e) {} }
@@ -14527,251 +14610,4 @@
       // P2.38 : on transporte l'onglet cible dans data → le clic ouvre le bon onglet.
       const opts = { body: body, icon: "icon-192.png", badge: "icon-192.png", tag: "sunmates", renotify: false, data: { tab: tab || "" } };
       try {
-        if (navigator.serviceWorker && navigator.serviceWorker.ready) {
-          navigator.serviceWorker.ready
-            .then((reg) => reg.showNotification(title, opts))
-            .catch(() => { try { new Notification(title, opts); } catch (_) {} });
-        } else { new Notification(title, opts); }
-      } catch (e) {}
-    }
-
-    // P2.38 : routage des notifications → bon onglet.
-    // (a) app déjà ouverte : le SW envoie un message au clic → on va sur l'onglet.
-    if (navigator.serviceWorker) {
-      navigator.serviceWorker.addEventListener("message", (e) => {
-        if (e.data && e.data.type === "sm-nav" && e.data.tab && typeof goToTab === "function") goToTab(e.data.tab);
-      });
-    }
-    // (b) app ouverte via la notif (nouvelle fenêtre) : on lit ?tab= au démarrage.
-    (function navFromNotifQuery() {
-      try {
-        const t = new URLSearchParams(location.search).get("tab");
-        if (!t) return;
-        setTimeout(() => { const app = $("appView"); if (app && !app.classList.contains("hidden") && typeof goToTab === "function") goToTab(t); }, 900);
-      } catch (e) {}
-    })();
-
-    // Bandeau d'état réseau : prévient quand on est hors-ligne (Supabase devient injoignable).
-    (function netStatus() {
-      const b = $("netBanner"); if (!b) return;
-      const update = () => b.classList.toggle("show", !navigator.onLine);
-      window.addEventListener("online", update);
-      window.addEventListener("offline", update);
-      update();
-    })();
-
-    // Bouton « effacer » (✕) dans chaque champ de recherche + touche Échap pour vider.
-    document.querySelectorAll(".search").forEach((wrap) => {
-      const input = wrap.querySelector("input");
-      if (!input || wrap.querySelector(".search-clear")) return;
-      const btn = document.createElement("button");
-      btn.type = "button"; btn.className = "search-clear"; btn.textContent = "✕";
-      btn.setAttribute("aria-label", "Effacer la recherche");
-      btn.style.display = "none";
-      wrap.appendChild(btn);
-      const sync = () => { btn.style.display = input.value ? "grid" : "none"; };
-      const clear = () => { input.value = ""; input.dispatchEvent(new Event("input", { bubbles: true })); input.focus(); sync(); };
-      input.addEventListener("input", sync);
-      input.addEventListener("keydown", (e) => { if (e.key === "Escape" && input.value) clear(); });
-      btn.addEventListener("click", clear);
-      sync();
-    });
-
-    // Textareas qui grandissent avec le contenu (au lieu d'une poignée d'étirement infinie).
-    function autoGrowTextarea(t) {
-      if (!t) return;
-      t.style.height = "auto";
-      const max = Math.round(window.innerHeight * 0.45);
-      const h = Math.min(t.scrollHeight + 2, max);
-      t.style.height = h + "px";
-      t.style.overflowY = (t.scrollHeight + 2 > max) ? "auto" : "hidden"; // scrollbar seulement si on atteint le plafond
-    }
-    document.querySelectorAll("textarea").forEach((t) => {
-      t.addEventListener("input", () => autoGrowTextarea(t));
-      autoGrowTextarea(t);
-    });
-
-    // Compteurs de caractères (éléments .char-count avec data-for / data-max).
-    document.querySelectorAll(".char-count[data-for]").forEach((el) => {
-      const input = $(el.dataset.for); if (!input) return;
-      const max = parseInt(el.dataset.max, 10) || 0;
-      const upd = () => { const n = (input.value || "").length; el.textContent = n + "/" + max; el.classList.toggle("over", max > 0 && n > max); };
-      input.addEventListener("input", upd);
-      upd();
-    });
-
-    // Tuiles de catégories de l'onglet Lieux → déclenchent les filtres (logique existante réutilisée).
-    // Rangée Lieux = UN SEUL sélecteur (filtre OU tri) : une seule tuile active à la fois.
-    // Choisir un tri remet le filtre sur « Tous », et inversement → fini les 2 tuiles allumées.
-    document.querySelectorAll("#lieuxCats .cat-tile").forEach((t) => t.addEventListener("click", () => {
-      if (t.classList.contains("active")) return; // déjà sélectionnée → rien à faire
-      document.querySelectorAll("#lieuxCats .cat-tile").forEach((x) => x.classList.toggle("active", x === t));
-      if (t.dataset.catcf) {
-        cafeSortKey = "default"; // un filtre annule le tri en cours
-        const chip = document.querySelector('#cafeFilters [data-cf="' + t.dataset.catcf + '"]');
-        if (chip) chip.click();              // gère la géoloc (« near ») + renderCafesList
-        else { cafeFilter.mode = t.dataset.catcf; renderCafesList(); }
-      } else if (t.dataset.catsort) {
-        cafeFilter.mode = "all";             // un tri repart de tous les lieux
-        if (typeof setCafeChipActive === "function") setCafeChipActive("all");
-        cafeSortKey = t.dataset.catsort;
-        renderCafesList();
-      }
-      // Redirige direct vers les résultats filtrés (sinon on ne voit pas l'effet).
-      setTimeout(() => { const lst = $("cafesList"); if (lst) lst.scrollIntoView({ behavior: "smooth", block: "start" }); }, 120);
-    }));
-
-    // Tuiles de navigation rapide de l'onglet Jeux (Quêtes / Jeux / Badges / Coupons).
-    function openJeuxSheet(kind) {
-      const isGames = kind === "games";
-      $("jeuxSheetTitle").textContent = isGames ? "🎮 Jeux populaires" : "🎯 Quêtes du jour";
-      { const h = $("jeuxSheetHint"); if (h) h.textContent = isGames ? "Touche un jeu pour le découvrir et y jouer." : "Touche une quête, accomplis-la dans la vraie vie, puis valide-la pour gagner XP + badge (3 par jour max)."; }
-      show($("jeuxSheetQuests"), !isGames);
-      show($("jeuxSheetGames"), isGames);
-      { const t = $("questSheetTools"); if (t) t.style.display = isGames ? "none" : "flex"; } // recherche/tri : quêtes uniquement
-      $("jeuxSheet").classList.remove("hidden");
-      if (!isGames) filterQuestSheet();
-    }
-    // Recherche + tri « près de moi » de la feuille Quêtes (réduit le listing énorme).
-    let _questSheetNear = false;
-    function filterQuestSheet() {
-      const list = $("questsList"); if (!list) return;
-      const q = (($("questSheetSearch") && $("questSheetSearch").value) || "").trim().toLowerCase();
-      const rows = [...list.querySelectorAll(".qrow")];
-      rows.forEach((r) => { const txt = r.textContent.toLowerCase(); r.style.display = (!q || txt.includes(q)) ? "" : "none"; });
-      // Tri par distance si activé et position connue
-      if (_questSheetNear && typeof lastKnownGeo !== "undefined" && lastKnownGeo) {
-        const dist = (r) => {
-          const k = r.dataset.qkey; const o = k && typeof questByKey === "function" ? questByKey(k) : null;
-          if (!o || o.lat == null || o.lng == null || typeof haversineKm !== "function") return Infinity;
-          return haversineKm(lastKnownGeo, { lat: o.lat, lng: o.lng });
-        };
-        rows.filter((r) => r.dataset.qkey).sort((a, b) => dist(a) - dist(b)).forEach((r) => list.appendChild(r));
-      }
-    }
-    { const s = $("questSheetSearch"); if (s) s.addEventListener("input", filterQuestSheet); }
-    { const n = $("questSheetNear"); if (n) n.addEventListener("click", () => {
-      _questSheetNear = !_questSheetNear; n.classList.toggle("active", _questSheetNear);
-      if (_questSheetNear && (typeof lastKnownGeo === "undefined" || !lastKnownGeo) && typeof getGeo === "function") {
-        getGeo(() => filterQuestSheet(), () => { if (typeof toast === "function") toast("⚠️", "Position indisponible"); });
-      } else filterQuestSheet();
-    }); }
-    { const c = $("jeuxSheetClose"); if (c) c.addEventListener("click", () => $("jeuxSheet").classList.add("hidden")); }
-    { const m = $("jeuxSheet"); if (m) m.addEventListener("click", (e) => { if (e.target.id === "jeuxSheet") m.classList.add("hidden"); }); }
-    document.querySelectorAll("[data-jeuxopen]").forEach((t) => t.addEventListener("click", () => openJeuxSheet(t.dataset.jeuxopen)));
-    document.querySelectorAll("#jeuxNav [data-jeuxnav]").forEach((t) => t.addEventListener("click", () => {
-      const k = t.dataset.jeuxnav;
-      if (k === "badges") { showJeuxView("jeuxBadges"); return; }
-      if (k === "coupons") { showJeuxView("jeuxCoupons"); return; }
-      if (k === "rank") { showJeuxView("jeuxRank"); if (typeof renderLeaderboard === "function") renderLeaderboard(); return; }
-      if (k === "shop") { showJeuxView("jeuxShop"); if (typeof renderShop === "function") renderShop(); return; }
-      openJeuxSheet(k); // quests | games -> feuille overlay
-    }));
-
-    // Boutons d'action des états vides (« Découvrir des Mates », « Voir les lieux »…)
-    document.addEventListener("click", (e) => {
-      const b = e.target.closest("[data-empty-act]"); if (!b) return;
-      const a = b.dataset.emptyAct;
-      if (a === "discover") {
-        goToTab("connexions");
-        if (typeof showMatesView === "function") showMatesView("matesHome");
-        if (typeof showMatesSegment === "function") showMatesSegment("discover");
-      } else if (a === "lieux") { goToTab("lieux"); }
-      else if (a === "jeux") { goToTab("jeux"); }
-    });
-
-    // ====================== INSTALLATION DE L'APP (PWA) ======================
-    // Propose d'installer SunMates sur l'écran d'accueil, via une bannière maison
-    // (le menu natif du navigateur est trop caché). Gère Android/Chrome (événement
-    // beforeinstallprompt) ET iPhone/iPad (pas d'événement → on explique le geste).
-    (function setupInstallBanner() {
-      const banner = $("pwaBanner"); if (!banner) return;
-      const sub = $("pwaSub"), installBtn = $("pwaInstall"), closeBtn = $("pwaClose");
-      const isStandalone = () => window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-      let deferredPrompt = null;
-      // P2.37 : dès qu'on détecte l'app comme installée UNE fois (standalone ou event appinstalled),
-      // on s'en souvient → la bannière ne réapparaît plus jamais (même ouverte ensuite en onglet),
-      // sauf re-déclenchement manuel depuis les Réglages.
-      const markInstalled = () => { try { localStorage.setItem("sm_pwa_installed", "1"); } catch (e) {} };
-      const isInstalled = () => { try { return localStorage.getItem("sm_pwa_installed") === "1"; } catch (e) { return false; } };
-      if (isStandalone()) markInstalled();
-
-      // « Fermer » ne masque plus la bannière POUR TOUJOURS : on la met en veille 5 jours,
-      // puis elle revient tant que l'app n'est pas installée. Re-déclenchable depuis les Réglages.
-      const SNOOZE_MS = 5 * 24 * 3600 * 1000;
-      const isSnoozed = () => Date.now() < (+localStorage.getItem("sm_pwa_snooze") || 0);
-      const snooze = () => { try { localStorage.setItem("sm_pwa_snooze", String(Date.now() + SNOOZE_MS)); } catch (e) {} };
-
-      // Instructions manuelles selon la plateforme (toujours dispo, même sans invite native).
-      const manualHint = () => isIOS
-        ? "Appuie sur Partager ⬆️ puis « Sur l'écran d'accueil »."
-        : "Menu ⋮ du navigateur → « Installer l'application » / « Ajouter à l'écran d'accueil ».";
-
-      const hideBanner = () => banner.classList.remove("show");
-      // force = ignore la mise en veille (re-déclenchement manuel)
-      const showBanner = (force) => {
-        if (isStandalone()) { markInstalled(); return; }
-        if (!force && (isSnoozed() || isInstalled())) return;
-        installBtn.style.display = deferredPrompt ? "" : "none"; // pas de bouton 1-clic sans invite native (ex. iOS)
-        sub.textContent = deferredPrompt ? "Accès direct depuis ton écran d'accueil, comme une vraie app." : manualHint();
-        banner.classList.add("show");
-      };
-
-      closeBtn.addEventListener("click", () => { hideBanner(); snooze(); });
-
-      // Android / Chrome / Edge : on intercepte l'invite native pour la déclencher nous-mêmes.
-      window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredPrompt = e; showBanner(); });
-      window.addEventListener("appinstalled", () => { track("pwa_installed"); markInstalled(); hideBanner(); try { localStorage.removeItem("sm_pwa_snooze"); } catch (e) {} });
-
-      installBtn.addEventListener("click", () => once("pwa-install", async () => {
-        if (!deferredPrompt) { sub.textContent = manualHint(); return; }
-        deferredPrompt.prompt();
-        try { await deferredPrompt.userChoice; } catch (e) {}
-        deferredPrompt = null;
-        hideBanner();
-      }));
-
-      // Re-déclenchement manuel (Réglages) : carte explicative + bouton d'installation.
-      const isAndroidChrome = /android/i.test(navigator.userAgent);
-      function fillInstallSteps() {
-        const steps = $("installSteps"), note = $("installNote"), btn = $("installNowBtn"); if (!steps) return;
-        if (deferredPrompt) {
-          steps.innerHTML = "<li>Touche <b>« Installer maintenant »</b> ci-dessous.</li><li>Confirme dans la fenêtre du navigateur.</li><li>SunMates apparaît sur ton écran d'accueil 🎉</li>";
-          btn.style.display = ""; note.textContent = "";
-        } else if (isIOS) {
-          steps.innerHTML = "<li>Touche le bouton <b>Partager</b> ⬆️ (en bas de Safari).</li><li>Choisis <b>« Sur l'écran d'accueil »</b>.</li><li>Touche <b>Ajouter</b> ✓</li>";
-          btn.style.display = "none"; note.textContent = "Sur iPhone/iPad, l'installation se fait via le menu Partager de Safari.";
-        } else {
-          steps.innerHTML = "<li>Ouvre le menu <b>⋮</b> du navigateur (en haut à droite).</li><li>Choisis <b>« Installer l'application »</b> ou <b>« Ajouter à l'écran d'accueil »</b>.</li><li>Valide 🎉</li>";
-          btn.style.display = isAndroidChrome ? "" : "none"; note.textContent = isAndroidChrome ? "Si le bouton ne fait rien, utilise le menu ⋮." : "";
-        }
-      }
-      function openInstallModal() {
-        const m = $("installModal"); if (!m) return;
-        fillInstallSteps(); m.classList.remove("hidden");
-      }
-      function closeInstallModal() { const m = $("installModal"); if (m) m.classList.add("hidden"); }
-      { const c = $("installModalClose"); if (c) c.addEventListener("click", closeInstallModal); }
-      { const m = $("installModal"); if (m) m.addEventListener("click", (e) => { if (e.target === m) closeInstallModal(); }); }
-      { const nb = $("installNowBtn"); if (nb) nb.addEventListener("click", () => once("pwa-install-modal", async () => {
-        if (!deferredPrompt) { fillInstallSteps(); return; }
-        deferredPrompt.prompt();
-        try { await deferredPrompt.userChoice; } catch (e) {}
-        deferredPrompt = null; closeInstallModal(); hideBanner();
-      })); }
-      window.openInstallHelp = () => {
-        if (isStandalone()) { if (typeof toast === "function") toast("✅", "SunMates est déjà installée sur cet appareil 🎉"); return; }
-        openInstallModal();
-      };
-
-      // Au démarrage : si pas installée et pas en veille, on affiche la bannière (invite native
-      // si dispo, sinon instructions manuelles). Elle reste affichée jusqu'à fermeture/installation.
-      if (!isStandalone() && !isSnoozed() && !isInstalled()) setTimeout(() => showBanner(), 1800);
-    })();
-
-    // Au chargement : vérifie s'il y a déjà une session
-    db.auth.getSession().then(({ data }) => render(data.session));
-  </script>
-</body>
-</html>
+        if (navigator.serviceWor
