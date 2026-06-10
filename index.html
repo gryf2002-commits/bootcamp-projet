@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=340"></script>
-  <script src="sunmates-icons.js?v=340"></script>
+  <script src="sunmates-badges.js?v=341"></script>
+  <script src="sunmates-icons.js?v=341"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -9364,6 +9364,23 @@
       if (window.SMSound) SMSound.play("pop");
     }
     { const bf = $("betaFeedbackBtn"); if (bf) bf.addEventListener("click", openBetaFeedback); }
+
+    // ===== Renvoi de la file locale : un retour/support qui a échoué (offline ou table absente) ne doit JAMAIS être perdu =====
+    async function flushFeedbackQueue() {
+      if (!navigator.onLine || typeof db === "undefined" || !db) return;
+      let q; try { q = JSON.parse(localStorage.getItem("sm_feedback_queue") || "[]"); } catch (e) { return; }
+      if (!q.length) return;
+      const left = [];
+      for (const item of q) {
+        const row = { ...item }; delete row.ts; // ts = horodatage local, pas une colonne app_feedback
+        let ok = false;
+        try { const { error } = await db.from("app_feedback").insert(row); ok = !error; } catch (e) {}
+        if (!ok) left.push(item); // on garde ceux qui échouent encore (table toujours absente / offline)
+      }
+      try { localStorage.setItem("sm_feedback_queue", JSON.stringify(left)); } catch (e) {}
+    }
+    window.addEventListener("online", flushFeedbackQueue);
+    setTimeout(flushFeedbackQueue, 4000); // au chargement, une fois db/init posés
 
     // ===== Support SunMates : vrai canal de contact (réutilise app_feedback → réponse admin dans l'app) =====
     function openSupport() {
