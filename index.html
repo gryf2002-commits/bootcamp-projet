@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=389"></script>
-  <script src="sunmates-icons.js?v=389"></script>
+  <script src="sunmates-badges.js?v=390"></script>
+  <script src="sunmates-icons.js?v=390"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -1921,12 +1921,16 @@
     .bubble { max-width: 80%; padding: .6rem .85rem; border-radius: 16px; font-size: .9rem; line-height: 1.35; word-wrap: break-word; }
     .bubble.them { background: #ffe7e1; color: var(--text); border-bottom-left-radius: 5px; align-self: flex-start; }
     .bubble.me { background: var(--accent-grad); color: #fff; border-bottom-right-radius: 5px; align-self: flex-end; }
-    /* Brise-glace (chat vide) */
-    .ice-break { display: flex; flex-direction: column; gap: .5rem; padding: 1rem .4rem; }
-    .ice-break-t { font-size: .8rem; font-weight: 800; color: var(--muted); text-align: center; margin-bottom: .2rem; }
-    .ice-chip { text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .6rem .8rem; font-size: .85rem; color: var(--ink); cursor: pointer; box-shadow: var(--shadow-sm); }
-    .ice-chip:active { transform: scale(.99); }
-    body.theme-dusk .ice-chip { background: #241b35; color: #f3e9f3; border-color: rgba(255,255,255,.08); }
+    /* Brise-glace (chat vide) — chips chaudes DA (suggestions engageantes, pas des boutons ternes) */
+    .ice-break { display: flex; flex-direction: column; gap: .55rem; padding: 1.1rem .4rem; }
+    .ice-break-t { font-size: .8rem; font-weight: 800; color: var(--muted); text-align: center; margin-bottom: .25rem; letter-spacing: .02em; }
+    .ice-chip { display: flex; align-items: flex-start; gap: .5rem; text-align: left;
+      background: linear-gradient(135deg, #FFF6E9, #FFE7DA); border: 1px solid rgba(255,122,89,.28); border-left: 4px solid var(--accent);
+      border-radius: 16px; padding: .65rem .85rem; font-size: .85rem; font-weight: 600; line-height: 1.4; color: var(--ink);
+      cursor: pointer; box-shadow: var(--shadow-sm); transition: transform .12s ease, box-shadow .12s ease; }
+    .ice-chip .ice-spark { flex-shrink: 0; font-size: .8rem; margin-top: .1rem; }
+    .ice-chip:active { transform: scale(.98); box-shadow: none; }
+    body.theme-dusk .ice-chip { background: linear-gradient(135deg, #2c2140, #241b35); color: #f3e9f3; border-color: rgba(255,170,130,.22); border-left-color: var(--accent); }
     .chat-input { display: flex; gap: .5rem; align-items: center; background: var(--bg); padding: .7rem 0 .3rem; flex-shrink: 0; }
     .chat-input input { flex: 1; box-shadow: var(--shadow-sm); border-color: #fff; }
     .chat-input button { padding: .75rem 1rem; flex-shrink: 0; }
@@ -7954,7 +7958,7 @@
             ${avatarMarkup(nameOf(c.user_a), avatarOf(c.user_a))}
             <div class="info"><div class="name">${escapeHtml(nameOf(c.user_a))}</div><div class="meta">souhaite se connecter</div></div>
             <button class="btn-primary" data-accept="${c.id}">Accepter</button></div>`).join("")
-        : emptyState("📭", "Aucune demande reçue", "Quand un voyageur souhaitera se connecter avec toi, sa demande apparaîtra ici.");
+        : emptyState("📭", "Aucune demande reçue", "Quand un voyageur souhaitera se connecter avec toi, sa demande apparaîtra ici. En attendant, fais le premier pas !", "Découvrir des Mates", "discover");
       $("requestsList").querySelectorAll("[data-accept]").forEach((b) =>
         b.addEventListener("click", () => acceptConnection(Number(b.dataset.accept))));
 
@@ -8176,7 +8180,7 @@
             </div>`;
           }).join("")
         : (q || travFilters.verified || travFilters.active || travFilters.city || travFilters.affinity || advActive
-            ? emptyState("🔍", "Aucun voyageur trouvé", "Essaie d'élargir tes filtres ou de modifier ta recherche.")
+            ? emptyState("🔍", "Aucun voyageur trouvé", "Essaie d'élargir tes filtres ou de modifier ta recherche.", "🔄 Réinitialiser les filtres", "resetfilters")
             : '<p class="muted">Découvre nos voyageurs ci-dessus 🌍 Pour trouver une vraie personne, tape son pseudo dans la recherche.</p>');
       $("travelersList").querySelectorAll("[data-profile]").forEach((el) =>
         el.addEventListener("click", () => openTravelerProfile(travelerMap[el.dataset.profile])));
@@ -8200,7 +8204,11 @@
       const el = $(id); if (el) el.addEventListener("input", _debounce(() => renderTravelers($("travSearch").value), 250));
     });
     $("fReset").addEventListener("click", () => {
-      ADV_FILTER_IDS.forEach((id) => { if ($(id)) $(id).value = ""; });
+      ADV_FILTER_IDS.forEach((id) => {
+        const el = $(id); if (!el) return; el.value = "";
+        // un <select> vidé par code ne notifie pas le sélecteur DA custom → on émet le change nous-mêmes
+        if (el.tagName === "SELECT") el.dispatchEvent(new Event("change", { bubbles: true }));
+      });
       renderTravelers($("travSearch").value);
     });
 
@@ -8242,6 +8250,9 @@
           if (typeof onNewMatch === "function") onNewMatch(reqItem && reqItem.fromId);
         }
         await loadConnections();
+        // Fiche voyageur ouverte sur la personne qu'on vient d'accepter → son bouton
+        // « Connexion » passe à « ✅ Connecté » sans avoir à fermer/rouvrir la fiche.
+        if (!error && currentTravelerId && connectedIds.has(currentTravelerId) && travelerMap[currentTravelerId]) _tpSyncConnState(travelerMap[currentTravelerId]);
       });
     }
 
@@ -9694,16 +9705,22 @@
     // Ouvre la conversation avec un Mate (identifié par son id utilisateur)
     // Brise-glace : suggestions de 1er message, personnalisées (intérêts / ville du Mate).
     function _iceBreakerHtml(p) {
-      const name = ((p.username || "").split(" ")[0]) || "toi";
+      // i18nT à la GÉNÉRATION : le filet de traduction DOM saute exprès .chat-body
+      // (messages perso) → sans ça, les brise-glace restaient en FR pour les anglophones.
+      const name = ((p.username || "").split(" ")[0]) || i18nT("toi");
       const city = (p.city || "").split(",")[0].trim();
       const interests = Array.isArray(p.interests) ? p.interests : [];
       const ideas = [];
-      if (interests.length) ideas.push("Hello " + name + " ! Moi aussi j'aime " + String(interests[0]).toLowerCase() + " 😄 on partage ça ?");
-      if (city) ideas.push("Coucou " + name + " ! Un bon spot à me conseiller à " + city + " ? ☕");
-      ideas.push("Salut " + name + " ! Partant·e pour une quête SunMates ensemble ? 🎯");
-      ideas.push("Hey " + name + " 👋 qu'est-ce qui t'amène à voyager en ce moment ?");
-      const chips = ideas.slice(0, 3).map((t) => '<button class="ice-chip" data-ice-msg="' + escapeHtml(t) + '">' + escapeHtml(t) + "</button>").join("");
-      return '<div class="ice-break"><div class="ice-break-t">💬 Brise-glace — touche pour démarrer</div>' + chips + "</div>";
+      if (interests.length) ideas.push(i18nT("Hello {n} ! Moi aussi j'aime {x} 😄 on partage ça ?", { n: name, x: String(interests[0]).toLowerCase() }));
+      if (city) ideas.push(i18nT("Coucou {n} ! Un bon spot à me conseiller à {c} ? ☕", { n: name, c: city }));
+      // accordé au genre du MATE (c'est lui/elle qu'on invite à être partant·e)
+      const partant = p.gender === "Femme" ? "Salut {n} ! Partante pour une quête SunMates ensemble ? 🎯"
+        : p.gender === "Homme" ? "Salut {n} ! Partant pour une quête SunMates ensemble ? 🎯"
+        : "Salut {n} ! Partant·e pour une quête SunMates ensemble ? 🎯";
+      ideas.push(i18nT(partant, { n: name }));
+      ideas.push(i18nT("Hey {n} 👋 qu'est-ce qui t'amène à voyager en ce moment ?", { n: name }));
+      const chips = ideas.slice(0, 3).map((t) => '<button class="ice-chip" data-ice-msg="' + escapeHtml(t) + '"><span class="ice-spark">✨</span>' + escapeHtml(t) + "</button>").join("");
+      return '<div class="ice-break"><div class="ice-break-t">' + i18nT("💬 Brise-glace : touche pour démarrer") + "</div>" + chips + "</div>";
     }
     async function openChat(otherUserId) {
       currentChatUserId = otherUserId;
@@ -10244,20 +10261,9 @@
       const prompts = [[p.prompt1_q, p.prompt1_a], [p.prompt2_q, p.prompt2_a], [p.prompt3_q, p.prompt3_a]].filter((x) => x[1]);
       $("tpPrompts").innerHTML = prompts.map((x) =>
         `<div class="pprompt"><div class="pq">${escapeHtml(x[0] || "")}</div><div class="pa">${escapeHtml(x[1])}</div></div>`).join("");
-      // Bouton connexion adapté si déjà connecté
-      const cbtn = $("tpConnectBtn");
-      if (connectedIds.has(p.id)) { cbtn.textContent = "✅ Connecté"; cbtn.disabled = true; cbtn.style.opacity = ".6"; }
-      else { cbtn.textContent = "Connexion"; cbtn.disabled = false; cbtn.style.opacity = "1"; }
-      // BFF du moment : seulement pour les Mates connectés
-      const bffBtn = $("tpBffBtn");
-      if (connectedIds.has(p.id)) {
-        bffBtn.style.display = "";
-        // P2.31 : libellé COURT (la tuile est petite) → on ne touche qu'au span label, l'explication va en title.
-        const bffLbl = bffBtn.querySelector("span:last-child");
-        const setBffTxt = (s) => { if (bffLbl && bffLbl !== bffBtn.querySelector(".tpa-ic")) bffLbl.textContent = s; else bffBtn.textContent = "⭐ " + s; };
-        if (!iAmGold) { bffBtn.disabled = true; bffBtn.style.opacity = ".6"; setBffTxt("BFF 👑"); bffBtn.title = "« BFF du moment » réservé aux membres Gold 👑"; }
-        else { bffBtn.disabled = false; bffBtn.style.opacity = "1"; const on = (myBffId === p.id); setBffTxt(on ? "BFF ✓" : "BFF"); bffBtn.title = on ? "Retirer ce Mate de tes BFF du moment" : "Définir ce Mate comme ton BFF du moment ⭐"; }
-      } else { bffBtn.style.display = "none"; }
+      // Bouton connexion + BFF adaptés à l'état de connexion (helper partagé : aussi appelé
+      // quand on accepte une demande pendant que la fiche est ouverte)
+      _tpSyncConnState(p);
       $("tpMsg").textContent = "";
       $("tpBadgesCard").style.display = "none"; $("tpBadges").innerHTML = "";
       if (typeof renderTravelerExtras === "function") renderTravelerExtras(p);
@@ -10269,6 +10275,25 @@
         $("tpBadges").innerHTML = badges.map((b) =>
           `<div class="bitem"><div class="smbadge-wrap">${renderBadge(b.badge_key, "grid", { emoji: b.emoji })}</div><div class="bname">${escapeHtml(b.name || "")}</div><div class="bprog">✅</div></div>`).join("");
       }
+    }
+    // État des boutons Connexion + BFF de la fiche voyageur, selon connectedIds.
+    // Appelé par openTravelerProfile ET par acceptConnection (fiche ouverte au moment où
+    // on accepte la demande → le bouton passait pas à « ✅ Connecté » sans rouvrir la fiche).
+    function _tpSyncConnState(p) {
+      const cbtn = $("tpConnectBtn");
+      if (!cbtn || !p) return;
+      if (connectedIds.has(p.id)) { cbtn.textContent = i18nT("✅ Connecté"); cbtn.disabled = true; cbtn.style.opacity = ".6"; }
+      else { cbtn.textContent = i18nT("Connexion"); cbtn.disabled = false; cbtn.style.opacity = "1"; }
+      // BFF du moment : seulement pour les Mates connectés
+      const bffBtn = $("tpBffBtn");
+      if (connectedIds.has(p.id)) {
+        bffBtn.style.display = "";
+        // P2.31 : libellé COURT (la tuile est petite) → on ne touche qu'au span label, l'explication va en title.
+        const bffLbl = bffBtn.querySelector("span:last-child");
+        const setBffTxt = (s) => { if (bffLbl && bffLbl !== bffBtn.querySelector(".tpa-ic")) bffLbl.textContent = s; else bffBtn.textContent = "⭐ " + s; };
+        if (!iAmGold) { bffBtn.disabled = true; bffBtn.style.opacity = ".6"; setBffTxt("BFF 👑"); bffBtn.title = "« BFF du moment » réservé aux membres Gold 👑"; }
+        else { bffBtn.disabled = false; bffBtn.style.opacity = "1"; const on = (myBffId === p.id); setBffTxt(on ? "BFF ✓" : "BFF"); bffBtn.title = on ? "Retirer ce Mate de tes BFF du moment" : "Définir ce Mate comme ton BFF du moment ⭐"; }
+      } else { bffBtn.style.display = "none"; }
     }
     $("tpMsgBtn").addEventListener("click", () => { if (currentTravelerId) openChat(currentTravelerId); });
     $("tpBlockBtn").addEventListener("click", () => blockUser(currentTravelerId));
@@ -14259,7 +14284,16 @@
       "Le boulot": "Work?",
       "Numéro inconnu": "Unknown number",
       "📞 Qui t'appelle ?": "THAT CALLS YOU.",
-      "Quand un voyageur souhaitera se connecter avec toi, sa demande apparaîtra ici.": "When a guest wants to connect with you, their request will appear here.",
+      "Quand un voyageur souhaitera se connecter avec toi, sa demande apparaîtra ici. En attendant, fais le premier pas !": "When a traveller wants to connect with you, their request will appear here. Meanwhile, go make the first move!",
+      "🔄 Réinitialiser les filtres": "🔄 Reset filters",
+      "💬 Brise-glace : touche pour démarrer": "💬 Icebreakers: tap to start",
+      "toi": "you",
+      "Hello {n} ! Moi aussi j'aime {x} 😄 on partage ça ?": "Hello {n}! I'm into {x} too 😄 something in common already?",
+      "Coucou {n} ! Un bon spot à me conseiller à {c} ? ☕": "Hey {n}! Any good spot you'd recommend in {c}? ☕",
+      "Salut {n} ! Partante pour une quête SunMates ensemble ? 🎯": "Hi {n}! Up for a SunMates quest together? 🎯",
+      "Salut {n} ! Partant pour une quête SunMates ensemble ? 🎯": "Hi {n}! Up for a SunMates quest together? 🎯",
+      "Salut {n} ! Partant·e pour une quête SunMates ensemble ? 🎯": "Hi {n}! Up for a SunMates quest together? 🎯",
+      "Hey {n} 👋 qu'est-ce qui t'amène à voyager en ce moment ?": "Hey {n} 👋 what's got you travelling these days?",
       "Aucune connexion pour l'instant": "No failed logins yet.",
       "Toucher pour discuter 💬": "Tap to chat 💬",
       "Pas encore de conversation": "No conversation yet!",
@@ -15243,6 +15277,13 @@
         if (typeof showMatesSegment === "function") showMatesSegment("discover");
       } else if (a === "lieux") { goToTab("lieux"); }
       else if (a === "jeux") { goToTab("jeux"); }
+      else if (a === "resetfilters") {
+        // Découvrir, 0 résultat : tout remettre à zéro (recherche + filtres rapides + avancés) et re-rendre
+        Object.keys(travFilters).forEach((k) => { travFilters[k] = false; });
+        document.querySelectorAll("[data-filter]").forEach((x) => x.classList.remove("active"));
+        const s = $("travSearch"); if (s) s.value = "";
+        const fr = $("fReset"); if (fr) fr.click(); else if (typeof renderTravelers === "function") renderTravelers("");
+      }
     });
 
     // ====================== INSTALLATION DE L'APP (PWA) ======================
