@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=366"></script>
-  <script src="sunmates-icons.js?v=366"></script>
+  <script src="sunmates-badges.js?v=367"></script>
+  <script src="sunmates-icons.js?v=367"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -1510,6 +1510,15 @@
     /* --- 1. Héros joueur --- */
     /* P2.20 : plus COMPACT et plus CALME (moins imposant/flashy) — padding réduit, ombre douce,
        halo statique discret (plus de « respiration »), avatar et titre plus petits. */
+    /* #12 : en-tête Jeux avec badge rond de niveau (cliquable). */
+    .jh-head{ display:flex; align-items:center; justify-content:space-between; gap:.6rem; }
+    .player-badge{ position:relative; flex-shrink:0; width:52px; height:52px; border-radius:50%; border:0; cursor:pointer;
+      background:var(--accent-grad); display:grid; place-items:center; box-shadow:0 6px 16px rgba(255,90,77,.34); transition:transform .12s ease; }
+    .player-badge:active{ transform:scale(.94); }
+    .player-badge .pb-av{ width:44px; height:44px; border-radius:50%; display:grid; place-items:center; font-size:1.45rem; line-height:1;
+      background:rgba(255,255,255,.22); background-size:cover; background-position:center; }
+    .player-badge .pb-lvl{ position:absolute; bottom:-3px; right:-4px; min-width:20px; height:20px; padding:0 4px; border-radius:999px;
+      background:#fff; color:var(--accent); font-weight:900; font-size:.72rem; display:grid; place-items:center; border:2px solid var(--accent); box-shadow:0 2px 5px rgba(0,0,0,.2); }
     .player-hero{ position:relative; overflow:hidden; border-radius:var(--radius); padding:.8rem .95rem .9rem; margin:.2rem 0 .85rem;
       background: radial-gradient(120% 130% at 18% -10%, rgba(255,255,255,.22), rgba(255,255,255,0) 46%), var(--accent-grad);
       box-shadow:var(--shadow); color:#fff; isolation:isolate; }
@@ -4345,10 +4354,14 @@
 
         <!-- Vue principale : Jeux & Quêtes -->
         <div id="jeuxHome" class="jeux-view">
-          <h1 data-i18n="games.title">Jeux &amp; Quêtes</h1>
-          <p class="muted" style="margin-top:0">Relève des défis, gagne de l'XP et débloque des coupons.</p>
-          <!-- Vignette de niveau (déplacée de l'accueil : sa place est ici, dans le hub de jeu) -->
-          <section class="player-hero" id="playerHero" aria-label="Ta progression">
+          <!-- #12 : niveau = petit BADGE ROND cliquable en haut (fini la grosse tuile jaune) ; détails (XP, série) en modale au clic. -->
+          <div class="jh-head">
+            <h1 data-i18n="games.title" style="margin:0">Jeux &amp; Quêtes</h1>
+            <button id="playerBadge" class="player-badge" title="Ta progression" aria-label="Ta progression"><span class="pb-av" id="pbAv">🧭</span><span class="pb-lvl" id="pbLvl">1</span></button>
+          </div>
+          <p class="muted" style="margin-top:.2rem">Relève des défis, gagne de l'XP et débloque des coupons.</p>
+          <!-- Vignette de niveau gardée mais MASQUÉE (renderPlayerHero la remplit toujours ; le badge + la modale lisent ses valeurs). -->
+          <section class="player-hero" id="playerHero" aria-label="Ta progression" style="display:none">
             <div class="ph-glow" aria-hidden="true"></div>
             <div class="ph-top">
               <div class="ph-avatar"><span class="ph-av-emoji" id="phAvatar">🧭</span><span class="ph-lvl-ring" id="phLvl">1</span></div>
@@ -12084,7 +12097,22 @@
       const av = $("phAvatar"), url = myProfile && myProfile.avatar_url;
       if (av) { if (url) { av.textContent = ""; av.style.backgroundImage = 'url("' + url + '")'; } else { av.style.backgroundImage = ""; av.textContent = "🧭"; } }
       try { const st = JSON.parse(localStorage.getItem("sm_streak_" + (myUserId || "x")) || "{}") || {}; $("phStreakN").textContent = st.count || 1; } catch (e) {}
+      // #12 : badge rond d'en-tête (niveau + avatar).
+      const pbLvl = $("pbLvl"); if (pbLvl) pbLvl.textContent = lvl;
+      const pbAv = $("pbAv"); if (pbAv) { if (url) { pbAv.textContent = ""; pbAv.style.backgroundImage = 'url("' + url + '")'; } else { pbAv.style.backgroundImage = ""; pbAv.textContent = "🧭"; } }
     }
+    // #12 : clic sur le badge rond → détails de progression (XP, niveau, série) en modale.
+    { const pb = $("playerBadge"); if (pb) pb.addEventListener("click", () => {
+      const g = (id) => { const e = $(id); return e ? e.textContent : ""; };
+      showInfo("⭐ Ta progression", `<div style="text-align:center;line-height:1.5">
+        <div style="font-weight:800;font-size:1.12rem;color:var(--ink)">${escapeHtml(g("phName"))}</div>
+        <div class="muted" style="font-size:.85rem">${escapeHtml(g("phTitle"))}</div>
+        <div style="margin:.7rem 0 .3rem;font-weight:800;color:#B5740E">Niveau ${escapeHtml(g("phLvl"))} · 🔥 ${escapeHtml(g("phStreakN"))} j d'affilée</div>
+        <div style="font-size:.84rem;margin-bottom:.35rem">${escapeHtml(g("phXpCur"))} / ${escapeHtml(g("phXpMax"))} XP</div>
+        <div class="ph-xp-track" style="height:12px;background:rgba(120,40,10,.18)"><div class="ph-xp-fill" style="width:${($("phXpFill") ? $("phXpFill").style.width : "0%")}"></div></div>
+        <p style="font-size:.85rem;margin:.75rem 0 0">${$("phXpNext") ? $("phXpNext").innerHTML : ""}</p>
+      </div>`);
+    }); }
 
     function renderQuestSpotlight() {
       if (!$("questSpotlight")) return;
