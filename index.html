@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=385"></script>
-  <script src="sunmates-icons.js?v=385"></script>
+  <script src="sunmates-badges.js?v=386"></script>
+  <script src="sunmates-icons.js?v=386"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -173,7 +173,7 @@
          au plus haut). Centralisée ici pour éviter les conflits d'empilement. */
       --z-header:   50;    /* en-tête collant */
       --z-nav:      60;    /* barre de navigation du bas */
-      --z-picker:   200;   /* overlay sélecteur (choisir un Mate) */
+      --z-picker:   6000;  /* overlay sélecteur (choisir un Mate) — AU-DESSUS des feuilles/modales (z-modal 4300), sinon il s'ouvre DERRIÈRE (bug « Défier un Mate » invisible) ; sous popinfo 6500 + fakecall 6700 */
       --z-notif:    210;   /* panneau de notifications */
       --z-toast:    300;   /* toasts éphémères */
       --z-pwa:      400;   /* bannière « installer l'app » */
@@ -4508,7 +4508,25 @@
               <div class="cat-tile" data-jeuxnav="shop"><div class="cic c-pink" data-smicon="shop" data-smicon-size="36">🛍️</div><div class="clbl">Boutique</div></div>
             </div>
           </div>
-          <div class="gold-only-note">👑 Gratuit : 1 quête + 1 activité par jour. Gold : illimité + <b>coupons exclusifs</b> bien plus avantageux.</div>
+          <!-- ⚡ QUÊTE DU JOUR (spotlight) — moteur renderQuestSpotlight ressuscité (le DOM avait sauté
+               lors d'un dédoublonnage : le renderer tournait dans le vide). Contenu vivant au cœur du hub. -->
+          <section class="card quest-spotlight" id="questSpotlight" aria-label="Quête du jour">
+            <div class="qs-aura" aria-hidden="true"></div>
+            <div class="qs-head"><span class="jnav-cap" style="margin:0;padding:0">⚡ Quête du jour</span><span class="muted" id="qsTimer" style="font-size:.76rem;font-weight:700">⏳</span></div>
+            <div style="display:flex;gap:.7rem;align-items:flex-start">
+              <div class="qs-emblem" id="qsEmblem">🎯</div>
+              <div style="flex:1;min-width:0">
+                <h3 class="qs-title" id="qsTitle">—</h3>
+                <div class="qs-desc muted" id="qsDesc" style="font-size:.82rem"></div>
+                <div style="display:flex;align-items:center;gap:.45rem;margin-top:.45rem;flex-wrap:wrap"><span class="qs-xp" id="qsXp">+0</span><span class="qs-dot">·</span><span class="qs-badge-hint" style="font-size:.78rem">🏅 <b id="qsBadge">—</b></span></div>
+              </div>
+            </div>
+            <div class="qs-mode" style="display:flex;gap:.3rem;margin:.7rem 0 .55rem;background:rgba(255,138,61,.1);border-radius:12px;padding:.25rem">
+              <button type="button" class="qs-mode-btn active" data-qsmode="solo">🧭 Solo</button>
+              <button type="button" class="qs-mode-btn" data-qsmode="group">👥 À deux <i>+bonus</i></button>
+            </div>
+            <button class="btn-primary btn-block qs-play" id="qsPlayBtn">▶️ Jouer cette quête</button>
+          </section>
 
           <!-- #13 : progression en TUILES CARRÉES (clic = détail). Quête proche + Ville à l'honneur =
                UNE tuile scindée en 2 moitiés. Les widgets d'origine sont gardés MASQUÉS (#progSources) :
@@ -4523,6 +4541,8 @@
             <button type="button" class="prog-row" data-prog="collection"><span class="cic c-purp">🗺️</span><span class="pr-tx"><b>Collection de quêtes</b><span class="pr-sub" id="prCollSub">Complète la carte, ville après ville</span></span><b class="pr-val" id="prCollVal"></b><span class="pr-chev">›</span></button>
             <button type="button" class="prog-row" data-prog="capitale"><span class="cic c-green">🏙️</span><span class="pr-tx"><b>Ville à l'honneur</b><span class="pr-sub" id="prCitySub">Une nouvelle ville chaque jour</span></span><span class="pr-chev">›</span></button>
           </div>
+          <!-- Note Gold reléguée APRÈS la progression (info secondaire) + cliquable → tuile explicative -->
+          <div class="gold-only-note" id="goldNote" role="button" tabindex="0" style="cursor:pointer">👑 Gratuit : 1 quête + 1 activité par jour. Gold : illimité + <b>coupons exclusifs</b> bien plus avantageux. <span style="opacity:.7">ⓘ</span></div>
           <div id="progSources" style="display:none">
             <div id="weeklyGoals"></div>
             <div class="card nq-card" id="nearQuestCard" style="display:none">
@@ -8578,7 +8598,9 @@
       if (!mates.length) { if (typeof toast === "function") toast("🤝", "Connecte-toi d'abord à un Mate pour le défier 🙂"); return; }
       const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden");
       openPicker(i18nT("Défier un Mate"), mates.map((p) => ({ label: p.username || "Voyageur", avatar: p.avatar_url, id: p.id })), (item) => {
-        closePicker(); goToTab("connexions"); if (typeof openChat === "function") openChat(item.id);
+        closePicker();
+        { const js = $("jeuxSheet"); if (js) js.classList.add("hidden"); } // sinon la feuille couvre le chat
+        goToTab("connexions"); if (typeof openChat === "function") openChat(item.id);
         setTimeout(() => { const inp = $("chatInput"); if (inp) { inp.value = i18nT("🎮 Je te défie : « {g} » sur SunMates{s} — à toi de jouer !", { g: gameName, s: scoreTxt ? " · " + scoreTxt : "" }); inp.focus(); } }, 450);
       });
     }
@@ -13009,6 +13031,10 @@
       else if (typeof showJeuxView === "function") showJeuxView("jeuxHome");
     }); }
     { const ps = $("phStreak"); if (ps) ps.addEventListener("click", () => { const h = $("homeStreak"); if (h) h.click(); }); }
+    // « Tout cliquable » : chaque info du hub ouvre sa tuile explicative
+    { const gn = $("goldNote"); if (gn) gn.addEventListener("click", () => popInfo("👑", "Gratuit vs Gold",
+      "<div style='text-align:left;line-height:1.6;font-size:.88rem'><p style='margin:.2rem 0'><b>Gratuit</b> : 1 quête + 1 activité par jour, les jeux, les badges, le classement — et toute la <b>sécurité</b>, gratuite pour toujours 🛟</p><p style='margin:.2rem 0'><b>Gold 👑</b> : quêtes illimitées + <b>coupons exclusifs</b> chez les partenaires, bien plus avantageux.</p><p class='muted' style='margin:.4rem 0 0;font-size:.78rem'>Le détail des avantages est dans Profil → Premium.</p></div>")); }
+    { const jn = $("jhNext"); if (jn) { jn.style.cursor = "pointer"; jn.setAttribute("role", "button"); jn.setAttribute("tabindex", "0"); jn.addEventListener("click", () => { const xi = $("xpInfoBtn"); if (xi && xi.onclick) xi.onclick(); }); } }
     const MISSION_QUEST = { talk: "quest_paris_canal", coffee: "quest_paris_marais", photo: "quest_paris_eiffel", quartier: "quest_paris_montmartre" };
     document.querySelectorAll("#qmRail .qm-card").forEach((c) => c.addEventListener("click", () => {
       const m = c.dataset.mission;
