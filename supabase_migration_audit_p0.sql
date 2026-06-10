@@ -164,3 +164,14 @@ end $$;
 --   • Auth > Settings : mot de passe minimum 8 caractères (1 clic dashboard)
 --   • Edge Functions : redéployer send-email (version sécurisée) ou la supprimer
 -- ============================================================
+
+-- ============================================================
+-- 7) VIE PRIVÉE — votes de sondage (contre-audit du 10 juin, soir)
+-- ============================================================
+-- Avant : SELECT using (true) → n'importe quel utilisateur connecté pouvait voir
+-- QUI a voté QUOI sur chaque sondage. L'app n'en a pas besoin : elle ne lit que
+-- SES propres votes, et les totaux passent par la RPC feed_poll_counts (SECURITY
+-- DEFINER), qui continue de fonctionner. On restreint donc la lecture à ses votes.
+drop policy if exists feed_poll_votes_select on feed_poll_votes;
+create policy feed_poll_votes_select on feed_poll_votes
+  for select to authenticated using (user_id = auth.uid());

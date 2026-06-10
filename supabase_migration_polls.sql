@@ -21,7 +21,9 @@ create index if not exists feed_poll_votes_post_idx on feed_poll_votes (post_id)
 alter table feed_poll_votes enable row level security;
 
 drop policy if exists feed_poll_votes_select on feed_poll_votes;
-create policy feed_poll_votes_select on feed_poll_votes for select to authenticated using (true);
+-- Vie privée : chacun ne lit que SES votes (les totaux passent par la RPC
+-- feed_poll_counts ci-dessous, SECURITY DEFINER). Jamais « qui a voté quoi ».
+create policy feed_poll_votes_select on feed_poll_votes for select to authenticated using (user_id = auth.uid());
 
 drop policy if exists feed_poll_votes_insert on feed_poll_votes;
 create policy feed_poll_votes_insert on feed_poll_votes for insert to authenticated with check (user_id = auth.uid());

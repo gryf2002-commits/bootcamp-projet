@@ -97,3 +97,51 @@
 ---
 
 *Audit réalisé par 3 passes parallèles (sécurité/RGPD, architecture, UI/UX) sur le code, les 62 SQL, les Edge Functions, le SW et les screenshots récents. Corrections P0 appliquées le 10 juin 2026 — détail dans le tableau ci-dessus.*
+
+---
+
+# 🔁 Addendum — contre-audit du soir (v373, après l'incident de troncature)
+
+> Second audit indépendant (4 passes parallèles + vérification manuelle de chaque finding critique).
+> Objectif : vérifier que les P0 du matin ont survécu au fix v373, et trouver ce que la première passe a raté.
+
+## ✅ Les P0 du matin ont survécu à v373 (vérifié point par point)
+
+Consentement PostHog, filtre realtime `recipient_id=eq`, limites chat (200) / connexions filtrées, mot de passe 8 car., Edge Functions `send-push` (secret `x-webhook-secret`) et `send-email` (JWT + templates fixes + CORS restreint), migration `audit_p0.sql` complète (TTL GPS, index, `sm_delete_my_account` couvrant toutes les tables, limites Storage) : **tout est en place**. Le commit v373 n'a annulé aucune correction.
+
+**Une seule exception** : le P0#10 (z-index) était marqué « corrigé » mais `.fakecall` est resté à `z-index: 99999` (index.html l.1379) — il n'a jamais été tokenisé (ni en v371 ni après). À remplacer par un token `--z-*` au-dessus du signal (le faux appel doit couvrir tout l'écran).
+
+## 🔴 Nouveaux findings confirmés (ratés par la passe du matin)
+
+1. **Votes de sondage lisibles par tous** — `supabase_migration_polls.sql` l.24 : `feed_poll_votes` SELECT `using (true)` pour tout utilisateur authentifié → n'importe qui peut voir **qui a voté quoi** sur chaque sondage. Restreindre à `user_id = auth.uid()` + agrégats via RPC/vue (ou lecture par le créateur du post).
+2. **`trust_score` / `is_verified` modifiables en console** — la vérification « simulée » écrit `is_verified: true, trust_score: +30` côté client (index.html l.5955). Choix MVP **assumé et documenté** (bloc H2 commenté dans `security_fixes.sql`), mais avec un **classement par confiance** dans l'app, n'importe qui peut se mettre 9999 de trust via la console. À durcir avant d'accélérer l'acquisition : activer H2 + RPC `SECURITY DEFINER` pour la vérif.
+3. **Fallback XP côté client** — si la RPC `grant_solo_xp` échoue, l'app fait un `update({ xp })` direct (index.html ~l.12479). Tant que la migration s27 (trigger anti-triche) est bien lancée en prod, le trigger bloque ; sinon c'est trichable. → Vérifier que s27 est appliquée, puis supprimer le fallback.
+
+## 🟠 Perf — confirmés (impact moyen)
+
+- **`touch_presence` tourne onglet caché** : le `setInterval` 60 s (l.14202) n'a pas de garde `document.hidden` → écritures DB inutiles en arrière-plan. Une ligne à ajouter.
+- **Markers carte reconstruits en bloc** : `homeCluster.clearLayers()` + recréation à chaque rendu (la signature `homeMapSig` évite les rebuilds identiques, mais tout changement = rebuild complet). Diff incrémental à envisager à 10k+ lieux/mates.
+- **ResizeObserver de la carte jamais `disconnect()`** (l.10590) ; caches globaux (`travelerMap`, `demoChats`) jamais purgés à la déconnexion → à vider dans `stopSessionFeatures()`.
+- Posts à 100+ commentaires : pas de « voir plus » (la limite coupe silencieusement).
+
+## 🟡 Cohérence / i18n
+
+- **Bannière cookies en FR uniquement** (texte injecté en dur l.54) : un utilisateur EN voit la bannière RGPD en français. Ajouter la paire EN.
+- `manifest.json` : champs `screenshots` et `id` toujours manquants (déjà en P1 du matin, toujours vrai).
+- Visite guidée : ~15 sélecteurs échantillonnés, **tous valides** ✅. Helper `_gw` bien utilisé ✅. Pas de vert criard ✅. Les « — » restants sont des placeholders vides (acceptable).
+
+## ❌ Faux positifs écartés (vérifiés à la main, ne pas « corriger »)
+
+- Listeners des popups Leaflet et du composeur de spot : les nœuds sont recréés via `innerHTML` à chaque rendu → pas d'accumulation réelle.
+- Traductions `vouch.*` : présentes dans le dictionnaire runtime d'index.html (le fichier `_fr_en.json` à la racine est un artefact de travail, pas la source runtime).
+- « Fuites démo » sur le feed : les comptes démo sont des profils seedés (IA), pas une session utilisateur ; l'auto-post de quête passe par la RPC `complete_quest` (validée serveur) pour l'utilisateur réel — comportement voulu.
+- Tables « manquantes » dans la suppression de compte : la version complète est dans `audit_p0.sql` (qui remplace celle de `security_fixes.sql`) — il suffit de **lancer la migration**.
+
+## 📋 Rappel : actions manuelles toujours en attente (dashboard Supabase)
+
+1. **Exécuter `supabase_migration_audit_p0.sql`** (SQL Editor) — tant que ce n'est pas fait, TTL GPS, index, suppression complète et limites Storage ne sont PAS actifs.
+2. **`send-push`** : secret `WEBHOOK_SECRET` + header `x-webhook-secret` sur les 3 webhooks + redéployer.
+3. Auth → mot de passe min 8 ; pg_cron si purge GPS auto.
+4. Vérifier que **s27 (anti-triche XP)** et `voicenotes_strict` sont bien passées.
+5. Petit correctif SQL à ajouter : policy SELECT de `feed_poll_votes` (finding #1 ci-dessus).
+6. Sentry `release` encore à `sunmates@v372` (index.html l.18) alors que l'app est en v373 — à bumper au prochain commit.

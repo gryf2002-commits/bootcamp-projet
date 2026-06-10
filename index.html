@@ -15,7 +15,7 @@
         if (window.Sentry && Sentry.init) {
           Sentry.init({
             dsn: "https://383baae639ccef902adb48a8439570b8@o4511521167638528.ingest.de.sentry.io/4511521207746640",
-            release: "sunmates@v372",
+            release: "sunmates@v374",
             sampleRate: 1.0,
             beforeSend: function (event) { if (event.user) { delete event.user.email; delete event.user.ip_address; } return event; }
           });
@@ -46,15 +46,20 @@
     document.addEventListener("DOMContentLoaded", function () {
       var c = null; try { c = localStorage.getItem("sm_consent_analytics"); } catch (e) { c = "no"; }
       if (c === "yes" || c === "no") return;
+      // i18n : la bannière s'affiche avant le moteur i18n → on traduit ici, selon la langue mémorisée.
+      var lang = "fr"; try { lang = localStorage.getItem("sm_lang") || "fr"; } catch (e) {}
+      var txt = (lang === "en")
+        ? { aria: "Analytics consent", title: "Analytics", body: "We'd like to measure how SunMates is used (anonymised, never your texts) to improve the app. It's your call.", yes: "Sure ☀️", no: "Decline" }
+        : { aria: "Consentement mesure d'audience", title: "Mesure d'audience", body: "On aimerait mesurer l'usage de SunMates (anonymisé, jamais tes textes) pour améliorer l'app. C'est toi qui choisis.", yes: "D'accord ☀️", no: "Refuser" };
       var b = document.createElement("div");
       b.id = "consentBanner";
       b.setAttribute("role", "dialog");
-      b.setAttribute("aria-label", "Consentement mesure d'audience");
+      b.setAttribute("aria-label", txt.aria);
       b.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:calc(.8rem + env(safe-area-inset-bottom,0px));z-index:var(--z-consent,5500);width:calc(100% - 1.6rem);max-width:430px;background:var(--card,#fff);color:var(--ink,#1d2230);border:1px solid var(--line,#f0e2da);border-radius:18px;box-shadow:0 18px 50px rgba(255,90,77,.22);padding:.9rem 1rem;font:600 .85rem/1.45 Manrope,system-ui,sans-serif";
-      b.innerHTML = '🍪 <b>Mesure d\'audience</b><br>On aimerait mesurer l\'usage de SunMates (anonymisé, jamais tes textes) pour améliorer l\'app. C\'est toi qui choisis.'
+      b.innerHTML = '🍪 <b>' + txt.title + '</b><br>' + txt.body
         + '<div style="display:flex;gap:.5rem;margin-top:.6rem">'
-        + '<button id="consentYes" style="flex:1;border:0;border-radius:999px;padding:.55rem;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#FFC93C,#FF8A3D,#FF5A4D);color:#fff">D\'accord ☀️</button>'
-        + '<button id="consentNo" style="flex:1;border:1.5px solid var(--line,#f0e2da);border-radius:999px;padding:.55rem;font-weight:800;cursor:pointer;background:transparent;color:inherit">Refuser</button></div>';
+        + '<button id="consentYes" style="flex:1;border:0;border-radius:999px;padding:.55rem;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#FFC93C,#FF8A3D,#FF5A4D);color:#fff">' + txt.yes + '</button>'
+        + '<button id="consentNo" style="flex:1;border:1.5px solid var(--line,#f0e2da);border-radius:999px;padding:.55rem;font-weight:800;cursor:pointer;background:transparent;color:inherit">' + txt.no + '</button></div>';
       document.body.appendChild(b);
       function done(v) { try { localStorage.setItem("sm_consent_analytics", v); } catch (e) {} b.remove(); if (v === "yes") window._phInit(); }
       document.getElementById("consentYes").addEventListener("click", function () { done("yes"); });
@@ -183,6 +188,7 @@
       --z-signal:   6400;  /* écran signal lumineux SOS */
       --z-popinfo:  6500;  /* tuile explicative centrée */
       --z-sheet:    6600;  /* bottom-sheet du sélecteur DA */
+      --z-fakecall: 6700;  /* faux appel plein écran (doit couvrir TOUT) */
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -1376,7 +1382,7 @@
     .ban-emoji { font-size: 3rem; }
     .ban-card h2 { margin: .4rem 0 .3rem; color: var(--danger); }
     .ban-card textarea { width: 100%; margin-top: .6rem; }
-    .fakecall { position: fixed; inset: 0; z-index: 99999; background: linear-gradient(180deg,#1b1b24,#0b0b11); color: #fff; display: flex; align-items: center; justify-content: center; }
+    .fakecall { position: fixed; inset: 0; z-index: var(--z-fakecall); background: linear-gradient(180deg,#1b1b24,#0b0b11); color: #fff; display: flex; align-items: center; justify-content: center; }
     .fakecall.hidden { display: none; }
     .fc-inner { width: 100%; max-width: 420px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: calc(3.5rem + env(safe-area-inset-top)) 2rem calc(3.5rem + env(safe-area-inset-bottom)); }
     .fc-top { text-align: center; margin-top: 1.5rem; }
@@ -14195,7 +14201,7 @@
     }
     let _presenceTimer = null;
     function presenceEnabled() { return localStorage.getItem("sm_presence") !== "0"; }
-    async function touchPresence() { try { if (presenceEnabled()) await db.rpc("touch_presence"); } catch (e) {} }
+    async function touchPresence() { if (document.hidden) return; /* onglet caché : pas d'écriture DB inutile (le retour est couvert par visibilitychange) */ try { if (presenceEnabled()) await db.rpc("touch_presence"); } catch (e) {} }
     function startPresence() {
       stopPresence();
       touchPresence();
