@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=365"></script>
-  <script src="sunmates-icons.js?v=365"></script>
+  <script src="sunmates-badges.js?v=366"></script>
+  <script src="sunmates-icons.js?v=366"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -4832,7 +4832,10 @@
       $("authPwToggle").innerHTML = show ? EYE_OPEN : EYE_OFF; // œil ouvert quand visible
     });
 
-    $("logoutBtn").addEventListener("click", () => db.auth.signOut());
+    // #5 : on RECHARGE après déconnexion (comme le ban-logout) → on repart d'un état 100 % propre
+    // (abonnements temps réel, dédup notifs, listes en mémoire) ; sinon au changement de compte
+    // toutes les anciennes notifs « revenaient ».
+    $("logoutBtn").addEventListener("click", async () => { try { await db.auth.signOut(); } catch (e) {} try { location.reload(); } catch (e) {} });
 
     // Réagit aux changements d'état (connexion/déconnexion).
     // IMPORTANT : on diffère render hors du callback (setTimeout 0). Sinon, faire des
