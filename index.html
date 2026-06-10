@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=380"></script>
-  <script src="sunmates-icons.js?v=380"></script>
+  <script src="sunmates-badges.js?v=381"></script>
+  <script src="sunmates-icons.js?v=381"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -3471,6 +3471,20 @@
               background: linear-gradient(135deg, rgba(255,201,60,.18), rgba(255,138,61,.12)); border: 1px dashed rgba(232,150,31,.45);
               border-radius: 14px; padding: .65rem .8rem; margin-top: .15rem; }
             .rit-row.rit-all .rit-name { color: var(--accent); font-weight: 800; }
+            .hm-inspo-nav { display: flex; gap: .3rem; flex-shrink: 0; }
+            .hm-inspo-nav button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--accent); font-size: 1.05rem; font-weight: 800; cursor: pointer; display: grid; place-items: center; line-height: 1; padding: 0; }
+            .tile { position: relative; }
+            .tile .tile-dot { position: absolute; top: .55rem; right: .55rem; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--accent); color: #fff; font-size: .64rem; font-weight: 900; display: grid; place-items: center; box-shadow: 0 2px 6px rgba(255,90,77,.5); }
+            .hm-mateday { display: flex; align-items: center; gap: .6rem; background: var(--cream); border: 1px solid var(--line); border-radius: 14px; padding: .55rem .7rem; margin: .15rem 0 .55rem; }
+            .hm-mateday .hmd-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .05rem; }
+            .hm-mateday .hmd-tx b { font-size: .88rem; }
+            .hm-mateday .hmd-tx span { font-size: .74rem; color: var(--muted); }
+            .hm-mateday .hmd-btn { flex: 0 0 auto; padding: .45rem .7rem; border-radius: 12px; }
+            body.theme-dusk .hm-mateday { background: rgba(255,255,255,.05); }
+            /* Squelette de carte : shimmer chaud derrière Leaflet, visible tant que les tuiles n'ont pas peint */
+            .homemap { background: linear-gradient(100deg, #f1e6d8 38%, #faf1e3 50%, #f1e6d8 62%); background-size: 200% 100%; animation: mapShimmer 1.3s linear infinite; }
+            body.theme-dusk .homemap { background: linear-gradient(100deg, #241a38 38%, #2d2145 50%, #241a38 62%); background-size: 200% 100%; }
+            @keyframes mapShimmer { from { background-position: 120% 0; } to { background-position: -80% 0; } }
           </style>
           <!-- HomeMates : tes souvenirs d'aventure + tes Mates, gardés même de retour à la maison -->
           <section class="card hm-souv" id="homeMates" style="display:none">
@@ -5527,6 +5541,21 @@
         if (typeof renderSoloHome === "function") renderSoloHome();
         renderInspo(); renderNextTrip(); renderTripPrep(); renderWishlist(); renderTripsDone(); renderVisitors(); renderHost();
         if (typeof renderHomeMates === "function") renderHomeMates();
+        // Jour 0 : un compte tout neuf voit un mode Maison presque vide → mot d'accueil + cap sur le mode Voyage.
+        try {
+          const fresh = !((typeof connectedIds !== "undefined" && connectedIds && connectedIds.size) || (typeof myCheckinsRaw !== "undefined" && (myCheckinsRaw || []).length) || (typeof myQuestRows !== "undefined" && (myQuestRows || []).some((r) => r.status === "completed")));
+          let d0 = $("hmDay0");
+          if (fresh && !localStorage.getItem("sm_day0_done")) {
+            if (!d0) {
+              d0 = document.createElement("section"); d0.id = "hmDay0"; d0.className = "card";
+              d0.style.cssText = "background:linear-gradient(150deg,#FFE9C4,#FFD9AE);border:0;text-align:center";
+              d0.innerHTML = '<div style="font-size:2rem;filter:var(--relief)">🌅</div><h3 style="margin:.2rem 0 .3rem">' + i18nT("Bienvenue chez toi") + '</h3><p style="margin:0 0 .7rem;font-size:.85rem;color:#7a4a20">' + i18nT("Ici, c'est ton cocon : défis du quotidien et rituels. L'aventure, elle, se passe en mode Voyage — carte, Mates et quêtes autour de toi.") + '</p><button class="btn-primary btn-block" id="hmDay0Go">✈️ ' + i18nT("Passer en mode Voyage") + '</button><button class="btn-ghost btn-block" id="hmDay0X" style="margin-top:.4rem">' + i18nT("Rester ici pour l'instant") + "</button>";
+              const host = $("homeHomeMode"); if (host) host.insertBefore(d0, host.firstChild);
+              const g = $("hmDay0Go"); if (g) g.addEventListener("click", () => { try { localStorage.setItem("sm_day0_done", "1"); } catch (e) {} d0.remove(); setHomeMode("travel"); });
+              const x = $("hmDay0X"); if (x) x.addEventListener("click", () => { try { localStorage.setItem("sm_day0_done", "1"); } catch (e) {} d0.remove(); });
+            }
+          } else if (d0) d0.remove();
+        } catch (e) {}
       } else if (typeof renderHomeMap === "function") { setTimeout(renderHomeMap, 60); } // resync OU crée la carte au retour (P1.3 : homeLeaf pouvait n'avoir jamais été initialisé en mode Maison)
       // (Le hub quête/missions a été retiré de l'accueil → plus rien à repositionner ici.
       //  Le solo "à la maison" est rendu par renderSoloHome ; les quêtes vivent dans l'onglet Jeux.)
@@ -5566,22 +5595,30 @@
         b.disabled = true; b.textContent = "✓ Ajouté à tes envies"; renderInspo();
       }; }, 40);
     }
+    // Carrousel : la destination du jour reste la porte d'entrée, mais on peut feuilleter ‹ ›
+    // les autres sans attendre demain (offset mémorisé pour la session seulement).
+    let _inspoOff = 0;
     function renderInspo() {
       const box = $("hmInspo"); if (!box) return;
       const day = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-      const o = HM_INSPO[day % HM_INSPO.length];
+      const o = HM_INSPO[(day + ((_inspoOff % HM_INSPO.length) + HM_INSPO.length)) % HM_INSPO.length];
       const inWish = (typeof loadWishlist === "function" ? loadWishlist() : []).some((x) => x.toLowerCase().includes(o.c.toLowerCase()));
       box.innerHTML = `<div class="hm-inspo-top"><span class="hm-inspo-flag">${o.f}</span>
-          <div style="flex:1;min-width:0"><div class="hm-inspo-ttl">Inspiration du jour</div><div class="hm-inspo-city">${escapeHtml(o.c)}</div></div></div>
+          <div style="flex:1;min-width:0"><div class="hm-inspo-ttl">${_inspoOff === 0 ? "Inspiration du jour" : "Inspiration"}</div><div class="hm-inspo-city">${escapeHtml(o.c)}</div></div>
+          <div class="hm-inspo-nav"><button type="button" id="hmInspoPrev" aria-label="Inspiration précédente">‹</button><button type="button" id="hmInspoNext" aria-label="Inspiration suivante">›</button></div></div>
         <div class="hm-inspo-desc">${escapeHtml(o.d)}</div>
         <div class="hm-inspo-tip">🗓️ ${escapeHtml(o.when)} · 💶 ${escapeHtml(o.budget)} · 🛟 ${escapeHtml(o.safe)}</div>
         <button class="btn-accent btn-block hm-inspo-btn" id="hmInspoMore" style="margin-top:.6rem">✨ Découvrir ${escapeHtml(o.c)} ›</button>
         ${inWish ? '<div class="muted" style="text-align:center;font-size:.78rem;margin-top:.4rem">✓ Déjà dans tes envies</div>' : ""}`;
       const b = $("hmInspoMore"); if (b) b.addEventListener("click", () => _inspoFiche(o));
+      const pv = $("hmInspoPrev"); if (pv) pv.addEventListener("click", () => { _inspoOff--; renderInspo(); if (window.SMSound) SMSound.play("tap"); });
+      const nx = $("hmInspoNext"); if (nx) nx.addEventListener("click", () => { _inspoOff++; renderInspo(); if (window.SMSound) SMSound.play("tap"); });
     }
     // Bucket-list de destinations de rêve (locale)
-    function loadWishlist() { try { return JSON.parse(localStorage.getItem("sm_wishlist") || "[]") || []; } catch (e) { return []; } }
-    function saveWishlist(a) { try { localStorage.setItem("sm_wishlist", JSON.stringify(a.slice(0, 30))); } catch (e) {} }
+    // Mémoïsé : relu à CHAQUE rendu du mode Maison → on parse une fois, on invalide à l'écriture.
+    let _wishCache = null;
+    function loadWishlist() { if (_wishCache) return _wishCache; try { _wishCache = JSON.parse(localStorage.getItem("sm_wishlist") || "[]") || []; } catch (e) { _wishCache = []; } return _wishCache; }
+    function saveWishlist(a) { _wishCache = a.slice(0, 30); try { localStorage.setItem("sm_wishlist", JSON.stringify(_wishCache)); } catch (e) {} }
     function renderWishlist() {
       const box = $("wishlistCard"); if (!box) return;
       const list = loadWishlist();
@@ -11952,6 +11989,16 @@
       setBadge("notifBellCount", bell);
       setBadge("segMsg", unreadMsgCount);
       setBadge("segReq", pendingRequestsList.length);
+      // Pastilles contextuelles sur les tuiles d'accès rapides de l'accueil (découvrabilité) :
+      // « Mes Mates » si messages non lus / demandes en attente, « Jeux » si défis reçus.
+      const _tileDot = (sel, n) => {
+        const tile = document.querySelector('.tab-panel[data-panel="accueil"] ' + sel); if (!tile) return;
+        let dot = tile.querySelector(".tile-dot");
+        if (n > 0) { if (!dot) { dot = document.createElement("span"); dot.className = "tile-dot"; tile.appendChild(dot); } dot.textContent = n > 9 ? "9+" : n; }
+        else if (dot) dot.remove();
+      };
+      _tileDot('.tile[data-goto="connexions"]', mates);
+      _tileDot('.tile[data-goto="jeux"]:not([data-jeuxview])', jeux);
       // La cloche « sonne » quand le nombre de notifs AUGMENTE (nouvelle arrivée).
       const btn = $("notifBell");
       if (btn) {
@@ -12005,9 +12052,19 @@
       const feed = $("homeFeed"); if (!feed) return;
       // Avatar du composer
       { const av = $("feedComposerAv"); if (av) { if (myProfile && myProfile.avatar_url) { av.textContent = ""; av.style.cssText = "width:36px;height:36px;border-radius:50%;background-size:cover;background-position:center;display:inline-block;flex-shrink:0;background-image:url('" + myProfile.avatar_url + "')"; } else { av.textContent = (myProfile && myProfile.username) ? myProfile.username[0].toUpperCase() : "🙂"; } } }
-      skelFirst("homeFeed", skelRows(3));
-      let rows = [];
-      try { const { data } = await db.rpc("feed_list", { p_limit: 40 }); rows = data || []; } catch (e) {}
+      // SWR : on AFFICHE le dernier fil connu tout de suite (cache local 15 min) et on
+      // rafraîchit en arrière-plan → le feed apparaît en ~50 ms au lieu d'attendre le réseau.
+      const CK = "sm_feed_cache_" + (myUserId || "x");
+      let cached = null; try { const o = JSON.parse(localStorage.getItem(CK) || "null"); if (o && Date.now() - o.t < 15 * 60 * 1000 && Array.isArray(o.rows) && o.rows.length) cached = o.rows; } catch (e) {}
+      if (cached) _paintFeed(feed, cached); else skelFirst("homeFeed", skelRows(3));
+      let rows = [], fetched = false;
+      try { const { data } = await db.rpc("feed_list", { p_limit: 40 }); rows = data || []; fetched = true; } catch (e) {}
+      if (!fetched) { if (cached) return; } // offline : on garde le cache affiché
+      else { try { localStorage.setItem(CK, JSON.stringify({ t: Date.now(), rows: rows.slice(0, 40) })); } catch (e) {} }
+      if (cached && fetched && JSON.stringify(cached) === JSON.stringify(rows)) return; // rien de neuf → pas de re-render
+      _paintFeed(feed, rows);
+    }
+    function _paintFeed(feed, rows) {
       if (!rows.length) {
         feed.innerHTML = '<div class="fpost-empty"><span class="fe-emoji">🌅</span><div class="fe-title">Le fil est calme…</div><div class="fe-sub">Sois le premier à publier quelque chose ✨</div></div>';
         return;
@@ -12028,6 +12085,8 @@
             ${isMe ? '<button class="fpost-del" data-del="' + r.id + '" title="Supprimer">🗑️</button>' : ""}
           </div></div>`;
       }).join("");
+      // Avatars en lazy-loading (data-lazybg) : ne charge que ceux qui approchent de l'écran.
+      if (typeof observeLazy === "function") observeLazy(feed);
       // Compte des commentaires en 1 appel (RPC) → maj des pastilles 💬.
       (async () => {
         const ids = rows.map((r) => Number(r.id)).filter(Boolean);
@@ -12727,9 +12786,16 @@
       const lbl = $("hmMatesLbl"), row = $("hmMatesRow");
       if (mates.length) {
         if (lbl) lbl.textContent = "Tes Mates d'aventure";
+        // « Mate du jour » : un lien social mis en avant chaque jour, même de retour à la maison.
+        const md = mates[(typeof _dayIdx === "function" ? _dayIdx() : 0) % mates.length];
+        const mdBg = _safeImgUrl(md.avatar_url);
+        let mdWrap = sec.querySelector(".hm-mateday-wrap");
+        if (!mdWrap) { mdWrap = document.createElement("div"); mdWrap.className = "hm-mateday-wrap"; row.parentNode.insertBefore(mdWrap, row); }
+        mdWrap.innerHTML = '<div class="hm-mateday"><div class="avatar"' + (mdBg ? " style=\"background-image:url('" + mdBg + "')\"" : "") + ">" + (mdBg ? "" : escapeHtml((md.username || "?")[0].toUpperCase())) + '</div><div class="hmd-tx"><b>' + escapeHtml(md.username || "Mate") + "</b><span>" + i18nT("Ton Mate du jour — un petit coucou ? ☀️") + '</span></div><button class="btn-accent hmd-btn" data-hmmate="' + escapeHtml(md.id) + '">💬</button></div>';
+        mdWrap.querySelectorAll("[data-hmmate]").forEach((el) => el.addEventListener("click", () => { goToTab("connexions"); if (typeof openChat === "function") openChat(el.dataset.hmmate); }));
         row.innerHTML = mates.slice(0, 12).map((p) => { const bg = _safeImgUrl(p.avatar_url); return '<div class="hm-mate" data-hmmate="' + escapeHtml(p.id) + '"><div class="avatar"' + (bg ? " style=\"background-image:url('" + bg + "')\"" : "") + ">" + (bg ? "" : escapeHtml((p.username || "?")[0].toUpperCase())) + '</div><div class="hm-mate-n">' + escapeHtml(p.username || "Mate") + "</div></div>"; }).join("");
         row.querySelectorAll("[data-hmmate]").forEach((el) => el.addEventListener("click", () => { goToTab("connexions"); if (typeof openChat === "function") openChat(el.dataset.hmmate); }));
-      } else { if (lbl) lbl.textContent = ""; row.innerHTML = '<p class="muted" style="font-size:.8rem">Pas encore de Mate — pars à la rencontre sur la carte ✨</p>'; }
+      } else { if (lbl) lbl.textContent = ""; const mw = sec.querySelector(".hm-mateday-wrap"); if (mw) mw.remove(); row.innerHTML = '<p class="muted" style="font-size:.8rem">Pas encore de Mate — pars à la rencontre sur la carte ✨</p>'; }
       // Teaser : on montre un bout du 1er souvenir SUR le résumé fermé → donne envie d'ouvrir l'album.
       const firstNoted = cities.find((c) => _souvGet(c));
       const teaser = firstNoted ? ' <span style="font-weight:500;color:var(--muted);font-size:.78rem">— ' + escapeHtml(firstNoted) + ' : « ' + escapeHtml(_souvGet(firstNoted).slice(0, 42)) + (_souvGet(firstNoted).length > 42 ? "…" : "") + ' »</span>' : "";
@@ -13713,6 +13779,11 @@
       "Bouger 30 minutes": "Move for 30 minutes",
       "Appeler un proche": "Call someone you love",
       "Lire 10 pages": "Read 10 pages",
+      "Bienvenue chez toi": "Welcome home",
+      "Ici, c'est ton cocon : défis du quotidien et rituels. L'aventure, elle, se passe en mode Voyage — carte, Mates et quêtes autour de toi.": "This is your cozy corner: daily challenges and rituals. The adventure lives in Travel mode — map, Mates and quests around you.",
+      "Passer en mode Voyage": "Switch to Travel mode",
+      "Rester ici pour l'instant": "Stay here for now",
+      "Ton Mate du jour — un petit coucou ? ☀️": "Your Mate of the day — say hi? ☀️",
       "tramways jaunes, fado et couchers de soleil sur le Tage": "yellow trams, fado and sunsets on the Tagus",
       "temples zen, ruelles de geishas et érables flamboyants": "zen temples, geisha lanes and flamboyant maples",
       "souks colorés, riads et désert à perte de vue": "colourful souks, riads and desert as far as the eye can see",
