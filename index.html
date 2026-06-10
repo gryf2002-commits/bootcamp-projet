@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=350"></script>
-  <script src="sunmates-icons.js?v=350"></script>
+  <script src="sunmates-badges.js?v=351"></script>
+  <script src="sunmates-icons.js?v=351"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -2890,6 +2890,43 @@
     .tile.soon .thumb { background: linear-gradient(135deg,#d9cdb8,#b3a079) !important; }
     .tile.soon .t-meta { color: var(--accent); font-weight: 700; }
 
+    /* ===================== SÉLECTEUR DA CUSTOM =====================
+       Chaque <select> natif est gardé (valeur + handlers change) mais masqué ;
+       on affiche un déclencheur DA + un panneau de choix (bottom-sheet) 100% DA. */
+    .sm-sel { position: relative; width: 100%; }
+    .sm-sel > select.sm-sel-native { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; margin: 0; padding: 0; border: 0; }
+    .sm-sel-trigger { width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+      padding: .8rem .9rem; border-radius: var(--radius-sm); border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+      font: inherit; font-weight: 600; cursor: pointer; text-align: left; transition: border-color .15s, box-shadow .15s; }
+    .sm-sel-trigger:active { transform: scale(.99); }
+    .sm-sel-trigger.open { border-color: var(--accent); box-shadow: var(--ring); }
+    .sm-sel-trigger .sm-sel-val { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sm-sel-trigger .sm-sel-val.placeholder { color: var(--muted); font-weight: 600; }
+    .sm-sel-trigger .sm-sel-chev { flex-shrink: 0; width: 22px; height: 22px; border-radius: 8px; display: grid; place-items: center;
+      background: var(--accent-soft); color: var(--accent); font-size: .68rem; font-weight: 900; }
+    body.theme-dusk .sm-sel-trigger { background: var(--card); border-color: rgba(255,255,255,.12); color: var(--ink); }
+    /* Contextes flex (le select était enfant flex direct) : le wrapper reprend le flex. */
+    .city-pick .sm-sel, #advFilters .sm-sel { flex: 1 1 auto; min-width: 0; }
+
+    .sm-selsheet-ov { position: fixed; inset: 0; z-index: 100010; background: rgba(20,8,30,.5); backdrop-filter: blur(2px);
+      display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .18s; }
+    .sm-selsheet-ov.show { opacity: 1; pointer-events: auto; }
+    .sm-selsheet { width: 100%; max-width: 480px; background: var(--paper); border-radius: 22px 22px 0 0; max-height: 74vh;
+      display: flex; flex-direction: column; transform: translateY(14px); transition: transform .2s; box-shadow: 0 -14px 44px rgba(0,0,0,.28);
+      padding-bottom: env(safe-area-inset-bottom, 0px); }
+    .sm-selsheet-ov.show .sm-selsheet { transform: translateY(0); }
+    .sm-selsheet-grip { width: 38px; height: 4px; border-radius: 999px; background: var(--line); margin: .55rem auto .2rem; }
+    .sm-selsheet-head { display: flex; align-items: center; justify-content: space-between; padding: .3rem 1.1rem .5rem; }
+    .sm-selsheet-head h4 { margin: 0; font-size: 1rem; color: var(--ink); }
+    .sm-selsheet-head button { background: none; border: 0; font-size: 1.05rem; color: var(--muted); padding: .2rem .5rem; cursor: pointer; line-height: 1; }
+    .sm-selsheet-list { overflow-y: auto; padding: .1rem .7rem 1.1rem; }
+    .sm-selopt { display: flex; align-items: center; justify-content: space-between; gap: .6rem; width: 100%; text-align: left;
+      padding: .72rem .8rem; border-radius: 12px; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: .92rem; cursor: pointer; }
+    .sm-selopt:active { background: var(--cream); }
+    .sm-selopt.sel { background: var(--accent-soft); color: var(--accent); font-weight: 800; }
+    .sm-selopt .sm-selopt-check { color: var(--accent); opacity: 0; font-weight: 900; }
+    .sm-selopt.sel .sm-selopt-check { opacity: 1; }
+
   </style>
 </head>
 <body>
@@ -4586,6 +4623,80 @@
       if (_notifiedEvents.size > 500) _notifiedEvents.delete(_notifiedEvents.values().next().value);
       return true;
     }
+
+    // ===================== Sélecteur DA custom =====================
+    // Garde le <select> natif (valeur + handlers change) mais le masque ; affiche un
+    // déclencheur DA + un panneau de choix (bottom-sheet) 100% DA. Auto sur tous les <select>.
+    (function () {
+      let _ov = null, _cur = null;
+      const esc = (s) => (typeof escapeHtml === "function" ? escapeHtml(s) : String(s == null ? "" : s));
+      function ensureOv() {
+        if (_ov) return _ov;
+        _ov = document.createElement("div");
+        _ov.className = "sm-selsheet-ov";
+        _ov.innerHTML = '<div class="sm-selsheet" role="dialog" aria-modal="true"><div class="sm-selsheet-grip"></div><div class="sm-selsheet-head"><h4></h4><button type="button" aria-label="Fermer">✕</button></div><div class="sm-selsheet-list"></div></div>';
+        document.body.appendChild(_ov);
+        _ov.addEventListener("click", (e) => { if (e.target === _ov) closeSheet(); });
+        _ov.querySelector(".sm-selsheet-head button").addEventListener("click", closeSheet);
+        return _ov;
+      }
+      function closeSheet() { if (_ov) _ov.classList.remove("show"); if (_cur && _cur._smTrigger) _cur._smTrigger.classList.remove("open"); _cur = null; }
+      function syncTrigger(sel) {
+        const t = sel._smTrigger; if (!t) return;
+        const o = sel.options[sel.selectedIndex];
+        const val = t.querySelector(".sm-sel-val");
+        val.textContent = (o && o.textContent) ? o.textContent : "Choisir";
+        val.classList.toggle("placeholder", !!(o && o.value === ""));
+      }
+      function titleFor(sel) {
+        if (sel.getAttribute("aria-label")) return sel.getAttribute("aria-label");
+        const w = sel.closest(".sm-sel") || sel;
+        const prev = w.previousElementSibling;
+        if (prev && prev.tagName === "LABEL") return prev.textContent.trim();
+        const cont = w.parentNode; const lbl = cont && cont.querySelector && cont.querySelector("label");
+        if (lbl) return lbl.textContent.trim();
+        return "Choisir";
+      }
+      function openSheet(sel, trigger) {
+        const ov = ensureOv(); _cur = sel;
+        ov.querySelector("h4").textContent = titleFor(sel) || "Choisir";
+        const list = ov.querySelector(".sm-selsheet-list");
+        const opts = Array.from(sel.options);
+        list.innerHTML = opts.map((o, i) => `<button type="button" class="sm-selopt${o.selected ? " sel" : ""}" data-i="${i}"${o.disabled ? " disabled" : ""}><span>${esc(o.textContent)}</span><span class="sm-selopt-check">✓</span></button>`).join("");
+        list.querySelectorAll(".sm-selopt").forEach((b) => b.addEventListener("click", () => {
+          sel.selectedIndex = +b.dataset.i;
+          syncTrigger(sel);
+          sel.dispatchEvent(new Event("change", { bubbles: true }));
+          if (window.SMSound) { try { SMSound.play("tap"); } catch (e) {} }
+          closeSheet();
+        }));
+        trigger.classList.add("open");
+        ov.classList.add("show");
+        const cur = list.querySelector(".sm-selopt.sel"); if (cur) setTimeout(() => { try { cur.scrollIntoView({ block: "nearest" }); } catch (e) {} }, 30);
+      }
+      function enhance(sel) {
+        if (!sel || sel._smEnhanced || sel.multiple) return;
+        sel._smEnhanced = true;
+        const wrap = document.createElement("div"); wrap.className = "sm-sel";
+        sel.parentNode.insertBefore(wrap, sel); wrap.appendChild(sel);
+        sel.classList.add("sm-sel-native"); sel.setAttribute("tabindex", "-1");
+        const trigger = document.createElement("button");
+        trigger.type = "button"; trigger.className = "sm-sel-trigger";
+        trigger.innerHTML = '<span class="sm-sel-val"></span><span class="sm-sel-chev">▾</span>';
+        wrap.appendChild(trigger); sel._smTrigger = trigger; syncTrigger(sel);
+        trigger.addEventListener("click", () => openSheet(sel, trigger));
+        sel.addEventListener("change", () => syncTrigger(sel));
+        try { new MutationObserver(() => syncTrigger(sel)).observe(sel, { childList: true }); } catch (e) {}
+      }
+      function enhanceAll(root) { try { (root || document).querySelectorAll("select:not(.sm-sel-native)").forEach(enhance); } catch (e) {} }
+      function init() {
+        enhanceAll();
+        try { new MutationObserver((muts) => { for (const m of muts) for (const n of m.addedNodes) { if (n.nodeType !== 1) continue; if (n.tagName === "SELECT") enhance(n); else if (n.querySelectorAll) n.querySelectorAll("select:not(.sm-sel-native)").forEach(enhance); } }).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+      }
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+      window.smEnhanceSelects = enhanceAll;
+    })();
 
     // --- Skeletons de chargement ---
     // Génère des lignes/cartes grises animées pendant un chargement.
