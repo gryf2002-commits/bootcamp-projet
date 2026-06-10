@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=382"></script>
-  <script src="sunmates-icons.js?v=382"></script>
+  <script src="sunmates-badges.js?v=383"></script>
+  <script src="sunmates-icons.js?v=383"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -4472,6 +4472,8 @@
             <button id="playerBadge" class="player-badge" title="Ta progression" aria-label="Ta progression"><span class="pb-av" id="pbAv">🧭</span><span class="pb-lvl" id="pbLvl">1</span></button>
           </div>
           <p class="muted" style="margin-top:.2rem">Relève des défis, gagne de l'XP et débloque des coupons.</p>
+          <!-- Anticipation : combien il manque pour le prochain niveau, visible SANS ouvrir la modale -->
+          <div class="jh-next" id="jhNext" style="font-size:.8rem;font-weight:800;color:var(--accent);margin:.15rem 0 .3rem"></div>
           <!-- Vignette de niveau gardée mais MASQUÉE (renderPlayerHero la remplit toujours ; le badge + la modale lisent ses valeurs). -->
           <section class="player-hero" id="playerHero" aria-label="Ta progression" style="display:none">
             <div class="ph-glow" aria-hidden="true"></div>
@@ -8691,7 +8693,8 @@
         const st = myQuestStatus[q.key];
         const tag = st === "completed" ? '<span class="badge ok" style="margin-left:.4rem">✅ Fait</span>'
                   : (st === "joined" ? '<span class="q-inprog">⏳ En cours</span>' : "");
-        const sub = [q.city, (q.points ? "+" + q.points + " XP" : "")].filter(Boolean).join(" · ");
+        // Bonus de groupe AFFICHÉ (+50% à deux) → donne envie de coopérer sans ouvrir le détail
+        const sub = [q.city, (q.points ? i18nT("+{x} XP · 👥 +{g} à deux ✨", { x: q.points, g: Math.round(q.points * 1.5) }) : "")].filter(Boolean).join(" · ");
         return `<div class="qrow${st === "completed" ? " qrow-done" : ""}" data-qkey="${q.key}">
           <div class="qico">${q.emoji}</div>
           <div class="qname">${escapeHtml(q.title)}${tag}${sub ? `<div class="qrow-sub">${escapeHtml(sub)}</div>` : ""}</div>
@@ -8703,7 +8706,10 @@
         if (qc) {
           const doneToday = myQuestRows.filter((r) => r.status === "completed" && _isToday(r.completed_at)).length;
           const doneTotal = myQuestRows.filter((r) => r.status === "completed").length;
-          qc.innerHTML = `<b>${doneToday}/3</b> aujourd'hui · ${doneTotal} accomplie${doneTotal > 1 ? "s" : ""}`;
+          // Quota du jour atteint → compte à rebours (l'attente crée le retour de demain ☀️)
+          let cdown = "";
+          if (doneToday >= 3) { const t = new Date(); t.setHours(24, 0, 0, 0); const h = Math.max(1, Math.ceil((t - Date.now()) / 3600000)); cdown = " · " + i18nT("prochaine quête dans ~{h} h ☀️", { h: h }); }
+          qc.innerHTML = `<b>${doneToday}/3</b> aujourd'hui · ${doneTotal} accomplie${doneTotal > 1 ? "s" : ""}` + cdown;
         }
       }
       const gq = $("questsList").querySelector("[data-goldq]");
@@ -8742,7 +8748,7 @@
           <div class="bprog">${done ? "✅ débloqué" : "🔒 à débloquer"}</div>
         </div>`;
       }).join("")
-        + (hiddenSecrets ? `<div class="bitem secret" id="secretTeaser" style="cursor:pointer">${window.SMBadge ? `<div class="smbadge-wrap">${SMBadge("legend", { secret: true, locked: true, size: 72 })}</div>` : '<div class="hex">❓</div>'}<div class="bname">Badges secrets</div><div class="bprog">${hiddenSecrets} à découvrir 👀</div></div>` : "");
+        + (hiddenSecrets ? (() => { const foundSec = defs.filter((b) => b.is_secret && myBadgeKeys.has(b.key)).length; return `<div class="bitem secret" id="secretTeaser" style="cursor:pointer">${window.SMBadge ? `<div class="smbadge-wrap">${SMBadge("legend", { secret: true, locked: true, size: 72 })}</div>` : '<div class="hex">❓</div>'}<div class="bname">Badges secrets</div><div class="bprog">${i18nT("🔮 {a}/{b} découverts", { a: foundSec, b: foundSec + hiddenSecrets })}</div></div>`; })() : "");
       $("badgeGrid").querySelectorAll("[data-badge]").forEach((el) => el.addEventListener("click", () => showBadgeInfo(el.dataset.badge)));
       { const tz = $("secretTeaser"); if (tz) tz.addEventListener("click", () => showInfo("Badges secrets 🔒", `<p style="text-align:center;line-height:1.6">Il existe <b>${hiddenSecrets} badge(s) secret(s)</b> à débloquer en explorant SunMates… 👀<br><br>À toi de les découvrir, ils apparaîtront ici une fois obtenus !</p>`)); }
       // Compteurs remis à la réalité (0 si rien d'accompli)
@@ -12362,6 +12368,8 @@
       // #12 : badge rond d'en-tête (niveau + avatar).
       const pbLvl = $("pbLvl"); if (pbLvl) pbLvl.textContent = lvl;
       _setAv($("pbAv"), url, "🧭");
+      // Anticipation visible sur le hub : « 💫 Encore X XP pour le niveau N »
+      const jn = $("jhNext"); if (jn) jn.textContent = i18nT("💫 Encore {x} XP pour le niveau {n}", { x: 100 - inLvl, n: lvl + 1 });
     }
     // Refonte progression : sous-titres LIVE des rangées, lus dans les widgets sources (masqués)
     // que renderWeeklyGoals/renderNearestQuest/renderQuestCollection/renderCapitaleDuJour remplissent.
@@ -13786,6 +13794,10 @@
       "Passer en mode Voyage": "Switch to Travel mode",
       "Rester ici pour l'instant": "Stay here for now",
       "Ton Mate du jour — un petit coucou ? ☀️": "Your Mate of the day — say hi? ☀️",
+      "prochaine quête dans ~{h} h ☀️": "next quest in ~{h} h ☀️",
+      "💫 Encore {x} XP pour le niveau {n}": "💫 {x} XP to go for level {n}",
+      "+{x} XP · 👥 +{g} à deux ✨": "+{x} XP · 👥 +{g} together ✨",
+      "🔮 {a}/{b} découverts": "🔮 {a}/{b} discovered",
       "tramways jaunes, fado et couchers de soleil sur le Tage": "yellow trams, fado and sunsets on the Tagus",
       "temples zen, ruelles de geishas et érables flamboyants": "zen temples, geisha lanes and flamboyant maples",
       "souks colorés, riads et désert à perte de vue": "colourful souks, riads and desert as far as the eye can see",
