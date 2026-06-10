@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=392"></script>
-  <script src="sunmates-icons.js?v=392"></script>
+  <script src="sunmates-badges.js?v=393"></script>
+  <script src="sunmates-icons.js?v=393"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -5334,7 +5334,7 @@
         st.best = Math.max(st.best || 0, st.count);
         st.last = todayStr;
         try { localStorage.setItem(key, JSON.stringify(st)); } catch (e) {}
-        if (frozeNow && typeof toast === "function") toast("🧊", "Jour manqué rattrapé ! Ton <b>joker hebdo</b> a sauvé ta flamme 🔥");
+        if (frozeNow && typeof toast === "function") toast("🧊", i18nT("Jour manqué rattrapé ! Ton <b>joker hebdo</b> a sauvé ta flamme 🔥"));
       }
       const n = st.count || 1;
       const enLang = (currentLang === "en");
@@ -5388,7 +5388,7 @@
       const val = on ? null : new Date(Date.now() + 3 * 3600 * 1000).toISOString(); // dispo 3 h
       try {
         const { error } = await db.from("profiles").update({ available_until: val }).eq("id", myUserId);
-        if (error) { if (typeof toast === "function") toast("⚠️", "Réessaie dans un instant."); return; }
+        if (error) { if (typeof toast === "function") toast("⚠️", i18nT("Réessaie dans un instant.")); return; }
         if (myProfile) myProfile.available_until = val;
         renderAvailChip();
         if (window.SMSound) SMSound.play("tap");
@@ -5676,7 +5676,7 @@
       box.innerHTML = `<div class="wish-wrap">${chips}</div>
         <div class="wish-add"><input id="wishInput" type="text" placeholder="Ex : Tokyo 🇯🇵, Patagonie…" maxlength="32" /><button class="btn-accent" id="wishAdd">+ Ajouter</button></div>`;
       box.querySelectorAll("[data-wishdel]").forEach((b) => b.addEventListener("click", () => { const a = loadWishlist(); a.splice(Number(b.dataset.wishdel), 1); saveWishlist(a); renderWishlist(); }));
-      const add = () => { const inp = $("wishInput"); const v = (inp.value || "").trim(); if (!v) return; const a = loadWishlist(); if (!a.some((x) => x.toLowerCase() === v.toLowerCase())) a.push(v); saveWishlist(a); renderWishlist(); if (typeof toast === "function") toast("🌠", "Ajouté à tes envies !"); };
+      const add = () => { const inp = $("wishInput"); const v = (inp.value || "").trim(); if (!v) return; const a = loadWishlist(); if (!a.some((x) => x.toLowerCase() === v.toLowerCase())) a.push(v); saveWishlist(a); renderWishlist(); if (typeof toast === "function") toast("🌠", i18nT("Ajouté à tes envies !")); };
       const ab = $("wishAdd"); if (ab) ab.addEventListener("click", add);
       const wi = $("wishInput"); if (wi) wi.addEventListener("keydown", (e) => { if (e.key === "Enter") add(); });
     }
@@ -6322,7 +6322,7 @@
             await db.from("messages").insert({ sender_id: myUserId, recipient_id: item.id, content: PLACE_MSG_PREFIX + c.name });
             if (typeof toast === "function") toast("📍", i18nT("Lieu recommandé à {n} ✅", { n: item.label || i18nT("ton Mate") }));
             if (window.SMSound) SMSound.play("success");
-          } catch (e) { if (typeof toast === "function") toast("⚠️", "Réessaie dans un instant."); }
+          } catch (e) { if (typeof toast === "function") toast("⚠️", i18nT("Réessaie dans un instant.")); }
         });
     }
     function renderCafesList() {
@@ -12412,7 +12412,7 @@
           sb.disabled = true;
           const { error } = await db.from("feed_comments").insert({ post_id: postId, user_id: myUserId, body: body.slice(0, 500) });
           sb.disabled = false;
-          if (error) { if (typeof toast === "function") toast("⚠️", "Réessaie dans un instant."); return; }
+          if (error) { if (typeof toast === "function") toast("⚠️", i18nT("Réessaie dans un instant.")); return; }
           ta.value = ""; if (window.SMSound) SMSound.play("tap"); load(); _syncCmtCount(postId);
         });
       }, 30);
@@ -14368,6 +14368,7 @@
       "Tout va bien ?": "Everything okay?",
       "Ton minuteur de rentrée s'est terminé pendant que l'app était fermée. Sans réponse de ta part, ta position sera diffusée à ton cercle de confiance 🛟": "Your safe-arrival timer ended while the app was closed. If you don't answer, your location will be shared with your trust circle 🛟",
       "✅ Je vais bien": "✅ I'm fine",
+      "Jour manqué rattrapé ! Ton <b>joker hebdo</b> a sauvé ta flamme 🔥": "Missed day caught up! Your <b>weekly joker</b> saved your flame 🔥",
       "Aucune connexion pour l'instant": "No failed logins yet.",
       "Toucher pour discuter 💬": "Tap to chat 💬",
       "Pas encore de conversation": "No conversation yet!",
