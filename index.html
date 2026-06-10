@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=394"></script>
-  <script src="sunmates-icons.js?v=394"></script>
+  <script src="sunmates-badges.js?v=395"></script>
+  <script src="sunmates-icons.js?v=395"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -14387,6 +14387,15 @@
       "Ton minuteur de rentrée s'est terminé pendant que l'app était fermée. Sans réponse de ta part, ta position sera diffusée à ton cercle de confiance 🛟": "Your safe-arrival timer ended while the app was closed. If you don't answer, your location will be shared with your trust circle 🛟",
       "✅ Je vais bien": "✅ I'm fine",
       "Jour manqué rattrapé ! Ton <b>joker hebdo</b> a sauvé ta flamme 🔥": "Missed day caught up! Your <b>weekly joker</b> saved your flame 🔥",
+      "📸 Mon récap à partager (story)": "📸 My recap to share (story)",
+      "🧪 App en bêta · donne ton avis": "🧪 App in beta · share your feedback",
+      "Données personnelles (RGPD)": "Personal data (GDPR)",
+      "Télécharge une copie de toutes tes données, ou supprime définitivement ton compte (": "Download a copy of all your data, or permanently delete your account (",
+      "irréversible": "irreversible",
+      "Apparaître dans le ": "Appear in the ",
+      "classement": "leaderboard",
+      "Profil public, tu apparais dans le classement": "Public profile: you appear in the leaderboard",
+      "Profil privé, tu n'apparais plus dans le classement": "Private profile: you no longer appear in the leaderboard",
       "Aucune connexion pour l'instant": "No failed logins yet.",
       "Toucher pour discuter 💬": "Tap to chat 💬",
       "Pas encore de conversation": "No conversation yet!",
@@ -15119,7 +15128,7 @@
         if (myProfile) myProfile.is_public = v;
         const { error } = await db.from("profiles").update({ is_public: v }).eq("id", myUserId);
         if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); pub.checked = !v; if (myProfile) myProfile.is_public = !v; }
-        else toast(v ? "🌍" : "🔒", v ? "Profil public, tu apparais dans le classement" : "Profil privé, tu n'apparais plus dans le classement");
+        else toast(v ? "🌍" : "🔒", v ? i18nT("Profil public, tu apparais dans le classement") : i18nT("Profil privé, tu n'apparais plus dans le classement"));
       });
     })();
 
