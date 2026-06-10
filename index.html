@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=378"></script>
-  <script src="sunmates-icons.js?v=378"></script>
+  <script src="sunmates-badges.js?v=379"></script>
+  <script src="sunmates-icons.js?v=379"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -356,18 +356,22 @@
        + 1 tuile scindée en 2 (quête proche | ville à l'honneur). */
     /* Refonte « Ta progression » (retour Maxime : trop de tuiles carrées qui clonaient la nav) :
        carte-LISTE avec données live → identité distincte, hiérarchie nav(tuiles) ≠ progression(liste). */
-    .prog-card { padding: .2rem 0; margin-bottom: .55rem; overflow: hidden; }
-    .prog-row { display: flex; align-items: center; gap: .7rem; width: 100%; padding: .68rem .9rem; background: transparent; border: 0; border-bottom: 1px solid var(--line); text-align: left; cursor: pointer; font: inherit; color: var(--ink); }
+    /* Carte chaude « lever de soleil » : crème → abricot, filigrane ☀, rangées UNIFORMES (retour Maxime). */
+    .prog-card { padding: .2rem 0; margin-bottom: .55rem; overflow: hidden; position: relative;
+      background: linear-gradient(168deg, #FFFBF1 0%, #FFF1DE 100%); border: 1.5px solid rgba(232,150,31,.2); }
+    .prog-card::after { content: "☀"; position: absolute; top: -16px; right: -8px; font-size: 72px; line-height: 1; opacity: .08; transform: rotate(14deg); pointer-events: none; }
+    .prog-row { position: relative; z-index: 1; display: flex; align-items: center; gap: .7rem; width: 100%; padding: .68rem .9rem; background: transparent; border: 0; border-bottom: 1px solid rgba(176,142,116,.18); text-align: left; cursor: pointer; font: inherit; color: var(--ink); }
     .prog-row:last-child { border-bottom: 0; }
-    .prog-row:active { background: rgba(255,138,61,.08); }
-    .prog-row .cic { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font-size: 1.18rem; line-height: 1; color: #fff; box-shadow: inset 0 -8px 16px rgba(0,0,0,.08); }
+    .prog-row:active { background: rgba(255,138,61,.1); }
+    .prog-row .cic { position: relative; overflow: hidden; flex: 0 0 auto; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font-size: 1.18rem; line-height: 1; color: #fff; box-shadow: inset 0 -8px 16px rgba(0,0,0,.08); }
+    /* Même gloss émaillé que les tuiles de nav → une seule âme SunMates */
+    .prog-row .cic::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(157deg, rgba(255,255,255,.36) 0%, rgba(255,255,255,.1) 28%, rgba(255,255,255,0) 55%); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); pointer-events: none; }
     .prog-row .pr-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .12rem; }
-    .prog-row .pr-tx b { font-size: .86rem; font-weight: 700; }
+    .prog-row .pr-tx b { font-size: .86rem; font-weight: 700; color: var(--ink-warm, var(--ink)); }
     .prog-row .pr-sub { font-size: .74rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .prog-row .pr-val { flex: 0 0 auto; font-size: .8rem; font-weight: 800; color: var(--accent); }
-    .prog-row .pr-chev { flex: 0 0 auto; color: var(--muted); font-weight: 700; }
-    .prog-row.pr-city { background: linear-gradient(135deg, rgba(255,201,60,.16), rgba(255,138,61,.08)); } /* ville à l'honneur : nuance chaude gardée */
-    body.theme-dusk .prog-row.pr-city { background: linear-gradient(135deg, rgba(255,201,60,.12), rgba(255,138,61,.08)); }
+    .prog-row .pr-val { flex: 0 0 auto; font-size: .8rem; font-weight: 800; color: var(--accent); background: rgba(255,90,77,.09); border-radius: 999px; padding: .12rem .5rem; }
+    .prog-row .pr-chev { flex: 0 0 auto; color: var(--accent); font-weight: 700; }
+    body.theme-dusk .prog-row { border-bottom-color: rgba(255,255,255,.08); }
     /* (anciennes tuiles carrées de progression — classes gardées pour compat si réutilisées ailleurs) */
     .prog-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: .55rem; margin-bottom: .55rem; }
     .prog-split { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: .55rem; }
@@ -1583,9 +1587,11 @@
     .player-badge{ position:relative; flex-shrink:0; width:52px; height:52px; border-radius:50%; border:0; cursor:pointer; overflow:visible;
       background:var(--accent-grad); display:grid; place-items:center; box-shadow:0 6px 16px rgba(255,90,77,.34); transition:transform .12s ease; }
     .player-badge:active{ transform:scale(.94); }
-    /* #5 : la photo REMPLIT le badge (centrée), fini l'anneau coral qui la décalait. */
-    .player-badge .pb-av{ width:100%; height:100%; border-radius:50%; display:grid; place-items:center; font-size:1.55rem; line-height:1; overflow:hidden;
+    /* #5 + FIX « photo ovale » : en grille auto, width:100% ne se résout pas (le span restait
+       13×26px → la photo se peignait dans un mini OVALE). Absolu plein cadre = toujours 52×52 rond. */
+    .player-badge .pb-av{ position:absolute; inset:0; z-index:0; border-radius:50%; display:grid; place-items:center; font-size:1.55rem; line-height:1; overflow:hidden;
       background-color:rgba(255,255,255,.18); background-size:cover; background-position:center center; background-repeat:no-repeat; }
+    .player-badge .pb-lvl{ z-index:1; }
     .player-badge .pb-lvl{ position:absolute; bottom:-3px; right:-4px; min-width:20px; height:20px; padding:0 4px; border-radius:999px;
       background:#fff; color:var(--accent); font-weight:900; font-size:.72rem; display:grid; place-items:center; border:2px solid var(--accent); box-shadow:0 2px 5px rgba(0,0,0,.2); }
     .player-hero{ position:relative; overflow:hidden; border-radius:var(--radius); padding:.8rem .95rem .9rem; margin:.2rem 0 .85rem;
@@ -4485,7 +4491,7 @@
             <button type="button" class="prog-row" data-prog="goals"><span class="cic c-gold">🗓️</span><span class="pr-tx"><b>Objectifs de la semaine</b><span class="pr-sub" id="prGoalsSub">3 défis qui tournent chaque lundi</span></span><b class="pr-val" id="prGoalsVal"></b><span class="pr-chev">›</span></button>
             <button type="button" class="prog-row" data-prog="nearquest"><span class="cic c-sun">📍</span><span class="pr-tx"><b>Quête la plus proche</b><span class="pr-sub" id="prQuestSub">Active ta position pour la repérer</span></span><span class="pr-chev">›</span></button>
             <button type="button" class="prog-row" data-prog="collection"><span class="cic c-purp">🗺️</span><span class="pr-tx"><b>Collection de quêtes</b><span class="pr-sub" id="prCollSub">Complète la carte, ville après ville</span></span><b class="pr-val" id="prCollVal"></b><span class="pr-chev">›</span></button>
-            <button type="button" class="prog-row pr-city" data-prog="capitale"><span class="cic c-green">🏙️</span><span class="pr-tx"><b>Ville à l'honneur</b><span class="pr-sub" id="prCitySub">Une nouvelle ville chaque jour</span></span><span class="pr-chev">›</span></button>
+            <button type="button" class="prog-row" data-prog="capitale"><span class="cic c-green">🏙️</span><span class="pr-tx"><b>Ville à l'honneur</b><span class="pr-sub" id="prCitySub">Une nouvelle ville chaque jour</span></span><span class="pr-chev">›</span></button>
           </div>
           <div id="progSources" style="display:none">
             <div id="weeklyGoals"></div>
@@ -8431,12 +8437,13 @@
     // mot-clé). `lock` rend l'image stable. Un dégradé vif reste derrière, donc
     // jamais d'image cassée. Mots-clés distincts → villes/pays variés.
     function flickrImg(keywords, seed) {
-      // P2.43 : loremflickr était LENT et changeait l'image à chaque fois (lock peu fiable).
-      // Picsum /seed/ = strictement DÉTERMINISTE (même lieu/quête → toujours la même photo),
-      // sur un CDN rapide et cachable par le service worker → fini les « 1000 ans » de chargement.
+      // v379 : photos TRIÉES À LA MAIN (planche-contact picsum) — intérieurs chauds, devantures,
+      // ruelles, tram, lumières… Fini la photo au hasard (une montagne pour un café 🙃).
+      // Toujours DÉTERMINISTE (même lieu → même photo) + cache média SW → instantané.
+      const POOL = [1, 45, 56, 155, 210, 221, 232, 265, 320, 331, 342, 397, 419, 430, 441, 639, 672, 694, 815, 826, 859, 936, 947, 1013];
       const s = String(seed || "") + "|" + String(keywords || ""); let n = 0;
       for (let i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) >>> 0;
-      return `https://picsum.photos/seed/sm${n % 100000}/640/320`;
+      return `https://picsum.photos/id/${POOL[n % POOL.length]}/640/320`;
     }
     // Chaque quête → sa ville (+ nuance pour varier si même pays)
     const QUEST_CITY = {
