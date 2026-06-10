@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=388"></script>
-  <script src="sunmates-icons.js?v=388"></script>
+  <script src="sunmates-badges.js?v=389"></script>
+  <script src="sunmates-icons.js?v=389"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -1861,7 +1861,9 @@
     .tp-hero-badges { position: absolute; top: .7rem; left: .7rem; right: .7rem; display: flex; flex-wrap: wrap; gap: .4rem; z-index: 2; }
     .tph-chip { font-size: .72rem; font-weight: 800; padding: .28rem .6rem; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
     .tph-match { background: rgba(255,90,77,.94); color: #fff; }
-    .tph-verif { background: rgba(255,255,255,.94); color: #B5740E; }
+    /* Badge « Vérifié » = preuve de sécurité clé → doré plein bien VISIBLE (jour + nuit) */
+    .tph-verif { background: linear-gradient(135deg,#FFD15C,#E8961F); color: #5a3d00; font-weight: 800; box-shadow: 0 2px 8px rgba(232,150,31,.4); }
+    body.theme-dusk .tph-verif { background: linear-gradient(135deg,#FFD15C,#E8961F); color: #4a3000; }
     .tph-online { background: rgba(255,201,60,.96); color: #6b4a00; }
     .tp-hero .dh-name { font-size: 1.6rem; }
     /* Stats de la fiche profil : chiffre en accent */
@@ -3749,7 +3751,7 @@
           <div class="mates-seg hidden" data-msegpanel="discover">
             <div id="mateOfDay"></div>
             <div class="card">
-              <div class="search"><span class="ico">🔍</span><input id="travSearch" type="text" placeholder="Rechercher par pseudo ou ville…" /></div>
+              <div class="search"><span class="ico">🔍</span><input id="travSearch" type="text" placeholder="Pseudo ou ville…" aria-label="Rechercher un voyageur par pseudo ou ville" /></div>
               <div class="chips wrap" id="travFilters" style="margin-bottom:.5rem">
                 <button class="chip" data-filter="verified" data-i18n="filter.verified">Vérifiés</button>
                 <button class="chip" data-filter="active" data-i18n="filter.active">● En ligne</button>
@@ -8194,7 +8196,8 @@
     // Filtres avancés : re-rendu à chaque changement
     const ADV_FILTER_IDS = ["fAgeMin", "fAgeMax", "fIntent", "fLang", "fStyle", "fGender", "fOrient", "fRel", "fFit", "fDrink", "fSmoke", "fDiet", "fZod", "fPerso", "fPhoto", "fInterest", "fEdu", "fChild", "fRelig"];
     ADV_FILTER_IDS.forEach((id) => {
-      const el = $(id); if (el) el.addEventListener("input", () => renderTravelers($("travSearch").value));
+      // Debounce : 19 filtres × saisie rapide = re-rendus en rafale de toute la liste → on lisse à 250 ms
+      const el = $(id); if (el) el.addEventListener("input", _debounce(() => renderTravelers($("travSearch").value), 250));
     });
     $("fReset").addEventListener("click", () => {
       ADV_FILTER_IDS.forEach((id) => { if ($(id)) $(id).value = ""; });
@@ -9734,15 +9737,35 @@
         return;
       }
       // Historique : messages échangés entre moi et cet interlocuteur (RLS = uniquement les miens)
-      // Scalabilité : on charge les 200 derniers (desc + limit) puis on remet dans l'ordre.
+      // Scalabilité : 200 derniers + PAGINATION « plus anciens » (les très longues convs ne chargent plus tout).
+      const PAGE = 200;
       const { data: dataDesc, error } = await db.from("messages").select("*")
         .or(`and(sender_id.eq.${myUserId},recipient_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},recipient_id.eq.${myUserId})`)
         .order("created_at", { ascending: false })
-        .limit(200);
-      const data = (dataDesc || []).reverse();
+        .limit(PAGE + 1);
+      let hasMore = (dataDesc || []).length > PAGE;
+      const data = (dataDesc || []).slice(0, PAGE).reverse();
+      let oldestTs = data.length ? data[0].created_at : null;
       const body = $("chatBody");
       if (error) { body.innerHTML = '<p class="muted">Erreur de chargement.</p>'; return; }
-      body.innerHTML = data.length ? chatHtml(data) : _iceBreakerHtml(p);
+      body.innerHTML = (hasMore ? '<button class="btn-ghost btn-block" id="chatOlderBtn" style="margin-bottom:.5rem;font-size:.8rem">⬆️ ' + i18nT("Voir les messages plus anciens") + "</button>" : "")
+        + (data.length ? chatHtml(data) : _iceBreakerHtml(p));
+      { const ob = $("chatOlderBtn"); if (ob) ob.addEventListener("click", () => once("chatolder:" + otherUserId, async () => {
+        if (!oldestTs) return;
+        const { data: oldDesc } = await db.from("messages").select("*")
+          .or(`and(sender_id.eq.${myUserId},recipient_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},recipient_id.eq.${myUserId})`)
+          .lt("created_at", oldestTs).order("created_at", { ascending: false }).limit(PAGE + 1);
+        const more = (oldDesc || []).slice(0, PAGE).reverse();
+        hasMore = (oldDesc || []).length > PAGE;
+        if (more.length) {
+          oldestTs = more[0].created_at;
+          const h0 = body.scrollHeight;
+          ob.insertAdjacentHTML("afterend", chatHtml(more));
+          body.scrollTop += (body.scrollHeight - h0); // on garde la position de lecture
+          loadReactions(more.map((m) => m.id));
+        }
+        if (!hasMore) ob.remove();
+      })); }
       if (!data.length) body.querySelectorAll("[data-ice-msg]").forEach((b) => b.addEventListener("click", () => { const i = $("chatInput"); if (i) { i.value = b.dataset.iceMsg; i.focus(); } if (window.SMSound) SMSound.play("tap"); }));
       if (data.length) loadReactions(data.map((m) => m.id));
       scrollChatBottom();
@@ -9782,7 +9805,11 @@
           else if (a === "delete") { deleteConversation(); }
           else if (a === "flame") { const f = _flameGet(id); showInfo("🔥 Flammes", '<p style="line-height:1.6;text-align:center;padding:.3rem">Envoie un <b>poc 🔥</b> à ' + escapeHtml((travelerMap[id] || {}).username || "ce Mate") + ' chaque jour pour entretenir votre <b>flamme</b>.<br><br>Flamme actuelle : <b>🔥 ' + (f.active ? f.count : 0) + '</b><br><span class="muted" style="font-size:.82rem">Reviens <b>chaque jour</b> pour la garder ! (rate un jour entier = flamme perdue)</span></p>'); }
           else if (a === "notif") { const on = (localStorage.getItem("sm_chatnotif_" + id) !== "0"); localStorage.setItem("sm_chatnotif_" + id, on ? "0" : "1"); const it = $("chatNotifItem"); if (it) it.textContent = on ? "🔕 Notifications : coupées" : "🔔 Notifications : activées"; toast(on ? "🔕" : "🔔", on ? "Notifications coupées pour cette conv" : "Notifications activées"); }
-          else if (a === "block") { goToTab("connexions"); if (id && travelerMap[id]) openTravelerProfile(travelerMap[id]); toast("🚫", "Bloquer / signaler depuis le profil"); }
+          else if (a === "block") {
+            // Sécurité d'abord : on bloque DIRECTEMENT depuis le chat (avant : renvoi vers le profil
+            // = friction inacceptable pour quelqu'un qui se fait harceler). blockUser confirme déjà.
+            if (id && typeof blockUser === "function") blockUser(id);
+          }
         }));
       } }
 
@@ -10008,8 +10035,15 @@
         // Doublon ignoré par once() (clic en double) → on retire la ligne en trop.
         if (bubble) (bubble.closest(".msg-row") || bubble).remove();
       } else if (result.error) {
-        // Échec d'envoi → la bulle optimiste devient une bulle d'erreur (le message N'a PAS été envoyé).
-        if (bubble) {
+        if (!navigator.onLine) {
+          // HORS-LIGNE : le message part en FILE locale et sera renvoyé à la reconnexion (rien ne se perd).
+          _msgQPush(recipient, text);
+          if (bubble) {
+            bubble.removeAttribute("data-pending");
+            const row = bubble.closest(".msg-row"); const t = row ? row.querySelector(".bubble-time") : null; if (t) t.textContent = "📡 " + i18nT("sera envoyé à la reconnexion");
+          }
+        } else if (bubble) {
+          // Échec d'envoi en ligne → bulle d'erreur (le message N'a PAS été envoyé).
           bubble.removeAttribute("data-pending");
           bubble.classList.add("msg-failed");
           const row = bubble.closest(".msg-row"); const t = row ? row.querySelector(".bubble-time") : null; if (t) t.textContent = "⚠️ non envoyé";
@@ -10025,6 +10059,27 @@
     $("chatSend").addEventListener("click", sendChatMessage);
     $("chatInput").addEventListener("keydown", (e) => { if (e.key === "Enter") sendChatMessage(); });
     $("chatInput").addEventListener("input", sendTyping); // prévient l'autre que je suis en train d'écrire
+
+    // ===== File d'attente HORS-LIGNE des messages (même principe que flushFeedbackQueue) :
+    // un message envoyé sans réseau est gardé en local et renvoyé à la reconnexion. =====
+    function _msgQKey() { return "sm_msg_queue_" + (myUserId || "x"); }
+    function _msgQGet() { try { return JSON.parse(localStorage.getItem(_msgQKey()) || "[]") || []; } catch (e) { return []; } }
+    function _msgQSave(q) { try { localStorage.setItem(_msgQKey(), JSON.stringify(q.slice(-30))); } catch (e) {} }
+    function _msgQPush(recipient, content) { const q = _msgQGet(); q.push({ recipient_id: recipient, content: content, ts: Date.now() }); _msgQSave(q); }
+    async function flushMsgQueue() {
+      if (!navigator.onLine || !myUserId || typeof db === "undefined" || !db) return;
+      const q = _msgQGet(); if (!q.length) return;
+      const left = [];
+      for (const it of q) {
+        try { const { error } = await db.from("messages").insert({ sender_id: myUserId, recipient_id: it.recipient_id, content: it.content }); if (error) left.push(it); }
+        catch (e) { left.push(it); }
+      }
+      _msgQSave(left);
+      const sent = q.length - left.length;
+      if (sent > 0 && typeof toast === "function") toast("📨", i18nT("{n} message(s) en attente envoyé(s) ✅", { n: sent }));
+    }
+    window.addEventListener("online", () => setTimeout(flushMsgQueue, 800));
+    setTimeout(flushMsgQueue, 5000); // au chargement, une fois la session posée
 
     // Temps réel : nouveaux messages. La RLS garantit qu'on ne reçoit QUE
     // les messages dont on est l'expéditeur ou le destinataire.
@@ -13944,6 +13999,9 @@
       "Montre cet écran au partenaire 😎": "Show this screen to the partner 😎",
       "✅ C'est validé — marquer utilisé": "✅ All good — mark as used",
       "Une fois marqué utilisé, le coupon ne peut plus servir.": "Once marked as used, the coupon can't be used again.",
+      "sera envoyé à la reconnexion": "will be sent when back online",
+      "{n} message(s) en attente envoyé(s) ✅": "{n} queued message(s) sent ✅",
+      "Voir les messages plus anciens": "See older messages",
       "tramways jaunes, fado et couchers de soleil sur le Tage": "yellow trams, fado and sunsets on the Tagus",
       "temples zen, ruelles de geishas et érables flamboyants": "zen temples, geisha lanes and flamboyant maples",
       "souks colorés, riads et désert à perte de vue": "colourful souks, riads and desert as far as the eye can see",
