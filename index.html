@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=377"></script>
-  <script src="sunmates-icons.js?v=377"></script>
+  <script src="sunmates-badges.js?v=378"></script>
+  <script src="sunmates-icons.js?v=378"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -336,8 +336,9 @@
     .cat-tile .clbl { font-size: .74rem; font-weight: 700; color: var(--ink); white-space: nowrap; }
     .cat-tile.active { border-color: var(--accent); box-shadow: 0 6px 16px rgba(255,90,77,.2); }
     .cic.c-sun { background: var(--accent-grad); }
-    .cic.c-green { background: linear-gradient(135deg,#8fe6a6,#34c77b); }
-    .cic.c-blue { background: linear-gradient(135deg,#8ed0ff,#3aa0f0); }
+    /* DA : pas de vert vif ni de bleu ciel « hors-DA » → turquoise bijou + indigo nuit (palette émaillée). */
+    .cic.c-green { background: linear-gradient(135deg,#4ED8B8,#179E8C); }
+    .cic.c-blue { background: linear-gradient(135deg,#9D86FF,#5E3FE0); }
     .cic.c-purp { background: linear-gradient(135deg,#b9a6ff,#7c5cff); }
     .cic.c-gold { background: linear-gradient(135deg,#FFD15C,#F4A11E); }
     .cic.c-pink { background: linear-gradient(135deg,#ffa7d1,#ff5e9f); }
@@ -1094,7 +1095,7 @@
     .homemap-filters .chip.cl-places.active   { background: #FF5A4D; color: #fff; box-shadow: 0 4px 12px rgba(255,90,77,.32); }
     .homemap-filters .chip.cl-mates.active     { background: #7a5cff; color: #fff; box-shadow: 0 4px 12px rgba(122,92,255,.32); }
     .homemap-filters .chip.cl-acts.active      { background: #ff9f1c; color: #fff; box-shadow: 0 4px 12px rgba(255,159,28,.32); }
-    .homemap-filters .chip.cl-checkins.active  { background: #19b36b; color: #fff; box-shadow: 0 4px 12px rgba(25,179,107,.32); }
+    .homemap-filters .chip.cl-checkins.active  { background: #17a99b; color: #fff; box-shadow: 0 4px 12px rgba(23,169,155,.32); } /* DA : teal, pas de vert vif */
     .homemap-filters .chip.cl-quests.active    { background: #E8961F; color: #fff; box-shadow: 0 4px 12px rgba(232,150,31,.34); }
     /* Marqueurs personnalisés (pastilles emoji colorées) */
     .epin { width: 36px; height: 36px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
@@ -1137,7 +1138,7 @@
       background: linear-gradient(158deg, rgba(255,255,255,.62) 0%, rgba(255,255,255,.22) 15%, rgba(255,255,255,.03) 36%, rgba(255,255,255,0) 58%);
       box-shadow: inset 0 1.5px 0 rgba(255,255,255,.65), inset 0 -16px 26px rgba(0,0,0,.12);
       pointer-events: none; }
-    .tile .thumb.green { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#8fe6a6,#34c77b); box-shadow: 0 6px 16px rgba(52,199,123,.24); }
+    .tile .thumb.green { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#4ED8B8,#179E8C); box-shadow: 0 6px 16px rgba(23,169,155,.24); } /* DA : teal */
     .tile .thumb.blue  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#8ed0ff,#3aa0f0); box-shadow: 0 6px 16px rgba(58,160,240,.24); }
     .tile .thumb.purp  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#b9a6ff,#7c5cff); box-shadow: 0 6px 16px rgba(124,92,255,.24); }
     .tile .thumb.gold  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.45), rgba(255,255,255,0) 55%), linear-gradient(135deg,#ffd98a,#f0a93a); box-shadow: 0 6px 16px rgba(240,169,58,.26); }
@@ -1240,8 +1241,8 @@
     .gcard:active { transform: scale(.98); }
     .gcard .ghead { height: 84px; background: var(--accent-grad); position: relative; background-size: cover; background-position: center; display: grid; place-items: center; }
     .gcard .ghead::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.35)); } /* lisibilité photo */
-    .gcard .ghead.green { background: linear-gradient(135deg,#8fe6a6,#34c77b); }
-    .gcard .ghead.blue  { background: linear-gradient(135deg,#8ed0ff,#3aa0f0); }
+    .gcard .ghead.green { background: linear-gradient(135deg,#4ED8B8,#179E8C); } /* DA : turquoise (pas de vert vif) */
+    .gcard .ghead.blue  { background: linear-gradient(135deg,#9D86FF,#5E3FE0); } /* DA : indigo nuit (pas de bleu ciel) */
     .gcard .ghead.purp  { background: linear-gradient(135deg,#b9a6ff,#7c5cff); }
     /* Têtes colorées des mini-jeux intégrés (pas de photo → dégradé plein, emoji centré) */
     .gcard .ghead.gh-gold   { background: linear-gradient(135deg,#ffd98a,#f0a93a); }
@@ -4484,7 +4485,7 @@
             <button type="button" class="prog-row" data-prog="goals"><span class="cic c-gold">🗓️</span><span class="pr-tx"><b>Objectifs de la semaine</b><span class="pr-sub" id="prGoalsSub">3 défis qui tournent chaque lundi</span></span><b class="pr-val" id="prGoalsVal"></b><span class="pr-chev">›</span></button>
             <button type="button" class="prog-row" data-prog="nearquest"><span class="cic c-sun">📍</span><span class="pr-tx"><b>Quête la plus proche</b><span class="pr-sub" id="prQuestSub">Active ta position pour la repérer</span></span><span class="pr-chev">›</span></button>
             <button type="button" class="prog-row" data-prog="collection"><span class="cic c-purp">🗺️</span><span class="pr-tx"><b>Collection de quêtes</b><span class="pr-sub" id="prCollSub">Complète la carte, ville après ville</span></span><b class="pr-val" id="prCollVal"></b><span class="pr-chev">›</span></button>
-            <button type="button" class="prog-row pr-city" data-prog="capitale"><span class="cic c-blue">🏙️</span><span class="pr-tx"><b>Ville à l'honneur</b><span class="pr-sub" id="prCitySub">Une nouvelle ville chaque jour</span></span><span class="pr-chev">›</span></button>
+            <button type="button" class="prog-row pr-city" data-prog="capitale"><span class="cic c-green">🏙️</span><span class="pr-tx"><b>Ville à l'honneur</b><span class="pr-sub" id="prCitySub">Une nouvelle ville chaque jour</span></span><span class="pr-chev">›</span></button>
           </div>
           <div id="progSources" style="display:none">
             <div id="weeklyGoals"></div>
@@ -5436,7 +5437,9 @@
       c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.fillStyle = "rgba(255,255,255,.2)"; c.fill();
       const url = (myProfile && myProfile.avatar_url) || ""; let drewPhoto = false;
       if (withPhoto && url) {
-        await new Promise((res) => { const img = new Image(); img.crossOrigin = "anonymous"; img.onload = () => { try { c.save(); c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.clip(); c.drawImage(img, cx - rad, cy - rad, rad * 2, rad * 2); c.restore(); drewPhoto = true; } catch (e) {} res(); }; img.onerror = () => res(); img.src = url; });
+        // FIX photo « ovale » : on recadre la photo en CARRÉ centré à la source (sx/sy/s) avant de la
+        // dessiner dans le cercle — sinon une photo portrait/paysage est écrasée (visage déformé).
+        await new Promise((res) => { const img = new Image(); img.crossOrigin = "anonymous"; img.onload = () => { try { const s = Math.min(img.width, img.height), sx = (img.width - s) / 2, sy = (img.height - s) / 2; c.save(); c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.clip(); c.drawImage(img, sx, sy, s, s, cx - rad, cy - rad, rad * 2, rad * 2); c.restore(); drewPhoto = true; } catch (e) {} res(); }; img.onerror = () => res(); img.src = url; });
       }
       if (!drewPhoto) { c.fillStyle = "#fff"; c.font = "800 140px system-ui,Arial"; c.textBaseline = "middle"; c.fillText((name[0] || "?").toUpperCase(), cx, cy); c.textBaseline = "alphabetic"; }
       c.lineWidth = 10; c.strokeStyle = "rgba(255,255,255,.85)"; c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.stroke();
@@ -10445,6 +10448,9 @@
     const homeLayerOn = { places: true, mates: true, activities: true, checkins: true, quests: true };
     let homeMapSig = null;                                   // signature des données du dernier rendu carte (perf : évite un rebuild identique)
     let _questCity = "";                                     // ville sélectionnée pour les quêtes ("" = toutes)
+    let _homeCityPts = [];                                   // TOUS les points datés d'une ville (quêtes + lieux sûrs) → menu villes + cadrage
+    const _cityNorm = (c) => String(c || "").replace(/, France$/i, "").trim().toLowerCase();
+    const _sameCity = (a, b) => _cityNorm(a) === _cityNorm(b); // « Paris » et « Paris, France » = même ville
     let _questTodoOnly = false;                              // n'afficher que les quêtes pas encore accomplies
     let homeMeMarker = null;
 
@@ -10560,12 +10566,15 @@
     let _questCitiesSig = "";
     function populateQuestCities(pts) {
       const sel = $("questCitySelect"); if (!sel) return;
-      const cities = [...new Set((pts || []).map((q) => q.city).filter(Boolean))].sort();
+      // TOUTES les villes de la carte (quêtes ET lieux sûrs), dédupliquées (« Paris » == « Paris, France »).
+      const seen = new Map();
+      (pts || []).forEach((q) => { const c = q.city; if (!c) return; const k = _cityNorm(c); if (k && !seen.has(k)) seen.set(k, c); });
+      const cities = [...seen.values()].sort((a, b) => a.localeCompare(b, "fr"));
       const sig = cities.join("|");
       if (sig === _questCitiesSig) return; // pas de changement → on garde le menu (et la sélection)
       _questCitiesSig = sig;
       sel.innerHTML = '<option value="">Toutes les villes</option>' + cities.map((c) => '<option value="' + escapeHtml(c) + '">' + escapeHtml(c.replace(/, France$/, "")) + "</option>").join("");
-      sel.value = (_questCity && cities.includes(_questCity)) ? _questCity : "";
+      sel.value = (_questCity && cities.some((c) => _sameCity(c, _questCity))) ? (cities.find((c) => _sameCity(c, _questCity)) || "") : "";
     }
     { const cs = $("questCitySelect"); if (cs) cs.addEventListener("change", () => {
       _questCity = cs.value || "";
@@ -10580,8 +10589,10 @@
           if (!homeLeaf) return;
           const valid = (arr) => (arr || []).filter((m) => { try { const ll = m.getLatLng(); return ll && isFinite(ll.lat) && isFinite(ll.lng) && !(ll.lat === 0 && ll.lng === 0); } catch (e) { return false; } });
           if (_questCity) {
-            const qs = valid(homeMarkersByType.quests);
-            if (qs.length) homeLeaf.fitBounds(L.featureGroup(qs).getBounds().pad(0.3), { maxZoom: 14 });
+            // Cadrage sur TOUS les points de la ville (quêtes + lieux sûrs) → marche même sans quête.
+            const cityPts = (_homeCityPts || []).filter((p) => _sameCity(p.city, _questCity));
+            if (cityPts.length) homeLeaf.fitBounds(L.latLngBounds(cityPts.map((p) => [p.lat, p.lng])).pad(0.3), { maxZoom: 14 });
+            else { const qs = valid(homeMarkersByType.quests); if (qs.length) homeLeaf.fitBounds(L.featureGroup(qs).getBounds().pad(0.3), { maxZoom: 14 }); }
           } else {
             const all = valid(homeAllMarkers);
             if (all.length) homeLeaf.fitBounds(L.featureGroup(all).getBounds().pad(0.2));
@@ -10631,7 +10642,7 @@
           });
           ro.observe(el);
         }
-        const LAYER_COLORS = { places: "#FF5A4D", mates: "#7a5cff", activities: "#ff9f1c", checkins: "#19b36b", quests: "#E8961F" };
+        const LAYER_COLORS = { places: "#FF5A4D", mates: "#7a5cff", activities: "#ff9f1c", checkins: "#17a99b", quests: "#E8961F" };
         homeCluster = (typeof L.markerClusterGroup === "function")
           ? L.markerClusterGroup({
               maxClusterRadius: 38, showCoverageOnHover: false, spiderfyDistanceMultiplier: 2.2,
@@ -10810,7 +10821,7 @@
         const knowWho = ck.user_id !== myUserId && travelerMap[ck.user_id] && (travelerMap[ck.user_id].is_demo || connectedIds.has(ck.user_id));
         const whoBtn = knowWho ? `<button class="mappop-btn ghost" data-hmprofile="${ck.user_id}">Voir le profil</button>` : "";
         const mins = Math.max(1, Math.round((HOUR - (nowMs - new Date(ck.created_at).getTime())) / 60000));
-        const mk = L.marker(jitterAt(cafe, "ck-" + ck.user_id + "-" + i), { icon: epinIcon("✅", "#19b36b") })
+        const mk = L.marker(jitterAt(cafe, "ck-" + ck.user_id + "-" + i), { icon: epinIcon("✅", "#17a99b") })
           .bindPopup(`<div class="mappop-mini"><b>${escapeHtml(who)}</b><br>check-in · ${escapeHtml(cafe.name)}<br><span class="muted">${timeAgo(ck.created_at)} · disparaît dans ~${mins} min</span>${whoBtn}</div>`);
         mk.smType = "checkins"; homeMarkersByType.checkins.push(mk); allMarkers.push(mk);
       });
@@ -10818,7 +10829,7 @@
       // ✅ Check-ins d'exemple des IA, au MÊME vrai lieu que l'IA (cohérent)
       mates.filter((p) => p.is_demo).slice(0, 6).forEach((p) => {
         const cafe = cafeForMember(p); if (!cafe) return;
-        const mk = L.marker(jitterAt(cafe, "ckdemo-" + p.id), { icon: epinIcon("✅", "#19b36b") })
+        const mk = L.marker(jitterAt(cafe, "ckdemo-" + p.id), { icon: epinIcon("✅", "#17a99b") })
           .bindPopup(`<div class="mappop-mini"><b>${escapeHtml(p.username)}</b> <span style="font-size:.7rem;color:#7a5cff">🤖</span><br>check-in · ${escapeHtml(cafe.name)}<br><button class="mappop-btn" data-hmchat="${p.id}">💬 Message</button></div>`);
         mk.smType = "checkins"; homeMarkersByType.checkins.push(mk); allMarkers.push(mk);
       });
@@ -10885,9 +10896,12 @@
         .map((q) => ({ key: q.key, emoji: q.emoji || "🎯", lat: q.lat, lng: q.lng, title: q.title, desc: q.description || "", xp: q.points || 0, badge: q.badge_name || "un badge", city: q.city || "Autre" }));
       const allQuestPts = dbGeoQuests.length ? dbGeoQuests
         : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS.map((q) => Object.assign({ city: "Paris, France" }, q)) : []);
-      populateQuestCities(allQuestPts); // alimente le menu déroulant des villes
+      // Menu des villes = TOUTE la carte (quêtes + lieux sûrs), pas seulement les quêtes.
+      _homeCityPts = allQuestPts.map((q) => ({ lat: q.lat, lng: q.lng, city: q.city || "" }))
+        .concat(places.filter((c) => c.lat != null && c.lng != null && c.city).map((c) => ({ lat: c.lat, lng: c.lng, city: c.city })));
+      populateQuestCities(_homeCityPts);
       // Sélecteur de ville + filtre « à faire » : on restreint les quêtes affichées.
-      let questPts = _questCity ? allQuestPts.filter((q) => (q.city || "") === _questCity) : allQuestPts;
+      let questPts = _questCity ? allQuestPts.filter((q) => _sameCity(q.city, _questCity)) : allQuestPts;
       if (_questTodoOnly) questPts = questPts.filter((q) => !(typeof myQuestStatus !== "undefined" && myQuestStatus[q.key] === "completed"));
       const _hmMode = (typeof getHomeMode === "function") ? getHomeMode() : "travel";
       const grpBtn = (_hmMode !== "home") ? '<button class="mappop-btn alt" data-hmqgroup="1">👥 À plusieurs <span style="opacity:.8">+bonus</span></button>' : '';
@@ -10909,9 +10923,14 @@
 
       homeAllMarkers = allMarkers;
       applyHomeLayers();
-      // Une ville est sélectionnée → on recadre sur ses quêtes. Sinon, recadrage initial seulement.
-      if (_questCity && homeMarkersByType.quests.length) {
-        try { homeLeaf.fitBounds(L.featureGroup(homeMarkersByType.quests).getBounds().pad(0.3), { maxZoom: 14 }); } catch (e) {}
+      // Une ville est sélectionnée → on recadre sur TOUS ses points (quêtes + lieux sûrs),
+      // donc ça marche aussi pour une ville sans quête. Sinon, recadrage initial seulement.
+      if (_questCity) {
+        try {
+          const cityPts = _homeCityPts.filter((p) => _sameCity(p.city, _questCity));
+          if (cityPts.length) homeLeaf.fitBounds(L.latLngBounds(cityPts.map((p) => [p.lat, p.lng])).pad(0.3), { maxZoom: 14 });
+          else if (homeMarkersByType.quests.length) homeLeaf.fitBounds(L.featureGroup(homeMarkersByType.quests).getBounds().pad(0.3), { maxZoom: 14 });
+        } catch (e) {}
       } else if (!homeFitDone) { homeFitDone = true; centerHomeMapOnUser(allMarkers); }
       setTimeout(() => { try { homeLeaf.invalidateSize(); } catch (e) {} }, 120);
       renderHomeLegend();
@@ -11112,7 +11131,7 @@
 
     function renderHomeLegend() {
       const el = $("homeMapLegend"); if (!el) return;
-      el.innerHTML = [["#FF5A4D", "📍 Lieux sûrs"], ["#7a5cff", "🧑 Mates"], ["#ff9f1c", "🎉 Activités"], ["#19b36b", "✅ Check-ins"], ["#ff5e9f", "📣 Partagées"]]
+      el.innerHTML = [["#FF5A4D", "📍 Lieux sûrs"], ["#7a5cff", "🧑 Mates"], ["#ff9f1c", "🎉 Activités"], ["#17a99b", "✅ Check-ins"], ["#ff5e9f", "📣 Partagées"]]
         .map(([c, l]) => `<span><i style="background:${c}"></i>${l}</span>`).join("");
     }
 
@@ -12412,7 +12431,7 @@
       const all = dbGeo.length ? dbGeo : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS.map((q) => Object.assign({ city: "Paris, France" }, q)) : []);
       // Le « plus proche » (radar / me localiser) ignore le filtre ville (sinon coincé sur la
       // capitale du jour). Le sélecteur de carte, lui, passe ignoreCity=false.
-      if (!ignoreCity && _questCity) { const f = all.filter((q) => (q.city || "") === _questCity); if (f.length) return f; }
+      if (!ignoreCity && _questCity) { const f = all.filter((q) => _sameCity(q.city, _questCity)); if (f.length) return f; }
       return all;
     }
     function _fmtDist(km) { return km < 1 ? Math.round(km * 1000) + " m" : (km < 10 ? km.toFixed(1) : Math.round(km)) + " km"; }
@@ -13835,7 +13854,7 @@
       "Les quêtes accomplies débloquent des badges affichés sur ton profil.": "Completed quests unlock badges displayed on your profile.",
       "Et des coupons à utiliser chez les commerces partenaires : le pont vers le monde réel.": "And coupons to use at partner stores: the bridge to the real world.",
       "🛡️ La sécurité": "🛡️ Safety",
-      "🆘 SOS & cercle de confiance": "circle of trust",
+      "🆘 SOS & cercle de confiance": "🆘 SOS & circle of trust",
       "🛡️ Le score de confiance": "🛡️ Confidence score",
       "On clique le score et une pop-up détaille les vraies preuves : vérification, check-ins, lieux, Mates. Transparent.": "We click on the score and a pop-up details the real evidence: verification, check-ins, places, Mates. Transparent.",
       "📝 Remplir son profil": "📝 Fill out your profile",
@@ -14101,7 +14120,6 @@
       "I want to help": "¡Quiero ayudar!\"",
       "Search a place or city…": "Search a place or city...",
       "Send a message…": "Send a message",
-      "🆘 I need help": "I need help !!",
       "Search a country…": "Search a country...",
       "📲 Install the app": "<g id=\"1\">Install ebm-papst one App</g>",
       "Search a username…": "Search a username...",
@@ -14722,6 +14740,9 @@
     if (navigator.serviceWorker) {
       navigator.serviceWorker.addEventListener("message", (e) => {
         if (e.data && e.data.type === "sm-nav" && e.data.tab && typeof goToTab === "function") goToTab(e.data.tab);
+        // Rotation d'abonnement push (pushsubscriptionchange dans le SW) → on re-sauvegarde
+        // le nouvel abonnement dans Supabase tout de suite (sinon les notifs meurent en silence).
+        if (e.data && e.data.type === "sm-resub" && typeof subscribePush === "function") subscribePush();
       });
     }
     // (b) app ouverte via la notif (nouvelle fenêtre) : on lit ?tab= au démarrage.

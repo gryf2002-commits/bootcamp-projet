@@ -3,7 +3,7 @@
 // cache à la volée les libs CDN et les images (avatars, tuiles de carte) en
 // "stale-while-revalidate" (on sert le cache tout de suite, on rafraîchit en fond).
 // Les écritures Supabase (POST/PATCH…) ne sont jamais touchées.
-const VER = "v377";
+const VER = "v378";
 const SHELL_CACHE = "sunmates-shell-" + VER;   // coquille (versionnée → purge à chaque déploiement)
 const RUNTIME = "sunmates-rt-" + VER;          // libs CDN/fonts (regénéré par version, re-précaché à l'install)
 // #15/#8 : cache MÉDIA STABLE (NON versionné) → avatars, photos (quêtes/check-ins), tuiles de carte.
@@ -128,6 +128,27 @@ self.addEventListener("push", (e) => {
     data: { url: d.url || "./", tab: d.tab || "" }, // P2.38 : onglet cible transporté dans la notif
   };
   e.waitUntil(self.registration.showNotification(title, opts));
+});
+
+// --- Rotation d'abonnement push (FCM en change parfois SANS action de l'utilisateur) :
+// on se réabonne aussitôt, puis on demande à la page (si ouverte) de re-sauvegarder
+// l'abonnement dans Supabase. Sinon, la sauvegarde se fait à la prochaine ouverture
+// (subscribePush tourne à chaque init de session). Sans ce handler → notifs mortes en silence.
+const VAPID_PUBLIC_SW = "BDroKpS-uCezrK7igjxCD9Ih8a5OgPQ3AtOuza220aSx8CzR3LIw9EwkkObyHZVMI1wyT24_w48Ho7CUnAAPZ_0";
+function _b64ToU8(b64) {
+  const pad = "=".repeat((4 - (b64.length % 4)) % 4);
+  const b = (b64 + pad).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(b); const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+self.addEventListener("pushsubscriptionchange", (e) => {
+  e.waitUntil(
+    self.registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: _b64ToU8(VAPID_PUBLIC_SW) })
+      .then(() => self.clients.matchAll({ type: "window" }))
+      .then((cl) => cl.forEach((c) => { try { c.postMessage({ type: "sm-resub" }); } catch (_) {} }))
+      .catch(() => {})
+  );
 });
 
 // --- Clic sur la notification : ouvrir / focaliser l'app SUR LE BON ONGLET (P2.38) ---
