@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=393"></script>
-  <script src="sunmates-icons.js?v=393"></script>
+  <script src="sunmates-badges.js?v=394"></script>
+  <script src="sunmates-icons.js?v=394"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -841,9 +841,10 @@
 
     /* Carte « score de confiance » */
     /* Profil : photo grande & entière, nom/titre/ville centrés, confiance compacte */
-    .prof-photo { width: 132px; height: 132px; margin: .2rem auto .7rem; border-radius: 20px; background-color: var(--cream); background-size: cover; background-position: center; background-repeat: no-repeat; display: grid; place-items: center; font-size: 3.2rem; box-shadow: var(--shadow-sm); overflow: hidden; }
+    /* Allégée (132→112px) avec la scission de la carte d'arrivée : moins « qui fait peur » */
+    .prof-photo { width: 112px; height: 112px; margin: .2rem auto .6rem; border-radius: 20px; background-color: var(--cream); background-size: cover; background-position: center; background-repeat: no-repeat; display: grid; place-items: center; font-size: 2.8rem; box-shadow: var(--shadow-sm); overflow: hidden; }
     body.theme-dusk .prof-photo { background-color: #2a2140; }
-    .prof-name { font-size: 1.45rem; font-weight: 800; justify-content: center; display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
+    .prof-name { font-size: 1.25rem; font-weight: 800; justify-content: center; display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
     .prof-title { font-size: .95rem; color: var(--accent); font-weight: 700; margin-top: .15rem; }
     .prof-city { font-size: .9rem; margin-top: .15rem; }
     .prof-trust { display: inline-flex; align-items: center; gap: .35rem; margin: .8rem auto 0; padding: .35rem .8rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: .85rem; cursor: pointer; }
@@ -2532,8 +2533,9 @@
     #profSegNav { background: transparent !important; border: 0 !important; padding: 0 !important; gap: .55rem; margin: .7rem 0 .2rem; }
     #profSegNav button { flex: 1; border-radius: 13px; padding: .62rem .5rem; font-size: .82rem; font-weight: 800; border: 1.5px solid var(--line); background: var(--card); box-shadow: var(--shadow-sm); }
     /* Premium = doré (spécial) ; Admin = terracotta sunset sobre (outil) → 2 tons DA distincts, zéro indigo hors-DA. */
-    #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#FFE7B0,#F7C463); border-color: rgba(240,169,58,.5); color: #7a4f00; }
-    #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#FBE3D4,#EFB89A); border-color: rgba(208,108,72,.5); color: #8a3b1c; }
+    /* Dégradés plus soutenus (les pâles disparaissaient en plein soleil sur mobile) */
+    #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#FFDD8A,#F0AD3A); border-color: rgba(200,130,20,.6); color: #5f3e00; }
+    #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#F6CDB4,#E59B72); border-color: rgba(185,85,45,.6); color: #732b10; }
     #profSegNav button.active { background: var(--accent-grad) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 6px 16px rgba(255,90,77,.28); }
     body.theme-dusk #profSegNav button { background: #2a2140; border-color: rgba(255,255,255,.1); color: #f3e7d8; }
     body.theme-dusk #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#4a3a1a,#5a4520); border-color: rgba(240,169,58,.4); color: #ffd98a; }
@@ -4048,9 +4050,11 @@
           <div style="flex:1;cursor:pointer" id="onbDoneCta"><b>🎯 Dernière étape !</b><div style="font-size:.82rem;opacity:.95">Choisis ton pseudo et complète ton profil → <b>commencer ›</b></div></div>
           <button id="onbDoneClose" aria-label="Fermer">✕</button>
         </div>
+        <!-- Carte d'arrivée SCINDÉE en 3 (avant : un seul bloc photo+stats+complétion+
+             Premium/Admin+parcours+BFF+bouton = « tuile énorme qui fait peur »). -->
         <div class="card prof-head" style="position:relative;text-align:center">
           <button class="iconbtn" id="profileSettingsBtn" title="Paramètres du compte" aria-label="Paramètres du compte" style="position:absolute;top:.7rem;right:.7rem">⚙️</button>
-          <!-- Photo plus grande, ENTIÈRE (non rognée), centrée -->
+          <!-- Photo ENTIÈRE (non rognée), centrée -->
           <div class="prof-photo" id="profileAvatar">😎</div>
           <div class="name prof-name"><span id="profileName">Voyageur</span> <span id="verifBadge"></span> <span id="profileHostBadge" class="badge ok hidden">🛟 Hôte</span></div>
           <div class="profile-title prof-title" id="profileTitle"></div>
@@ -4059,8 +4063,10 @@
           <div class="prof-trust stat-click" data-stat="trust" role="button" tabindex="0">
             <span>🛟 Confiance</span> <b id="trustScore">0</b> <span class="pt-info">ⓘ</span>
           </div>
+        </div>
+        <div class="card" style="text-align:center">
           <!-- Stats secondaires -->
-          <div class="stat-row stat-row-3" style="margin-top:.55rem">
+          <div class="stat-row stat-row-3" style="margin-top:0">
             <div class="stat-box stat-click" data-stat="xp"><div class="stat" id="xpScore">0</div><div class="lbl">XP ⭐</div></div>
             <div class="stat-box stat-click" data-stat="mates"><div class="stat" id="matesCountSelf">0</div><div class="lbl">Mates</div></div>
             <div class="stat-box stat-click" data-stat="checkins"><div class="stat" id="checkinCount">0</div><div class="lbl">Check-ins</div></div>
@@ -4069,22 +4075,21 @@
             <div class="completion-bar"><span id="completionFill"></span></div>
             <div class="completion-txt" id="completionTxt">Profil complété à 0%</div>
           </div>
-          <!-- P2.28 : accès Premium/Admin remontés DANS la carte (sous les stats) → toujours visibles
-               sans devoir scroller au-delà des badges/parcours quand le profil est bien rempli. -->
+          <!-- P2.28 : accès Premium/Admin gardés ICI, en haut → toujours visibles sans scroller. -->
           <div class="mseg" id="profSegNav" style="flex-wrap:wrap;margin-top:.7rem">
             <button data-pseg="premium">Premium ✨</button>
             <button data-pseg="admin" id="adminSegBtn" style="display:none">Admin 🛡️</button>
           </div>
           <div class="prof-badges" id="profileBadges" style="display:none"></div>
-          <!-- Mon parcours : intégré à la 1ʳᵉ carte -->
-          <div class="parcours-card" id="parcoursCard" style="margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--line)">
+          <button class="btn-primary btn-block" id="editProfileBtn" style="margin-top:.8rem">✏️ Modifier mon profil</button>
+        </div>
+        <div class="card">
+          <div class="parcours-card" id="parcoursCard">
             <div class="pc-head"><b>🧭 Mon parcours</b><button class="btn-accent pc-share" id="shareParcoursBtn">📤 Partager</button></div>
             <div class="pc-stats" id="parcoursStatsRow"></div>
             <div id="parcoursToday" class="pc-today muted"></div>
           </div>
-          <!-- BFF : intégré à la 1ʳᵉ carte -->
           <div id="bffCard" style="display:none;margin-top:.6rem"></div>
-          <button class="btn-primary btn-block" id="editProfileBtn" style="margin-top:.8rem">✏️ Modifier mon profil</button>
         </div>
 
         <div class="prof-seg hidden" data-psegpanel="edit">
@@ -4260,13 +4265,15 @@
         </div><!-- /prof-seg checkins -->
 
         <div class="prof-seg hidden" data-psegpanel="premium">
+          <!-- Hiérarchie rééquilibrée : couronne/prix moins écrasants, bouton principal qui a
+               l'air ACTIF (avant : marron mat sans ombre = il semblait désactivé). -->
           <div class="card" style="background:linear-gradient(145deg,#FFE8A3,#FFC23D 55%,#E89B2B);border:0;text-align:center">
-            <div style="font-size:2.8rem">👑</div>
-            <h2 style="margin:.3rem 0;color:#5a3d00;font-family:'Fraunces',serif">SunMates Gold</h2>
-            <div style="color:#5a3d00;font-weight:800;font-size:1.6rem;font-family:'Fraunces',serif">9,99 € <span style="font-size:.9rem;font-weight:600">/ mois</span></div>
+            <div style="font-size:2rem">👑</div>
+            <h2 style="margin:.25rem 0;font-size:1.3rem;color:#5a3d00;font-family:'Fraunces',serif">SunMates Gold</h2>
+            <div style="color:#5a3d00;font-weight:800;font-size:1.25rem;font-family:'Fraunces',serif">9,99 € <span style="font-size:.85rem;font-weight:600">/ mois</span></div>
             <span class="badge" style="background:rgba(0,0,0,.14);color:#5a3d00;border:0;margin-top:.4rem">Bientôt disponible</span>
-            <button class="btn-primary btn-block" id="premiumBtn" style="margin-top:1.1rem;background:#5a3d00 !important;box-shadow:none !important">Me prévenir au lancement</button>
-            <button class="btn-ghost btn-block" id="goldToggleBtn" style="margin-top:.5rem;border-color:#5a3d00;color:#5a3d00">Activer Gold (aperçu)</button>
+            <button class="btn-primary btn-block" id="premiumBtn" style="margin-top:1rem;background:linear-gradient(135deg,#7a5410,#5a3d00) !important;box-shadow:0 6px 14px rgba(90,61,0,.35) !important">Me prévenir au lancement</button>
+            <button class="btn-ghost btn-block" id="goldToggleBtn" style="margin-top:.5rem;border-color:#5a3d00;color:#5a3d00;background:transparent">Activer Gold (aperçu)</button>
             <div class="msg" id="premiumMsg" style="color:#4a3500"></div>
             <p class="muted" id="goldTestNote" style="font-size:.72rem;margin:.4rem 0 0;color:#5a3d00;display:none">Mode test : active/désactive Gold pour voir ce qui se débloque dans l'app.</p>
           </div>
@@ -6636,6 +6643,17 @@
       else if (seg === "data") loadAdminData();
       else if (seg === "feedback") loadAdminFeedback();
       else if (seg === "system") loadAdminSystem();
+      // Filet : si l'écran reste bloqué sur « Chargement… » (réseau/erreur silencieuse),
+      // on propose de réessayer au lieu d'une attente infinie. (Écran admin → FR ok.)
+      clearTimeout(window._asegWatch);
+      window._asegWatch = setTimeout(() => {
+        const p = document.querySelector("[data-asegpanel]:not(.hidden)");
+        if (!p || p.dataset.asegpanel !== seg) return;
+        p.querySelectorAll("p").forEach((el) => {
+          if ((el.textContent || "").trim() === "Chargement…")
+            el.outerHTML = '<div style="text-align:center;padding:.6rem"><p class="muted" style="margin:0 0 .5rem">⚠️ Le chargement n\'aboutit pas (réseau ?).</p><button class="btn-ghost" onclick="showAdminSegment(\'' + seg + '\')">↻ Réessayer</button></div>';
+        });
+      }, 6000);
     }
     // Retours bêta (segment dédié) — lit la table app_feedback (best-effort).
     async function loadAdminFeedback() {
@@ -11582,7 +11600,7 @@
         { tab: "connexions", sel: "#inviteFriendsBtn", emoji: "✨", title: "Inviter des amis", text: "Fais venir tes amis : un coupon « 1er verre offert » pour vous deux 🍹" },
         { tab: "connexions", sel: ".mseg", emoji: "🤝", title: "Tes Mates", text: "Messages, Découvrir de nouveaux voyageurs, et Demandes de connexion." },
         { tab: "securite", sel: '[data-tab="securite"]', emoji: "🛡️", title: "Sécurité", text: "SOS, faux appel, partage de position au cercle, contacts d'urgence — pour voyager serein·e." },
-        { tab: "profil", sel: "#editProfileBtn", emoji: "👤", title: "Ton profil", text: "Complète-le pour de meilleurs matchs. Mon parcours et ton BFF sont aussi sur cette carte." },
+        { tab: "profil", sel: "#editProfileBtn", emoji: "👤", title: "Ton profil", text: "Complète-le pour de meilleurs matchs. Mon parcours et ton BFF sont dans la carte juste en dessous." },
       ],
     };
     // FUSION tuto pas-à-pas + démo auto : un SEUL moteur = AUTO_DEMO (auto + Précédent/Suivant).
