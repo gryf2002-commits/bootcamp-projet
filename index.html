@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=370"></script>
-  <script src="sunmates-icons.js?v=370"></script>
+  <script src="sunmates-badges.js?v=371"></script>
+  <script src="sunmates-icons.js?v=371"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -12906,6 +12906,108 @@
     // Dictionnaire FR→EN pour la traduction auto (texte d'UI codé en dur).
     // Clés = texte FR EXACT (trimmé) tel qu'affiché. Le contenu utilisateur n'y est pas.
     const I18N_DICT = {
+      // ===== Passe EN (audit) : chaînes JS statiques manquantes (toasts/modales/confirmations) =====
+      // — Flammes / série / joker —
+      "Jour manqué rattrapé ! Ton <b>joker hebdo</b> a sauvé ta flamme 🔥": "Missed day recovered! Your <b>weekly joker</b> saved your flame 🔥",
+      "Réessaie dans un instant.": "Try again in a moment.",
+      "Réessaie.": "Try again.",
+      // — Voyages / souvenirs / récap —
+      "Supprimer ce voyage ?": "Delete this trip?", "Ce voyage sera retiré de ton profil.": "This trip will be removed from your profile.",
+      "Ajouter un voyage": "Add a trip", "Ta semaine sur SunMates": "Your week on SunMates",
+      "Localisation de la ville…": "Locating the city…",
+      "Voyage ajouté ✨": "Trip added ✨",
+      "Génération de ton récap…": "Generating your recap…", "Impossible de générer l'image.": "Couldn't generate the image.",
+      "Récap téléchargé ! Partage-le en story ☀️": "Recap downloaded! Share it as a story ☀️",
+      "✓ Ajouté à tes envies": "✓ Added to your wishlist",
+      // — Hôte —
+      "Tu es hôte SunMates": "You're a SunMates host", "Demande en cours": "Request pending", "Devenir hôte SunMates": "Become a SunMates host",
+      // — Profil / photo / vérif —
+      "Optimisation & envoi…": "Optimising & uploading…",
+      "Choisis une image.": "Choose an image.", "Fichier trop lourd (max 15 Mo).": "File too heavy (max 15 MB).",
+      "Erreur de recadrage.": "Cropping error.",
+      // — Lieux / check-in / avis —
+      "Connecte-toi d'abord avec un Mate pour lui recommander un lieu.": "Connect with a Mate first to recommend a place.",
+      "📍 Localisation…": "📍 Locating…",
+      "Check-in": "Check-in",
+      "Nettoyage du cache…": "Clearing cache…", "Cache vidé ✅ rechargement…": "Cache cleared ✅ reloading…",
+      // — Admin / modération —
+      "Membre suspendu, signalement traité": "Member suspended, report handled",
+      "Supprimer ce signalement ?": "Delete this report?", "Suppression définitive de ce signalement.": "This report will be permanently deleted.",
+      "Écris une réponse": "Write a reply", "Réponse envoyée — l'auteur sera notifié": "Reply sent — the author will be notified",
+      "Erreur": "Error", "Stats indisponibles": "Stats unavailable", "Rapport copié !": "Report copied!",
+      "Bannir définitivement ?": "Ban permanently?", "Ce membre disparaîtra de la liste.": "This member will disappear from the list.",
+      "Membre": "Member", "Ce lieu partenaire sera supprimé.": "This partner place will be deleted.",
+      "Aperçu": "Preview", "Profil indisponible": "Profile unavailable", "Badge": "Badge",
+      // — Sécurité / position / minuteur / faux appel —
+      "Partager ma position ?": "Share my location?",
+      "Déclencher une alerte d'urgence ?": "Trigger an emergency alert?", "Ta position sera diffusée aussitôt à ton cercle de confiance.": "Your location will be shared instantly with your trust circle.", "Déclencher l'alerte": "Trigger the alert",
+      "Minuteur en cours": "Timer running", "Rentrée en sécurité": "Home safe",
+      "Minuteur lancé. Confirme « bien arrivé·e » avant la fin 🛟": "Timer started. Confirm “arrived safely” before it ends 🛟",
+      "Bien arrivé·e ! Minuteur arrêté.": "Arrived safely! Timer stopped.", "Minuteur écoulé": "Timer's up",
+      "Nouveau contact d'urgence": "New emergency contact", "Indique un nom.": "Enter a name.", "Indique un numéro.": "Enter a number.",
+      "Ma sonnerie": "My ringtone", "Sonnerie par défaut rétablie": "Default ringtone restored",
+      "Choisis un fichier audio (mp3, m4a…).": "Choose an audio file (mp3, m4a…).",
+      "Fichier trop lourd (max 2 Mo). Prends un extrait plus court / moins bon débit.": "File too heavy (max 2 MB). Pick a shorter clip / lower bitrate.",
+      "Ta sonnerie est enregistrée !": "Your ringtone is saved!", "Impossible d'enregistrer ce fichier.": "Couldn't save this file.",
+      "Appel entrant…": "Incoming call…", "📞 Configurer le faux appel": "📞 Set up the fake call",
+      // — Jeux / quêtes / XP / boutique —
+      "Invitation copiée, partage-la !": "Invite copied, share it!",
+      "Décide pour moi": "Decide for me", "Quiz du voyageur": "Traveller quiz", "Bingo de voyage": "Travel bingo",
+      "BINGO ! Grille complète, bravo 🎉": "BINGO! Full grid, well done 🎉",
+      "Badges secrets 🔒": "Secret badges 🔒",
+      "Achat impossible — réessaie.": "Purchase failed — try again.",
+      "Ton retour a été traité 💛": "Your feedback has been handled 💛",
+      "Coup de projecteur activé — tu es en vedette 24 h ✨": "Spotlight on — you're featured for 24 h ✨",
+      "Quitter cette quête ?": "Leave this quest?", "Tu pourras la rejoindre à nouveau plus tard.": "You can join it again later.", "Quitter": "Leave",
+      "Quête quittée": "Quest left",
+      "Validation…": "Validating…",
+      "Collection de quêtes complète, bravo !": "Quest collection complete, well done!",
+      "Tour de France bouclé — toutes les villes explorées !": "Tour de France done — all cities explored!",
+      "⭐ Ta progression": "⭐ Your progress", "🎯 Objectifs de la semaine": "🎯 Weekly goals", "🏙️ Ville à l'honneur": "🏙️ City of the day", "🎯 Quêtes proches de toi": "🎯 Quests near you", "🗺️ Ma collection": "🗺️ My collection",
+      "Invite un Mate pour une sortie de groupe (+bonus XP) ✨": "Invite a Mate for a group outing (+XP bonus) ✨",
+      "Décris en quelques mots comment tu l'as accomplie (anti-triche).": "Describe in a few words how you did it (anti-cheat).",
+      // — Chat / messages / flammes / vocaux —
+      "Ce message sera retiré de la conversation.": "This message will be removed from the conversation.",
+      "Message supprimé": "Message deleted",
+      "Tes messages de cette conversation seront supprimés.": "Your messages in this conversation will be deleted.",
+      "🔥 Flammes": "🔥 Flames", "Bloquer / signaler depuis le profil": "Block / report from the profile",
+      "App en bêta · ton avis compte": "App in beta · your feedback counts",
+      "Écris quelques mots avant d'envoyer 🙂": "Write a few words before sending 🙂",
+      "Support SunMates": "SunMates support",
+      "Les vocaux marchent avec un vrai Mate 🙂": "Voice notes work with a real Mate 🙂",
+      "Micro indisponible sur cet appareil": "Mic unavailable on this device", "Accès micro refusé": "Mic access denied",
+      "Activer le micro ?": "Enable the mic?", "Pour une note vocale (30 s max). Rien n'est gardé tant que tu n'envoies pas.": "For a voice note (30 s max). Nothing is kept until you send.",
+      "Échec envoi vocal (lance la migration s36 ?)": "Voice note failed (run migration s36?)", "Lecture impossible": "Playback failed",
+      "✓ Vu": "✓ Seen",
+      // — Activités carte —
+      "⏳ Localisation…": "⏳ Locating…", "Publication…": "Posting…",
+      "Elle sera retirée de la carte.": "It will be removed from the map.",
+      // — Compte / confidentialité / données —
+      "✅ Réponse de l'équipe SunMates": "✅ Reply from the SunMates team",
+      "SunMates Gold 👑": "SunMates Gold 👑",
+      "Supprimer ton compte ?": "Delete your account?", "Suppression DÉFINITIVE de ton compte et de toutes tes données. Cette action est irréversible.": "PERMANENT deletion of your account and all your data. This action can't be undone.",
+      "Suppression annulée": "Deletion cancelled", "Suppression en cours…": "Deleting…", "Compte supprimé": "Account deleted",
+      "Erreur : réessaie.": "Error: try again.",
+      "Préparation de tes données…": "Preparing your data…", "Tes données ont été téléchargées 📦": "Your data has been downloaded 📦",
+      "Confidentialité & données": "Privacy & data",
+      // — Coupons / blocage —
+      "Il sera marqué utilisé et ne pourra plus servir.": "It'll be marked as used and can't be used again.", "Marquer utilisé": "Mark as used",
+      "Bloquer ce voyageur ?": "Block this traveller?", "Il n'apparaîtra plus dans ta découverte ni tes messages. Tu pourras le débloquer plus tard.": "They won't appear in your discovery or messages anymore. You can unblock them later.",
+      // — Fil / posts / commentaires —
+      "Supprimer ce post ?": "Delete this post?", "Ce post sera retiré du fil.": "This post will be removed from the feed.", "Post supprimé": "Post deleted",
+      "Commentaires": "Comments", "Commentaire supprimé": "Comment deleted",
+      "Connecte-toi pour commenter.": "Log in to comment.", "Connecte-toi pour voter.": "Log in to vote.",
+      "Mets au moins 2 options.": "Add at least 2 options.", "Erreur, réessaie.": "Error, try again.",
+      // — Rituels / souvenirs —
+      "Mon rituel à moi": "My own ritual",
+      "Ajoute une photo de profil dans « Modifier mon profil »": "Add a profile photo in “Edit my profile”",
+      // — QR / caméra / installation —
+      "QR indisponible": "QR unavailable",
+      "Activer la caméra ?": "Enable the camera?", "Uniquement pour scanner le QR d'un Mate. Aucune image n'est enregistrée ni envoyée.": "Only to scan a Mate's QR. No image is saved or sent.",
+      "Afficher": "Show",
+      "Sur iPhone/iPad, l'installation se fait via le menu Partager de Safari.": "On iPhone/iPad, install via Safari's Share menu.",
+      "SunMates est déjà installée sur cet appareil 🎉": "SunMates is already installed on this device 🎉",
+      // ===== fin passe EN audit =====
       // — Accueil / mode Voyage & Maison —
       "Bonjour": "Hello", "Regarde qui traîne dans le coin 👀": "See who's around 👀",
       "✈️ En voyage": "✈️ Travelling", "🏠 À la maison": "🏠 At home",
