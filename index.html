@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=372"></script>
-  <script src="sunmates-icons.js?v=372"></script>
+  <script src="sunmates-badges.js?v=375"></script>
+  <script src="sunmates-icons.js?v=375"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -731,7 +731,7 @@
     /* ---- Bandeau d'état réseau (hors-ligne) ---- */
     .net-banner { position: fixed; top: 0; left: 0; right: 0; z-index: var(--z-confetti);
       background: #b91c1c; color: #fff; text-align: center; font-size: .82rem; font-weight: 700;
-      padding: .5rem .8rem; transform: translateY(-100%); transition: transform .3s ease; pointer-events: none; }
+      padding: calc(.5rem + env(safe-area-inset-top, 0px)) .8rem .5rem; transform: translateY(-100%); transition: transform .3s ease; pointer-events: none; }
     .net-banner.show { transform: translateY(0); }
 
     /* ---- Nav du bas : icônes seules, libellé uniquement sur l'onglet ACTIF ---- */
@@ -748,8 +748,9 @@
     @keyframes tabFade { from { opacity: 0; transform: translateY(16px) scale(.985); } to { opacity: 1; transform: none; } }
     .prof-seg:not(.hidden) { animation: tabFade .3s cubic-bezier(.22,.8,.3,1); }
 
-    /* ---- Textareas : plus d'étirement infini (auto-grow géré en JS, hauteur plafonnée) ---- */
-    textarea { resize: none; min-height: 4.6em; max-height: 45vh; overflow-y: hidden; line-height: 1.5; }
+    /* ---- Textareas : plus d'étirement infini (auto-grow géré en JS, hauteur plafonnée).
+       overflow-y:auto (pas hidden) : une fois le plafond 45vh atteint, on peut ENCORE relire/scroller son texte. ---- */
+    textarea { resize: none; min-height: 4.6em; max-height: 45vh; overflow-y: auto; line-height: 1.5; }
 
     /* ---- Flash de succès (DA SunMates : coucher de soleil ambre → corail) ---- */
     @keyframes flashOk {
@@ -834,6 +835,10 @@
     .popinfo-ov.hidden { display: none; }
     .popinfo-card { position: relative; width: 100%; max-width: 340px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 1.5rem 1.3rem 1.3rem; box-shadow: 0 18px 50px rgba(0,0,0,.32); text-align: center; animation: popinfoPop .22s cubic-bezier(.2,1.2,.4,1); }
     .popinfo-x { position: absolute; top: .6rem; right: .6rem; width: 30px; height: 30px; border: 0; border-radius: 50%; background: var(--cream); color: var(--muted); font-size: .9rem; cursor: pointer; display: grid; place-items: center; line-height: 1; padding: 0; }
+    /* Cibles tactiles 44px SANS grossir le visuel : on étend la zone cliquable des petites croix
+       via un pseudo-élément invisible (le doigt tape large, le rond reste discret). */
+    .popinfo-x::after, .search-clear::after, .kb-search .kb-clear::after { content: ""; position: absolute; inset: -8px; border-radius: 50%; }
+    .kb-search .kb-clear::after { inset: -11px; }
     /* Croix SVG centrée (fix systémique) : marche dans n'importe quel bouton de fermeture */
     .xbtn { display: inline-grid !important; place-items: center !important; line-height: 1 !important; padding: 0 !important; }
     .xbtn svg { display: block; }
@@ -2451,7 +2456,7 @@
     .navbadge { position: absolute; top: 3px; right: calc(50% - 22px); background: var(--accent); color: #fff; font-size: .6rem; font-weight: 800; min-width: 16px; height: 16px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 3px; box-shadow: 0 2px 6px rgba(255,90,77,.5); }
 
     /* Toasts (notifications éphémères) */
-    #toastWrap { position: fixed; top: .7rem; left: 50%; transform: translateX(-50%); z-index: var(--z-toast); display: flex; flex-direction: column; gap: .5rem; width: calc(100% - 1.5rem); max-width: 430px; pointer-events: none; }
+    #toastWrap { position: fixed; top: calc(.7rem + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: var(--z-toast); display: flex; flex-direction: column; gap: .5rem; width: calc(100% - 1.5rem); max-width: 430px; pointer-events: none; }
     .toast { pointer-events: auto; background: rgba(45,35,50,.96); color: #fff; border-radius: 14px; padding: .7rem .9rem; display: flex; align-items: center; gap: .6rem; box-shadow: 0 12px 30px rgba(0,0,0,.3); animation: toastIn .3s cubic-bezier(.2,.8,.3,1) both; cursor: pointer; }
     .toast .tico { font-size: 1.35rem; flex-shrink: 0; }
     .toast .ttxt { font-size: .85rem; line-height: 1.25; } .toast .ttxt b { font-weight: 700; }
@@ -2956,7 +2961,7 @@
     .signal-sos { font-size: 5rem; font-weight: 900; letter-spacing: .18em; color: #e11d2e; line-height: 1; }
     .signal-txt { font-size: 1.5rem; font-weight: 900; margin-top: .6rem; color: #111; }
     .signal-sub { font-size: .88rem; color: #333; margin-top: .8rem; max-width: 280px; margin-left: auto; margin-right: auto; }
-    .signal-close { position: absolute; bottom: calc(1.4rem + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: #111; color: #fff; border: 0; border-radius: 999px; padding: .7rem 1.4rem; font-weight: 800; cursor: pointer; }
+    .signal-close { position: absolute; bottom: calc(1.4rem + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: #111; color: #fff; border: 0; border-radius: 999px; padding: .7rem 1.4rem; font-weight: 800; cursor: pointer; min-height: 44px; min-width: 44px; }
     #goldPreviewBanner { display: none; }
     body.gold-free #goldPreviewBanner { display: block; background: linear-gradient(135deg,#FFD15C,#E89B2B); color: #5a3d00; text-align: center; font-weight: 700; font-size: .8rem; padding: .5rem; }
     /* Exclus Gold (lieu / quête), lisibles en clair ET en sombre */
@@ -4378,7 +4383,8 @@
           <!-- Aide & support : FAQ retirée (revient quand la démo guidée sera finie) ;
                contact = bientôt dispo (pas d'email perso affiché). -->
           <div class="set-grouptitle">Aide &amp; support</div>
-          <button class="btn-ghost btn-block" data-secu="contactus">✉️ Nous contacter</button>
+          <button class="btn-ghost btn-block" data-secu="aide">❓ <span>Centre d'aide · FAQ</span></button>
+          <button class="btn-ghost btn-block" data-secu="contactus" style="margin-top:.5rem">✉️ Nous contacter</button>
           <button class="btn-ghost btn-block" id="betaFeedbackBtn" style="margin-top:.5rem">🧪 App en bêta · donne ton avis</button>
 
           <!-- Application -->
