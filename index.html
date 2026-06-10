@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=384"></script>
-  <script src="sunmates-icons.js?v=384"></script>
+  <script src="sunmates-badges.js?v=385"></script>
+  <script src="sunmates-icons.js?v=385"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -8946,7 +8946,15 @@
         if (error) return; // migration pas encore lancée → silencieux
         const res = (data && data[0]) || data || {};
         if (myProfile && typeof res.balance === "number") myProfile.coins = res.balance;
-        if (res.granted > 0) { if (typeof toast === "function") toast("🪙", "+" + res.granted + " SunCoins, bonus du jour ! Reviens demain ✨"); if (window.SMSound) SMSound.play("coin"); }
+        if (res.granted > 0) {
+          // Série de bonus consécutifs (🔥 rétention douce, stockée en local)
+          let stk = {}; try { stk = JSON.parse(localStorage.getItem("sm_coins_streak_" + myUserId) || "{}") || {}; } catch (e) {}
+          const today = new Date().toISOString().slice(0, 10), yest = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+          if (stk.last !== today) { stk.count = (stk.last === yest) ? (stk.count || 0) + 1 : 1; stk.last = today; try { localStorage.setItem("sm_coins_streak_" + myUserId, JSON.stringify(stk)); } catch (e) {} }
+          const stTxt = (stk.count > 1) ? " 🔥 " + i18nT("{n} jours d'affilée !", { n: stk.count }) : "";
+          if (typeof toast === "function") toast("🪙", "+" + res.granted + " SunCoins, bonus du jour !" + stTxt + " Reviens demain ✨");
+          if (window.SMSound) SMSound.play("coin");
+        }
         if (typeof renderShop === "function" && !$("jeuxShop").classList.contains("hidden")) renderShop();
       } catch (e) {}
     }
@@ -11806,12 +11814,24 @@
     }
     // ---- Utiliser un coupon ----
     async function useCoupon(id) {
-      if (!(await smConfirmP("🎟️", "Marquer ce coupon comme utilisé ?", "Il sera marqué utilisé et ne pourra plus servir.", "Marquer utilisé"))) return;
-      const { error } = await db.from("user_coupons").update({ used: true }).eq("id", id);
-      if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); return; }
-      track("coupon_used");
-      toast("🎟️", "Coupon utilisé, bon plan !");
-      await loadGameData();
+      // ÉCRAN PRÉSENTABLE : on montre d'abord le coupon EN GRAND (à présenter au partenaire),
+      // puis on le marque utilisé — la boucle « monde réel » au lieu d'une simple confirmation.
+      const c = (typeof myCoupons !== "undefined" ? myCoupons : []).find((x) => x.id === id);
+      popInfo("🎟️", (c && c.title) || "Coupon", "<div style='text-align:center;line-height:1.5'>"
+        + "<div style='font-size:3rem;filter:var(--relief)'>🎟️</div>"
+        + "<b style='font-size:1.05rem'>" + escapeHtml((c && c.title) || "Coupon") + "</b>"
+        + (c && c.descr ? "<div class='muted' style='font-size:.85rem;margin-top:.25rem'>" + escapeHtml(c.descr) + "</div>" : "")
+        + "<div style='margin:.7rem 0;padding:.55rem;border:1.5px dashed var(--accent);border-radius:12px;font-weight:800;color:var(--accent)'>" + i18nT("Montre cet écran au partenaire 😎") + "</div>"
+        + "<button class='btn-primary btn-block' id='couponMarkUsed'>" + i18nT("✅ C'est validé — marquer utilisé") + "</button>"
+        + "<p class='muted' style='font-size:.72rem;margin:.5rem 0 0'>" + i18nT("Une fois marqué utilisé, le coupon ne peut plus servir.") + "</p></div>");
+      setTimeout(() => { const b = $("couponMarkUsed"); if (b) b.onclick = () => once("usecoupon:" + id, async () => {
+        const { error } = await db.from("user_coupons").update({ used: true }).eq("id", id);
+        const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden");
+        if (error) { toast("⚠️", "Erreur : " + escapeHtml(error.message)); return; }
+        track("coupon_used");
+        toast("🎟️", "Coupon utilisé, bon plan !");
+        await loadGameData();
+      }); }, 40);
     }
     // ---- Bloquer un voyageur ----
     let blockedIds = new Set();
@@ -12584,6 +12604,31 @@
         const go = $("nqGo"); if (go) { go.textContent = "📍 Me localiser"; go.onclick = () => { if (typeof toast === "function") toast("📍", "Localisation…"); getGeo(() => renderNearestQuest(), () => { if (typeof toast === "function") toast("⚠️", "Position indisponible"); }); }; }
       }
     }
+    // Quête la plus proche DYNAMIQUE : se met à jour quand tu te déplaces (~500 m).
+    // Garde-fous : seulement si la permission géoloc est DÉJÀ accordée (jamais de prompt),
+    // et seulement quand l'app est visible (batterie). Précision basse, cache 60 s.
+    let _geoWatchId = null, _geoLastRef = null;
+    function startGeoWatch() {
+      if (_geoWatchId != null || !("geolocation" in navigator)) return;
+      try {
+        _geoWatchId = navigator.geolocation.watchPosition((pos) => {
+          const g = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          lastKnownGeo = g;
+          if (!_geoLastRef || (typeof haversineKm === "function" && haversineKm(_geoLastRef, g) > 0.5)) {
+            _geoLastRef = g;
+            try { if (typeof renderNearestQuest === "function") renderNearestQuest(); } catch (e) {}
+            try { if (typeof renderProgRows === "function") renderProgRows(); } catch (e) {}
+          }
+        }, () => {}, { enableHighAccuracy: false, maximumAge: 60000, timeout: 20000 });
+      } catch (e) {}
+    }
+    function stopGeoWatch() { if (_geoWatchId != null) { try { navigator.geolocation.clearWatch(_geoWatchId); } catch (e) {} _geoWatchId = null; } }
+    document.addEventListener("visibilitychange", () => { if (document.hidden) stopGeoWatch(); else startGeoWatchIfGranted(); });
+    function startGeoWatchIfGranted() {
+      try { if (navigator.permissions && navigator.permissions.query) navigator.permissions.query({ name: "geolocation" }).then((st) => { if (st.state === "granted") startGeoWatch(); }); } catch (e) {}
+    }
+    setTimeout(startGeoWatchIfGranted, 6000);
+
     // Radar dépliable : touche la carte radar (hors bouton) → liste des quêtes les plus proches.
     function showNearestQuests() {
       const pts = _questGeoList(true); // ignore le filtre ville → vraies plus proches
@@ -13840,6 +13885,10 @@
       "Défier un Mate": "Challenge a Mate",
       "Record : {n}": "Best: {n}",
       "🎮 Je te défie : « {g} » sur SunMates{s} — à toi de jouer !": "🎮 I challenge you: \"{g}\" on SunMates{s} — your turn!",
+      "{n} jours d'affilée !": "{n} days in a row!",
+      "Montre cet écran au partenaire 😎": "Show this screen to the partner 😎",
+      "✅ C'est validé — marquer utilisé": "✅ All good — mark as used",
+      "Une fois marqué utilisé, le coupon ne peut plus servir.": "Once marked as used, the coupon can't be used again.",
       "tramways jaunes, fado et couchers de soleil sur le Tage": "yellow trams, fado and sunsets on the Tagus",
       "temples zen, ruelles de geishas et érables flamboyants": "zen temples, geisha lanes and flamboyant maples",
       "souks colorés, riads et désert à perte de vue": "colourful souks, riads and desert as far as the eye can see",
