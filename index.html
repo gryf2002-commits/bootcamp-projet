@@ -100,8 +100,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=376"></script>
-  <script src="sunmates-icons.js?v=376"></script>
+  <script src="sunmates-badges.js?v=377"></script>
+  <script src="sunmates-icons.js?v=377"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -331,7 +331,7 @@
       padding: .65rem .5rem; text-align: center; cursor: pointer; transition: transform .1s ease, box-shadow .15s ease, border-color .15s ease; }
     .cat-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
     .cat-tile:active { transform: scale(.96); }
-    .cat-tile .cic { position: relative; overflow: hidden; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 1.25rem; margin: 0 auto .35rem; color: #fff; box-shadow: inset 0 -8px 16px rgba(0,0,0,.08); }
+    .cat-tile .cic { position: relative; overflow: hidden; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 1.25rem; line-height: 1; margin: 0 auto .35rem; color: #fff; box-shadow: inset 0 -8px 16px rgba(0,0,0,.08); }
     .cat-tile .cic::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(157deg, rgba(255,255,255,.34) 0%, rgba(255,255,255,.08) 26%, rgba(255,255,255,0) 54%); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); pointer-events: none; }
     .cat-tile .clbl { font-size: .74rem; font-weight: 700; color: var(--ink); white-space: nowrap; }
     .cat-tile.active { border-color: var(--accent); box-shadow: 0 6px 16px rgba(255,90,77,.2); }
@@ -353,6 +353,21 @@
     .jnav-primary .cat-tile .clbl { font-size: .82rem; }
     /* #13/#6 : tuiles de progression au MÊME style joaillerie que la nav (cic + label, carte blanche),
        + 1 tuile scindée en 2 (quête proche | ville à l'honneur). */
+    /* Refonte « Ta progression » (retour Maxime : trop de tuiles carrées qui clonaient la nav) :
+       carte-LISTE avec données live → identité distincte, hiérarchie nav(tuiles) ≠ progression(liste). */
+    .prog-card { padding: .2rem 0; margin-bottom: .55rem; overflow: hidden; }
+    .prog-row { display: flex; align-items: center; gap: .7rem; width: 100%; padding: .68rem .9rem; background: transparent; border: 0; border-bottom: 1px solid var(--line); text-align: left; cursor: pointer; font: inherit; color: var(--ink); }
+    .prog-row:last-child { border-bottom: 0; }
+    .prog-row:active { background: rgba(255,138,61,.08); }
+    .prog-row .cic { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font-size: 1.18rem; line-height: 1; color: #fff; box-shadow: inset 0 -8px 16px rgba(0,0,0,.08); }
+    .prog-row .pr-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .12rem; }
+    .prog-row .pr-tx b { font-size: .86rem; font-weight: 700; }
+    .prog-row .pr-sub { font-size: .74rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .prog-row .pr-val { flex: 0 0 auto; font-size: .8rem; font-weight: 800; color: var(--accent); }
+    .prog-row .pr-chev { flex: 0 0 auto; color: var(--muted); font-weight: 700; }
+    .prog-row.pr-city { background: linear-gradient(135deg, rgba(255,201,60,.16), rgba(255,138,61,.08)); } /* ville à l'honneur : nuance chaude gardée */
+    body.theme-dusk .prog-row.pr-city { background: linear-gradient(135deg, rgba(255,201,60,.12), rgba(255,138,61,.08)); }
+    /* (anciennes tuiles carrées de progression — classes gardées pour compat si réutilisées ailleurs) */
     .prog-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: .55rem; margin-bottom: .55rem; }
     .prog-split { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: .55rem; }
     .prog-tile, .prog-half { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem; text-align: center;
@@ -4463,13 +4478,13 @@
                renderWeeklyGoals/renderQuestCollection/renderNearestQuest/renderCapitaleDuJour les
                remplissent toujours ; les tuiles lisent/ouvrent leur contenu. Fonctionnement inchangé. -->
           <div class="jnav-cap">🎯 Ta progression</div>
-          <div class="prog-tiles">
-            <button type="button" class="prog-tile" data-prog="goals"><div class="cic c-gold">🎯</div><div class="clbl">Objectifs</div></button>
-            <button type="button" class="prog-tile" data-prog="collection"><div class="cic c-purp">🗺️</div><div class="clbl">Collection</div></button>
-          </div>
-          <div class="prog-split">
-            <button type="button" class="prog-half" data-prog="nearquest"><div class="cic c-sun">📍</div><div class="clbl">Quête proche</div></button>
-            <button type="button" class="prog-half ps-city" data-prog="capitale"><div class="cic c-gold">🏙️</div><div class="clbl">Ville à l'honneur</div></button>
+          <!-- Carte-LISTE (refonte) : chaque rangée montre la VRAIE donnée (objectifs x/3, quête la
+               plus proche, collection n/n, ville du jour). Mêmes data-prog → handlers inchangés. -->
+          <div class="card prog-card">
+            <button type="button" class="prog-row" data-prog="goals"><span class="cic c-gold">🗓️</span><span class="pr-tx"><b>Objectifs de la semaine</b><span class="pr-sub" id="prGoalsSub">3 défis qui tournent chaque lundi</span></span><b class="pr-val" id="prGoalsVal"></b><span class="pr-chev">›</span></button>
+            <button type="button" class="prog-row" data-prog="nearquest"><span class="cic c-sun">📍</span><span class="pr-tx"><b>Quête la plus proche</b><span class="pr-sub" id="prQuestSub">Active ta position pour la repérer</span></span><span class="pr-chev">›</span></button>
+            <button type="button" class="prog-row" data-prog="collection"><span class="cic c-purp">🗺️</span><span class="pr-tx"><b>Collection de quêtes</b><span class="pr-sub" id="prCollSub">Complète la carte, ville après ville</span></span><b class="pr-val" id="prCollVal"></b><span class="pr-chev">›</span></button>
+            <button type="button" class="prog-row pr-city" data-prog="capitale"><span class="cic c-blue">🏙️</span><span class="pr-tx"><b>Ville à l'honneur</b><span class="pr-sub" id="prCitySub">Une nouvelle ville chaque jour</span></span><span class="pr-chev">›</span></button>
           </div>
           <div id="progSources" style="display:none">
             <div id="weeklyGoals"></div>
@@ -5604,7 +5619,7 @@
           const dest = ($("ntDest").value || "").trim(), date = $("ntDate").value;
           if (!dest || !date) { toast("✈️", "Indique une destination et une date 🙂"); return; }
           try { localStorage.setItem("sm_next_trip", JSON.stringify({ dest, date })); localStorage.removeItem("sm_trip_prep"); } catch (e) {}
-          renderNextTrip(); if (typeof renderTripPrep === "function") renderTripPrep(); if (typeof toast === "function") toast("🧳", "Voyage planifié ! Bons préparatifs ✨");
+          renderNextTrip(); if (typeof renderTripPrep === "function") renderTripPrep(); if (typeof toast === "function") toast("✈️", "Voyage planifié ! Bons préparatifs ✨"); /* ✈️ = emoji voyage unique (cohérence) */
         });
       }
     }
@@ -8557,6 +8572,7 @@
           <p style="margin:.2rem 0">Plus d'XP = tu grimpes dans le <b>Classement</b> 🏆 et tu débloques des cosmétiques en <b>Boutique</b> 🛍️</p></div>`);
       }
       if (typeof renderWeeklyGoals === "function") renderWeeklyGoals();
+      if (typeof renderProgRows === "function") renderProgRows();
       if (typeof renderGameHub === "function") renderGameHub(); // rafraîchit héros/quête/badges du home v2
 
       // Rangée des badges ÉPINGLÉS sur la carte profil (3 max, choisis dans l'onglet Badges)
@@ -8931,7 +8947,7 @@
       const status = myQuestStatus[q.key];
       const hero = $("detailHero");
       if (hero) { hero.style.backgroundImage = "url('" + questImage(q) + "')"; hero.classList.add("has-photo"); }
-      $("detailEmoji").textContent = q.emoji || "🎮";
+      $("detailEmoji").textContent = q.emoji || "🎯"; /* fallback quête = 🎯 (🎮 = mini-jeux) */
       $("detailName").textContent = q.title;
       // Si la quête est rattachée à un lieu réel, on montre son ADRESSE ; sinon la ville.
       const linkedCafe = (q.cafe_id != null && typeof allCafes !== "undefined") ? (allCafes || []).find((c) => c.id === q.cafe_id) : null;
@@ -12230,11 +12246,33 @@
       $("phXpNext").innerHTML = xp === 0 ? "Accomplis une quête pour gagner ton premier niveau"
         : ("Plus que <b>" + (100 - inLvl) + " XP</b> pour le niveau " + (lvl + 1) + " 🚀");
       const av = $("phAvatar"), url = myProfile && myProfile.avatar_url;
-      if (av) { if (url) { av.textContent = ""; av.style.backgroundImage = 'url("' + url + '")'; } else { av.style.backgroundImage = ""; av.textContent = "🧭"; } }
+      // FIX « logo niveau buggé » : si la photo ÉCHOUE à charger (offline/cache), on retombe sur
+      // l'emoji 🧭 au lieu d'un rond pâle vide (avant : textContent vidé + backgroundImage cassée).
+      const _setAv = (el, u, emo) => {
+        if (!el) return;
+        if (!u) { el.style.backgroundImage = ""; el.textContent = emo; return; }
+        const im = new Image();
+        im.onload = () => { el.textContent = ""; el.style.backgroundImage = 'url("' + u + '")'; };
+        im.onerror = () => { el.style.backgroundImage = ""; el.textContent = emo; };
+        im.src = u;
+      };
+      _setAv(av, url, "🧭");
       try { const st = JSON.parse(localStorage.getItem("sm_streak_" + (myUserId || "x")) || "{}") || {}; $("phStreakN").textContent = st.count || 1; } catch (e) {}
       // #12 : badge rond d'en-tête (niveau + avatar).
       const pbLvl = $("pbLvl"); if (pbLvl) pbLvl.textContent = lvl;
-      const pbAv = $("pbAv"); if (pbAv) { if (url) { pbAv.textContent = ""; pbAv.style.backgroundImage = 'url("' + url + '")'; } else { pbAv.style.backgroundImage = ""; pbAv.textContent = "🧭"; } }
+      _setAv($("pbAv"), url, "🧭");
+    }
+    // Refonte progression : sous-titres LIVE des rangées, lus dans les widgets sources (masqués)
+    // que renderWeeklyGoals/renderNearestQuest/renderQuestCollection/renderCapitaleDuJour remplissent.
+    function renderProgRows() {
+      try {
+        const wg = document.querySelector("#weeklyGoals .wg-count");
+        const gv = $("prGoalsVal"); if (gv && wg) gv.textContent = wg.textContent;
+        const nqT = $("nqTitle"), nqM = $("nqMeta"), qs = $("prQuestSub");
+        if (qs && nqT && nqT.textContent && nqT.textContent !== "—") qs.textContent = nqT.textContent + ((nqM && nqM.textContent) ? " · " + nqM.textContent : "");
+        const qc = $("qcollCount"), cv = $("prCollVal"); if (cv && qc && qc.textContent !== "0/0") cv.textContent = qc.textContent;
+        const cn = $("capName"), cs = $("prCitySub"); if (cs && cn && cn.textContent && cn.textContent !== "—") cs.textContent = i18nT("Aujourd'hui : {c}", { c: cn.textContent });
+      } catch (e) {}
     }
     // #12 : clic sur le badge rond → détails de progression (XP, niveau, série) en modale.
     { const pb = $("playerBadge"); if (pb) pb.addEventListener("click", () => {
@@ -12279,7 +12317,7 @@
       sec.style.display = "";
     }
 
-    function renderGameHub() { try { renderPlayerHero(); renderQuestSpotlight(); renderBadgeRail(); renderNearestQuest(); renderQuestCollection(); renderCapitaleDuJour(); } catch (e) {} }
+    function renderGameHub() { try { renderPlayerHero(); renderQuestSpotlight(); renderBadgeRail(); renderNearestQuest(); renderQuestCollection(); renderCapitaleDuJour(); } catch (e) {} try { renderProgRows(); } catch (e) {} }
     // #13 : les tuiles de progression ouvrent le contenu du widget correspondant (sources masquées).
     document.querySelectorAll("[data-prog]").forEach((b) => b.addEventListener("click", () => {
       const k = b.dataset.prog;
@@ -13580,6 +13618,15 @@
       "🗂️ Filtres": "🗂️ Filters",
       "🗂️ Filtres de la carte": "🗂️ Map filters",
       "Nouvelle demande 📨": "New request 📨",
+      "Objectifs de la semaine": "Weekly goals",
+      "Quête la plus proche": "Nearest quest",
+      "Collection de quêtes": "Quest collection",
+      "Ville à l'honneur": "City spotlight",
+      "3 défis qui tournent chaque lundi": "3 challenges, fresh every Monday",
+      "Active ta position pour la repérer": "Turn on location to spot it",
+      "Complète la carte, ville après ville": "Fill the map, city by city",
+      "Une nouvelle ville chaque jour": "A new city every day",
+      "Aujourd'hui : {c}": "Today: {c}",
       "tramways jaunes, fado et couchers de soleil sur le Tage": "yellow trams, fado and sunsets on the Tagus",
       "temples zen, ruelles de geishas et érables flamboyants": "zen temples, geisha lanes and flamboyant maples",
       "souks colorés, riads et désert à perte de vue": "colourful souks, riads and desert as far as the eye can see",
@@ -14658,7 +14705,9 @@
       // P2.52 : icône PNG nette (icon.svg ne s'affiche pas dans beaucoup de systèmes de notif).
       // P2.49 : tag commun + renotify:false → les notifs SE REMPLACENT (jamais d'empilement de vieilles notifs).
       // P2.38 : on transporte l'onglet cible dans data → le clic ouvre le bon onglet.
-      const opts = { body: body, icon: "icon-192.png", badge: "icon-192.png", tag: "sunmates", renotify: false, data: { tab: tab || "" } };
+      // MÊMES options que le handler push du SW (badge MONOCHROME badge-96, sinon Android
+      // affiche un pavé gris dans la barre d'état) → popup identique quel que soit le chemin.
+      const opts = { body: body, icon: "icon-192.png", badge: "badge-96.png", tag: "sunmates", renotify: false, vibrate: [60, 30, 60], data: { tab: tab || "" } };
       try {
         if (navigator.serviceWorker && navigator.serviceWorker.ready) {
           navigator.serviceWorker.ready
