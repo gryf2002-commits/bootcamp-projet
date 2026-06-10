@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=345"></script>
-  <script src="sunmates-icons.js?v=345"></script>
+  <script src="sunmates-badges.js?v=346"></script>
+  <script src="sunmates-icons.js?v=346"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -2886,6 +2886,23 @@
     .tile.soon:hover { transform: none; box-shadow: none; }
     .tile.soon .thumb { background: linear-gradient(135deg,#d9cdb8,#b3a079) !important; }
     .tile.soon .t-meta { color: var(--accent); font-weight: 700; }
+
+    /* ===== Menus déroulants en DA SunMates (placé en FIN de CSS pour gagner sur les
+       « background:#fff !important » des blocs thème) : on retire la flèche native de l'OS
+       (qui faisait « pas fini / hors-DA ») et on pose un chevron sunset maison. Le fond/couleur
+       restent gérés par les règles thème ; on n'override QUE l'image de fond (le chevron). ===== */
+    select {
+      -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important;
+      padding-right: 2.3rem !important;
+      background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23FF5A4D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right .95rem center !important;
+      background-size: 12px 8px !important;
+      cursor: pointer;
+    }
+    body.theme-dusk select {
+      background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23FFB37A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+    }
   </style>
 </head>
 <body>
