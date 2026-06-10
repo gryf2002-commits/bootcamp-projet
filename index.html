@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=354"></script>
-  <script src="sunmates-icons.js?v=354"></script>
+  <script src="sunmates-badges.js?v=355"></script>
+  <script src="sunmates-icons.js?v=355"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -14241,9 +14241,12 @@
     setLang(currentLang);
 
     // ---- Masquer / afficher le fil d'actualité ----
-    if (localStorage.getItem("sm_feed_hidden") === "1") { $("homeFeed").classList.add("hidden"); $("feedToggle").textContent = "Afficher"; }
+    // « Masquer » cache TOUT le fil (composer + liste) d'un coup → une seule logique cohérente
+    // (avant : seule la liste se masquait, le composer restait = « une tuile masquable, pas l'autre »).
+    if (localStorage.getItem("sm_feed_hidden") === "1") { $("homeFeed").classList.add("hidden"); { const fc = $("feedComposer"); if (fc) fc.classList.add("hidden"); } $("feedToggle").textContent = "Afficher"; }
     $("feedToggle").addEventListener("click", () => {
       const hidden = $("homeFeed").classList.toggle("hidden");
+      { const fc = $("feedComposer"); if (fc) fc.classList.toggle("hidden", hidden); }
       localStorage.setItem("sm_feed_hidden", hidden ? "1" : "0");
       $("feedToggle").textContent = hidden ? "Afficher" : "Masquer";
     });
