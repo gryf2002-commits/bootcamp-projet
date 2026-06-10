@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=364"></script>
-  <script src="sunmates-icons.js?v=364"></script>
+  <script src="sunmates-badges.js?v=365"></script>
+  <script src="sunmates-icons.js?v=365"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -571,11 +571,13 @@
     body.theme-dusk .match-avs .mlink { background: #241b35; }
 
     /* ---- Pull-to-refresh ---- */
+    /* #16 : spinner DA SunMates (anneau sunset), pas un « ↻ » générique. */
     .ptr { position: fixed; top: 0; left: 50%; transform: translateX(-50%) translateY(-44px); z-index: var(--z-toast);
-      width: 38px; height: 38px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow);
-      display: grid; place-items: center; font-size: 1.1rem; transition: transform .12s ease, opacity .2s ease; opacity: 0; pointer-events: none; }
+      width: 40px; height: 40px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow);
+      display: grid; place-items: center; transition: transform .12s ease, opacity .2s ease; opacity: 0; pointer-events: none; }
     .ptr.show { opacity: 1; }
-    .ptr.spin span { display: inline-block; animation: ptrSpin .7s linear infinite; }
+    .ptr .ptr-ring { width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--accent-soft); border-top-color: var(--accent); border-right-color: var(--accent-2, var(--accent)); }
+    .ptr.spin .ptr-ring { animation: ptrSpin .62s linear infinite; }
     @keyframes ptrSpin { to { transform: rotate(360deg); } }
 
     /* ---- QR de profil (overlay réutilise .act-overlay/.act-card) ---- */
@@ -14156,23 +14158,26 @@
       vibrate(15);
     }
     (function setupPTR() {
-      let ptr = document.createElement("div"); ptr.className = "ptr"; ptr.innerHTML = "<span>↻</span>"; document.body.appendChild(ptr);
-      let startY = 0, pulling = false, dist = 0; const THRESH = 70;
+      let ptr = document.createElement("div"); ptr.className = "ptr"; ptr.innerHTML = '<div class="ptr-ring"></div>'; document.body.appendChild(ptr);
+      let startY = 0, pulling = false, dist = 0; const THRESH = 70, SHOW_AT = 24;
       window.addEventListener("touchstart", (e) => {
-        if (window.scrollY > 4 || document.querySelector(".homemap-card.fs") || document.querySelector(".act-overlay:not(.hidden)")) { pulling = false; return; }
+        // #16 : on ne DÉCLENCHE que si on est PILE en haut de l'écran (sinon le spinner apparaissait
+        // trop souvent en plein scroll). scrollY doit être 0 (pas une marge de 4px).
+        if (window.scrollY > 0 || document.querySelector(".homemap-card.fs") || document.querySelector(".act-overlay:not(.hidden)")) { pulling = false; return; }
         if ($("appView") && $("appView").classList.contains("hidden")) { pulling = false; return; }
         // Pas de pull-to-refresh quand on scrolle une zone interne (chat, modals, listes déroulantes).
-        if (e.target.closest(".chat-body, #chatView, .popinfo-card, .act-card, #pickerBody, [data-noptr]")) { pulling = false; return; }
+        if (e.target.closest(".chat-body, #chatView, .popinfo-card, .act-card, #pickerBody, .sm-selsheet, [data-noptr]")) { pulling = false; return; }
         startY = e.touches[0].clientY; pulling = true; dist = 0;
       }, { passive: true });
       window.addEventListener("touchmove", (e) => {
         if (!pulling) return;
         dist = e.touches[0].clientY - startY;
-        if (dist > 0 && window.scrollY <= 0) {
+        // #16 : on n'affiche le spinner qu'à partir d'un vrai geste de pull (SHOW_AT px), pas au moindre toucher.
+        if (dist > SHOW_AT && window.scrollY <= 0) {
           const d = Math.min(dist, 110);
           ptr.classList.add("show");
           ptr.style.transform = "translateX(-50%) translateY(" + (Math.min(d, THRESH) - 44) + "px)";
-        }
+        } else if (dist <= SHOW_AT) { ptr.classList.remove("show"); }
       }, { passive: true });
       window.addEventListener("touchend", () => {
         if (!pulling) return; pulling = false;
