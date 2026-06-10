@@ -72,8 +72,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=363"></script>
-  <script src="sunmates-icons.js?v=363"></script>
+  <script src="sunmates-badges.js?v=364"></script>
+  <script src="sunmates-icons.js?v=364"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -10333,6 +10333,7 @@
     let homeMapToken = 0; // évite que deux rendus concurrents dupliquent les marqueurs
     let homeCafeMarkerById = {}; // id de lieu -> marqueur (pour centrer la carte depuis l'onglet Lieux)
     let homeFitDone = false; // on ne recadre la carte qu'une fois (sinon elle "snap" à chaque rendu)
+    let _homeForceCenter = null; // #9 : centrage explicite (quête/ville) → empêche centerHomeMapOnUser (async) de l'écraser
     let homeCityCenter = null; // coordonnées géocodées de la ville de l'utilisateur (cache)
 
     // Vue initiale de la carte d'accueil : on cadre sur la VILLE / position de l'utilisateur
@@ -10352,6 +10353,7 @@
     // Vue initiale : on se place près de toi, sur l'activité/le lieu le PLUS PROCHE (tu vois tout de suite quoi faire).
     async function centerHomeMapOnUser(markers) {
       if (!homeLeaf) return;
+      if (_homeForceCenter) return; // #9 : un centrage explicite (quête/ville) a la priorité
       const focusNear = (lat, lng, fbZoom) => {
         const near = nearestMarkerTo(lat, lng, markers);
         if (near) { try { homeLeaf.setView(near.getLatLng(), 14, { animate: false }); near.openPopup && setTimeout(() => { try { near.openPopup(); } catch (e) {} }, 250); return; } catch (e) {} }
@@ -10368,6 +10370,7 @@
         try {
           const r = await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(city));
           const j = await r.json();
+          if (_homeForceCenter) return; // #9 : un centrage explicite est arrivé pendant le fetch → on ne l'écrase pas
           if (j && j[0]) { homeCityCenter = [parseFloat(j[0].lat), parseFloat(j[0].lon)]; focusNear(homeCityCenter[0], homeCityCenter[1], 12); return; }
         } catch (e) {}
       }
@@ -12143,8 +12146,12 @@
         setTimeout(() => { const b = $("capExplore"); if (b) b.onclick = () => {
           const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden");
           _questCity = cf; const sel = $("questCitySelect"); if (sel) sel.value = cf;
+          // #6 : on bloque l'auto-centrage sur la ville de l'utilisateur (async) ; le fitBounds sur
+          // les quêtes de la ville (dans renderHomeMap) fait le cadrage. Verrou relâché après.
+          homeFitDone = true; _homeForceCenter = true;
           goToTab("accueil"); if (typeof setHomeMode === "function") setHomeMode("travel");
           setTimeout(() => { if (typeof renderHomeMap === "function") renderHomeMap(); }, 140);
+          setTimeout(() => { _homeForceCenter = null; }, 1600);
         }; }, 40);
       };
     }
@@ -12236,17 +12243,22 @@
     { const c = $("nearQuestCard"); if (c) c.addEventListener("click", (e) => { if (e.target.closest("#nqGo")) return; showNearestQuests(); }); }
     function focusHomeMapOnQuest(lat, lng) {
       if (!isFinite(lat) || !isFinite(lng)) return; // coords invalides → on ne touche pas la carte
+      // #9 : on prend la main sur le centrage (sinon centerHomeMapOnUser, async, recentre sur la
+      // ville de l'utilisateur — ex Biarritz — APRÈS, et la quête de Paris « saute » ailleurs).
+      homeFitDone = true; _homeForceCenter = [lat, lng];
       if (typeof setHomeMode === "function") setHomeMode("travel");
       goToTab("accueil");
       // La mini-carte vient d'apparaître : on lui laisse le temps de se rendre, on RECALCULE sa
       // taille (sinon tuiles grises / rendu cassé), PUIS on cadre — sans animation (plus stable).
       setTimeout(() => {
-        if (!homeLeaf) return;
+        if (!homeLeaf) { _homeForceCenter = null; return; }
         try {
           homeLeaf.invalidateSize();
           homeLeaf.setView([lat, lng], 15, { animate: false });
           setTimeout(() => { try { homeLeaf.invalidateSize(); } catch (e) {} }, 220); // 2e passe anti-tuiles grises
         } catch (e) {}
+        // #9 : on relâche le verrou une fois la vue posée (sinon l'auto-centrage reste bloqué).
+        setTimeout(() => { _homeForceCenter = null; }, 1200);
       }, 280);
     }
 
