@@ -111,8 +111,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=415"></script>
-  <script src="sunmates-icons.js?v=415"></script>
+  <script src="sunmates-badges.js?v=416"></script>
+  <script src="sunmates-icons.js?v=416"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -14190,8 +14190,9 @@
     }
 
     // ---- Boîte à outils FX (animations VECTORIELLES dessinées main — fini les emojis cheap) ----
-    const _eggAdmin = () => !!(myProfile && myProfile.is_admin); // l'admin peut re-déclencher à volonté (démo/tests)
-    function _eggCool(key, ms) { if (_eggAdmin()) return true; const k = "_eggcool_" + key, now = Date.now(); if (window[k] && now - window[k] < ms) return false; window[k] = now; return true; }
+    const _eggAdmin = () => !!(myProfile && myProfile.is_admin); // l'admin peut re-déclencher (démo/tests)…
+    // …mais garde un MINI-cooldown (10 s) : zéro limite = avalanche d'effets (retour Maxime).
+    function _eggCool(key, ms) { const eff = _eggAdmin() ? Math.min(ms, 10000) : ms; const k = "_eggcool_" + key, now = Date.now(); if (window[k] && now - window[k] < eff) return false; window[k] = now; return true; }
     const EGG_SUN_SVG = (px) => `<svg viewBox="0 0 64 64" width="${px}" height="${px}"><defs><radialGradient id="egsun" cx="50%" cy="45%"><stop offset="0%" stop-color="#FFE9A8"/><stop offset="55%" stop-color="#FFC93C"/><stop offset="100%" stop-color="#FF8A3D"/></radialGradient></defs><g class="eg-rays" stroke="#FFB13C" stroke-width="3.4" stroke-linecap="round"><line x1="32" y1="2" x2="32" y2="11"/><line x1="32" y1="53" x2="32" y2="62"/><line x1="2" y1="32" x2="11" y2="32"/><line x1="53" y1="32" x2="62" y2="32"/><line x1="11" y1="11" x2="17" y2="17"/><line x1="47" y1="47" x2="53" y2="53"/><line x1="53" y1="11" x2="47" y2="17"/><line x1="17" y1="47" x2="11" y2="53"/></g><circle cx="32" cy="32" r="16" fill="url(#egsun)"/></svg>`;
     const EGG_BALLOON_SVG = (c1, c2, w) => `<svg viewBox="0 0 40 66" width="${w || 30}" height="${Math.round((w || 30) * 1.65)}"><path d="M20 3C11.2 3 4.5 10 4.5 18.5 4.5 28 13 36.5 20 41.5 27 36.5 35.5 28 35.5 18.5 35.5 10 28.8 3 20 3z" fill="${c1}"/><path d="M13.5 8.5c-3 2-5 5.5-5 9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none" opacity=".65"/><path d="M20 41.5l-2.6 4.5h5.2z" fill="${c2}"/><path d="M20 46c1.4 6-2.2 9 .4 17" stroke="${c2}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/></svg>`;
 
@@ -14235,6 +14236,9 @@
     function _eggWhaleCheck() {
       try {
         if (!homeLeaf || homeLeaf.getZoom() < 10) return;
+        if (_whaleMk) return; // UNE seule baleine à la fois (avant : elles s'empilaient et la
+                              // référence écrasée empêchait le nettoyage des précédentes)
+        if (!_eggCool("whale", 30000)) return;
         const day = new Date().toISOString().slice(0, 10);
         if (!_eggAdmin() && localStorage.getItem("sm_egg_whale_day") === day) return;
         const m = (typeof window._homeGlMap === "function") ? window._homeGlMap() : null;
@@ -14254,9 +14258,12 @@
           + '<path d="M70 33c6-7 14-10 21-8-3 6-8 11-15 12z" fill="#2E5A7A"/>'
           + '<path d="M16 40c7 4 16 6 25 6" stroke="#BFE2F4" stroke-width="2.2" stroke-linecap="round" fill="none" opacity=".55"/>'
           + '<circle cx="23" cy="32" r="2.4" fill="#EAF6FC"/></svg></div>';
-        _whaleMk = L.marker(homeLeaf.getCenter(), { icon: L.divIcon({ className: "egg-whale-wrap", html: whaleHtml, iconSize: [84, 60], iconAnchor: [42, 36] }), zIndexOffset: 1500 }).addTo(homeLeaf);
-        setTimeout(() => { try { const el = document.querySelector(".egg-whale-v"); if (el) el.classList.add("out"); } catch (e) {} }, 10800);
-        setTimeout(() => { try { if (_whaleMk) homeLeaf.removeLayer(_whaleMk); } catch (e) {} _whaleMk = null; }, 12000);
+        // Référence LOCALE au marqueur : le nettoyage vise CETTE baleine précisément
+        // (avant : variable globale écrasée → les anciennes baleines restaient à jamais).
+        const mk = L.marker(homeLeaf.getCenter(), { icon: L.divIcon({ className: "egg-whale-wrap", html: whaleHtml, iconSize: [84, 60], iconAnchor: [42, 36] }), zIndexOffset: 1500 }).addTo(homeLeaf);
+        _whaleMk = mk;
+        setTimeout(() => { try { const el = mk.getElement && mk.getElement(); const v = el && el.querySelector(".egg-whale-v"); if (v) v.classList.add("out"); } catch (e) {} }, 10800);
+        setTimeout(() => { try { homeLeaf.removeLayer(mk); } catch (e) {} if (_whaleMk === mk) _whaleMk = null; }, 12000);
         if (typeof toast === "function") toast("🐋", i18nT("Une baleine te salue… puis replonge dans le grand bleu"), null, { low: true });
         awardSecretBadge("badge_whale");
       } catch (e) {}
@@ -14365,10 +14372,11 @@
       applyRetro();
       function fire() {
         try {
-          const active = Date.now() < (+localStorage.getItem("sm_retro_until") || 0);
+          // Mode déjà actif → refaire le code (dans N'IMPORTE quel sens) = SORTIR.
+          // (Avant : prolongation silencieuse → impression que « le retour est bugé ».)
+          if (Date.now() < (+localStorage.getItem("sm_retro_until") || 0)) { unfire(); return; }
           localStorage.setItem("sm_retro_until", String(Date.now() + 600000)); // 10 min
           applyRetro();
-          if (active) return; // déjà en 1988 : on prolonge en silence (anti-spam)
           if (window.SMSound) { try { SMSound.play("levelup"); } catch (e) {} }
           if (typeof toast === "function") toast("🎮", i18nT("MODE RÉTRO DÉBLOQUÉ · bienvenue en 1988, voyageur·se"), null, { low: true });
           awardSecretBadge("badge_konami");
@@ -14447,6 +14455,8 @@
     function _eggTitanicCheck() {
       try {
         if (!homeLeaf || homeLeaf.getZoom() < 8) return;
+        if (window._titanicOn) return; // un seul paquebot à la fois
+        if (!_eggCool("titanic", 60000)) return;
         if (!_eggAdmin() && localStorage.getItem("sm_egg_titanic")) return;
         const c = homeLeaf.getCenter();
         if (typeof haversineKm !== "function" || haversineKm({ lat: c.lat, lng: c.lng }, { lat: 41.7325, lng: -49.9469 }) > 40) return;
@@ -14464,9 +14474,10 @@
         const iceHtml = '<div class="egg-ship" style="animation-delay:.5s"><svg viewBox="0 0 64 52" width="48" height="39">'
           + '<path d="M6 48L19 13l8 13 7-19 11 24 6-9 7 26z" fill="#E8F4FC" stroke="#AFD3E8" stroke-width="2.4" stroke-linejoin="round"/>'
           + '<path d="M27 26l7-19M34 33l11-9" stroke="#C7E2F2" stroke-width="2" stroke-linecap="round"/></svg></div>';
+        window._titanicOn = true;
         const mk = L.marker([41.7325, -49.9469], { icon: L.divIcon({ className: "egg-whale-wrap", html: shipHtml, iconSize: [104, 60], iconAnchor: [52, 40] }), zIndexOffset: 1500 }).addTo(homeLeaf);
         const ice = L.marker([41.76, -49.91], { icon: L.divIcon({ className: "egg-whale-wrap", html: iceHtml, iconSize: [48, 44], iconAnchor: [24, 30] }), zIndexOffset: 1490 }).addTo(homeLeaf);
-        setTimeout(() => { try { homeLeaf.removeLayer(mk); homeLeaf.removeLayer(ice); } catch (e) {} }, 15000);
+        setTimeout(() => { try { homeLeaf.removeLayer(mk); homeLeaf.removeLayer(ice); } catch (e) {} window._titanicOn = false; }, 15000);
         if (typeof toast === "function") toast("🚢", i18nT("« Je suis le roi du monde ! » · attention à l'iceberg…"), null, { low: true });
         awardSecretBadge("badge_titanic");
       } catch (e) {}
