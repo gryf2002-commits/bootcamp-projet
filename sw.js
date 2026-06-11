@@ -3,7 +3,7 @@
 // cache à la volée les libs CDN et les images (avatars, tuiles de carte) en
 // "stale-while-revalidate" (on sert le cache tout de suite, on rafraîchit en fond).
 // Les écritures Supabase (POST/PATCH…) ne sont jamais touchées.
-const VER = "v404";
+const VER = "v405";
 const SHELL_CACHE = "sunmates-shell-" + VER;   // coquille (versionnée → purge à chaque déploiement)
 const RUNTIME = "sunmates-rt-" + VER;          // libs CDN/fonts (regénéré par version, re-précaché à l'install)
 // #15/#8 : cache MÉDIA STABLE (NON versionné) → avatars, photos (quêtes/check-ins), tuiles de carte.
@@ -20,6 +20,10 @@ const CDN_PRECACHE = [
   "https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js",
   "https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css",
   "https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css",
+  // Fond de carte vectoriel « SunMates » (MapLibre GL dans Leaflet) → fluide + offline.
+  "https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js",
+  "https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css",
+  "https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js",
   "https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js",
   "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js",
   // Polices SunMates (Fraunces + Manrope) précachées → texte net dès le 1er rendu, même hors-ligne.
@@ -99,7 +103,8 @@ self.addEventListener("fetch", (e) => {
   const host = url.hostname;
   // Tuiles de carte + images (avatars Supabase Storage, photos de quêtes/check-ins, picsum, pravatar)
   // → cache MÉDIA STABLE (survit aux MAJ, cache-first = instantané). #8 carte + #15 photos.
-  const isTile = /(^|\.)(tile\.openstreetmap\.org|basemaps\.cartocdn\.com)$/i.test(host);
+  // tiles.openfreemap.org = style JSON + glyphes + tuiles vectorielles (.pbf) du fond SunMates.
+  const isTile = /(^|\.)(tile\.openstreetmap\.org|basemaps\.cartocdn\.com|tiles\.openfreemap\.org)$/i.test(host);
   const isImg = req.destination === "image"
     || /(^|\.)(picsum\.photos|fastly\.picsum\.photos|i\.pravatar\.cc)$/i.test(host)
     || (/(^|\.)supabase\.co$/i.test(host) && /\/storage\//.test(url.pathname));

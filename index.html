@@ -100,12 +100,19 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <script defer src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <!-- Fond de carte « SunMates » : MapLibre GL (vectoriel, GPU, fluide) rendu DANS Leaflet via le
+       plugin officiel → les marqueurs/clusters/popups existants continuent de marcher tels quels.
+       Tuiles : OpenFreeMap (gratuit, sans clé, sans limite). Repli raster auto si WebGL absent. -->
+  <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" />
+  <script defer src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
+  <script defer src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js"></script>
   <!-- QR du profil : génération 100% locale (qrcodejs) + scan caméra (jsQR). Aucune donnée n'est envoyée. -->
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=404"></script>
-  <script src="sunmates-icons.js?v=404"></script>
+  <script src="sunmates-badges.js?v=405"></script>
+  <script src="sunmates-icons.js?v=405"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -11047,14 +11054,121 @@
         if (hs && !hs.value.trim()) hs.focus();
       })); }
 
+    // ==================== FOND DE CARTE « SUNMATES » ====================
+    // Vectoriel GPU (MapLibre GL rendu dans Leaflet) + recoloration COMPLÈTE du style
+    // dans la DA sunset → une vraie carte à la marque, fluide, qui ne « charge » plus
+    // tuile par tuile. Source : OpenFreeMap (gratuit, sans clé). Si WebGL ou la lib
+    // manquent → repli raster CARTO (CDN rapide), puis OSM en dernier recours.
+    // 4 palettes : la carte suit le thème de l'app (jour sunset / nuit tropicale / hiver / tropiques).
+    const SM_MAP_PALETTES = {
+      day: {
+        bg: "#FAF0E2", water: "#A8D8CE", waterLine: "#9CD0C5", park: "#E6EDD2", wood: "#DCE7C9",
+        residential: "#F6E9D7", building: "#F0DEC8", sand: "#F4E3C8", ice: "#F4F8F4",
+        roadMinor: "#FFFFFF", roadMajor: "#FFE3B8", motorway: "#FFD391", casing: "#EBD6BE",
+        rail: "#E3CDB4", aeroway: "#EFE2CE", boundary: "#D8BCA2", text: "#7A5742", halo: "#FFF7EC",
+      },
+      dusk: { // nuit tropicale : violets profonds + eau pétrole + étiquettes crème
+        bg: "#251C38", water: "#1E4049", waterLine: "#2A5560", park: "#2C3A2C", wood: "#27331F",
+        residential: "#2B2143", building: "#322749", sand: "#3A2F4E", ice: "#2E3C4A",
+        roadMinor: "#423766", roadMajor: "#54447A", motorway: "#69538E", casing: "#1C1430",
+        rail: "#3C3055", aeroway: "#322749", boundary: "#51416B", text: "#EAD9C0", halo: "#1C1430",
+      },
+      winter: { // glacier : bleus givrés
+        bg: "#EAF3FB", water: "#B5D8F0", waterLine: "#A5CDE9", park: "#DCEAE2", wood: "#D0E2D6",
+        residential: "#E2EDF7", building: "#D8E5F2", sand: "#E8EFF6", ice: "#F4FAFF",
+        roadMinor: "#FFFFFF", roadMajor: "#D3E5F8", motorway: "#BFD9F2", casing: "#C9DCEF",
+        rail: "#C4D5E6", aeroway: "#DCE7F2", boundary: "#AFC6DB", text: "#4A6076", halo: "#F4FAFF",
+      },
+      tropic: { // jungle & mangue
+        bg: "#F7F9EC", water: "#9FD9C8", waterLine: "#92D0BE", park: "#DCECC2", wood: "#CEE4B2",
+        residential: "#F0F3DC", building: "#E9EDCE", sand: "#F2EBC8", ice: "#F2F8F2",
+        roadMinor: "#FFFFFF", roadMajor: "#FFE9A8", motorway: "#FFDD8A", casing: "#E3DDB6",
+        rail: "#D8D3AE", aeroway: "#E9EDCE", boundary: "#C2BC8F", text: "#4F6A4A", halo: "#FDFBE8",
+      },
+    };
+    function smActiveMapPalette() {
+      const b = document.body.classList;
+      if (b.contains("theme-winter")) return SM_MAP_PALETTES.winter;
+      if (b.contains("theme-tropic")) return SM_MAP_PALETTES.tropic;
+      if (b.contains("theme-dusk")) return SM_MAP_PALETTES.dusk;
+      return SM_MAP_PALETTES.day;
+    }
+    const _smGlMaps = []; // cartes GL vivantes → re-teintées au changement de thème
+    function smRefreshMapTheme() { _smGlMaps.forEach((m) => _smRecolorStyle(m)); }
+    function _smRecolorStyle(m) {
+      try {
+        const P = smActiveMapPalette();
+        const layers = (m.getStyle() && m.getStyle().layers) || [];
+        const set = (id, prop, val) => { try { m.setPaintProperty(id, prop, val); } catch (e) {} };
+        layers.forEach((ly) => {
+          const id = (ly.id || "").toLowerCase();
+          if (ly.type === "background") { set(ly.id, "background-color", P.bg); return; }
+          if (ly.type === "raster") { set(ly.id, "raster-opacity", 0.16); return; } // relief monde discret
+          if (ly.type === "fill") {
+            if (/water|ocean|river|lake/.test(id)) set(ly.id, "fill-color", P.water);
+            else if (/ice|glacier/.test(id)) set(ly.id, "fill-color", P.ice);
+            else if (/park|wood|forest|grass|green/.test(id)) set(ly.id, "fill-color", /wood|forest/.test(id) ? P.wood : P.park);
+            else if (/sand|beach/.test(id)) set(ly.id, "fill-color", P.sand);
+            else if (/building/.test(id)) set(ly.id, "fill-color", P.building);
+            else if (/aeroway|airport/.test(id)) set(ly.id, "fill-color", P.aeroway);
+            else if (/residential|landuse|landcover/.test(id)) set(ly.id, "fill-color", P.residential);
+            return;
+          }
+          if (ly.type === "line") {
+            if (/water|river|stream|canal/.test(id)) { set(ly.id, "line-color", P.waterLine); return; }
+            if (/boundary|admin/.test(id)) { set(ly.id, "line-color", P.boundary); return; }
+            if (/rail|transit/.test(id)) { set(ly.id, "line-color", P.rail); return; }
+            if (/aeroway|runway|taxiway/.test(id)) { set(ly.id, "line-color", P.aeroway); return; }
+            const casing = /casing|outline/.test(id);
+            if (/motorway|trunk/.test(id)) set(ly.id, "line-color", casing ? "#F2C386" : P.motorway);
+            else if (/primary|secondary|tertiary|major|highway/.test(id)) set(ly.id, "line-color", casing ? P.casing : P.roadMajor);
+            else if (/minor|service|street|road|path|track|pedestrian|bridge|tunnel|link/.test(id)) set(ly.id, "line-color", casing ? P.casing : P.roadMinor);
+            return;
+          }
+          if (ly.type === "symbol") {
+            set(ly.id, "text-color", P.text);
+            set(ly.id, "text-halo-color", P.halo);
+          }
+        });
+      } catch (e) {}
+    }
+    function smBaseLayer() {
+      const glOk = (() => {
+        try {
+          if (typeof maplibregl === "undefined" || typeof L.maplibreGL !== "function") return false;
+          const c = document.createElement("canvas");
+          return !!(c.getContext("webgl2") || c.getContext("webgl") || c.getContext("experimental-webgl"));
+        } catch (e) { return false; }
+      })();
+      if (glOk) {
+        const lyr = L.maplibreGL({ style: "https://tiles.openfreemap.org/styles/positron", attribution: "© OpenStreetMap · OpenFreeMap", attributionControl: false });
+        // Recoloration SunMates une fois le style chargé (idempotent, best-effort),
+        // + enregistrement pour re-teinter au changement de thème (jour/nuit/saisons).
+        setTimeout(() => {
+          try {
+            const m = lyr.getMaplibreMap(); if (!m) return;
+            _smGlMaps.push(m);
+            if (m.isStyleLoaded && m.isStyleLoaded()) _smRecolorStyle(m);
+            m.once("load", () => _smRecolorStyle(m));
+          } catch (e) {}
+        }, 0);
+        return lyr;
+      }
+      // Repli raster : CARTO Voyager (CDN mondial bien plus rapide que tile.openstreetmap.org).
+      return L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        { attribution: "© OpenStreetMap · © CARTO", maxZoom: 19, keepBuffer: 4, updateWhenIdle: false, updateWhenZooming: false });
+    }
+
     // ---- Carte interactive des lieux sûrs (Leaflet) ----
     let leafMap = null, mapMarkers = [], mapMarkerById = {};
     function renderMap() {
       if (typeof L === "undefined") return;
       const el = $("map"); if (!el) return;
       if (!leafMap) {
-        leafMap = L.map(el, { scrollWheelZoom: false }).setView([46.6, 2.3], 4);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap", maxZoom: 19 }).addTo(leafMap);
+        // maxZoom sur la CARTE (le fond GL n'en déclare pas, contrairement à un tileLayer raster
+        // → sans lui, markercluster jette « Map has no maxZoom specified »).
+        leafMap = L.map(el, { scrollWheelZoom: false, maxZoom: 19 }).setView([46.6, 2.3], 4);
+        smBaseLayer().addTo(leafMap); // fond vectoriel SunMates (repli raster auto)
         leafMap.attributionControl.setPrefix(false).setPosition("bottomleft");
         // Même correctif définitif que la carte d'accueil : resync sur la taille réelle.
         if (typeof ResizeObserver === "function") {
@@ -11273,11 +11387,11 @@
       if (tm && (tm.style.display === "none" || el.offsetParent === null)) return;
       ensureIaPersonas();
       if (!homeLeaf) {
-        homeLeaf = L.map(el, { scrollWheelZoom: false, zoomSnap: 0.5, wheelPxPerZoomLevel: 120, zoomControl: false,
+        homeLeaf = L.map(el, { scrollWheelZoom: false, zoomSnap: 0.5, wheelPxPerZoomLevel: 120, zoomControl: false, maxZoom: 19,
           preferCanvas: true, tap: false, zoomAnimation: true, fadeAnimation: true, inertiaDeceleration: 2600 }).setView([46.6, 2.3], 4);
-        // Tuiles : buffer plus large + mises à jour pendant le pan → déplacement bien plus fluide.
-        // (Le service worker les met en cache → instantanées au retour.)
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap", maxZoom: 19, keepBuffer: 4, updateWhenIdle: false, updateWhenZooming: false }).addTo(homeLeaf);
+        // Fond vectoriel SunMates : rendu GPU continu (fini le chargement tuile par tuile),
+        // recoloré dans la DA. Le service worker met style/glyphes/tuiles en cache → offline OK.
+        smBaseLayer().addTo(homeLeaf);
         homeLeaf.attributionControl.setPrefix(false).setPosition("bottomleft"); // retire le logo Leaflet, déplace à gauche
         try { if (homeLeaf.zoomControl) homeLeaf.zoomControl.setPosition("bottomright"); } catch (e) {} // libère le haut-gauche pour les outils en plein écran
         // ★ Correctif plein écran DÉFINITIF : un ResizeObserver resynchronise Leaflet avec la
@@ -13918,6 +14032,7 @@
         : '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><path d="M20 14.6A8 8 0 1 1 11 4.2a6.5 6.5 0 0 0 9 10.4z" fill="#ffd15c"/><circle cx="17.5" cy="6.5" r="1.2" fill="#FF8A3D"/></svg>';
       const st = $("setThemeToggle"); if (st) st.checked = dusk; // garde le toggle des Réglages synchro
       const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", dusk ? "#171026" : "#fbeee9");
+      if (typeof smRefreshMapTheme === "function") smRefreshMapTheme(); // la carte suit le thème
     }
     // Thème AUTO au coucher du soleil (clin d'œil DA) : si l'utilisateur n'a jamais choisi
     // manuellement, on passe en « nuit tropicale » le soir (19h→7h), sinon mode jour.
@@ -13935,6 +14050,7 @@
       try { if (s) localStorage.setItem("sm_season", s); else localStorage.removeItem("sm_season"); if (manual) localStorage.setItem("sm_season_lock", "1"); } catch (e) {}
       const tt = $("themeToggle"); if (tt) tt.dataset.season = s || "";
       const meta = document.querySelector('meta[name="theme-color"]'); if (meta && s) meta.setAttribute("content", s === "winter" ? "#EAF3FB" : "#F7F9EC");
+      if (typeof smRefreshMapTheme === "function") smRefreshMapTheme(); // la carte suit la saison
     }
     let _seasonLpFired = false;
     $("themeToggle").addEventListener("click", () => {
