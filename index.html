@@ -104,8 +104,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=400"></script>
-  <script src="sunmates-icons.js?v=400"></script>
+  <script src="sunmates-badges.js?v=401"></script>
+  <script src="sunmates-icons.js?v=401"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -3115,6 +3115,28 @@
     .sm-date-col .sm-selopt { padding: .5rem .4rem; justify-content: center; text-align: center; }
     body.theme-dusk .sm-date-col { border-color: rgba(255,255,255,.1); }
 
+    /* ====== MODES SAISON (#26) · activés par appui long 10 s sur le bouton thème ======
+       L'âme SunMates (soleil, chaleur humaine) traduite pour les pays froids / la canicule.
+       Les saisons remplacent visuellement jour/nuit (la classe theme-dusk est retirée). */
+    body.theme-winter { --bg:#EAF3FB; --bg-grad:radial-gradient(125% 85% at 50% -12%, #F4FAFF 0%, #E8F2FB 40%, #E2EEF9 100%);
+      --card:#FFFFFF; --cream:#F2F8FD; --ink:#1E3A52; --text:#2C4862; --muted:#67839B; --line:#DDE9F3;
+      --accent:#3A8FD9; --accent-2:#6FB4E8; --accent-3:#A8D8F5; --accent-soft:#E3F1FB;
+      --accent-grad:linear-gradient(135deg, #A8D8F5 0%, #6FB4E8 45%, #3A8FD9 100%); }
+    body.theme-winter .topbar { background: #EAF3FB; border-bottom-color: rgba(58,143,217,.12); }
+    body.theme-winter #bgFx { background: radial-gradient(125% 48% at 50% -8%, rgba(168,216,245,.55) 0%, rgba(111,180,232,.12) 38%, rgba(255,255,255,0) 64%), var(--bg); }
+    body.theme-winter .app-shell { background: transparent; }
+    body.theme-tropic { --bg:#F7F9EC; --bg-grad:radial-gradient(125% 85% at 50% -12%, #FDFBE8 0%, #F3F7DE 40%, #ECF4DC 100%);
+      --card:#FFFFFF; --cream:#F8FBEE; --ink:#1C3D2E; --text:#2A4A3A; --muted:#6E8A77; --line:#E2EDD9;
+      --accent:#0FA37C; --accent-2:#36C495; --accent-3:#FFC23D; --accent-soft:#E2F4EC;
+      --accent-grad:linear-gradient(135deg, #FFC23D 0%, #36C495 50%, #0FA37C 100%); }
+    body.theme-tropic .topbar { background: #F7F9EC; border-bottom-color: rgba(15,163,124,.12); }
+    body.theme-tropic #bgFx { background: radial-gradient(125% 48% at 50% -8%, rgba(255,194,61,.40) 0%, rgba(54,196,149,.12) 38%, rgba(255,255,255,0) 64%), var(--bg); }
+    body.theme-tropic .app-shell { background: transparent; }
+    /* Rappel discret du mode actif sur le bouton thème */
+    #themeToggle[data-season="winter"]::after, #themeToggle[data-season="tropic"]::after { content: "❄️"; position: absolute; bottom: -4px; right: -4px; font-size: .7rem; }
+    #themeToggle[data-season="tropic"]::after { content: "🌴"; }
+    #themeToggle { position: relative; }
+
     /* Faux appel décroché : grille de commandes factices (l'écran n'est plus vide) */
     .fc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem .9rem; }
     .fc-gbtn { display: flex; flex-direction: column; align-items: center; gap: .35rem; background: none; border: 0; color: #cfcfdd; font-size: .66rem; font-weight: 600; cursor: pointer; }
@@ -3646,6 +3668,8 @@
         <!-- ===== Carte « tout-en-un » : lieux, Mates, activités, check-ins ===== -->
         <div class="section-head" style="justify-content:center"><h3 style="margin-top:.4rem;text-align:center">Explore autour de toi 🗺️</h3></div>
         <p class="muted" style="margin:-.2rem 0 .6rem;font-size:.84rem;text-align:center">Touche une pastille pour voir un lieu, un Mate ou une activité autour de toi ✨</p>
+        <!-- 🌅 Ma journée de voyage (#28) : top départ → WRAPPED du soir -->
+        <div id="daySessionCard" style="margin:.2rem 0 .6rem"></div>
         <div class="card homemap-card">
           <!-- Sélecteur de ville (menu déroulant) : concentre la carte sur une ville de jeu -->
           <!-- UNE seule rangée au-dessus de la carte : ville + À faire + Filtres (avant : 2 rangées éparpillées) -->
@@ -5929,12 +5953,53 @@
     }
     function _countryFiche(c) {
       const row = (e, l, v) => "<div style='margin:.35rem 0'><b>" + e + " " + l + " :</b> " + escapeHtml(v) + "</div>";
+      const hasLore = !!COUNTRY_LORE[c.name];
       popInfo(c.flag, "À savoir · " + c.name,
         "<div style='text-align:left;font-size:.86rem'>" +
         row("🛂", "Formalités", c.visa) + row("💶", "Argent", c.money) + row("🗣️", "Langue", c.lang) +
         row("🚉", "Transport", c.transport) + row("💧", "Eau", c.water) + row("🔌", "Prise", c.plug) +
         row("🪙", "Pourboire", c.tip) + row("💊", "Santé", c.health) + row("🤝", "Coutumes", c.custom) +
-        row("🛟", "Sécurité", c.safe) + "</div>");
+        row("🛟", "Sécurité", c.safe) + "</div>" +
+        (hasLore ? "<button class='btn-primary btn-block' id='loreBtn' style='margin-top:.8rem'>📚 Histoire & culture ›</button>" : ""));
+      if (hasLore) setTimeout(() => { const b = $("loreBtn"); if (b) b.onclick = () => _countryLore(c); }, 40);
+    }
+    // ---- 📚 Histoire & culture (#27) : vocabulaire de survie + histoire express + fun facts + tradition ----
+    const COUNTRY_LORE = {
+      "Portugal": { vocab: [["Bonjour", "Olá"], ["Merci", "Obrigado·a"], ["S'il te plaît", "Por favor"], ["Combien ?", "Quanto custa?"], ["À l'aide !", "Socorro!"]], hist: "Petit royaume devenu empire des mers au XVᵉ siècle : Vasco de Gama, les grandes découvertes, puis la Révolution des Œillets (1974) qui rend la démocratie en douceur.", facts: ["Lisbonne est plus vieille que Rome.", "Le fado est classé au patrimoine de l'UNESCO."], trad: "La saudade : cette douce mélancolie qu'on écoute dans le fado, un verre de ginjinha à la main." },
+      "Japon": { vocab: [["Bonjour", "Konnichiwa"], ["Merci", "Arigatō"], ["S'il te plaît", "Onegai shimasu"], ["Excusez-moi", "Sumimasen"], ["À l'aide !", "Tasukete!"]], hist: "Des samouraïs d'Edo au miracle économique d'après-guerre : un pays resté fermé 250 ans (sakoku) qui a su devenir ultramoderne sans perdre ses temples.", facts: ["Il y a plus de 5 millions de distributeurs automatiques.", "Le train Shinkansen a un retard moyen inférieur à 1 minute."], trad: "Le hanami : pique-niquer sous les cerisiers en fleurs, en avril, comme tout le pays." },
+      "Maroc": { vocab: [["Bonjour", "Salam"], ["Merci", "Choukran"], ["S'il te plaît", "Afak"], ["Combien ?", "Bch-hal?"], ["À l'aide !", "3tek!"]], hist: "Carrefour berbère, arabe et andalou : dynasties impériales (Fès, Marrakech, Meknès, Rabat), protectorat français, indépendance en 1956.", facts: ["La plus vieille université du monde encore active est à Fès (859).", "Le bleu de Chefchaouen attire des photographes du monde entier."], trad: "Le thé à la menthe versé de haut : signe d'hospitalité, on ne refuse jamais le premier verre." },
+      "Islande": { vocab: [["Bonjour", "Halló"], ["Merci", "Takk"], ["S'il te plaît", "Vinsamlegast"], ["Combien ?", "Hvað kostar?"], ["À l'aide !", "Hjálp!"]], hist: "Colonisée par les Vikings vers 874, dotée du plus vieux parlement du monde (Althing, 930), indépendante du Danemark en 1944.", facts: ["Pas d'armée, et la police ne porte pas d'arme.", "Beaucoup d'Islandais croient (un peu) aux elfes."], trad: "Le bain géothermal : on s'y retrouve comme au café, été comme hiver, même sous la neige." },
+      "Mexique": { vocab: [["Bonjour", "Hola"], ["Merci", "Gracias"], ["S'il te plaît", "Por favor"], ["Combien ?", "¿Cuánto cuesta?"], ["À l'aide !", "¡Ayuda!"]], hist: "Des pyramides aztèques et mayas à la conquête espagnole (1521), puis l'indépendance (1810) et la révolution de Zapata : un pays-musée à ciel ouvert.", facts: ["Mexico s'enfonce de plusieurs centimètres par an (lac asséché).", "Le pays compte 35 sites UNESCO."], trad: "El Día de los Muertos (1-2 nov.) : on fête joyeusement ses défunts avec autels, fleurs et sucreries." },
+      "Grèce": { vocab: [["Bonjour", "Yássou"], ["Merci", "Efcharistó"], ["S'il te plaît", "Parakaló"], ["Combien ?", "Póso káni?"], ["À l'aide !", "Voíthia!"]], hist: "Berceau de la démocratie, de la philosophie et des Jeux olympiques ; sous domination ottomane 400 ans avant l'indépendance de 1830.", facts: ["Plus de 200 îles habitées sur 6 000.", "Athènes est habitée depuis plus de 5 000 ans."], trad: "Le kéfi : l'art de la joie partagée · on casse (parfois) des assiettes pour célébrer." },
+      "Vietnam": { vocab: [["Bonjour", "Xin chào"], ["Merci", "Cảm ơn"], ["S'il te plaît", "Làm ơn"], ["Combien ?", "Bao nhiêu?"], ["À l'aide !", "Cứu tôi!"]], hist: "Mille ans sous la Chine, un siècle sous la France, puis la guerre du Vietnam : réunifié en 1975, ouvert et bouillonnant depuis le Đổi Mới (1986).", facts: ["Le pho se mange au petit-déjeuner.", "Hanoï compte ~5 millions de scooters."], trad: "Le Têt (nouvel an lunaire) : tout le pays rentre en famille, offre des enveloppes rouges et repart à zéro." },
+      "Pérou": { vocab: [["Bonjour", "Hola"], ["Merci", "Gracias"], ["S'il te plaît", "Por favor"], ["Combien ?", "¿Cuánto cuesta?"], ["À l'aide !", "¡Ayuda!"]], hist: "Cœur de l'empire inca (Cusco, Machu Picchu), conquis par Pizarro en 1532, indépendant en 1821 : l'Amérique précolombienne y affleure partout.", facts: ["On y cultive plus de 3 000 variétés de pommes de terre.", "Le lac Titicaca est le plus haut lac navigable du monde."], trad: "La Pachamama : on verse quelques gouttes de sa boisson à la Terre-Mère avant de trinquer." },
+      "Italie": { vocab: [["Bonjour", "Ciao"], ["Merci", "Grazie"], ["S'il te plaît", "Per favore"], ["Combien ?", "Quanto costa?"], ["À l'aide !", "Aiuto!"]], hist: "Rome a dirigé le monde antique, la Renaissance a réinventé l'art (Florence, Venise), et le pays ne s'est unifié qu'en 1861.", facts: ["Plus de sites UNESCO que n'importe quel pays.", "Le cappuccino après 11 h fait grincer des dents."], trad: "La passeggiata : la balade du soir, bien habillé·e, pour voir et être vu·e avant le dîner." },
+      "Thaïlande": { vocab: [["Bonjour", "Sawatdee"], ["Merci", "Khop khun"], ["S'il te plaît", "Karuna"], ["Combien ?", "Tao rai?"], ["À l'aide !", "Chuay duay!"]], hist: "Seul pays d'Asie du Sud-Est jamais colonisé (l'ancien Siam), royaume bouddhiste où le roi reste très respecté.", facts: ["Bangkok a le nom de ville le plus long du monde (168 lettres).", "On compte plus de 40 000 temples."], trad: "Le wai : on salue mains jointes ; et à Songkran (avril), tout le pays se fait des batailles d'eau." },
+      "Espagne": { vocab: [["Bonjour", "Hola"], ["Merci", "Gracias"], ["S'il te plaît", "Por favor"], ["Combien ?", "¿Cuánto es?"], ["À l'aide !", "¡Socorro!"]], hist: "Huit siècles d'Al-Andalus (l'Alhambra !), l'empire « où le soleil ne se couche jamais », la dictature de Franco puis la Movida démocratique.", facts: ["On y dîne vers 21h30-22h, record d'Europe.", "La Sagrada Família est en chantier depuis 1882."], trad: "La sobremesa : rester à table à papoter longtemps après le dessert · sacré." },
+      "Norvège": { vocab: [["Bonjour", "Hei"], ["Merci", "Takk"], ["S'il te plaît", "Vær så snill"], ["Combien ?", "Hvor mye?"], ["À l'aide !", "Hjelp!"]], hist: "Terre des Vikings et des explorateurs polaires (Amundsen), indépendante de la Suède en 1905, riche de son pétrole et de ses fjords.", facts: ["Le soleil de minuit brille tout l'été au nord.", "Le « droit de tout un chacun » permet de camper presque partout."], trad: "Friluftsliv : la vie au grand air par tous les temps, c'est presque une religion." },
+      "Colombie": { vocab: [["Bonjour", "Hola"], ["Merci", "Gracias"], ["S'il te plaît", "Por favor"], ["Combien ?", "¿Cuánto vale?"], ["À l'aide !", "¡Ayuda!"]], hist: "Cités d'or précolombiennes, port colonial de Carthagène, indépendance avec Bolívar (1819) : aujourd'hui l'un des pays les plus accueillants du continent.", facts: ["2ᵉ pays le plus biodiversifié du monde.", "Le café y est une fierté nationale classée UNESCO."], trad: "La rumba : ici on danse partout, tout le temps · refuser une danse se négocie avec le sourire." },
+      "Australie": { vocab: [["Bonjour", "G'day"], ["Merci", "Thanks mate"], ["S'il te plaît", "Please"], ["Combien ?", "How much?"], ["À l'aide !", "Help!"]], hist: "60 000 ans de culture aborigène (la plus ancienne du monde), colonie pénitentiaire britannique en 1788, nation fédérée en 1901.", facts: ["Plus de kangourous que d'habitants.", "La Grande Barrière de corail se voit depuis l'espace."], trad: "Le barbie (barbecue) du dimanche : plage, grillades et « no worries », l'art de vivre local." },
+      "Turquie": { vocab: [["Bonjour", "Merhaba"], ["Merci", "Teşekkürler"], ["S'il te plaît", "Lütfen"], ["Combien ?", "Ne kadar?"], ["À l'aide !", "İmdat!"]], hist: "Byzance, puis Constantinople, puis Istanbul : capitale de deux empires (byzantin et ottoman), république fondée par Atatürk en 1923.", facts: ["Istanbul est la seule ville sur deux continents.", "Le Grand Bazar compte ~4 000 boutiques."], trad: "Le çay (thé noir) : offert partout, dans des petits verres tulipe · accepte, c'est un lien." },
+      "États-Unis": { vocab: [["Bonjour", "Hi"], ["Merci", "Thank you"], ["S'il te plaît", "Please"], ["Combien ?", "How much?"], ["À l'aide !", "Help!"]], hist: "Treize colonies devenues superpuissance : indépendance (1776), conquête de l'Ouest, immigration mondiale · le pays s'est construit en deux siècles.", facts: ["Le Grand Canyon est plus grand que certains pays.", "Chaque État a ses propres lois (et sa fierté)."], trad: "Thanksgiving (4ᵉ jeudi de novembre) : LE repas de famille de l'année, dinde et gratitude." },
+      "Royaume-Uni": { vocab: [["Bonjour", "Hello"], ["Merci", "Cheers"], ["S'il te plaît", "Please"], ["Combien ?", "How much?"], ["À l'aide !", "Help!"]], hist: "De l'empire « où le soleil ne se couche jamais » au Brexit : monarchie millénaire, révolution industrielle, Beatles et pop culture.", facts: ["Londres a plus de 170 musées, beaucoup gratuits.", "Le métro de Londres est le plus ancien du monde (1863)."], trad: "Le Sunday roast au pub : rôti, Yorkshire pudding et débats foot · la file d'attente, elle, est sacrée." },
+      "Indonésie (Bali)": { vocab: [["Bonjour", "Halo"], ["Merci", "Terima kasih"], ["S'il te plaît", "Tolong"], ["Combien ?", "Berapa?"], ["À l'aide !", "Tolong!"]], hist: "Bali, île hindouiste au cœur du plus grand archipel musulman du monde : royaumes, épices, colonisation néerlandaise, indépendance en 1945.", facts: ["L'Indonésie compte ~17 000 îles.", "À Bali, chaque maison a son temple."], trad: "Nyepi, le jour du silence : 24 h sans bruit, sans lumière… aéroport fermé compris." },
+      "Inde": { vocab: [["Bonjour", "Namaste"], ["Merci", "Dhanyavad"], ["S'il te plaît", "Kripya"], ["Combien ?", "Kitna hai?"], ["À l'aide !", "Bachao!"]], hist: "Civilisation cinq fois millénaire : empires maurya et moghol (le Taj Mahal !), Raj britannique, indépendance non-violente avec Gandhi (1947).", facts: ["Plus de 1 600 langues parlées.", "Le réseau ferroviaire emploie plus d'un million de personnes."], trad: "Holi, la fête des couleurs (mars) : tout le monde se couvre de pigments, touristes compris." },
+      "Égypte": { vocab: [["Bonjour", "Salam"], ["Merci", "Choukran"], ["S'il te plaît", "Min fadlak"], ["Combien ?", "Bikam?"], ["À l'aide !", "Elhaouni!"]], hist: "5 000 ans d'histoire : pharaons et pyramides, Alexandrie des Ptolémées, canal de Suez · le Nil a tout rendu possible.", facts: ["La grande pyramide a été le plus haut bâtiment du monde pendant 3 800 ans.", "Le Caire est la plus grande ville d'Afrique."], trad: "Le ramadan vécu de nuit : rues illuminées, tables partagées (iftar) · une ambiance unique." },
+      "Allemagne": { vocab: [["Bonjour", "Hallo"], ["Merci", "Danke"], ["S'il te plaît", "Bitte"], ["Combien ?", "Wie viel?"], ["À l'aide !", "Hilfe!"]], hist: "Du Saint-Empire à la réunification (1990) en passant par la chute du Mur (1989) : Berlin porte toute l'histoire du XXᵉ siècle.", facts: ["Plus de 1 500 brasseries et ~6 000 bières.", "Berlin a plus de ponts que Venise."], trad: "La Spätkauf-culture berlinoise : bière de rue, parcs le dimanche et silence le dimanche (Ruhetag)." },
+      "Croatie": { vocab: [["Bonjour", "Bok"], ["Merci", "Hvala"], ["S'il te plaît", "Molim"], ["Combien ?", "Koliko košta?"], ["À l'aide !", "Upomoć!"]], hist: "Comptoirs romains (le palais de Dioclétien à Split), République de Raguse (Dubrovnik), Yougoslavie, indépendance en 1991.", facts: ["Plus de 1 200 îles le long de l'Adriatique.", "La cravate vient des cavaliers croates (« hrvati »)."], trad: "La fjaka : l'art dalmate de ne rien faire, café au soleil et zéro stress." },
+      "Brésil": { vocab: [["Bonjour", "Oi"], ["Merci", "Obrigado·a"], ["S'il te plaît", "Por favor"], ["Combien ?", "Quanto custa?"], ["À l'aide !", "Socorro!"]], hist: "Colonie portugaise, seul empire d'Amérique du Sud, république en 1889 : un continent à lui seul, du Sertão à l'Amazonie.", facts: ["L'Amazonie produit ~20 % de l'oxygène de la planète.", "Le pays compte plus de 2 000 plages."], trad: "Le carnaval de Rio : la plus grande fête du monde · mais chaque quartier a sa petite samba toute l'année." },
+      "Canada": { vocab: [["Bonjour", "Hi / Bonjour"], ["Merci", "Thanks / Merci"], ["S'il te plaît", "Please / SVP"], ["Combien ?", "How much?"], ["À l'aide !", "Help!"]], hist: "Premières Nations, Nouvelle-France, conquête britannique (1763), confédération en 1867 : deux langues, dix provinces, des espaces infinis.", facts: ["Plus de lacs que tout le reste du monde réuni.", "La poutine est née au Québec dans les années 50."], trad: "La cabane à sucre (printemps québécois) : sirop d'érable sur neige et chansons à répondre." },
+    };
+    function _countryLore(c) {
+      const lo = COUNTRY_LORE[c.name]; if (!lo) return;
+      popInfo(c.flag, "Histoire & culture · " + c.name,
+        "<div style='text-align:left;font-size:.86rem;line-height:1.55'>" +
+        "<div class='set-grouptitle' style='margin-top:.1rem'>🗣️ Le vocabulaire de survie</div>" +
+        "<div style='display:grid;grid-template-columns:1fr 1fr;gap:.25rem .6rem'>" + lo.vocab.map((v) => "<span class='muted'>" + escapeHtml(v[0]) + "</span><b>" + escapeHtml(v[1]) + "</b>").join("") + "</div>" +
+        "<div class='set-grouptitle'>📜 L'histoire en 20 secondes</div><p style='margin:.2rem 0'>" + escapeHtml(lo.hist) + "</p>" +
+        "<div class='set-grouptitle'>💡 Fun facts</div>" + lo.facts.map((f) => "<p style='margin:.2rem 0'>· " + escapeHtml(f) + "</p>").join("") +
+        "<div class='set-grouptitle'>🎎 La tradition à vivre</div><p style='margin:.2rem 0'>" + escapeHtml(lo.trad) + "</p>" +
+        "</div>");
     }
     // Préparatifs de voyage : checklist sécurité/pratique liée au voyage planifié (locale)
     const TRIP_PREP = [
@@ -5968,7 +6033,7 @@
       let lastCat = "";
       box.innerHTML = `<div class="wg-head"><span>🎒 Préparatifs · ${escapeHtml(trip.dest)}</span><span class="wg-count">${n}/${TRIP_PREP.length}</span></div>
         <div class="prep-bar"><span style="width:${pct}%"></span></div>
-        ${country ? `<button class="prep-country" id="prepCountryBtn"><span class="pc-flag">${country.flag}</span><span class="pc-txt"><b>À savoir sur ${escapeHtml(country.name)}</b><span>Formalités · argent · transport · coutumes · sécurité</span></span><span class="pc-go">›</span></button>` : ""}
+        ${country ? `<button class="prep-country" id="prepCountryBtn"><span class="pc-flag">${country.flag}</span><span class="pc-txt"><b>À savoir sur ${escapeHtml(country.name)}</b><span>Formalités · coutumes · 📚 histoire & culture · vocabulaire</span></span><span class="pc-go">›</span></button>` : ""}
         ${TRIP_PREP.map((it, i) => {
           const ck = done.includes(i);
           const head = (it.cat && it.cat !== lastCat) ? `<div class="prep-cat">${escapeHtml(it.cat)}</div>` : "";
@@ -13413,6 +13478,46 @@
       body.querySelectorAll("[data-galmate]").forEach((el) => el.addEventListener("click", () => { if (typeof closePicker === "function") closePicker(); goToTab("connexions"); if (typeof openChat === "function") openChat(el.dataset.galmate); }));
       body.querySelectorAll("[data-galsouv]").forEach((el) => el.addEventListener("click", () => _souvEdit(el.dataset.galsouv, true)));
     }
+    // ---- 🌅 Ma journée de voyage (#28) : top départ le matin, WRAPPED le soir ----
+    // On photographie les compteurs au départ ; le soir, le récap = la différence.
+    function _daySess() { try { return JSON.parse(localStorage.getItem("sm_day_sess") || "null"); } catch (e) { return null; } }
+    function _daySnap() {
+      return {
+        t: Date.now(),
+        ck: (typeof myCheckinsRaw !== "undefined" ? (myCheckinsRaw || []).length : 0),
+        q: (typeof myQuestRows !== "undefined" ? (myQuestRows || []).filter((r) => r.status === "completed").length : 0),
+        m: (typeof connectedIds !== "undefined" && connectedIds ? connectedIds.size : 0),
+        xp: (myProfile && myProfile.xp) || 0,
+      };
+    }
+    function renderDaySession() {
+      const box = $("daySessionCard"); if (!box) return;
+      const s = _daySess();
+      box.innerHTML = s
+        ? '<button type="button" class="hm-gal-open" id="dayEndBtn"><span class="hmg-lbl" style="margin:0 auto">🌙 ' + i18nT("Terminer ma journée · voir mon WRAPPED") + "</span></button>"
+        : '<button type="button" class="hm-gal-open" id="dayStartBtn"><span class="hmg-lbl" style="margin:0 auto">🌅 ' + i18nT("Lancer ma journée de voyage") + "</span></button>";
+      { const sb = $("dayStartBtn"); if (sb) sb.addEventListener("click", () => { try { localStorage.setItem("sm_day_sess", JSON.stringify(_daySnap())); } catch (e) {} toast("🌅", i18nT("Belle journée ! Je note tout · reviens ce soir pour ton récap ✨")); if (window.SMSound) SMSound.play("success"); renderDaySession(); }); }
+      { const eb = $("dayEndBtn"); if (eb) eb.addEventListener("click", showDayWrapped); }
+    }
+    function showDayWrapped() {
+      const s = _daySess(); if (!s) return;
+      const now = _daySnap();
+      const h = Math.max(1, Math.round((now.t - s.t) / 3600000));
+      const d = { ck: Math.max(0, now.ck - s.ck), q: Math.max(0, now.q - s.q), m: Math.max(0, now.m - s.m), xp: Math.max(0, now.xp - s.xp) };
+      const stat = (n, l, e) => '<div class="sv-stat"><div class="sv-n">' + e + " " + n + '</div><div class="sv-l">' + l + "</div></div>";
+      showInfo("🌇 " + i18nT("Ton WRAPPED du jour"),
+        '<div class="souvenir-card" style="border-radius:16px">' +
+        '<div class="sv-brand">☀️ SunMates</div>' +
+        '<div class="sv-name" style="margin-top:.6rem">' + i18nT("Ta journée de voyage") + "</div>" +
+        '<div class="sv-tag">' + i18nT("≈ {h} h d'aventure", { h: h }) + "</div>" +
+        '<div class="sv-stats">' + stat(d.q, i18nT("quêtes accomplies"), "🎯") + stat(d.ck, i18nT("check-ins"), "🛟") + stat(d.m, i18nT("nouveaux Mates"), "🤝") + stat("+" + d.xp, "XP", "⭐") + "</div>" +
+        '<div class="sv-foot">' + ((d.q + d.ck + d.m + d.xp) > 0 ? i18nT("Quelle journée ! Repose-toi bien 🌙") : i18nT("Journée tranquille · demain, l'aventure ✨")) + "</div>" +
+        "</div>" +
+        '<button class="btn-primary btn-block" id="dayWrapClose" style="margin-top:.7rem">' + i18nT("Boucler la journée ✅") + "</button>" +
+        '<p class="muted" style="font-size:.74rem;text-align:center;margin:.4rem 0 0">' + i18nT("Astuce : fais une capture d'écran pour le partager en story 📸") + "</p>");
+      { const c = $("dayWrapClose"); if (c) c.onclick = () => { try { localStorage.removeItem("sm_day_sess"); } catch (e) {} if (typeof closePicker === "function") closePicker(); if (typeof celebrate === "function") celebrate(); renderDaySession(); }; }
+    }
+    renderDaySession();
     // Édition d'un souvenir de ville (popInfo PAR-DESSUS la galerie ; la galerie se rafraîchit après).
     function _souvEdit(c, fromGallery) {
       const cur = _souvGet(c);
@@ -13799,10 +13904,61 @@
     // manuellement, on passe en « nuit tropicale » le soir (19h→7h), sinon mode jour.
     // Dès qu'il touche le bouton thème, son choix (sm_theme) prime et l'auto est désactivé.
     { const saved = localStorage.getItem("sm_theme"); const h = new Date().getHours(); const auto = (h >= 19 || h < 7) ? "dusk" : "day"; applyTheme(saved || auto); }
+    // ====== MODES SAISON (#26) : HIVER ❄️ / TROPIQUES 🌴 ======
+    // Appui LONG 10 s sur ce bouton → entre/sort du mode saison. En saison, un simple
+    // clic alterne hiver ↔ tropiques. Auto météo : <0 °C → hiver, >30 °C → tropiques.
+    function seasonMode() { try { return localStorage.getItem("sm_season") || ""; } catch (e) { return ""; } }
+    function applySeason(s, manual) {
+      document.body.classList.toggle("theme-winter", s === "winter");
+      document.body.classList.toggle("theme-tropic", s === "tropic");
+      if (s) document.body.classList.remove("theme-dusk"); // la saison remplace jour/nuit
+      else applyTheme(localStorage.getItem("sm_theme") || "day");
+      try { if (s) localStorage.setItem("sm_season", s); else localStorage.removeItem("sm_season"); if (manual) localStorage.setItem("sm_season_lock", "1"); } catch (e) {}
+      const tt = $("themeToggle"); if (tt) tt.dataset.season = s || "";
+      const meta = document.querySelector('meta[name="theme-color"]'); if (meta && s) meta.setAttribute("content", s === "winter" ? "#EAF3FB" : "#F7F9EC");
+    }
+    let _seasonLpFired = false;
     $("themeToggle").addEventListener("click", () => {
+      if (_seasonLpFired) { _seasonLpFired = false; return; } // le relâché de l'appui long ne doit pas re-basculer
+      const s = seasonMode();
+      if (s) { const next = s === "winter" ? "tropic" : "winter"; applySeason(next, true); toast(next === "winter" ? "❄️" : "🌴", next === "winter" ? i18nT("Mode hiver ❄️") : i18nT("Mode tropiques 🌴")); return; }
       const next = document.body.classList.contains("theme-dusk") ? "day" : "dusk";
       localStorage.setItem("sm_theme", next); applyTheme(next);
     });
+    { const tt = $("themeToggle"); let _lpT = null, _lpHint = null;
+      const start = () => { clearTimeout(_lpT); clearTimeout(_lpHint);
+        _lpHint = setTimeout(() => { if (typeof toast === "function") toast(seasonMode() ? "🌞" : "❄️", i18nT("Continue d'appuyer (10 s) pour changer de saison…")); }, 3000);
+        _lpT = setTimeout(() => {
+          _seasonLpFired = true;
+          if (seasonMode()) { applySeason("", true); toast("🌞", i18nT("Retour au mode normal (jour / nuit)")); }
+          else { applySeason("winter", true); toast("❄️", i18nT("Mode hiver activé ! Un clic sur ce bouton bascule ❄️ hiver / 🌴 tropiques.")); }
+          if (navigator.vibrate) { try { navigator.vibrate(80); } catch (e) {} }
+        }, 10000);
+      };
+      const stop = () => { clearTimeout(_lpT); clearTimeout(_lpHint); };
+      tt.addEventListener("pointerdown", start);
+      ["pointerup", "pointerleave", "pointercancel"].forEach((ev) => tt.addEventListener(ev, stop));
+      tt.addEventListener("contextmenu", (e) => e.preventDefault()); // l'appui long mobile ne doit pas ouvrir le menu natif
+    }
+    applySeason(seasonMode());
+    // Auto météo (open-meteo, sans clé) : seulement si la géoloc est DÉJÀ accordée et
+    // qu'aucun choix manuel de saison n'a été fait.
+    (function autoSeason() {
+      try { if (localStorage.getItem("sm_season_lock")) return; } catch (e) { return; }
+      if (!navigator.geolocation || !navigator.permissions || !navigator.permissions.query) return;
+      navigator.permissions.query({ name: "geolocation" }).then((st) => {
+        if (st.state !== "granted") return;
+        navigator.geolocation.getCurrentPosition((pos) => {
+          fetch("https://api.open-meteo.com/v1/forecast?latitude=" + pos.coords.latitude.toFixed(3) + "&longitude=" + pos.coords.longitude.toFixed(3) + "&current=temperature_2m")
+            .then((r) => r.json()).then((j) => {
+              const t = j && j.current && j.current.temperature_2m;
+              if (typeof t !== "number") return;
+              if (t <= 0 && seasonMode() !== "winter") { applySeason("winter"); toast("❄️", i18nT("{t} °C dehors : mode hiver ! (appui long 10 s sur le bouton thème pour en sortir)", { t: Math.round(t) })); }
+              else if (t >= 30 && seasonMode() !== "tropic") { applySeason("tropic"); toast("🌴", i18nT("{t} °C dehors : mode tropiques ! (appui long 10 s pour en sortir)", { t: Math.round(t) })); }
+            }).catch(() => {});
+        }, () => {}, { maximumAge: 3600000, timeout: 8000 });
+      }).catch(() => {});
+    })();
     { const st = $("setThemeToggle"); if (st) st.addEventListener("change", () => {
       const next = st.checked ? "dusk" : "day";
       localStorage.setItem("sm_theme", next); applyTheme(next);
@@ -14753,6 +14909,25 @@
       "Pourquoi tu kiffes cet endroit ?": "Why do you love this place?",
       "Note enregistrée ✨": "Note saved ✨",
       "Mes adresses favorites": "My favourite places",
+      "Mode hiver ❄️": "Winter mode ❄️",
+      "Mode tropiques 🌴": "Tropics mode 🌴",
+      "Continue d'appuyer (10 s) pour changer de saison…": "Keep holding (10 s) to switch season…",
+      "Retour au mode normal (jour / nuit)": "Back to normal mode (day / night)",
+      "Mode hiver activé ! Un clic sur ce bouton bascule ❄️ hiver / 🌴 tropiques.": "Winter mode on! A single tap on this button switches ❄️ winter / 🌴 tropics.",
+      "{t} °C dehors : mode hiver ! (appui long 10 s sur le bouton thème pour en sortir)": "{t} °C outside: winter mode! (hold the theme button 10 s to exit)",
+      "{t} °C dehors : mode tropiques ! (appui long 10 s pour en sortir)": "{t} °C outside: tropics mode! (hold 10 s to exit)",
+      "Terminer ma journée · voir mon WRAPPED": "End my day · see my WRAPPED",
+      "Lancer ma journée de voyage": "Start my travel day",
+      "Belle journée ! Je note tout · reviens ce soir pour ton récap ✨": "Have a great day! I'm keeping track · come back tonight for your recap ✨",
+      "Ton WRAPPED du jour": "Your daily WRAPPED",
+      "Ta journée de voyage": "Your travel day",
+      "≈ {h} h d'aventure": "≈ {h} h of adventure",
+      "quêtes accomplies": "quests completed",
+      "nouveaux Mates": "new Mates",
+      "Quelle journée ! Repose-toi bien 🌙": "What a day! Rest well 🌙",
+      "Journée tranquille · demain, l'aventure ✨": "Quiet day · tomorrow, adventure ✨",
+      "Boucler la journée ✅": "Wrap up the day ✅",
+      "Astuce : fais une capture d'écran pour le partager en story 📸": "Tip: take a screenshot to share it as a story 📸",
       "Tes Mates d'aventure": "Your adventure Mates",
       "Aucune connexion pour l'instant": "No failed logins yet.",
       "Toucher pour discuter 💬": "Tap to chat 💬",
