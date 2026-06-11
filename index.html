@@ -111,8 +111,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=405"></script>
-  <script src="sunmates-icons.js?v=405"></script>
+  <script src="sunmates-badges.js?v=406"></script>
+  <script src="sunmates-icons.js?v=406"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -13799,18 +13799,46 @@
        Tous les sons sont SYNTHÉTISÉS à la volée (aucun fichier audio externe) → aucun
        droit d'auteur. Activable/désactivable dans Paramètres (clé sm_sound). */
     const SMSound = (function () {
-      let ctx = null;
+      let ctx = null, master = null, comp = null;
       let on = false; try { on = localStorage.getItem("sm_sound") === "1"; } catch (e) {}
-      function ac() { if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } return ctx; }
+      function ac() {
+        if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+        // CHAÎNE MAÎTRESSE (retraitement volumes) : tout passe par un gain master puis un
+        // COMPRESSEUR doux → plus aucun son qui « claque » plus fort que les autres,
+        // les superpositions (arpèges) ne saturent plus.
+        if (ctx && !master) {
+          try {
+            master = ctx.createGain(); master.gain.value = 1;
+            comp = ctx.createDynamicsCompressor();
+            comp.threshold.value = -18; comp.knee.value = 12; comp.ratio.value = 3;
+            comp.attack.value = 0.003; comp.release.value = 0.25;
+            master.connect(comp); comp.connect(ctx.destination);
+          } catch (e) { master = null; comp = null; }
+        }
+        return ctx;
+      }
+      const out = () => master || (ctx && ctx.destination);
+      // Trim de NORMALISATION par son, calibré en MESURANT le RMS crête de chaque son
+      // (banc _calib_sounds.js, fenêtres 50 ms après compresseur). Deux niveaux voulus :
+      // les TICKS d'interface (tap/select/toggle/nav) restent ~2× plus discrets que les
+      // sons de FEEDBACK/célébration, qui eux sortent tous au MÊME volume perçu.
+      let _trim = 1;
+      const TRIM = {
+        tap: 4.0, select: 1.1, toggle: 1.1, nav: 0.9,                       // ticks discrets, alignés entre eux
+        pop: 1.26, coin: 1.38, error: 1.41, message: 1.45, whoosh: 1.0,     // feedback = niveau cible
+        star: 1.0, notify: 0.92, success: 0.83, match: 0.75,
+        unlock: 0.71, levelup: 0.73, badge: 0.69,                            // célébrations ramenées au niveau
+        ringtone: 0.5,                                                       // aperçu sonnerie dégonflé
+      };
       // Brique de base : une note avec enveloppe douce (+ glissando optionnel vers freqEnd).
       function blip(freq, dur, type, vol, when, freqEnd) {
         const c = ac(); if (!c) return; const t = when || c.currentTime;
         const o = c.createOscillator(), g = c.createGain();
         o.type = type || "sine"; o.frequency.setValueAtTime(freq, t);
         if (freqEnd) o.frequency.exponentialRampToValueAtTime(freqEnd, t + dur);
-        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.1, t + 0.01);
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime((vol || 0.1) * _trim, t + 0.01);
         g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + dur + 0.03);
+        o.connect(g); g.connect(out()); o.start(t); o.stop(t + dur + 0.03);
       }
       const arp = (n, freqs, dur, type, vol, step) => freqs.forEach((f, i) => blip(f, dur, type, vol, n + i * step));
       // TIMBRE SIGNATURE SUNMATES : note « marimba/cloche » chaude = triangle + octave sine,
@@ -13824,9 +13852,10 @@
         if (freqEnd) o.frequency.exponentialRampToValueAtTime(freqEnd, t + dur);
         const o2 = c.createOscillator(), g2 = c.createGain();
         o2.type = "sine"; o2.frequency.setValueAtTime(freq * 2, t);
-        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.1, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        g2.gain.setValueAtTime(0.0001, t); g2.gain.exponentialRampToValueAtTime((vol || 0.1) * 0.34, t + 0.012); g2.gain.exponentialRampToValueAtTime(0.0001, t + dur * 0.6);
-        o.connect(g); g.connect(c.destination); o2.connect(g2); g2.connect(c.destination);
+        const v = (vol || 0.1) * _trim;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        g2.gain.setValueAtTime(0.0001, t); g2.gain.exponentialRampToValueAtTime(v * 0.34, t + 0.012); g2.gain.exponentialRampToValueAtTime(0.0001, t + dur * 0.6);
+        o.connect(g); g.connect(out()); o2.connect(g2); g2.connect(out());
         o.start(t); o.stop(t + dur + 0.05); o2.start(t); o2.stop(t + dur * 0.6 + 0.05);
       }
       const warmArp = (n, freqs, dur, vol, step) => freqs.forEach((f, i) => warm(f, dur, vol, n + i * step));
@@ -13856,7 +13885,8 @@
       function play(name, force) {
         if (!on && !force) return; const c = ac(); if (!c) return;
         if (c.state === "suspended") { try { c.resume(); } catch (e) {} }
-        (SEQ[name] || SEQ.tap)(c.currentTime);
+        _trim = TRIM[name] || 1;                  // normalisation : trim mesuré par son
+        try { (SEQ[name] || SEQ.tap)(c.currentTime); } finally { _trim = 1; }
       }
       // Sonnerie LONGUE du faux appel : mélodie « marimba » crédible (tempo modéré, respiration
       // entre les boucles comme une vraie sonnerie), stoppable, qui RESPECTE le mute global.
@@ -13874,7 +13904,7 @@
       // Sonnerie marimba synthétisée (fallback, 100 % libre de droit).
       function _synthRing() {
         const c = ac(); if (!c) return; if (c.state === "suspended") { try { c.resume(); } catch (e) {} }
-        const m = c.createGain(); m.gain.value = 0.3; m.connect(c.destination); _ringMaster = m;
+        const m = c.createGain(); m.gain.value = 0.3; m.connect(out()); _ringMaster = m; // via la chaîne master+compresseur
         const STEP = 0.26;                                             // tempo modéré (pas accéléré)
         const phrase = [523, 659, 784, 1047, 880, 784, 659, 587];      // do majeur, montée-descente accrocheuse
         const phraseLen = phrase.length * STEP;
@@ -13909,7 +13939,8 @@
         try { if (_ringMaster && ctx) { const m = _ringMaster; _ringMaster = null; m.gain.cancelScheduledValues(ctx.currentTime); m.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15); setTimeout(() => { try { m.disconnect(); } catch (e) {} }, 250); } } catch (e) {}
       }
       function set(v) { on = !!v; try { localStorage.setItem("sm_sound", on ? "1" : "0"); } catch (e) {} if (on) { try { ac() && ctx.resume(); } catch (e) {} play("toggle", true); } else { stopRing(); } }
-      return { play, playRing, stopRing, reloadRing, set, isOn: function () { return on; }, list: function () { return Object.keys(SEQ); } };
+      return { play, playRing, stopRing, reloadRing, set, isOn: function () { return on; }, list: function () { return Object.keys(SEQ); },
+        _chain: function () { ac(); return { ctx, master, comp }; } }; // accès mesure/diagnostic (calibration des volumes)
     })();
     window.SMSound = SMSound;
 
