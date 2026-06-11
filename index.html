@@ -104,8 +104,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=401"></script>
-  <script src="sunmates-icons.js?v=401"></script>
+  <script src="sunmates-badges.js?v=402"></script>
+  <script src="sunmates-icons.js?v=402"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -4383,6 +4383,7 @@
         <div class="prof-seg hidden" data-psegpanel="admin">
           <div class="mseg aseg-nav" style="flex-wrap:wrap">
             <button data-aseg="demo" class="active">🎤 Démo</button>
+            <button data-aseg="livre">📖 Livre blanc</button>
             <button data-aseg="dash">📊 Bord</button>
             <button data-aseg="users">👥 Membres</button>
             <button data-aseg="places">📍 Lieux</button>
@@ -4416,6 +4417,17 @@
               <summary style="font-weight:800;cursor:pointer">🛡️ Réservé admin (back-office) <span class="muted" style="font-weight:400;font-size:.78rem">· non public</span></summary>
               <div id="adminOnlyList"></div>
             </details>
+          </div>
+
+          <!-- 📖 LIVRE BLANC (#25) : purement explicatif (aucune mention back-office ni versions),
+               chaque section a sa démo interactive façon tuto vidéo -->
+          <div class="aseg hidden" data-asegpanel="livre">
+            <div class="card">
+              <h3 style="margin-top:0">📖 Le livre blanc SunMates</h3>
+              <p class="muted" style="font-size:.84rem;margin:.2rem 0 .6rem">Tout ce que fait l'app, expliqué simplement, section par section. Touche <b>▶ Démo guidée</b> sur une section pour la voir en action, comme un tuto vidéo interactif.</p>
+              <div class="search" style="margin:.4rem 0 .6rem"><span class="ico">🔍</span><input id="lbWhiteSearch" type="text" maxlength="80" placeholder="Rechercher une fonctionnalité…" /></div>
+              <div id="livreBlancList"></div>
+            </div>
           </div>
 
           <div class="aseg hidden" data-asegpanel="dash">
@@ -6903,6 +6915,7 @@
       document.querySelectorAll("[data-aseg]").forEach((b) => b.classList.toggle("active", b.dataset.aseg === seg));
       document.querySelectorAll("[data-asegpanel]").forEach((p) => show(p, p.dataset.asegpanel === seg));
       if (seg === "demo") renderDemoScript();
+      else if (seg === "livre") renderLivreBlanc();
       else if (seg === "dash") loadAdminDash();
       else if (seg === "users") loadAdminUsers();
       else if (seg === "places") loadAdminPlaces();
@@ -7173,6 +7186,16 @@
       box.querySelectorAll("[data-feattab]").forEach((b) => b.addEventListener("click", () => startGuidedTour(b.dataset.feattab)));
       return any;
     }
+    // 📖 LIVRE BLANC : catalogue PUBLIC uniquement (jamais le bloc admin, jamais de numéro de
+    // version) · chaque zone garde son bouton « ▶ Démo guidée » = tuto interactif.
+    function renderLivreBlanc() {
+      const box = $("livreBlancList"); if (!box) return;
+      const q = (($("lbWhiteSearch") && $("lbWhiteSearch").value) || "").trim().toLowerCase();
+      const pub = SM_FEATURES.filter(([z]) => !_isAdminZone(z));
+      const any = _renderCatalogInto(box, pub, q);
+      if (!any) box.innerHTML = '<p class="muted" style="text-align:center;padding:1rem">Aucune fonctionnalité ne correspond.</p>';
+    }
+    { const ls = $("lbWhiteSearch"); if (ls) ls.addEventListener("input", _debounce(() => renderLivreBlanc(), 200)); }
     function renderFeatureCatalog(q) {
       q = (q || "").trim().toLowerCase();
       // Catalogue PUBLIC (tout sauf admin) + bloc « Réservé admin » À PART (jamais dans le public).
@@ -10865,18 +10888,32 @@
       } else if (action === "aide" && typeof currentLang !== "undefined" && currentLang === "en") {
         // Version EN rédigée (ton SunMates) · data-no-tr : on coupe le filet auto (sinon il "re-traduirait" l'anglais)
         showInfo("Help center ❓", `<div class="faq-secu" data-no-tr>
+          <button class="btn-primary btn-block" id="faqDemoBtn" style="margin-bottom:.7rem">🎬 (Re)watch the app's guided demo</button>
           <details open><summary>🎯 How do I earn XP and badges?</summary><p>Complete <b>quests</b> (Games tab or straight from the map), take on <b>solo challenges</b> and <b>rituals</b> in Home mode. Each quest asks for a quick <b>note</b> (anti-cheat).</p></details>
           <details><summary>🛟 How does location sharing work?</summary><p>Your location is only shared with your <b>trusted circle</b> (accepted connections), visible for 24 h. The emergency alert broadcasts it instantly.</p></details>
           <details><summary>🤝 How do I meet Mates safely?</summary><p>Go for <b>verified</b> profiles (the small round logo), meet up in <b>validated places</b>, and you can <b>block/report</b> anytime.</p></details>
           <details><summary>🍹 What's the referral perk?</summary><p>Invite a friend via "Invite your friends": you both get a <b>first drink on us</b> coupon 🍹</p></details>
+          <details><summary>💛 How do favourites work?</summary><p>On any place card, tap <b>🤍 Favourite</b>: it lands in <b>My favourite places</b> (Places tab) with your personal note.</p></details>
+          <details><summary>🌅 What's "my travel day"?</summary><p>Tap <b>Start my travel day</b> in the morning (Travel mode). In the evening, end it to get your <b>daily WRAPPED</b>: quests, check-ins, new Mates and XP of the day.</p></details>
+          <details><summary>❄️ Winter / tropics modes?</summary><p>Hold the theme button (top right) for <b>10 seconds</b> to switch seasons; one tap then toggles ❄️/🌴. Hold 10 s again to come back to day/night.</p></details>
+          <details><summary>🛟 How do I become a host?</summary><p>In Home mode, tap <b>I want to help</b>: your request is reviewed (verified profile, seniority). Once approved, travellers see your 🛟 host badge.</p></details>
+          <details><summary>🔒 What about my data?</summary><p>Settings → Personal data: <b>download a copy</b> of everything or <b>delete your account</b> (irreversible). Safety features are free for everyone, forever.</p></details>
         </div>`);
+        setTimeout(() => { const b = $("faqDemoBtn"); if (b) b.onclick = () => { if (typeof closePicker === "function") closePicker(); if (typeof startAutoDemo === "function") startAutoDemo(0); }; }, 40);
       } else if (action === "aide") {
         showInfo("Centre d'aide ❓", `<div class="faq-secu">
+          <button class="btn-primary btn-block" id="faqDemoBtn" style="margin-bottom:.7rem">🎬 (Re)voir la démo guidée de l'app</button>
           <details open><summary>🎯 Comment gagner de l'XP et des badges ?</summary><p>Accomplis des <b>quêtes</b> (onglet Jeux ou sur la carte), relève des <b>défis solo</b> et des <b>rituels</b> en mode Maison. Chaque quête demande une petite <b>justification</b> (anti-triche).</p></details>
           <details><summary>🛟 Comment fonctionne le partage de position ?</summary><p>Ta position n'est partagée qu'avec ton <b>cercle de confiance</b> (connexions acceptées), visible 24 h. L'alerte d'urgence la diffuse aussitôt.</p></details>
           <details><summary>🤝 Comment rencontrer des Mates en sécurité ?</summary><p>Privilégie les profils <b>vérifiés</b> (petit logo rond), retrouve-toi dans des <b>lieux validés</b>, et tu peux <b>bloquer/signaler</b> à tout moment.</p></details>
           <details><summary>🍹 C'est quoi le parrainage ?</summary><p>Invite un ami via « Inviter tes amis » : vous recevez tous les deux un coupon <b>1er verre offert</b> 🍹</p></details>
+          <details><summary>💛 Comment marchent les favoris ?</summary><p>Sur la fiche d'un lieu, touche <b>🤍 Favori</b> : il rejoint <b>Mes adresses favorites</b> (onglet Lieux) avec ta petite note perso.</p></details>
+          <details><summary>🌅 C'est quoi « ma journée de voyage » ?</summary><p>Le matin, touche <b>Lancer ma journée</b> (mode Voyage). Le soir, termine-la pour recevoir ton <b>WRAPPED du jour</b> : quêtes, check-ins, nouveaux Mates et XP de la journée.</p></details>
+          <details><summary>❄️ Les modes hiver / tropiques ?</summary><p>Reste appuyé·e <b>10 secondes</b> sur le bouton thème (en haut à droite) pour passer en mode saison ; un simple clic bascule ensuite ❄️/🌴. Re-appuie 10 s pour revenir au jour/nuit.</p></details>
+          <details><summary>🛟 Comment devenir hôte ?</summary><p>En mode Maison, touche <b>Je veux aider</b> : ta demande est vérifiée (profil vérifié, ancienneté). Une fois validée, les voyageurs voient ton badge 🛟 d'hôte.</p></details>
+          <details><summary>🔒 Et mes données ?</summary><p>Réglages → Données personnelles : <b>télécharge une copie</b> de tout ou <b>supprime ton compte</b> (irréversible). Les fonctions de sécurité restent gratuites pour tout le monde, pour toujours.</p></details>
         </div>`);
+        setTimeout(() => { const b = $("faqDemoBtn"); if (b) b.onclick = () => { if (typeof closePicker === "function") closePicker(); if (typeof startAutoDemo === "function") startAutoDemo(0); }; }, 40);
       } else if (action === "contactus" || action === "support2") {
         if (typeof openSupport === "function") openSupport();
       } else if (action === "voyage") {
