@@ -111,8 +111,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=410"></script>
-  <script src="sunmates-icons.js?v=410"></script>
+  <script src="sunmates-badges.js?v=411"></script>
+  <script src="sunmates-icons.js?v=411"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -3128,6 +3128,35 @@
     body.theme-dusk .sm-date-preview { background: linear-gradient(135deg, #2c2140, #241b35); color: #ffc8a8; }
     body.theme-winter .sm-date-preview { background: linear-gradient(135deg, #F4FAFF, #E4F0FB); }
     body.theme-tropic .sm-date-preview { background: linear-gradient(135deg, #FDFBE8, #EDF6DF); }
+
+    /* ====== 🥚 Easter eggs (effets visuels · jamais documentés côté public) ====== */
+    /* Golden Hour : voile doré multiplié au-dessus de TOUTE l'app (pointer-events none) */
+    #goldenFx { position: fixed; inset: 0; z-index: 99999; pointer-events: none;
+      background: linear-gradient(160deg, rgba(255,196,64,.22), rgba(255,150,61,.13) 55%, rgba(255,99,72,.10));
+      mix-blend-mode: multiply; }
+    /* Baleine au large : flottement doux */
+    .egg-whale { font-size: 2.3rem; filter: drop-shadow(0 4px 10px rgba(0,60,80,.35)); animation: eggWhaleBob 1.8s ease-in-out infinite alternate, eggWhaleIn .6s ease; }
+    @keyframes eggWhaleBob { from { transform: translateY(0) rotate(-4deg); } to { transform: translateY(-7px) rotate(4deg); } }
+    @keyframes eggWhaleIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    /* Soleil invoqué : traverse l'écran en arc */
+    .egg-sun { position: fixed; z-index: 99998; pointer-events: none; font-size: 3rem; left: -12%; top: 60%;
+      filter: drop-shadow(0 0 18px rgba(255,190,60,.85)); animation: eggSunArc 3.2s ease-in-out forwards; }
+    @keyframes eggSunArc {
+      0% { left: -12%; top: 62%; transform: rotate(0deg) scale(.8); }
+      50% { top: 10%; transform: rotate(180deg) scale(1.15); }
+      100% { left: 104%; top: 62%; transform: rotate(360deg) scale(.8); }
+    }
+    /* Minuit pile : étoiles filantes */
+    .egg-stars { position: fixed; inset: 0; z-index: 99998; pointer-events: none; overflow: hidden; }
+    .egg-stars span { position: absolute; top: -9%; font-size: 1.6rem; opacity: 0; animation: eggStarFall 3.4s linear forwards; }
+    @keyframes eggStarFall { 0% { opacity: 0; transform: translate(0,0) rotate(12deg); } 8% { opacity: 1; } 80% { opacity: .9; } 100% { opacity: 0; transform: translate(-22vw, 118vh) rotate(12deg); } }
+    /* Flamme 30 jours : halo qui flamboie autour de l'avatar (profil + badge joueur) */
+    body.streak-flame #profileAvatar, body.streak-flame .player-badge { position: relative; }
+    body.streak-flame #profileAvatar::after, body.streak-flame .player-badge::after {
+      content: "🔥"; position: absolute; right: -6px; bottom: -6px; font-size: 1.05rem; z-index: 3;
+      filter: drop-shadow(0 0 6px rgba(255,140,40,.8)); animation: eggFlame 1.1s ease-in-out infinite alternate; }
+    @keyframes eggFlame { from { transform: scale(.92) rotate(-6deg); } to { transform: scale(1.1) rotate(6deg); } }
+    body.streak-flame #profileAvatar { box-shadow: 0 0 0 2.5px rgba(255,150,50,.65), 0 0 18px rgba(255,140,40,.45); }
 
     /* ====== MODES SAISON (#26) · activés par appui long 10 s sur le bouton thème ======
        L'âme SunMates (soleil, chaleur humaine) traduite pour les pays froids / la canicule.
@@ -6334,6 +6363,7 @@
       if (typeof setHomeMode === "function") setHomeMode("travel", false); // on arrive TOUJOURS sur la carte (mode Voyage), le mode Maison reste accessible via la bascule
       if (typeof renderHost === "function") renderHost(); // badge hôte sur la carte profil
       if (typeof syncHostRequest === "function") syncHostRequest(); // répare une demande d'hôte restée locale
+      if (typeof initEasterEggs === "function") initEasterEggs(); // 🥚 chut.
       const badge = $("verifBadge");
       // Vérifié = petit logo rond SunMates (sans le mot). Non vérifié = rien (le bouton « Demander » suffit).
       badge.innerHTML = data.is_verified ? '<span class="vchip lg" title="Compte vérifié">✓</span>' : "";
@@ -7252,6 +7282,14 @@
         ["❄️", "Modes saison hiver / tropiques", "Appui long 10 s sur le bouton thème (puis 1 clic = ❄️↔🌴) ; auto météo : <0 °C hiver, >30 °C tropiques."],
         ["❓", "Badges secrets", "Invisibles tant que pas débloqués ; conditions révélées à l'admin dans la fiche badge."],
         ["🌟", "Badge « Légende de SunMates »", "Le badge secret ultime, palier endgame."],
+        ["🌅", "Golden Hour", "7 taps sur le logo soleil → toute l'app se dore pendant 1 h + badge « Chercheur d'or »."],
+        ["🐋", "La baleine", "Zoomer au large (centre de la carte sur l'eau, zoom ≥10) → une baleine apparaît 12 s + badge « Capitaine Achab » (1×/jour)."],
+        ["🎂", "Anniversaire", "Ouvrir l'app le jour de sa date de naissance → confettis + carte + badge « Année dorée » (1×/an)."],
+        ["☀️", "Mot magique", "Taper « soleil » (ou sunshine/sunmates) dans la recherche accueil → soleil qui traverse l'écran + badge."],
+        ["🗼", "Pèlerin", "Être à <150 m d'un des 12 monuments légendaires (géoloc) → badge « Pèlerin »."],
+        ["🍸", "Secousse cocktail", "Secouer le téléphone (Android) → le hasard propose une quête/un lieu + badge « Maître cocktail »."],
+        ["🌠", "Minuit pile", "Ouvrir l'app entre 00:00 et 00:05 → pluie d'étoiles + badge « Noctambule » (1×/nuit)."],
+        ["🔥", "Flamme 30 jours", "Série de 30 jours → l'avatar s'embrase (profil + badge joueur) + badge « Flamme éternelle »."],
       ]],
     ];
     // Mappe une zone du catalogue vers l'onglet correspondant (pour la démo « ▶ Voir »).
@@ -11514,7 +11552,10 @@
           preferCanvas: true, tap: false, zoomAnimation: true, fadeAnimation: true, inertiaDeceleration: 2600 }).setView([46.6, 2.3], 4);
         // Fond vectoriel SunMates : rendu GPU continu (fini le chargement tuile par tuile),
         // recoloré dans la DA. Le service worker met style/glyphes/tuiles en cache → offline OK.
-        smBaseLayer().addTo(homeLeaf);
+        const _homeBase = smBaseLayer().addTo(homeLeaf);
+        // Accès au moteur GL (sert à l'egg 🐋 : savoir si le centre de la carte est sur l'eau).
+        window._homeGlMap = () => { try { return _homeBase.getMaplibreMap ? _homeBase.getMaplibreMap() : null; } catch (e) { return null; } };
+        homeLeaf.on("moveend", () => { try { if (typeof _eggWhaleCheck === "function") _eggWhaleCheck(); } catch (e) {} });
         homeLeaf.attributionControl.setPrefix(false).setPosition("bottomleft"); // retire le logo Leaflet, déplace à gauche
         try { homeLeaf.attributionControl.addAttribution("© OpenStreetMap · OpenFreeMap"); } catch (e) {} // mention légale OSM garantie
         try { if (homeLeaf.zoomControl) homeLeaf.zoomControl.setPosition("bottomright"); } catch (e) {} // libère le haut-gauche pour les outils en plein écran
@@ -11959,7 +12000,7 @@
     let lastKnownGeo = null;
     function getGeo(onOk, onErr) {
       if (!navigator.geolocation) { if (onErr) onErr({ code: 0, message: "indisponible" }); return; }
-      const ok = (pos) => { lastKnownGeo = { lat: pos.coords.latitude, lng: pos.coords.longitude }; onOk(lastKnownGeo); };
+      const ok = (pos) => { lastKnownGeo = { lat: pos.coords.latitude, lng: pos.coords.longitude }; try { if (typeof _eggPilgrimCheck === "function") _eggPilgrimCheck(lastKnownGeo); } catch (e) {} onOk(lastKnownGeo); };
       navigator.geolocation.getCurrentPosition(ok,
         () => navigator.geolocation.getCurrentPosition(ok, (e) => { if (onErr) onErr(e); }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }),
         { enableHighAccuracy: true, timeout: 9000, maximumAge: 60000 });
@@ -13976,6 +14017,192 @@
       else if (typeof showJeuxView === "function") showJeuxView("jeuxHome");
     }));
 
+    /* ====================== 🥚 EASTER EGGS (chut… réservé aux explorateurs) ======================
+       RÈGLE : AUCUNE mention dans l'UI publique — tout se découvre par hasard. La liste vit
+       dans le catalogue ADMIN. Chaque egg débloque un badge SECRET (badges : lancer
+       supabase_migration_easter_eggs.sql). Tout est best-effort : un egg qui casse ne doit
+       JAMAIS gêner l'app (try/catch partout). */
+    async function awardSecretBadge(key) {
+      try {
+        if (!myUserId) return;
+        const k = "sm_egg_badge_" + key + "_" + myUserId;
+        if (localStorage.getItem(k)) return;
+        localStorage.setItem(k, "1");
+        const def = (typeof allBadgeDefs !== "undefined" && allBadgeDefs.find((b) => b.key === key)) || {};
+        await db.from("user_badges").upsert({ user_id: myUserId, badge_key: key, name: def.name || null, emoji: def.emoji || null }, { onConflict: "user_id,badge_key" });
+        if (typeof loadGameData === "function") loadGameData(); // la grille fête le nouveau badge
+      } catch (e) {}
+    }
+
+    // 🌅 GOLDEN HOUR — 7 taps sur le logo soleil : l'app entière se dore pendant 1 h.
+    (function eggGoldenHour() {
+      function apply() {
+        try {
+          const until = +localStorage.getItem("sm_golden_until") || 0;
+          const on = Date.now() < until;
+          let g = document.getElementById("goldenFx");
+          if (on && !g) { g = document.createElement("div"); g.id = "goldenFx"; document.body.appendChild(g); }
+          if (g) g.style.display = on ? "" : "none";
+          if (on) setTimeout(apply, Math.min(until - Date.now() + 500, 3600000));
+        } catch (e) {}
+      }
+      apply();
+      const brand = document.querySelector("#appView .brand"); if (!brand) return;
+      let taps = 0, t0 = 0;
+      brand.addEventListener("click", () => {
+        const now = Date.now();
+        if (now - t0 > 4000) { taps = 0; t0 = now; }
+        if (++taps < 7) return;
+        taps = 0;
+        try { localStorage.setItem("sm_golden_until", String(Date.now() + 3600000)); } catch (e) {}
+        apply();
+        if (typeof celebrate === "function") celebrate();
+        if (typeof toast === "function") toast("🌅", i18nT("Golden Hour ! L'app se dore au soleil pendant 1 h ✨"), null, { low: true });
+        awardSecretBadge("badge_goldenhour");
+      });
+    })();
+
+    // 🐋 LA BALEINE — zoomer au large (le centre de la carte est sur l'eau) : elle apparaît.
+    let _whaleMk = null;
+    function _eggWhaleCheck() {
+      try {
+        if (!homeLeaf || homeLeaf.getZoom() < 10) return;
+        const day = new Date().toISOString().slice(0, 10);
+        if (localStorage.getItem("sm_egg_whale_day") === day) return;
+        const m = (typeof window._homeGlMap === "function") ? window._homeGlMap() : null;
+        if (!m || !m.queryRenderedFeatures || !(m.isStyleLoaded && m.isStyleLoaded())) return;
+        const el = $("homeMap"); if (!el || !el.clientWidth) return;
+        const feats = m.queryRenderedFeatures([el.clientWidth / 2, el.clientHeight / 2]);
+        const f = (feats || []).find((x) => x.layer && x.layer.type === "fill");
+        if (!f || !/water/.test(((f.layer && f.layer.id) || "") + " " + (f.sourceLayer || ""))) return; // pas d'eau sous le centre
+        localStorage.setItem("sm_egg_whale_day", day);
+        _whaleMk = L.marker(homeLeaf.getCenter(), { icon: L.divIcon({ className: "egg-whale-wrap", html: '<div class="egg-whale">🐋</div>', iconSize: [54, 54], iconAnchor: [27, 27] }), zIndexOffset: 1500 }).addTo(homeLeaf);
+        setTimeout(() => { try { if (_whaleMk) homeLeaf.removeLayer(_whaleMk); } catch (e) {} _whaleMk = null; }, 12000);
+        if (typeof toast === "function") toast("🐋", i18nT("Une baleine te salue… puis replonge dans le grand bleu"), null, { low: true });
+        awardSecretBadge("badge_whale");
+      } catch (e) {}
+    }
+
+    // 🎂 ANNIVERSAIRE — le jour J (date de naissance du profil), une fois par an.
+    function _eggBirthday() {
+      try {
+        if (!myProfile || !myProfile.birthdate || !myUserId) return;
+        const b = new Date(myProfile.birthdate); if (isNaN(b)) return;
+        const n = new Date();
+        if (b.getDate() !== n.getDate() || b.getMonth() !== n.getMonth()) return;
+        const k = "sm_egg_bday_" + n.getFullYear() + "_" + myUserId;
+        if (localStorage.getItem(k)) return;
+        localStorage.setItem(k, "1");
+        if (typeof celebrate === "function") celebrate();
+        popInfo("🎂", i18nT("Joyeux anniversaire !"), i18nT("Toute l'équipe SunMates te souhaite une journée dorée, {n} ☀️ Que cette nouvelle année t'emmène loin.", { n: escapeHtml(myProfile.username || "") }));
+        awardSecretBadge("badge_birthday");
+      } catch (e) {}
+    }
+
+    // ☀️ MOT MAGIQUE — taper « soleil » (ou sunshine/sunmates) dans la recherche de l'accueil.
+    (function eggSunWord() {
+      const inp = $("homeSearch"); if (!inp) return;
+      inp.addEventListener("input", () => {
+        try {
+          const v = (inp.value || "").trim().toLowerCase();
+          if (v !== "soleil" && v !== "sunshine" && v !== "sunmates") return;
+          if (window._sunFly) return; window._sunFly = true;
+          const d = document.createElement("div"); d.className = "egg-sun"; d.textContent = "☀️"; document.body.appendChild(d);
+          if (window.SMSound) { try { SMSound.play("star"); } catch (e) {} }
+          setTimeout(() => { d.remove(); window._sunFly = false; }, 3400);
+          awardSecretBadge("badge_sunword");
+        } catch (e) {}
+      });
+    })();
+
+    // 🗼 PÈLERIN — être physiquement à <150 m d'un monument légendaire (via la géoloc déjà accordée).
+    const EGG_MONUMENTS = [
+      ["la Tour Eiffel", 48.85837, 2.29448], ["le Sacré-Cœur", 48.88670, 2.34310], ["le Mont-Saint-Michel", 48.63601, -1.51144],
+      ["le Colisée", 41.89021, 12.49223], ["la Sagrada Família", 41.40363, 2.17436], ["Big Ben", 51.50072, -0.12462],
+      ["la Tour de Belém", 38.69155, -9.21598], ["l'Atomium", 50.89497, 4.34151], ["la Porte de Brandebourg", 52.51628, 13.37770],
+      ["la Statue de la Liberté", 40.68925, -74.04450], ["l'Opéra de Sydney", -33.85680, 151.21530], ["Burj Khalifa", 25.19720, 55.27440],
+    ];
+    function _eggPilgrimCheck(g) {
+      try {
+        if (!g || typeof haversineKm !== "function") return;
+        const hit = EGG_MONUMENTS.find(([n, la, ln]) => haversineKm(g, { lat: la, lng: ln }) < 0.15);
+        if (!hit) return;
+        const seen = JSON.parse(localStorage.getItem("sm_egg_pilgrim") || "[]");
+        if (seen.includes(hit[0])) return;
+        seen.push(hit[0]); localStorage.setItem("sm_egg_pilgrim", JSON.stringify(seen));
+        if (typeof celebrate === "function") celebrate();
+        if (typeof toast === "function") toast("🗼", i18nT("Pèlerin·e : tu es au pied de {m} ! Quel voyage…", { m: hit[0] }), null, { low: true });
+        awardSecretBadge("badge_pilgrim");
+      } catch (e) {}
+    }
+
+    // 🍸 SECOUSSE COCKTAIL — secouer le téléphone : le hasard choisit une quête ou un lieu.
+    // (iOS demande une permission explicite → l'egg y dort, pas de pop-up intrusive.)
+    function _eggShakeResult() {
+      try {
+        if ($("appView") && $("appView").classList.contains("hidden")) return;
+        const pool = [];
+        (typeof allQuests !== "undefined" ? allQuests : []).filter((q) => q.kind === "quest").forEach((q) => pool.push({ t: (q.emoji || "🎯") + " " + q.title, run: () => { goToTab("jeux"); setTimeout(() => { if (typeof openDetail === "function") openDetail(q); }, 120); } }));
+        (typeof allCafes !== "undefined" ? allCafes : []).forEach((c) => pool.push({ t: "📍 " + c.name, run: () => { if (typeof focusHomeMapOn === "function") focusHomeMapOn(c.id); } }));
+        if (!pool.length) return;
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        if (window.SMSound) { try { SMSound.play("pop"); } catch (e) {} }
+        popInfo("🍸", i18nT("Le hasard décide !"), `<p style="text-align:center;margin:.3rem 0;font-weight:700">${escapeHtml(pick.t)}</p><button class="btn-primary btn-block" id="eggShakeGo" style="margin-top:.5rem">🎲 ${i18nT("J'y vais !")}</button>`);
+        setTimeout(() => { const b = $("eggShakeGo"); if (b) b.onclick = () => { const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); pick.run(); }; }, 40);
+        awardSecretBadge("badge_shaker");
+      } catch (e) {}
+    }
+    (function eggShake() {
+      try {
+        if (typeof DeviceMotionEvent === "undefined") return;
+        if (typeof DeviceMotionEvent.requestPermission === "function") return; // iOS : on n'impose pas de pop-up permission
+        let last = 0, hits = 0, lastShake = 0, px = null, py = null, pz = null;
+        window.addEventListener("devicemotion", (e) => {
+          const a = e.accelerationIncludingGravity; if (!a || a.x == null) return;
+          const now = Date.now();
+          if (px != null) {
+            const d = Math.abs(a.x - px) + Math.abs(a.y - py) + Math.abs(a.z - pz);
+            if (d > 38 && now - last > 120) { hits++; last = now; }
+            if (now - last > 1400) hits = 0;
+            if (hits >= 3 && now - lastShake > 30000) { hits = 0; lastShake = now; _eggShakeResult(); }
+          }
+          px = a.x; py = a.y; pz = a.z;
+        });
+      } catch (e) {}
+    })();
+
+    // 🌠 MINUIT PILE — ouvrir l'app entre 00:00 et 00:05 : pluie d'étoiles filantes.
+    function _eggMidnight() {
+      try {
+        const n = new Date();
+        if (n.getHours() !== 0 || n.getMinutes() >= 5) return;
+        const day = n.toISOString().slice(0, 10);
+        if (localStorage.getItem("sm_egg_midnight") === day) return;
+        localStorage.setItem("sm_egg_midnight", day);
+        const w = document.createElement("div"); w.className = "egg-stars";
+        w.innerHTML = Array.from({ length: 9 }, (_, i) => `<span style="left:${6 + i * 11}%;animation-delay:${(i * 0.3).toFixed(1)}s">🌠</span>`).join("");
+        document.body.appendChild(w); setTimeout(() => w.remove(), 7000);
+        if (typeof toast === "function") toast("🌠", i18nT("Minuit pile · fais un vœu, noctambule…"), null, { low: true });
+        awardSecretBadge("badge_midnight");
+      } catch (e) {}
+    }
+
+    // 🔥 FLAMME 30 JOURS — série ≥30 : l'avatar s'embrase (profil + badge joueur).
+    function applyStreakFlame() {
+      try {
+        let st = {}; try { st = JSON.parse(localStorage.getItem("sm_streak_" + (myUserId || "x")) || "{}") || {}; } catch (e) {}
+        const on = (st.count || 0) >= 30;
+        document.body.classList.toggle("streak-flame", on);
+        if (on) awardSecretBadge("badge_streak30");
+      } catch (e) {}
+    }
+
+    // Lancés quand le profil est chargé (cf. appel à côté de syncHostRequest).
+    function initEasterEggs() {
+      if (window._smEggsInit) return; window._smEggsInit = true;
+      _eggBirthday(); _eggMidnight(); applyStreakFlame();
+    }
+
     /* ================= SON DE L'INTERFACE (WebAudio, 100% libre de droit) =================
        Tous les sons sont SYNTHÉTISÉS à la volée (aucun fichier audio externe) → aucun
        droit d'auteur. Activable/désactivable dans Paramètres (clé sm_sound). */
@@ -14341,6 +14568,15 @@
       // · Hôte —
       "Tu es hôte SunMates": "You're a SunMates host", "Demande en cours": "Request pending", "Devenir hôte SunMates": "Become a SunMates host",
       "✕ Annuler ma demande": "✕ Cancel my request",
+      // 🥚 (textes d'eggs : visibles seulement quand l'egg se déclenche)
+      "Golden Hour ! L'app se dore au soleil pendant 1 h ✨": "Golden Hour! The app basks in gold for 1 h ✨",
+      "Une baleine te salue… puis replonge dans le grand bleu": "A whale says hi… then dives back into the big blue",
+      "Joyeux anniversaire !": "Happy birthday!",
+      "Toute l'équipe SunMates te souhaite une journée dorée, {n} ☀️ Que cette nouvelle année t'emmène loin.": "The whole SunMates team wishes you a golden day, {n} ☀️ May this new year take you far.",
+      "Pèlerin·e : tu es au pied de {m} ! Quel voyage…": "Pilgrim: you're standing at {m}! What a journey…",
+      "Le hasard décide !": "Chance decides!",
+      "J'y vais !": "I'm going!",
+      "Minuit pile · fais un vœu, noctambule…": "Midnight sharp · make a wish, night owl…",
       "Demande annulée · tu peux la refaire quand tu veux 💛": "Request cancelled · you can send it again any time 💛",
       "La demande n'est pas partie, réessaie dans un instant.": "The request didn't go through, try again in a moment.",
       // · Profil / photo / vérif —
