@@ -114,8 +114,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=428"></script>
-  <script src="sunmates-icons.js?v=428"></script>
+  <script src="sunmates-badges.js?v=429"></script>
+  <script src="sunmates-icons.js?v=429"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -1198,7 +1198,7 @@
     .tile:hover .thumb { transform: translateY(-2px) scale(1.02); }
     /* POLISH VERRE + PEPS : reflet glossy marqué (verre brillant) + liseré clair + ombre interne
        basse pour le volume (fini le rendu pastel/plat), sans le halo blanc vertical moche. */
-    .tile .thumb { position: relative; overflow: hidden; filter: saturate(1.16) brightness(1.03); }
+    .tile .thumb { position: relative; overflow: hidden; filter: saturate(1.04) brightness(1.01); } /* néon coupé : la couleur émaillée DA suffit */
     .tile .thumb::before { content: ""; position: absolute; inset: 0; border-radius: inherit;
       background: linear-gradient(158deg, rgba(255,255,255,.62) 0%, rgba(255,255,255,.22) 15%, rgba(255,255,255,.03) 36%, rgba(255,255,255,0) 58%);
       box-shadow: inset 0 1.5px 0 rgba(255,255,255,.65), inset 0 -16px 26px rgba(0,0,0,.12);
@@ -2107,7 +2107,8 @@
     /* Tuiles ÉCLATANTES (accueil + sécurité) : couleurs pop + relief + gloss + emoji vivant (le peps demandé) */
     .tab-panel[data-panel="accueil"] .tile .thumb,
     .tab-panel[data-panel="securite"] .tile .thumb {
-      filter: drop-shadow(0 5px 9px rgba(90,25,10,.40)) saturate(1.28) brightness(1.06); position: relative; overflow: hidden; }
+      /* saturation calmée (1.28 → 1.06) : le « pop » vient des couleurs émaillées DA, pas d'un boost néon */
+      filter: drop-shadow(0 5px 9px rgba(90,25,10,.40)) saturate(1.06) brightness(1.02); position: relative; overflow: hidden; }
     .tab-panel[data-panel="accueil"] .tile .thumb::after,
     .tab-panel[data-panel="securite"] .tile .thumb::after {
       content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
@@ -2931,19 +2932,20 @@
     /* Mode nuit : contour NEUTRE (le --line chaud créait un liseré orange bizarre autour des tuiles) */
     body.theme-dusk .tile, body.theme-dusk .gcard { border-color: rgba(255,255,255,.09) !important; }
     .thumb { background: var(--accent-grad); color: #fff; background-repeat: no-repeat; background-size: cover; overflow: hidden; }
-    /* Retour Maxime (les VRAIES tuiles à thémer !) : faux appel, lampe torche, pin, sirène,
-       minuteur, bouée, police, hôpital… → couleurs en --c1/--c2, la couche « palette
-       malléable » (fin de feuille) les adapte à CHAQUE thème. */
-    .thumb.green { --c1:#22D3C5; --c2:#0E9E96; }
-    .thumb.blue  { --c1:#5BC0FF; --c2:#2D8FE0; }
-    .thumb.purp  { --c1:#C77DFF; --c2:#8A4FE0; }
-    .thumb.coral { --c1:#FFB37A; --c2:#FF6F3D; }
-    .thumb.lime  { --c1:#FFD15C; --c2:#E8961F; } /* ex-vert lime : ambre DA */
-    .thumb.indigo{ --c1:#9FA8FF; --c2:#5B63E0; }
-    .thumb.rose  { --c1:#FF9CC2; --c2:#F0568F; }
-    .thumb.gold  { --c1:#FFD15C; --c2:#F4A11E; }
-    .thumb.teal  { --c1:#7FE3D3; --c2:#17A99B; }
-    .thumb.red   { --c1:#FF8A6B; --c2:#E23B2E; }
+    /* Retour Maxime (bis) : les couleurs de BASE elles-mêmes passent dans la DA « émaillée »
+       SunMates (mêmes familles bijou que les pastilles de Jeux) — fini le néon bonbon
+       bleu-ciel/violet-flashy/rose-barbie, MÊME EN MODE JOUR. La couche « palette malléable »
+       (fin de feuille) les décline ensuite en nuit / hiver / tropiques. */
+    .thumb.green { --c1:#2BC4A8; --c2:#128F7C; } /* turquoise bijou (zéro vert criard) */
+    .thumb.blue  { --c1:#5E74E8; --c2:#3641B8; } /* bleu-indigo nuit (famille classement) */
+    .thumb.purp  { --c1:#9B7BFF; --c2:#6638D6; } /* violet bijou (famille jeux) */
+    .thumb.coral { --c1:#FF9A5C; --c2:#E8631F; } /* corail braise (famille solo) */
+    .thumb.lime  { --c1:#FFC93C; --c2:#D98414; } /* ambre doré */
+    .thumb.indigo{ --c1:#8A5CFF; --c2:#5028B0; } /* indigo crépuscule (famille couronne) */
+    .thumb.rose  { --c1:#FF6FA5; --c2:#D63A78; } /* framboise (famille coupons) */
+    .thumb.gold  { --c1:#FFC93C; --c2:#E8961F; } /* or franc */
+    .thumb.teal  { --c1:#4ED8B8; --c2:#149E8C; } /* lagon émaillé */
+    .thumb.red   { --c1:#FF5A4D; --c2:#C9281F; } /* corail-rouge d'alerte */
     .thumb.green, .thumb.blue, .thumb.purp, .thumb.coral, .thumb.lime, .thumb.indigo, .thumb.rose, .thumb.gold, .thumb.teal, .thumb.red {
       background: linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))) !important; }
 
@@ -3389,28 +3391,38 @@
     .egg-savane .egs-acacia { position: absolute; bottom: calc(54px + env(safe-area-inset-bottom, 0px)); opacity: .96; }
     .egg-savane .egs-acacia.a1 { left: 6%; }
     .egg-savane .egs-acacia.a2 { right: 8%; transform: scale(.62); transform-origin: bottom; }
-    /* La petite troupe : traversée sur la ligne d'horizon + trottinement (rebond du corps) */
+    /* La petite troupe : SILHOUETTES sur la ligne d'horizon (refonte design) — traversée +
+       léger roulis du corps + VRAIE marche 2 temps (deux jeux de pattes alternés). */
     .egg-savane .egs-walk { position: absolute; left: -16%; bottom: calc(46px + env(safe-area-inset-bottom, 0px));
-      animation-name: egsCross; animation-timing-function: linear; animation-fill-mode: forwards;
-      filter: drop-shadow(0 4px 6px rgba(40,20,5,.45)); }
-    .egg-savane .egs-walk svg { animation: egsTrot .42s ease-in-out infinite alternate; }
+      animation-name: egsCross; animation-timing-function: linear; animation-fill-mode: forwards; }
+    .egg-savane .egs-walk svg { animation: egsTrot .46s ease-in-out infinite alternate; }
     @keyframes egsCross { from { left: -16%; } to { left: 106%; } }
-    @keyframes egsTrot { from { transform: translateY(0) rotate(-1.5deg); } to { transform: translateY(-4px) rotate(1.5deg); } }
+    @keyframes egsTrot { from { transform: translateY(0) rotate(-1deg); } to { transform: translateY(-2.5px) rotate(1deg); } }
+    .egg-savane .egs-walk .lgA { animation: egsStepA .46s steps(1, end) infinite; }
+    .egg-savane .egs-walk .lgB { opacity: 0; animation: egsStepB .46s steps(1, end) infinite; }
+    @keyframes egsStepA { 0%, 49.9% { opacity: 1; } 50%, 100% { opacity: 0; } }
+    @keyframes egsStepB { 0%, 49.9% { opacity: 0; } 50%, 100% { opacity: 1; } }
     .egg-savane .egs-bird { position: absolute; left: -8%; animation: egsBird 6.4s linear forwards; }
     @keyframes egsBird { 0% { left: -8%; transform: translateY(0) scale(1); } 30% { transform: translateY(-14px) scale(.92); } 60% { transform: translateY(5px) scale(1.04); } 100% { left: 106%; transform: translateY(-10px) scale(.9); } }
     /* 🎈 Là-haut : la VRAIE tuile « À la maison » décolle, pendue à des ballons vectoriels */
-    .egg-flyhome { position: fixed; z-index: 99998; pointer-events: none; animation: efhFly 5s ease-in forwards; }
+    .egg-flyhome { position: fixed; z-index: 99998; pointer-events: none; animation: efhFly 5.6s ease-in forwards; }
     @keyframes efhFly {
-      0% { transform: translate(0,0) rotate(0deg); opacity: 1; }
-      12% { transform: translate(6px,-12px) rotate(-2deg); }
-      35% { transform: translate(-10px,-32vh) rotate(3deg); }
-      60% { transform: translate(10px,-62vh) rotate(-3deg); }
+      /* 1. la tuile S'AFFAISSE d'abord (la grappe se déploie, bien visible)… 2. puis l'envol */
+      0% { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
+      16% { transform: translate(3px,32px) rotate(-1.4deg) scale(1); }
+      26% { transform: translate(-2px,22px) rotate(1.2deg) scale(1); }
+      44% { transform: translate(-9px,-26vh) rotate(2.6deg) scale(.99); }
+      66% { transform: translate(9px,-58vh) rotate(-2.6deg) scale(.96); }
       88% { opacity: 1; }
-      100% { transform: translate(-4px,-118vh) rotate(5deg); opacity: 0; }
+      100% { transform: translate(-5px,-118vh) rotate(4deg) scale(.9); opacity: 0; }
     }
-    .efh-balloons { position: absolute; left: 50%; top: -50px; transform: translateX(-50%); display: flex; align-items: flex-end; gap: 0; }
-    .efh-balloons span { display: inline-block; animation: efhSway 1.6s ease-in-out infinite alternate; filter: drop-shadow(0 4px 7px rgba(0,0,0,.18)); }
-    @keyframes efhSway { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+    /* GRAPPE de ballons façon Là-haut (refonte design) : 8 ballons en bouquet, ficelles vers un
+       nœud, double suspension vers la tuile · balancement à 2 niveaux (grappe + chaque ballon). */
+    .efh-cluster { position: absolute; left: 50%; top: -162px; transform: translateX(-50%); transform-origin: 50% 100%;
+      animation: efhSway 2.8s ease-in-out infinite alternate; filter: drop-shadow(0 10px 16px rgba(90,35,15,.28)); }
+    .efh-cluster .efb { animation: efbBob 2.2s ease-in-out infinite alternate; transform-origin: 85px 134px; transform-box: view-box; }
+    @keyframes efbBob { from { transform: rotate(-1.7deg); } to { transform: rotate(1.7deg); } }
+    @keyframes efhSway { from { transform: translateX(-50%) rotate(-3.2deg); } to { transform: translateX(-50%) rotate(3.2deg); } }
     .efh-back { animation: efhBack .7s cubic-bezier(.34,1.56,.64,1); }
     @keyframes efhBack { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     /* 🎅 Décembre : bonnet sur les pastilles de la carte */
@@ -9720,6 +9732,10 @@
     }
     function playGame(key) {
       const g = CLIENT_GAMES.find((x) => x.key === key); if (!g) return;
+      // FIX « bug d'affichage qui pop » : la feuille Jeux restait OUVERTE sous la modale du
+      // mini-jeu → double voile sombre + deux cartes empilées. On la ferme proprement
+      // (même recette que « Défier un Mate » v386).
+      { const sh = $("jeuxSheet"); if (sh) sh.classList.add("hidden"); }
       const reBtn = "<button class='btn-accent btn-block' id='gameAgain' style='margin-top:1rem'>🔄 Rejouer</button>"
         + "<button class='btn-ghost btn-block' id='gameChallenge' style='margin-top:.4rem'>🤝 " + i18nT("Défier un Mate") + "</button>";
       const wireChallenge = (scoreTxt) => { const c = $("gameChallenge"); if (c) c.onclick = () => challengeMate(g.name, scoreTxt || ""); };
@@ -15015,28 +15031,37 @@
           // main dans la DA, créations maison) trottinent en bas de l'écran sous un halo doré.
           if (v === "hakuna matata") {
             if (!_eggCool("hakuna", 60000)) return;
-            const LION = '<svg viewBox="0 0 64 44" width="62" height="43"><defs><linearGradient id="eglio" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E8A53C"/><stop offset="100%" stop-color="#C97F22"/></linearGradient></defs>'
-              + '<path d="M54 26c4-2 7-1 8 1-2 2-5 3-8 2z" fill="#C97F22"/>'
-              + '<ellipse cx="36" cy="30" rx="20" ry="11" fill="url(#eglio)"/>'
-              + '<g fill="#A55E1F"><ellipse cx="28" cy="41" rx="3" ry="2.4"/><ellipse cx="44" cy="41" rx="3" ry="2.4"/></g>'
-              + '<circle cx="16" cy="19" r="12" fill="#A55E1F"/><circle cx="16" cy="19" r="7.5" fill="#F4C465"/>'
-              + '<circle cx="13.5" cy="17.5" r="1.3" fill="#3A2410"/><ellipse cx="19" cy="21" rx="2" ry="1.6" fill="#C97F22"/></svg>';
-            const PHACO = '<svg viewBox="0 0 56 40" width="50" height="36"><defs><linearGradient id="egpho" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#B07A6E"/><stop offset="100%" stop-color="#8D5B52"/></linearGradient></defs>'
-              + '<path d="M50 17c2-4 4-5 6-3-1 3-3 5-6 6z" fill="#8D5B52"/>'
-              + '<ellipse cx="30" cy="26" rx="17" ry="10" fill="url(#egpho)"/>'
-              + '<g fill="#6E443C"><ellipse cx="22" cy="35.5" rx="2.8" ry="2.2"/><ellipse cx="38" cy="35.5" rx="2.8" ry="2.2"/></g>'
-              + '<path d="M14 13l3.5-6 2.5 5z" fill="#8D5B52"/>'
-              + '<circle cx="12" cy="21" r="8" fill="#B07A6E"/>'
-              + '<rect x="1.5" y="21.5" width="9" height="6.5" rx="3.2" fill="#8D5B52"/>'
-              + '<path d="M8 28c-2 2-4 2.4-5.5 1.4" stroke="#F4E7D2" stroke-width="2" stroke-linecap="round" fill="none"/>'
-              + '<circle cx="11" cy="18.5" r="1.2" fill="#2E1A12"/></svg>';
-            const SURIC = '<svg viewBox="0 0 24 40" width="22" height="37"><defs><linearGradient id="egsur" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E3BC84"/><stop offset="100%" stop-color="#C49659"/></linearGradient></defs>'
-              + '<path d="M6.5 6.5l1.6-3M17.5 6.5l-1.6-3" stroke="#C49659" stroke-width="2" stroke-linecap="round"/>'
-              + '<ellipse cx="12" cy="26" rx="7" ry="11" fill="url(#egsur)"/>'
-              + '<path d="M5.5 24c-2 1-3 3-3 5.5" stroke="#C49659" stroke-width="2.4" stroke-linecap="round" fill="none"/>'
-              + '<circle cx="12" cy="10" r="6" fill="#E3BC84"/>'
-              + '<circle cx="9.8" cy="9" r="1.1" fill="#2E1A12"/><circle cx="14.4" cy="9" r="1.1" fill="#2E1A12"/><ellipse cx="12" cy="12.2" rx="1.3" ry="1" fill="#7A4E26"/>'
-              + '<g fill="#A87B45"><ellipse cx="9" cy="37" rx="2.4" ry="1.9"/><ellipse cx="15" cy="37" rx="2.4" ry="1.9"/></g></svg>';
+            // SILHOUETTES iconiques (refonte design) : profils noirs sur le couchant, façon
+            // « crête de savane » — la beauté vient de la silhouette, pas du cartoon coloré.
+            // Chaque personnage a DEUX jeux de pattes (.lgA/.lgB) alternés = vraie marche 2 temps.
+            const F = "#2A1505";
+            const LION = `<svg viewBox="0 0 122 66" width="104" height="56"><g fill="${F}">`
+              + `<path d="M16 32C9 25 10 15 19 12" stroke="${F}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="19" cy="11" r="5.4"/>`
+              + '<ellipse cx="52" cy="40" rx="31" ry="13"/><circle cx="77" cy="36" r="12"/>'
+              + '<circle cx="89" cy="27" r="16"/><circle cx="77" cy="17" r="8"/><circle cx="99" cy="17" r="7"/><circle cx="102" cy="31" r="8"/><circle cx="88" cy="11" r="7"/><circle cx="74" cy="30" r="9"/>'
+              + '<circle cx="94" cy="25" r="9"/><path d="M101 20l15 5-2.5 6c-4 2.4-9 1.6-13-.6z"/>'
+              + '<path d="M85 9l4.5-7 5 5.5z"/><path d="M95 8l5-5 3.5 6z"/>'
+              + '<g class="lgA"><path d="M67 48l8 14 4.5-1.6-7-14z"/><path d="M79 48l-1 15h4.5l2.5-15z"/><path d="M33 48l-7 14 4.5 2 7-15z"/><path d="M45 48l1 15h4.5l.5-15z"/></g>'
+              + '<g class="lgB"><path d="M69 48l-2 15h4.5l3-15z"/><path d="M80 48l7 14 4-2-6-14z"/><path d="M36 48l1 15h4.5l1-15z"/><path d="M47 48l-6 14 4 2 7-14z"/></g>'
+              + "</g></svg>";
+            const PHACO = `<svg viewBox="0 0 94 58" width="70" height="43"><g fill="${F}">`
+              + `<path d="M20 26L12 7" stroke="${F}" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="11.5" cy="6" r="3.4"/>`
+              + '<ellipse cx="42" cy="34" rx="23" ry="13"/>'
+              + '<path d="M26 23q10-9 32-6l-3 8-28 4z"/>'
+              + '<circle cx="66" cy="30" r="10"/><path d="M71 26l16 3.5-1.2 8-14.5-.5z"/>'
+              + `<path d="M83 36q7-1 9-8" stroke="${F}" stroke-width="3" stroke-linecap="round" fill="none"/>`
+              + '<path d="M61 19l3-8 5.5 6.5z"/><path d="M70 18l5.5-6 3 8z"/>'
+              + '<g class="lgA"><path d="M52 44l5 12 4-1.4-4.5-12z"/><path d="M28 44l-5 12 4 1.6 5.5-12z"/></g>'
+              + '<g class="lgB"><path d="M54 44l-1.5 13h4.2l2.3-13z"/><path d="M31 44l.5 13h4.2l1-13z"/></g>'
+              + "</g></svg>";
+            const SURIC = `<svg viewBox="0 0 36 58" width="27" height="44"><g fill="${F}">`
+              + `<path d="M9 40Q1 35 4 24" stroke="${F}" stroke-width="3" stroke-linecap="round" fill="none"/>`
+              + '<ellipse cx="18" cy="32" rx="8.5" ry="13"/><circle cx="18" cy="13" r="7"/>'
+              + '<path d="M23 10l9 3.5-1.8 4.8-7.5-1.6z"/><path d="M12 7l2.5-5.5 4 4.4z"/>'
+              + '<path d="M13 26l-6.5 7 2.6 2.6 6.4-6.4z"/>'
+              + '<g class="lgA"><path d="M14 43l-3.5 12.5 4 1 3.5-12.5z"/><path d="M21 43l4.5 11.5 3.8-1.6-3.6-11.4z"/></g>'
+              + '<g class="lgB"><path d="M15 43l.6 13h4.2l.2-13z"/><path d="M22 43l-2.2 13h4.2l2.2-13z"/></g>'
+              + "</g></svg>";
             // Acacia en silhouette (dessiné main) : tronc fourchu + canopée plate
             const ACACIA = '<svg class="egs-acacia a1" viewBox="0 0 110 78" width="120" height="85">'
               + '<path d="M52 78V46l-10-13 7 3 6-11 6 11 7-3-10 13v32z" fill="#3E2210"/>'
@@ -15047,9 +15072,9 @@
               + '<div class="egs-sun">' + EGG_SUN_SVG(110) + "</div>"
               + ACACIA + ACACIA.replace('class="egs-acacia a1"', 'class="egs-acacia a2"')
               + '<div class="egs-ground"></div><div class="egs-grass"></div>'
-              + `<span class="egs-walk" style="animation-duration:6.2s">${LION}</span>`
-              + `<span class="egs-walk" style="animation-duration:6.8s;animation-delay:.7s">${PHACO}</span>`
-              + `<span class="egs-walk" style="animation-duration:7.2s;animation-delay:1.3s">${SURIC}</span>`
+              + `<span class="egs-walk" style="animation-duration:7.4s;animation-delay:1s">${LION}</span>`
+              + `<span class="egs-walk" style="animation-duration:6.9s;animation-delay:.5s">${PHACO}</span>`
+              + `<span class="egs-walk" style="animation-duration:6.4s">${SURIC}</span>`
               + Array.from({ length: 3 }, (_, i) => `<svg class="egs-bird" style="top:${13 + i * 7}%;animation-delay:${(i * 0.7).toFixed(1)}s" viewBox="0 0 28 12" width="${24 - i * 4}" height="${10 - i}"><path d="M2 9Q8 1 14 9Q20 1 26 9" stroke="#5C3414" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>`).join("");
             document.body.appendChild(w);
             if (typeof toast === "function") toast("🦁", i18nT("Hakuna matata · mais quelle phrase magnifique !"), null, { low: true });
@@ -15130,6 +15155,19 @@
 
     // 🎈 LÀ-HAUT — 5 taps rapides sur « À la maison » : la VRAIE tuile décolle, accrochée à des
     // ballons vectoriels, et DISPARAÎT de l'accueil pendant 1 minute (elle revient en douceur).
+    // Grappe de ballons « Là-haut » (refonte design) : bouquet de 8 ballons dégradés DA,
+    // ficelles vers un nœud + double suspension vers la tuile. Construite en SVG à la volée.
+    function _efhCluster() {
+      const C = [["#FFC1A6", "#FF7A59", "#C94B30"], ["#FFE9A8", "#FFC93C", "#D98414"], ["#FFB3C5", "#F2607E", "#C92D55"], ["#BDF0E2", "#4ED8B8", "#149E8C"], ["#FFE3C4", "#FFB37A", "#E8763B"], ["#FFF7E6", "#FFE3B0", "#E8B468"]];
+      const B = [[85, 62, 26, 30, 0, 0], [52, 56, 19, 22, 1, .3], [118, 58, 20, 23, 2, .55], [66, 32, 16, 19, 3, .8], [104, 30, 17, 20, 4, 1.05], [85, 18, 14, 17, 5, 1.3], [38, 70, 12, 14, 2, .45], [132, 68, 12, 14, 1, .7]];
+      const defs = C.map((c, i) => `<radialGradient id="efb${i}" cx="38%" cy="30%" r="78%"><stop offset="0%" stop-color="${c[0]}"/><stop offset="55%" stop-color="${c[1]}"/><stop offset="100%" stop-color="${c[2]}"/></radialGradient>`).join("");
+      const strings = B.map((b) => `<path d="M${b[0]} ${b[1] + b[3] + 1} Q ${(b[0] + 85) / 2} ${b[1] + b[3] + 24} 85 134" stroke="rgba(80,35,15,.5)" stroke-width="1.1" fill="none"/>`).join("");
+      const balloons = B.map((b) => `<g class="efb" style="animation-delay:${b[5]}s"><ellipse cx="${b[0]}" cy="${b[1]}" rx="${b[2]}" ry="${b[3]}" fill="url(#efb${b[4]})"/><path d="M${b[0] - 3} ${b[1] + b[3] - 1} L${b[0]} ${b[1] + b[3] + 4} L${b[0] + 3} ${b[1] + b[3] - 1} z" fill="url(#efb${b[4]})"/><ellipse cx="${(b[0] - b[2] * .34).toFixed(1)}" cy="${(b[1] - b[3] * .4).toFixed(1)}" rx="${(b[2] * .26).toFixed(1)}" ry="${(b[3] * .32).toFixed(1)}" fill="rgba(255,255,255,.5)"/></g>`).join("");
+      return `<svg viewBox="0 0 170 152" width="190" height="170" style="overflow:visible"><defs>${defs}</defs>${strings}${balloons}`
+        + '<circle cx="85" cy="134" r="2.6" fill="#5A2A12"/>'
+        + '<path d="M85 134 Q76 142 66 151" stroke="rgba(80,35,15,.6)" stroke-width="1.3" fill="none"/>'
+        + '<path d="M85 134 Q94 142 104 151" stroke="rgba(80,35,15,.6)" stroke-width="1.3" fill="none"/></svg>';
+    }
     (function eggBalloons() {
       const btn = document.querySelector('#homeModeSwitch button[data-mode="home"]'); if (!btn) return;
       let taps = 0, t0 = 0;
@@ -15144,16 +15182,13 @@
           const ghost = document.createElement("div");
           ghost.className = "egg-flyhome";
           ghost.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;`;
-          ghost.innerHTML = '<div class="efh-balloons">'
-            + '<span style="animation-delay:0s">' + EGG_BALLOON_SVG("#FF7A59", "#D8553A", 30) + "</span>"
-            + '<span style="animation-delay:.25s;margin-top:-8px">' + EGG_BALLOON_SVG("#FFC93C", "#DBA413", 34) + "</span>"
-            + '<span style="animation-delay:.5s">' + EGG_BALLOON_SVG("#36C495", "#179E8C", 28) + "</span></div>";
+          ghost.innerHTML = '<div class="efh-cluster">' + _efhCluster() + "</div>";
           const clone = btn.cloneNode(true);
           clone.style.cssText = "width:100%;height:100%;margin:0;pointer-events:none;";
           ghost.appendChild(clone);
           document.body.appendChild(ghost);
           btn.style.visibility = "hidden"; // la tuile quitte VRAIMENT l'écran d'accueil
-          setTimeout(() => ghost.remove(), 5200);
+          setTimeout(() => ghost.remove(), 5800);
           setTimeout(() => { btn.style.visibility = ""; btn.classList.add("efh-back"); setTimeout(() => btn.classList.remove("efh-back"), 750); }, 60000);
           if (window.SMSound) { try { SMSound.play("whoosh"); } catch (e) {} }
           if (typeof toast === "function") toast("🎈", i18nT("L'aventure est là-dehors ! (la maison revient dans une minute…)"), null, { low: true });
