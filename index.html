@@ -111,8 +111,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=421"></script>
-  <script src="sunmates-icons.js?v=421"></script>
+  <script src="sunmates-badges.js?v=422"></script>
+  <script src="sunmates-icons.js?v=422"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -827,9 +827,10 @@
     /* ------------------------- Liste de lieux ----------------------- */
     /* Démo guidée automatique (barre de narration) */
     .ad-bar { position: fixed; left: 50%; bottom: calc(.45rem + env(safe-area-inset-bottom)); transform: translateX(-50%); width: calc(100% - 1.2rem); max-width: 448px; z-index: var(--z-demo);
-      background: linear-gradient(135deg, #2a1850, #160b2e); color: #fff; border-radius: 18px;
+      background: linear-gradient(135deg, #54232C, #2E1118); color: #fff; border-radius: 18px;
       padding: .85rem 1.05rem; box-shadow: 0 18px 44px rgba(0,0,0,.5); animation: adIn .35s ease; transition: opacity .35s ease; }
-    /* La barre de démo SUIT le thème (texte clair gardé : fonds profonds dans les 4 cas) */
+    /* #18 : la barre suit VRAIMENT le thème — JOUR = braise sunset (le violet sombre d'avant
+       était hors DA en plein jour) ; nuit/hiver/tropiques = leurs encres respectives. */
     body.theme-dusk .ad-bar { background: linear-gradient(135deg, var(--dcard4,#352a52), var(--dcard2,#241b35)); }
     body.theme-winter .ad-bar { background: linear-gradient(135deg, #29486B, #1B344F); }
     body.theme-tropic .ad-bar { background: linear-gradient(135deg, #1F5C49, #123F33); }
@@ -1095,29 +1096,27 @@
     .onb.show { animation: onbFade .4s ease; }
     @keyframes onbFade { from { opacity: 0; } to { opacity: 1; } }
     .onb-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-    .onb-bg .orb { position: absolute; border-radius: 50%; filter: blur(32px); opacity: .55; animation: orbFloat 9s ease-in-out infinite; will-change: transform; }
+    /* #20 : orbes SANS filter blur (le blur(32px) recalculé au 1er rendu faisait accrocher le
+       tout début) → dégradés radiaux pré-adoucis, même look, coût quasi nul. */
+    .onb-bg .orb { position: absolute; border-radius: 50%; opacity: .62; animation: orbFloat 9s ease-in-out infinite; will-change: transform; }
     .onb-bg.orb-paused .orb { animation-play-state: paused; } /* fige les orbes pendant le glissement de slide (anti-saccade) */
-    .onb-bg .o1 { width: 240px; height: 240px; background: #ff7e5f; top: -40px; left: -30px; }
-    /* Orbe du bas passé du bleu-violet au doré sunset (la « tache bleue » dénotait dans tous les modes) + plus discret */
-    .onb-bg .o2 { width: 200px; height: 200px; background: #ffc23d; bottom: -30px; right: -20px; animation-delay: -3s; opacity: .4; }
-    .onb-bg .o3 { width: 160px; height: 160px; background: #29d8c2; top: 42%; right: 26%; animation-delay: -6s; }
-    /* translate SEUL (pas de scale) : le flou n'est plus recalculé à chaque frame → fluide. */
+    .onb-bg .o1 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,126,95,.85) 0%, rgba(255,126,95,0) 62%); top: -70px; left: -60px; }
+    .onb-bg .o2 { width: 260px; height: 260px; background: radial-gradient(circle, rgba(255,194,61,.7) 0%, rgba(255,194,61,0) 62%); bottom: -60px; right: -50px; animation-delay: -3s; opacity: .45; }
+    .onb-bg .o3 { width: 210px; height: 210px; background: radial-gradient(circle, rgba(41,216,194,.7) 0%, rgba(41,216,194,0) 62%); top: 40%; right: 20%; animation-delay: -6s; }
+    /* translate SEUL (pas de scale) : rien n'est recalculé à chaque frame → fluide. */
     @keyframes orbFloat { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-22px,0); } }
-    .onb-card { position: relative; width: 100%; max-width: 420px; background: rgba(22,15,42,.34);
-      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,.22);
+    /* #20 : fond de carte FIXE (plus de backdrop-filter du tout → plus de « tuile qui fonce et
+       devient translucide » au moment du switch, et plus de latence GPU). */
+    .onb-card { position: relative; width: 100%; max-width: 420px; background: linear-gradient(180deg, rgba(24,16,46,.66), rgba(18,12,36,.72));
+      border: 1px solid rgba(255,255,255,.22);
       border-radius: 28px; padding: 2.4rem 1.6rem 1.4rem; color: #fff; box-shadow: 0 30px 80px rgba(0,0,0,.45); text-align: center; }
-    /* P2.1/P1.13 : pendant le glissement de slide, on COUPE le backdrop-filter (re-floute tout le fond à
-       chaque frame = saccade sur mobile) et on le remplace par un fond opaque équivalent → switch fluide.
-       Au repos, le frosted glass revient. */
-    .onb-card.onb-sliding { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(20,13,38,.78); }
-    .onb-skip { position: absolute; top: 1rem; right: 1.1rem; background: none; border: 0; color: rgba(255,255,255,.7); font-size: .82rem; cursor: pointer; }
+    .onb-skip { position: absolute; top: 1rem; right: 1.1rem; background: none; border: 0; color: rgba(255,255,255,.8); font-size: .82rem; cursor: pointer; }
     .onb-stage { position: relative; min-height: 280px; }
-    /* Glissement plus doux (courbe amortie) ; .fast = utilisateur pressé → transitions instantanées */
-    .onb-step { position: absolute; inset: 0; opacity: 0; transform: translateX(24px); transition: opacity .45s cubic-bezier(.22,1,.36,1), transform .45s cubic-bezier(.22,1,.36,1);
-
+    /* Glissement plus doux et plus COURT (#20 : la latence entre slides) ; .fast = pressé → instantané */
+    .onb-step { position: absolute; inset: 0; opacity: 0; transform: translateX(20px); transition: opacity .28s cubic-bezier(.22,1,.36,1), transform .28s cubic-bezier(.22,1,.36,1);
       pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; will-change: transform, opacity; backface-visibility: hidden; }
     .onb-step.active { opacity: 1; transform: none; pointer-events: auto; }
-    .onb-step.left { transform: translateX(-24px); }
+    .onb-step.left { transform: translateX(-20px); }
     .onb-stage.fast .onb-step { transition: none; }
     .onb-skip.hot { color: #ffd15c; font-weight: 800; text-decoration: underline; }
     .onb-emoji { font-size: 72px; margin-bottom: .8rem; filter: drop-shadow(0 10px 18px rgba(0,0,0,.4)); animation: floaty 3s ease-in-out infinite; }
@@ -7404,7 +7403,7 @@
       ["🚪 Connexion & onboarding", [
         ["🌍", "Choix de langue avant connexion", "FR/EN dès la page de login, mémorisé."],
         ["💼", "Onglet Pro", "Transforme la page en pitch B2B (sans identifiants), bouton Démarrer."],
-        ["🎬", "Onboarding du futur", "4 slides animées + visite guidée (spotlights) des 6 onglets."],
+        ["🎬", "Onboarding du futur", "6 slides animées + visite guidée (spotlights) des 6 onglets."],
         ["🎯", "Fin d'onboarding = CTA", "Bannière cliquable qui emmène choisir son pseudo."],
         ["🔒", "Profil privé par défaut", "Nouveau compte = hors classement tant qu'il n'opte pas."],
       ]],
@@ -7590,7 +7589,25 @@
     let adIdx = 0, adTimer = null, adPaused = false, adHideTimer = null, adThemeWasDusk = false;
     const A = (fn) => { try { fn(); } catch (e) {} };
     const adClick = (id) => { const e = $(id); if (e) A(() => e.click()); };
-    const adInto = (sel, ms, block) => setTimeout(() => { const e = document.querySelector(sel); if (e) A(() => e.scrollIntoView({ block: block || "start", behavior: "smooth" })); }, ms || 350);
+    // #18 : l'élément cité doit finir AU MILIEU de la zone VISIBLE (la barre de démo en bas
+    // mange ~140 px → scrollIntoView seul laissait la cible trop basse, parfois sous la barre).
+    const adInto = (sel, ms, block) => setTimeout(() => {
+      const e = document.querySelector(sel); if (!e) return;
+      A(() => {
+        e.scrollIntoView({ block: block || "center", behavior: "smooth" });
+        setTimeout(() => {
+          try {
+            const bar = document.querySelector(".ad-bar");
+            const barTop = bar ? bar.getBoundingClientRect().top : window.innerHeight;
+            const vis = Math.min(barTop, window.innerHeight); // zone réellement visible
+            const r = e.getBoundingClientRect();
+            const want = (block === "start") ? 90 : Math.max(70, (vis - r.height) / 2);
+            const delta = r.top - want;
+            if (Math.abs(delta) > 24) window.scrollBy({ top: delta, behavior: "smooth" });
+          } catch (err) {}
+        }, 460);
+      });
+    }, ms || 350);
     const adDemoProfile = () => (typeof travelersCache !== "undefined" && travelersCache && travelersCache[0]) || Object.values(travelerMap).find((p) => p.is_demo && !String(p.id).startsWith("ia-") && p.id !== myUserId) || travelerMap["ia-lina"];
     const adFirstCafe = () => (allCafes || []).find((c) => c.lat != null && c.lng != null);
     // Ferme tout ce qui pourrait rester ouvert entre deux scènes
@@ -7616,8 +7633,8 @@
         run: () => { adCleanup(); A(() => goToTab("accueil")); } },
       { title: "🔑 L'écran de connexion", text: "Le premier contact : un pitch clair, et trois entrées : Connexion, Inscription, et un espace Pro pour les établissements.", ms: 7000,
         run: () => { adCleanup(); A(() => { const p = $("appView"), a = $("authView"); if (p) show(p, false); if (a) show(a, true); if (typeof setAuthMode === "function") setAuthMode("login"); window.scrollTo({ top: 0 }); }); } },
-      { title: "✨ L'onboarding en arrivant", text: "Juste après l'inscription, l'app se présente toute seule en quatre étapes animées : rencontres, carte vivante, activités, et sécurité.", ms: 10500,
-        run: () => { adShowApp(); A(() => goToTab("accueil")); setTimeout(() => { if (typeof openOnboarding === "function") openOnboarding(); }, 400); [[1, 3000], [2, 5400], [3, 7800]].forEach(([s, t]) => setTimeout(() => { if (typeof showOnbStep === "function") showOnbStep(s); }, t)); } },
+      { title: "✨ L'onboarding en arrivant", text: "Juste après l'inscription, l'app se présente toute seule en six étapes animées : bienvenue, rencontres, carte vivante, activités, sécurité et c'est parti.", ms: 14500,
+        run: () => { adShowApp(); A(() => goToTab("accueil")); setTimeout(() => { if (typeof openOnboarding === "function") openOnboarding(); }, 400); [[1, 2600], [2, 4800], [3, 7000], [4, 9200], [5, 11400]].forEach(([s, t]) => setTimeout(() => { if (typeof showOnbStep === "function") showOnbStep(s); }, t)); } },
       { title: "💼 L'espace Pro (B2B)", text: "Cafés, co-livings, bars et hôtels demandent à être référencés comme lieux sûrs. Ils remplissent un devis directement dans l'app : visibilité, mise en avant et coupons sponsorisés. La piste de revenus B2B.", ms: 9000,
         run: () => { adCleanup(); A(() => { if (typeof openB2B === "function") openB2B("auth"); }); setTimeout(() => { if (typeof b2bScrollToForm === "function") b2bScrollToForm(); }, 3300); } },
       { title: "🗺️ Ta carte vivante", text: "L'accueil, c'est une seule carte qui montre tout autour de toi : lieux, Mates, activités et check-ins.", ms: 6500,
@@ -12581,16 +12598,10 @@
       const d = $("onbDots"); if (!d) return;
       d.innerHTML = Array.from({ length: ONB_STEPS }, (_, i) => `<i class="${i === 0 ? "on" : ""}"></i>`).join("");
     }
-    let _onbOrbT = null, _onbCardT = null;
     function showOnbStep(i) {
       onbStep = Math.max(0, Math.min(ONB_STEPS - 1, i));
-      // Anti-saccade : on fige les orbes floutées (blur 32px = lourd au repaint) pendant
-      // le glissement de la slide, puis on les relance (le GPU ne fait plus 2 anims lourdes à la fois).
-      const bg = document.querySelector(".onb-bg");
-      if (bg) { bg.classList.add("orb-paused"); if (_onbOrbT) clearTimeout(_onbOrbT); _onbOrbT = setTimeout(() => bg.classList.remove("orb-paused"), 480); }
-      // On coupe le backdrop-filter de la carte pendant le glissement (anti-saccade) puis on le rétablit.
-      const card = document.querySelector(".onb-card");
-      if (card) { card.classList.add("onb-sliding"); if (_onbCardT) clearTimeout(_onbCardT); _onbCardT = setTimeout(() => card.classList.remove("onb-sliding"), 420); }
+      // #20 : plus AUCUNE bascule de fond pendant le slide (les orbes sont des dégradés légers
+      // et la carte a un fond fixe) → fini la « tuile qui fonce/devient translucide » au switch.
       document.querySelectorAll("#onbStage .onb-step").forEach((s, idx) => {
         s.classList.toggle("active", idx === onbStep);
         s.classList.toggle("left", idx < onbStep);
@@ -12632,7 +12643,9 @@
         const now = performance.now();
         if (now - _onbLastTap < 900) { _onbFast++; } else { _onbFast = 0; }
         _onbLastTap = now;
-        if (_onbFast >= 2) { const st = document.querySelector(".onb-stage"); if (st) st.classList.add("fast"); const sk = $("onbSkip"); if (sk) sk.classList.add("hot"); }
+        // #20 : « Passer » ne devient plus DORÉ (Maxime : « pourquoi le passer est en gold ? »).
+        // Utilisateur pressé → on garde juste les transitions instantanées.
+        if (_onbFast >= 2) { const st = document.querySelector(".onb-stage"); if (st) st.classList.add("fast"); }
         if (onbStep >= ONB_STEPS - 1) { closeOnbSlides(); goToTab("accueil"); setTimeout(startTour, 320); } else showOnbStep(onbStep + 1);
       });
       const pv = $("onbPrev"); if (pv) pv.addEventListener("click", () => showOnbStep(onbStep - 1));
@@ -12692,6 +12705,10 @@
     function showTourStep(i) {
       if (i >= _activeTour.length) { endTour(); return; }
       tourIdx = i; const st = _activeTour[i];
+      // #21 : « Suivant » doit répondre AU DOIGT — on ne paie le délai de placement que si
+      // l'étape change réellement d'onglet (sinon la cible est déjà peinte : quasi instantané).
+      const curTab = (document.querySelector(".bottom-nav button.active") || { dataset: {} }).dataset.tab;
+      const tabChanges = !!(st.tab && st.tab !== curTab);
       if (st.tab && typeof goToTab === "function") goToTab(st.tab);
       if (st.view && typeof showJeuxView === "function" && /^jeux/.test(st.view)) showJeuxView(st.view);
       if (st.matesSeg && typeof showMatesSegment === "function") showMatesSegment(st.matesSeg);
@@ -12704,8 +12721,7 @@
       // La BULLE est toujours masquée le temps du placement (sinon « apparaît en haut puis redescend »).
       // Le SPOTLIGHT n'est masqué qu'à la 1re étape (ensuite il GLISSE de façon fluide vers la cible).
       { const sp = $("tourSpot"), pp = $("tourPop"); if (pp) pp.style.opacity = "0"; if (sp && i === 0) { sp.style.opacity = "0"; sp.classList.add("no-anim"); } }
-      // Délai CONSTANT (que l'étape change d'onglet ou pas) → vitesse de transition uniforme.
-      setTimeout(() => positionTour(st, i === 0), 210);
+      setTimeout(() => positionTour(st, i === 0), tabChanges ? 200 : 60);
     }
     function positionTour(st, isFirst) {
       const el = document.querySelector(st.sel), spot = $("tourSpot"), pop = $("tourPop");
@@ -15934,7 +15950,7 @@
       "FR/EN dès la page de login, mémorisé.": "FR/EN right from the login page, remembered.",
       "Transforme la page en pitch B2B (sans identifiants), bouton Démarrer.": "Turns the page into a B2B pitch (no credentials), Start button.",
       "Onboarding du futur": "Onboarding of the future",
-      "4 slides animées + visite guidée (spotlights) des 6 onglets.": "4 animated slides + guided tour (spotlights) of the 6 tabs.",
+      "6 slides animées + visite guidée (spotlights) des 6 onglets.": "6 animated slides + guided tour (spotlights) of the 6 tabs.",
       "Fin d'onboarding = CTA": "End of onboarding = CTA",
       "Bannière cliquable qui emmène choisir son pseudo.": "Clickable banner that takes you to pick your username.",
       "Profil privé par défaut": "Private profile by default",
@@ -16027,7 +16043,7 @@
       "🔑 L'écran de connexion": "🔑 The login screen",
       "Le premier contact : un pitch clair, et trois entrées : Connexion, Inscription, et un espace Pro pour les établissements.": "First impression: a clear pitch and three doors — Log in, Sign up, and a Pro space for venues.",
       "✨ L'onboarding en arrivant": "✨ Onboarding on arrival",
-      "Juste après l'inscription, l'app se présente toute seule en quatre étapes animées : rencontres, carte vivante, activités, et sécurité.": "Right after sign-up, the app introduces itself in four animated steps: meeting people, the living map, activities, and safety.",
+      "Juste après l'inscription, l'app se présente toute seule en six étapes animées : bienvenue, rencontres, carte vivante, activités, sécurité et c'est parti.": "Right after sign-up, the app introduces itself in six animated steps: welcome, meeting people, the living map, activities, safety and let's go.",
       "💼 L'espace Pro (B2B)": "💼 The Pro space (B2B)",
       "🗺️ Ta carte vivante": "🗺️ Your living map",
       "L'accueil, c'est une seule carte qui montre tout autour de toi : lieux, Mates, activités et check-ins.": "Home is one single map showing everything around you: places, Mates, activities and check-ins.",
