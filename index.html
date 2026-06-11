@@ -111,8 +111,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=411"></script>
-  <script src="sunmates-icons.js?v=411"></script>
+  <script src="sunmates-badges.js?v=412"></script>
+  <script src="sunmates-icons.js?v=412"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -3157,6 +3157,25 @@
       filter: drop-shadow(0 0 6px rgba(255,140,40,.8)); animation: eggFlame 1.1s ease-in-out infinite alternate; }
     @keyframes eggFlame { from { transform: scale(.92) rotate(-6deg); } to { transform: scale(1.1) rotate(6deg); } }
     body.streak-flame #profileAvatar { box-shadow: 0 0 0 2.5px rgba(255,150,50,.65), 0 0 18px rgba(255,140,40,.45); }
+    /* 🎮 Mode rétro 8-bit (Konami) : scanlines CRT + pixels + police machine, 10 min */
+    #retroFx { position: fixed; inset: 0; z-index: 99999; pointer-events: none;
+      background: repeating-linear-gradient(0deg, rgba(20,10,40,.10) 0 1px, transparent 1px 3px);
+      box-shadow: inset 0 0 120px rgba(40,10,60,.35); }
+    body.retro-8bit, body.retro-8bit * { font-family: "Courier New", ui-monospace, Consolas, monospace !important; letter-spacing: .01em; }
+    body.retro-8bit img, body.retro-8bit canvas, body.retro-8bit svg { image-rendering: pixelated; }
+    body.retro-8bit .app-shell { filter: saturate(1.35) contrast(1.06); }
+    /* 🦁 Hakuna matata : le trio trotte le long du bas de l'écran */
+    .egg-hakuna { position: fixed; inset: 0; z-index: 99998; pointer-events: none; }
+    .egg-hakuna span { position: absolute; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); left: -10%;
+      font-size: 2rem; animation: eggTrot 4.6s linear forwards; filter: drop-shadow(0 3px 6px rgba(0,0,0,.25)); }
+    @keyframes eggTrot { 0% { left: -10%; transform: translateY(0); } 25% { transform: translateY(-7px); } 50% { transform: translateY(0); } 75% { transform: translateY(-7px); } 100% { left: 106%; transform: translateY(0); } }
+    /* 🎈 Là-haut : les ballons (et la maison) s'envolent */
+    .egg-balloons { position: fixed; inset: 0; z-index: 99998; pointer-events: none; overflow: hidden; }
+    .egg-balloons span { position: absolute; bottom: -10%; opacity: 0; animation: eggRise 4.2s ease-in forwards; filter: drop-shadow(0 4px 8px rgba(0,0,0,.18)); }
+    @keyframes eggRise { 0% { opacity: 0; transform: translateY(0) rotate(-4deg); } 10% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; transform: translateY(-118vh) rotate(6deg); } }
+    /* 🎅 Décembre : bonnet sur les pastilles de la carte */
+    .epin { position: relative; }
+    .epin-xmas { position: absolute; top: -11px; right: -8px; font-size: .8rem; transform: rotate(20deg); }
 
     /* ====== MODES SAISON (#26) · activés par appui long 10 s sur le bouton thème ======
        L'âme SunMates (soleil, chaleur humaine) traduite pour les pays froids / la canicule.
@@ -7290,6 +7309,13 @@
         ["🍸", "Secousse cocktail", "Secouer le téléphone (Android) → le hasard propose une quête/un lieu + badge « Maître cocktail »."],
         ["🌠", "Minuit pile", "Ouvrir l'app entre 00:00 et 00:05 → pluie d'étoiles + badge « Noctambule » (1×/nuit)."],
         ["🔥", "Flamme 30 jours", "Série de 30 jours → l'avatar s'embrase (profil + badge joueur) + badge « Flamme éternelle »."],
+        ["🎮", "Code Konami", "↑↑↓↓←→←→BA (clavier) ou la même séquence en swipes → mode RÉTRO 8-bit 10 min + badge « Up Up Down Down »."],
+        ["🛸", "La réponse : 42", "Taper « 42 » dans la recherche accueil → hommage H2G2 + badge « Routard galactique »."],
+        ["🦁", "Hakuna matata", "Taper « hakuna matata » dans la recherche → le trio trotte en bas d'écran + badge « Sans souci »."],
+        ["⭐", "May the 4th", "Ouvrir l'app le 4 mai → clin d'œil Star Wars + badge « Padawan du voyage » (1×/an)."],
+        ["🎈", "Là-haut", "5 taps rapides sur le bouton « À la maison » → ballons + maison qui s'envolent + badge « L'aventure est là-dehors »."],
+        ["🚢", "Titanic", "Centrer la carte sur 41.73 N / 49.95 W (zoom ≥8) → 🚢+🧊 + badge « Roi du monde »."],
+        ["🎅", "Bonnets de décembre", "Tout décembre : les pastilles de la carte portent un bonnet (automatique, sans badge)."],
       ]],
     ];
     // Mappe une zone du catalogue vers l'onglet correspondant (pour la démo « ▶ Voir »).
@@ -11367,9 +11393,11 @@
 
     // Pastille emoji colorée comme marqueur (au lieu du marqueur bleu par défaut).
     function epinIcon(emoji, bg, extra) {
+      // 🎅 Décembre : les pastilles mettent leur bonnet (clin d'œil saisonnier, zéro réglage).
+      const xmas = (new Date().getMonth() === 11) ? '<span class="epin-xmas">🎅</span>' : "";
       return L.divIcon({
         className: "epin-wrap",
-        html: `<div class="epin ${extra || ""}" style="background:${bg}"><span>${emoji}</span></div>`,
+        html: `<div class="epin ${extra || ""}" style="background:${bg}"><span>${emoji}</span>${xmas}</div>`,
         iconSize: [32, 32], iconAnchor: [16, 30], popupAnchor: [0, -28],
       });
     }
@@ -11555,7 +11583,7 @@
         const _homeBase = smBaseLayer().addTo(homeLeaf);
         // Accès au moteur GL (sert à l'egg 🐋 : savoir si le centre de la carte est sur l'eau).
         window._homeGlMap = () => { try { return _homeBase.getMaplibreMap ? _homeBase.getMaplibreMap() : null; } catch (e) { return null; } };
-        homeLeaf.on("moveend", () => { try { if (typeof _eggWhaleCheck === "function") _eggWhaleCheck(); } catch (e) {} });
+        homeLeaf.on("moveend", () => { try { if (typeof _eggWhaleCheck === "function") _eggWhaleCheck(); if (typeof _eggTitanicCheck === "function") _eggTitanicCheck(); } catch (e) {} });
         homeLeaf.attributionControl.setPrefix(false).setPosition("bottomleft"); // retire le logo Leaflet, déplace à gauche
         try { homeLeaf.attributionControl.addAttribution("© OpenStreetMap · OpenFreeMap"); } catch (e) {} // mention légale OSM garantie
         try { if (homeLeaf.zoomControl) homeLeaf.zoomControl.setPosition("bottomright"); } catch (e) {} // libère le haut-gauche pour les outils en plein écran
@@ -14099,21 +14127,139 @@
       } catch (e) {}
     }
 
-    // ☀️ MOT MAGIQUE — taper « soleil » (ou sunshine/sunmates) dans la recherche de l'accueil.
-    (function eggSunWord() {
+    // ☀️ MOTS MAGIQUES — certains mots tapés dans la recherche de l'accueil réveillent des choses.
+    (function eggMagicWords() {
       const inp = $("homeSearch"); if (!inp) return;
       inp.addEventListener("input", () => {
         try {
           const v = (inp.value || "").trim().toLowerCase();
-          if (v !== "soleil" && v !== "sunshine" && v !== "sunmates") return;
-          if (window._sunFly) return; window._sunFly = true;
-          const d = document.createElement("div"); d.className = "egg-sun"; d.textContent = "☀️"; document.body.appendChild(d);
-          if (window.SMSound) { try { SMSound.play("star"); } catch (e) {} }
-          setTimeout(() => { d.remove(); window._sunFly = false; }, 3400);
-          awardSecretBadge("badge_sunword");
+          // ☀️ soleil : il traverse l'écran
+          if (v === "soleil" || v === "sunshine" || v === "sunmates") {
+            if (window._sunFly) return; window._sunFly = true;
+            const d = document.createElement("div"); d.className = "egg-sun"; d.textContent = "☀️"; document.body.appendChild(d);
+            if (window.SMSound) { try { SMSound.play("star"); } catch (e) {} }
+            setTimeout(() => { d.remove(); window._sunFly = false; }, 3400);
+            awardSecretBadge("badge_sunword");
+            return;
+          }
+          // 🛸 42 : la réponse à la grande question (H2G2 — la bible du voyageur)
+          if (v === "42") {
+            if (window._egg42) return; window._egg42 = true; setTimeout(() => { window._egg42 = false; }, 8000);
+            popInfo("🛸", i18nT("La réponse."), i18nT("« 42 : la réponse à la grande question sur la vie, l'univers et le reste. » Bon voyage galactique — et n'oublie jamais ta serviette 🧻✨"));
+            awardSecretBadge("badge_h2g2");
+            return;
+          }
+          // 🦁 hakuna matata : tous les soucis s'envolent
+          if (v === "hakuna matata") {
+            if (window._eggHak) return; window._eggHak = true;
+            const w = document.createElement("div"); w.className = "egg-hakuna";
+            w.innerHTML = '<span style="animation-delay:0s">🦁</span><span style="animation-delay:.35s">🐗</span><span style="animation-delay:.6s">🐭</span>';
+            document.body.appendChild(w);
+            if (typeof toast === "function") toast("🦁", i18nT("Hakuna matata · mais quelle phrase magnifique !"), null, { low: true });
+            setTimeout(() => { w.remove(); window._eggHak = false; }, 5200);
+            awardSecretBadge("badge_hakuna");
+            return;
+          }
         } catch (e) {}
       });
     })();
+
+    // 🎮 KONAMI — ↑↑↓↓←→←→BA au clavier, ou la même séquence en SWIPES sur mobile :
+    // l'app passe en mode RÉTRO 8-bit pendant 10 min (scanlines, pixels, police machine).
+    (function eggKonami() {
+      const SEQ_K = ["arrowup", "arrowup", "arrowdown", "arrowdown", "arrowleft", "arrowright", "arrowleft", "arrowright", "b", "a"];
+      const SEQ_S = ["u", "u", "d", "d", "l", "r", "l", "r"];
+      function applyRetro() {
+        try {
+          const until = +localStorage.getItem("sm_retro_until") || 0;
+          const on = Date.now() < until;
+          document.body.classList.toggle("retro-8bit", on);
+          let g = document.getElementById("retroFx");
+          if (on && !g) { g = document.createElement("div"); g.id = "retroFx"; document.body.appendChild(g); }
+          if (g) g.style.display = on ? "" : "none";
+          if (on) setTimeout(applyRetro, Math.min(until - Date.now() + 500, 600000));
+        } catch (e) {}
+      }
+      applyRetro();
+      function fire() {
+        try {
+          localStorage.setItem("sm_retro_until", String(Date.now() + 600000)); // 10 min
+          applyRetro();
+          if (window.SMSound) { try { SMSound.play("levelup"); } catch (e) {} }
+          if (typeof toast === "function") toast("🎮", i18nT("MODE RÉTRO DÉBLOQUÉ · bienvenue en 1988, voyageur·se"), null, { low: true });
+          awardSecretBadge("badge_konami");
+        } catch (e) {}
+      }
+      // Clavier (ordi)
+      let kbuf = [];
+      window.addEventListener("keydown", (e) => {
+        kbuf.push((e.key || "").toLowerCase()); if (kbuf.length > SEQ_K.length) kbuf.shift();
+        if (kbuf.join(",") === SEQ_K.join(",")) { kbuf = []; fire(); }
+      });
+      // Swipes (mobile) : on note la direction des glissements francs (>70 px)
+      let sbuf = [], sx = 0, sy = 0, st0 = 0;
+      window.addEventListener("touchstart", (e) => { const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st0 = Date.now(); }, { passive: true });
+      window.addEventListener("touchend", (e) => {
+        try {
+          const t = e.changedTouches[0]; const dx = t.clientX - sx, dy = t.clientY - sy;
+          if (Date.now() - st0 > 700) return;
+          const ax = Math.abs(dx), ay = Math.abs(dy);
+          let dir = null;
+          if (ax > 70 && ax > ay * 1.6) dir = dx > 0 ? "r" : "l";
+          else if (ay > 70 && ay > ax * 1.6) dir = dy > 0 ? "d" : "u";
+          if (!dir) return;
+          sbuf.push(dir); if (sbuf.length > SEQ_S.length) sbuf.shift();
+          if (sbuf.join("") === SEQ_S.join("")) { sbuf = []; fire(); }
+        } catch (err) {}
+      }, { passive: true });
+    })();
+
+    // 🎈 LÀ-HAUT — 5 taps rapides sur le bouton « À la maison » : la maison s'envole.
+    (function eggBalloons() {
+      const btn = document.querySelector('#homeModeSwitch button[data-mode="home"]'); if (!btn) return;
+      let taps = 0, t0 = 0;
+      btn.addEventListener("click", () => {
+        const now = Date.now();
+        if (now - t0 > 3000) { taps = 0; t0 = now; }
+        if (++taps < 5) return;
+        taps = 0;
+        try {
+          const w = document.createElement("div"); w.className = "egg-balloons";
+          w.innerHTML = Array.from({ length: 11 }, (_, i) => `<span style="left:${5 + i * 9}%;animation-delay:${(i * 0.18).toFixed(2)}s;font-size:${(1.3 + (i % 3) * 0.5).toFixed(1)}rem">🎈</span>`).join("") + '<span style="left:46%;animation-delay:.9s;font-size:1.6rem">🏠</span>';
+          document.body.appendChild(w); setTimeout(() => w.remove(), 6500);
+          if (typeof toast === "function") toast("🎈", i18nT("L'aventure est là-dehors !"), null, { low: true });
+          awardSecretBadge("badge_adventure");
+        } catch (e) {}
+      });
+    })();
+
+    // 🚢 TITANIC — naviguer sur la carte jusqu'aux coordonnées du naufrage (41.73 N, 49.95 W).
+    function _eggTitanicCheck() {
+      try {
+        if (!homeLeaf || homeLeaf.getZoom() < 8) return;
+        if (localStorage.getItem("sm_egg_titanic")) return;
+        const c = homeLeaf.getCenter();
+        if (typeof haversineKm !== "function" || haversineKm({ lat: c.lat, lng: c.lng }, { lat: 41.7325, lng: -49.9469 }) > 40) return;
+        localStorage.setItem("sm_egg_titanic", "1");
+        const mk = L.marker([41.7325, -49.9469], { icon: L.divIcon({ className: "egg-whale-wrap", html: '<div class="egg-whale">🚢</div>', iconSize: [54, 54], iconAnchor: [27, 27] }), zIndexOffset: 1500 }).addTo(homeLeaf);
+        const ice = L.marker([41.76, -49.91], { icon: L.divIcon({ className: "egg-whale-wrap", html: '<div class="egg-whale" style="animation-delay:.4s">🧊</div>', iconSize: [44, 44], iconAnchor: [22, 22] }), zIndexOffset: 1490 }).addTo(homeLeaf);
+        setTimeout(() => { try { homeLeaf.removeLayer(mk); homeLeaf.removeLayer(ice); } catch (e) {} }, 15000);
+        if (typeof toast === "function") toast("🚢", i18nT("« Je suis le roi du monde ! » · attention à l'iceberg…"), null, { low: true });
+        awardSecretBadge("badge_titanic");
+      } catch (e) {}
+    }
+
+    // ⭐ MAY THE 4TH — ouvrir l'app un 4 mai.
+    function _eggMay4th() {
+      try {
+        const n = new Date();
+        if (n.getMonth() !== 4 || n.getDate() !== 4) return;
+        const k = "sm_egg_may4_" + n.getFullYear();
+        if (localStorage.getItem(k)) return; localStorage.setItem(k, "1");
+        if (typeof toast === "function") toast("⭐", i18nT("Que la Force soit avec toi, voyageur·se."), null, { low: true });
+        awardSecretBadge("badge_may4th");
+      } catch (e) {}
+    }
 
     // 🗼 PÈLERIN — être physiquement à <150 m d'un monument légendaire (via la géoloc déjà accordée).
     const EGG_MONUMENTS = [
@@ -14200,7 +14346,7 @@
     // Lancés quand le profil est chargé (cf. appel à côté de syncHostRequest).
     function initEasterEggs() {
       if (window._smEggsInit) return; window._smEggsInit = true;
-      _eggBirthday(); _eggMidnight(); applyStreakFlame();
+      _eggBirthday(); _eggMidnight(); applyStreakFlame(); _eggMay4th();
     }
 
     /* ================= SON DE L'INTERFACE (WebAudio, 100% libre de droit) =================
@@ -14577,6 +14723,13 @@
       "Le hasard décide !": "Chance decides!",
       "J'y vais !": "I'm going!",
       "Minuit pile · fais un vœu, noctambule…": "Midnight sharp · make a wish, night owl…",
+      "La réponse.": "The answer.",
+      "« 42 : la réponse à la grande question sur la vie, l'univers et le reste. » Bon voyage galactique — et n'oublie jamais ta serviette 🧻✨": "“42: the answer to the great question of life, the universe and everything.” Safe galactic travels — and never forget your towel 🧻✨",
+      "Hakuna matata · mais quelle phrase magnifique !": "Hakuna matata · what a wonderful phrase!",
+      "MODE RÉTRO DÉBLOQUÉ · bienvenue en 1988, voyageur·se": "RETRO MODE UNLOCKED · welcome to 1988, traveller",
+      "L'aventure est là-dehors !": "Adventure is out there!",
+      "« Je suis le roi du monde ! » · attention à l'iceberg…": "“I'm the king of the world!” · mind the iceberg…",
+      "Que la Force soit avec toi, voyageur·se.": "May the Force be with you, traveller.",
       "Demande annulée · tu peux la refaire quand tu veux 💛": "Request cancelled · you can send it again any time 💛",
       "La demande n'est pas partie, réessaie dans un instant.": "The request didn't go through, try again in a moment.",
       // · Profil / photo / vérif —
