@@ -111,8 +111,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=408"></script>
-  <script src="sunmates-icons.js?v=408"></script>
+  <script src="sunmates-badges.js?v=409"></script>
+  <script src="sunmates-icons.js?v=409"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -658,6 +658,9 @@
       width: 40px; height: 40px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow);
       display: grid; place-items: center; transition: transform .12s ease, opacity .2s ease; opacity: 0; pointer-events: none; }
     .ptr.show { opacity: 1; }
+    /* PWA : on COUPE le pull-to-refresh NATIF du navigateur (sa molette grise faisait
+       doublon avec la nôtre ci-dessous). Le rafraîchissement passe par notre PTR DA. */
+    html, body { overscroll-behavior-y: none; }
     .ptr .ptr-ring { width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--accent-soft); border-top-color: var(--accent); border-right-color: var(--accent-2, var(--accent)); }
     .ptr.spin .ptr-ring { animation: ptrSpin .62s linear infinite; }
     @keyframes ptrSpin { to { transform: rotate(360deg); } }
@@ -823,6 +826,10 @@
     .ad-bar { position: fixed; left: 50%; bottom: calc(.45rem + env(safe-area-inset-bottom)); transform: translateX(-50%); width: calc(100% - 1.2rem); max-width: 448px; z-index: var(--z-demo);
       background: linear-gradient(135deg, #2a1850, #160b2e); color: #fff; border-radius: 18px;
       padding: .85rem 1.05rem; box-shadow: 0 18px 44px rgba(0,0,0,.5); animation: adIn .35s ease; transition: opacity .35s ease; }
+    /* La barre de démo SUIT le thème (texte clair gardé : fonds profonds dans les 4 cas) */
+    body.theme-dusk .ad-bar { background: linear-gradient(135deg, #352a52, #241b35); }
+    body.theme-winter .ad-bar { background: linear-gradient(135deg, #29486B, #1B344F); }
+    body.theme-tropic .ad-bar { background: linear-gradient(135deg, #1F5C49, #123F33); }
     /* Auto-replié quand on ne touche pas : le texte et les boutons se rétractent en douceur
        (pas de glissement brusque), il ne reste que l'en-tête + le titre. Touche l'écran pour le rouvrir. */
     .ad-bar .ad-text, .ad-bar .ad-ctrl { max-height: 220px; overflow: hidden; transition: max-height .4s ease, opacity .35s ease, margin .4s ease; }
@@ -2518,6 +2525,8 @@
 
     /* Toasts (notifications éphémères) */
     #toastWrap { position: fixed; top: calc(.7rem + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: var(--z-toast); display: flex; flex-direction: column; gap: .5rem; width: calc(100% - 1.5rem); max-width: 430px; pointer-events: none; }
+    /* Variante BASSE (au-dessus de la nav) : pour les messages liés à un élément qu'on touche en haut */
+    #toastWrapLow { position: fixed; bottom: calc(86px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); z-index: var(--z-toast); display: flex; flex-direction: column; gap: .5rem; width: calc(100% - 1.5rem); max-width: 430px; pointer-events: none; }
     .toast { pointer-events: auto; background: rgba(45,35,50,.96); color: #fff; border-radius: 14px; padding: .7rem .9rem; display: flex; align-items: center; gap: .6rem; box-shadow: 0 12px 30px rgba(0,0,0,.3); animation: toastIn .3s cubic-bezier(.2,.8,.3,1) both; cursor: pointer; }
     .toast .tico { font-size: 1.35rem; flex-shrink: 0; }
     .toast .ttxt { font-size: .85rem; line-height: 1.25; } .toast .ttxt b { font-weight: 700; }
@@ -2566,10 +2575,16 @@
     /* Dégradés plus soutenus (les pâles disparaissaient en plein soleil sur mobile) */
     #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#FFDD8A,#F0AD3A); border-color: rgba(200,130,20,.6); color: #5f3e00; }
     #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#F6CDB4,#E59B72); border-color: rgba(185,85,45,.6); color: #732b10; }
+    /* État ACTIF : chaque tuile garde SA couleur (avant : tout passait corail → le Premium
+       n'était plus jaune). Premium actif = OR franc, Admin actif = terracotta profond. */
     #profSegNav button.active { background: var(--accent-grad) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 6px 16px rgba(255,90,77,.28); }
+    #profSegNav button[data-pseg="premium"].active { background: linear-gradient(135deg,#FFC93C,#E89A12) !important; color: #4a3200 !important; box-shadow: 0 6px 16px rgba(232,154,18,.35); }
+    #profSegNav button[data-pseg="admin"].active { background: linear-gradient(135deg,#E08A55,#B95A2D) !important; color: #fff !important; box-shadow: 0 6px 16px rgba(185,90,45,.32); }
     body.theme-dusk #profSegNav button { background: #2a2140; border-color: rgba(255,255,255,.1); color: #f3e7d8; }
     body.theme-dusk #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#4a3a1a,#5a4520); border-color: rgba(240,169,58,.4); color: #ffd98a; }
     body.theme-dusk #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#4a2a1c,#5e3825); border-color: rgba(208,108,72,.5); color: #ffc8a8; }
+    body.theme-dusk #profSegNav button[data-pseg="premium"].active { background: linear-gradient(135deg,#D9A21B,#A87708) !important; color: #fff8e6 !important; }
+    body.theme-dusk #profSegNav button[data-pseg="admin"].active { background: linear-gradient(135deg,#9C4F26,#7C3A18) !important; color: #ffe8da !important; }
     /* Nav admin : emoji + libellé → chips qui s'adaptent au texte et passent à la ligne proprement */
     .aseg-nav button { flex: 0 1 auto; padding: .5rem .7rem; white-space: nowrap; }
     /* Liste membres admin : en-tête comptes actifs/suspendus + filtre */
@@ -3070,15 +3085,16 @@
 
     /* Réglages > Aide & support : cartes chaudes (les btn-ghost étaient ternes pour de l'aide).
        En fin de feuille pour passer devant .btn-ghost et ses variantes de thème. */
-    .help-cta { display: flex; align-items: center; gap: .6rem; text-align: left; justify-content: flex-start;
-      background: linear-gradient(135deg, #FFF6E9, #FFE7DA); border: 1px solid rgba(255,122,89,.28); border-left: 4px solid var(--accent);
-      border-radius: 16px; padding: .8rem .9rem; font-weight: 700; color: var(--ink); box-shadow: var(--shadow-sm); }
+    /* Aide & support : MÊME DA que les tuiles de l'app (carte thémée + pastille emoji
+       en dégradé sunset), plus de dégradé crème « à part » qui jurait avec le reste. */
+    .help-cta { display: flex; align-items: center; gap: .7rem; text-align: left; justify-content: flex-start;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: .7rem .8rem; font-weight: 700; color: var(--ink); box-shadow: var(--shadow-sm); }
     .help-cta:active { transform: scale(.99); }
+    .help-cta .hc-ic { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; font-size: 1.2rem;
+      border-radius: 13px; background: linear-gradient(135deg, #FFD9A8, #FF9A7B); box-shadow: inset 0 1px 0 rgba(255,255,255,.55); }
     .help-cta .hc-txt { display: flex; flex-direction: column; gap: .12rem; min-width: 0; }
-    .help-cta .hc-sub { font-weight: 500; font-size: .73rem; line-height: 1.35; opacity: .78; white-space: normal; }
-    body.theme-dusk .help-cta { background: linear-gradient(135deg, #2c2140, #241b35); color: #f3e9f3; border-color: rgba(255,170,130,.22); border-left-color: var(--accent); }
-    body.theme-winter .help-cta { background: linear-gradient(135deg, #F4FAFF, #E4F0FB); border-color: rgba(58,143,217,.28); border-left-color: var(--accent); }
-    body.theme-tropic .help-cta { background: linear-gradient(135deg, #FDFBE8, #EDF6DF); border-color: rgba(15,163,124,.28); border-left-color: var(--accent); }
+    .help-cta .hc-sub { font-weight: 500; font-size: .73rem; line-height: 1.35; color: var(--muted); white-space: normal; }
 
     /* Souvenirs : vitrine compacte (avatars empilés) + galerie en feuille */
     .hm-gal-open { display: flex; align-items: center; width: 100%; gap: .15rem; padding: .55rem .7rem; margin-top: .25rem;
@@ -3105,6 +3121,13 @@
     .sm-date-col { flex: 1; max-height: 36vh; overflow-y: auto; border: 1px solid var(--line); border-radius: 12px; padding: .25rem; }
     .sm-date-col .sm-selopt { padding: .5rem .4rem; justify-content: center; text-align: center; }
     body.theme-dusk .sm-date-col { border-color: rgba(255,255,255,.1); }
+    /* Aperçu vivant de la date composée (« mercredi 11 juin 2026 ») */
+    .sm-date-preview { text-align: center; font-weight: 800; color: var(--accent); font-size: .95rem;
+      padding: .45rem .6rem; margin: 0 0 .55rem; background: linear-gradient(135deg, #FFF6E9, #FFE7DA);
+      border-radius: 12px; text-transform: capitalize; }
+    body.theme-dusk .sm-date-preview { background: linear-gradient(135deg, #2c2140, #241b35); color: #ffc8a8; }
+    body.theme-winter .sm-date-preview { background: linear-gradient(135deg, #F4FAFF, #E4F0FB); }
+    body.theme-tropic .sm-date-preview { background: linear-gradient(135deg, #FDFBE8, #EDF6DF); }
 
     /* ====== MODES SAISON (#26) · activés par appui long 10 s sur le bouton thème ======
        L'âme SunMates (soleil, chaleur humaine) traduite pour les pays froids / la canicule.
@@ -3702,6 +3725,11 @@
               <label style="margin-top:.6rem">Détail (optionnel)</label>
               <input id="actNote" type="text" placeholder="Quand, où exactement, niveau…" maxlength="120" />
               <div class="muted" id="actPos" style="font-size:.78rem;margin:.5rem 0"></div>
+              <!-- 📌 Carnet perso : coché = le point reste 100 % local (mémoire solo), rien ne part en base -->
+              <label style="display:flex;align-items:flex-start;gap:.55rem;margin:.1rem 0 .5rem;font-size:.8rem;cursor:pointer">
+                <input type="checkbox" id="actPrivate" style="width:auto;margin-top:.15rem" />
+                <span>📌 <b>Garder pour moi</b><br><span class="muted" style="font-size:.72rem">Mon carnet d'adresses perso : visible par toi seul·e, gardé sur cet appareil.</span></span>
+              </label>
               <button class="btn-primary btn-block" id="actSave" style="margin-top:.3rem">Publier sur la carte</button>
               <div class="msg" id="actMsg" style="text-align:center"></div>
             </div>
@@ -4572,9 +4600,9 @@
           <!-- Aide & support : FAQ supprimée (infos pas à jour) → seule la visite guidée
                reste ici. Ton chaleureux SunMates : titre + petite phrase qui conseille. -->
           <div class="set-grouptitle">Aide &amp; support</div>
-          <button class="btn-ghost btn-block help-cta" data-secu="aide">🎬 <span class="hc-txt"><b>La visite guidée</b><span class="hc-sub">Perdu·e ? Laisse l'app te montrer tout ce qu'elle sait faire, à ton rythme ✨</span></span></button>
-          <button class="btn-ghost btn-block help-cta" data-secu="contactus" style="margin-top:.5rem">✉️ <span class="hc-txt"><b>Écris-nous</b><span class="hc-sub">Une question, un pépin ? On te lit et on te répond ici, dans l'app 💛</span></span></button>
-          <button class="btn-ghost btn-block help-cta" id="betaFeedbackBtn" style="margin-top:.5rem">🧪 <span class="hc-txt"><b>Ton avis compte</b><span class="hc-sub">SunMates grandit avec toi : raconte-nous ce que tu changerais</span></span></button>
+          <button class="btn-ghost btn-block help-cta" data-secu="aide"><span class="hc-ic">🎬</span><span class="hc-txt"><b>La visite guidée</b><span class="hc-sub">Perdu·e ? Laisse l'app te montrer tout ce qu'elle sait faire, à ton rythme ✨</span></span></button>
+          <button class="btn-ghost btn-block help-cta" data-secu="contactus" style="margin-top:.5rem"><span class="hc-ic">✉️</span><span class="hc-txt"><b>Écris-nous</b><span class="hc-sub">Une question, un pépin ? On te lit et on te répond ici, dans l'app 💛</span></span></button>
+          <button class="btn-ghost btn-block help-cta" id="betaFeedbackBtn" style="margin-top:.5rem"><span class="hc-ic">🧪</span><span class="hc-txt"><b>Ton avis compte</b><span class="hc-sub">SunMates grandit avec toi : raconte-nous ce que tu changerais</span></span></button>
 
           <!-- Application -->
           <div class="set-grouptitle">Application</div>
@@ -5043,6 +5071,7 @@
         if (_ov) return _ov;
         _ov = document.createElement("div"); _ov.className = "sm-selsheet-ov"; _ov.id = "smDateOv";
         _ov.innerHTML = '<div class="sm-selsheet" role="dialog" aria-modal="true"><div class="sm-selsheet-grip"></div><div class="sm-selsheet-head"><h4>📅 Choisir une date</h4><button type="button" aria-label="Fermer">✕</button></div>'
+          + '<div class="sm-date-preview" id="smDatePrev"></div>'
           + '<div class="sm-date-cols"><div class="sm-date-col" data-dcol="d"></div><div class="sm-date-col" data-dcol="m"></div><div class="sm-date-col" data-dcol="y"></div></div>'
           + '<button class="btn-primary btn-block" id="smDateOk" style="margin-top:.7rem">Valider</button></div>';
         document.body.appendChild(_ov);
@@ -5061,11 +5090,27 @@
         });
         return _ov;
       }
-      function fillCol(col, items, cur, key) {
+      // Aperçu VIVANT de la date choisie (« mercredi 11 juin 2026 ») → on voit ce qu'on compose.
+      function syncPreview(ov) {
+        const p = ov.querySelector("#smDatePrev"); if (!p) return;
+        try {
+          const loc = (typeof currentLang !== "undefined" && currentLang === "en") ? "en-GB" : "fr-FR";
+          p.textContent = new Date(_sel.y, _sel.m, _sel.d).toLocaleDateString(loc, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+        } catch (e) { p.textContent = _sel.d + "/" + (_sel.m + 1) + "/" + _sel.y; }
+      }
+      // Le nombre de JOURS s'adapte au mois/année choisis (fini le « 31 février »).
+      function refreshDays(ov) {
+        const dim = new Date(_sel.y, _sel.m + 1, 0).getDate();
+        if (_sel.d > dim) _sel.d = dim;
+        fillCol(ov, ov.querySelector('[data-dcol="d"]'), Array.from({ length: dim }, (_, i) => ({ v: i + 1, l: String(i + 1) })), _sel.d, "d");
+      }
+      function fillCol(ov, col, items, cur, key) {
         col.innerHTML = items.map((it) => `<button type="button" class="sm-selopt${it.v === cur ? " sel" : ""}" data-dv="${it.v}"><span>${esc(it.l)}</span></button>`).join("");
         col.querySelectorAll("[data-dv]").forEach((b) => b.addEventListener("click", () => {
           _sel[key] = +b.dataset.dv;
           col.querySelectorAll(".sm-selopt").forEach((x) => x.classList.toggle("sel", x === b));
+          if (key !== "d") refreshDays(ov); // mois/année changés → jours recalculés
+          syncPreview(ov);
         }));
         const c = col.querySelector(".sm-selopt.sel"); if (c) setTimeout(() => { try { c.scrollIntoView({ block: "center" }); } catch (e) {} }, 40);
       }
@@ -5076,10 +5121,11 @@
         _sel = base ? { y: base[0], m: base[1] - 1, d: base[2] } : { y: today.getFullYear(), m: today.getMonth(), d: today.getDate() };
         const [y0, y1] = yearsFor(inp);
         if (_sel.y < y0) _sel.y = y0; if (_sel.y > y1) _sel.y = y1;
-        fillCol(ov.querySelector('[data-dcol="d"]'), Array.from({ length: 31 }, (_, i) => ({ v: i + 1, l: String(i + 1) })), _sel.d, "d");
-        fillCol(ov.querySelector('[data-dcol="m"]'), MONTHS.map((m, i) => ({ v: i, l: m })), _sel.m, "m");
+        refreshDays(ov);
+        fillCol(ov, ov.querySelector('[data-dcol="m"]'), MONTHS.map((m, i) => ({ v: i, l: m })), _sel.m, "m");
         const years = []; for (let y = y1; y >= y0; y--) years.push({ v: y, l: String(y) });
-        fillCol(ov.querySelector('[data-dcol="y"]'), years, _sel.y, "y");
+        fillCol(ov, ov.querySelector('[data-dcol="y"]'), years, _sel.y, "y");
+        syncPreview(ov);
         ov.classList.add("show");
       }
       function enhance(inp) {
@@ -7066,6 +7112,7 @@
         ["🏠", "Bascule Voyage / Maison", "L'accueil s'adapte : carte de rencontre en Voyage, hub solo à la Maison."],
         ["🎯", "Filtre quêtes « à faire »", "Sur la carte : n'affiche que les quêtes pas encore accomplies."],
         ["🌅", "Ma journée de voyage", "Lance ta journée le matin ; le soir, ton WRAPPED du jour (quêtes, check-ins, nouveaux Mates, XP) en carte souvenir."],
+        ["📌", "Mes adresses perso", "Pose tes propres points sur la carte (bonnes adresses, coins repérés) : 100 % privés, gardés sur ton appareil."],
       ]],
       ["📍 Lieux sûrs", [
         ["☕", "Catalogue de lieux", "Cartes photo : éco, check-ins, note, top noté."],
@@ -9678,6 +9725,16 @@
       if (lat != null && lng != null && isFinite(lat) && isFinite(lng) && typeof focusHomeMapOnQuest === "function") {
         focusHomeMapOnQuest(lat, lng); return;
       }
+      // Repli : quête sans coordonnées → on l'a ancrée sur sa VILLE (même graine « q-<key> »
+      // que le marqueur de renderHomeMap, donc on atterrit pile sur sa pastille).
+      if (currentQuest.city && typeof cityCoords === "function") {
+        const ll = cityCoords(currentQuest.city, "q-" + currentQuest.key);
+        if (ll && isFinite(ll[0]) && typeof focusHomeMapOnQuest === "function") {
+          focusHomeMapOnQuest(ll[0], ll[1]);
+          if (typeof toast === "function") toast("📍", i18nT("Position approximative dans la ville · les détails exacts sont dans la quête 😉"));
+          return;
+        }
+      }
       if (typeof toast === "function") toast("📍", "Cette quête n'a pas encore de position précise.");
     });
     // P2.10 : la tuile récompense (badge) avait l'air cliquable mais ne faisait rien → elle ouvre
@@ -11223,8 +11280,8 @@
     let homePopupOpen = false;   // P2.5 : un aperçu de pastille est-il ouvert ? (on ne reconstruit pas la carte pendant)
     let _homeMapDeferred = false; // un rendu a-t-il été reporté car un aperçu était ouvert ?
     let homeCluster = null;                                  // UN SEUL groupe de cluster → les marqueurs au même endroit fusionnent (rosace au clic)
-    let homeMarkersByType = { places: [], mates: [], activities: [], checkins: [], quests: [] }; // marqueurs par type (pour les filtres)
-    const homeLayerOn = { places: true, mates: true, activities: true, checkins: true, quests: true };
+    let homeMarkersByType = { places: [], mates: [], activities: [], checkins: [], quests: [], mypins: [] }; // marqueurs par type (pour les filtres)
+    const homeLayerOn = { places: true, mates: true, activities: true, checkins: true, quests: true, mypins: true };
     let homeMapSig = null;                                   // signature des données du dernier rendu carte (perf : évite un rebuild identique)
     let _questCity = "";                                     // ville sélectionnée pour les quêtes ("" = toutes)
     let _homeCityPts = [];                                   // TOUS les points datés d'une ville (quêtes + lieux sûrs) → menu villes + cadrage
@@ -11250,8 +11307,8 @@
       const geo = (allCafes || []).filter((p) => p.lat != null && p.lng != null);
       let baseLat, baseLng;
       if (geo.length) {
-        // 1) un lieu dans la même ville si possible… 2) sinon un lieu déterministe
-        const ref = geo.find((p) => (p.city || "").toLowerCase() === (city || "").toLowerCase()) || geo[h % geo.length];
+        // 1) un lieu dans la même ville si possible (« Lisbonne » == « Lisbonne, Portugal »)… 2) sinon un lieu déterministe
+        const ref = geo.find((p) => _sameCity(p.city, city)) || geo[h % geo.length];
         baseLat = ref.lat; baseLng = ref.lng;
       } else {
         baseLat = 38.72; baseLng = -9.14; // centre par défaut (Lisbonne) si aucun lieu géolocalisé
@@ -11260,6 +11317,19 @@
       const dy = ((Math.floor(h / 100) % 100) / 100 - 0.5) * 0.06;
       return [baseLat + dy, baseLng + dx];
     }
+
+    // ==== 📌 MES ADRESSES PERSO (mémoire solo) ====
+    // Points 100 % PRIVÉS posés par l'utilisateur sur la carte (bonnes adresses, coins
+    // repérés, à tester…). Stockés en LOCAL sur l'appareil (sm_mypins_<uid>) : jamais
+    // envoyés en base, invisibles aux autres. C'est le carnet de voyage solo.
+    function _myPinsGet() { try { return JSON.parse(localStorage.getItem("sm_mypins_" + (myUserId || "anon")) || "[]"); } catch (e) { return []; } }
+    function _myPinsSave(list) { try { localStorage.setItem("sm_mypins_" + (myUserId || "anon"), JSON.stringify(list)); } catch (e) {} }
+    function addMyPin(lat, lng, title, note) {
+      const l = _myPinsGet();
+      l.push({ id: Date.now() + "-" + Math.random().toString(36).slice(2, 7), lat, lng, title, note: note || "", ts: new Date().toISOString() });
+      _myPinsSave(l);
+    }
+    function deleteMyPin(id) { _myPinsSave(_myPinsGet().filter((p) => p.id !== id)); }
 
     let homeAllMarkers = [], homeGpsMarker = null;
     let homeAddMode = false, homeAddLatLng = null, homeAddAddress = null;
@@ -11473,6 +11543,13 @@
           node.querySelectorAll("[data-hmsuggest]").forEach((b) => b.addEventListener("click", () => { homeLeaf.closePopup(); mapProposeActivity(travelerMap[b.dataset.hmsuggest]); }));
           // Supprimer une de mes activités partagées
           node.querySelectorAll("[data-hmdelact]").forEach((b) => b.addEventListener("click", () => deleteMapActivity(b.dataset.hmdelact)));
+          // Retirer une de MES adresses perso (carnet local)
+          node.querySelectorAll("[data-hmdelpin]").forEach((b) => b.addEventListener("click", async () => {
+            if (!(await smConfirmP("🗑️", i18nT("Retirer cette adresse ?"), i18nT("Elle ne sera retirée que de TON carnet (personne d'autre ne la voit)."), i18nT("Retirer")))) return;
+            deleteMyPin(b.dataset.hmdelpin); homeLeaf.closePopup();
+            if (typeof toast === "function") toast("📌", i18nT("Adresse retirée de ton carnet"));
+            renderHomeMap();
+          }));
           // Ouvrir une quête depuis la carte
           node.querySelectorAll("[data-hmquest]").forEach((b) => b.addEventListener("click", () => { homeLeaf.closePopup(); goToTab("jeux"); const q = (typeof questByKey === "function") && questByKey(b.dataset.hmquest); if (q && typeof openDetail === "function") setTimeout(() => openDetail(q), 80); }));
           // Jouer une quête-lieu de Paris : ouvre la VRAIE quête (si la migration est
@@ -11514,7 +11591,8 @@
         cf: (allCafes || []).map((c) => c.id + ":" + c.lat + ":" + c.lng),
         mt: (typeof connectedIds !== "undefined" && connectedIds) ? connectedIds.size : 0,
         sh: (typeof circleLocs !== "undefined" ? (circleLocs || []).length : 0),
-        qg: (typeof allQuests !== "undefined" ? allQuests.filter((q) => q.kind === "quest" && q.lat != null).length : 0),
+        qg: (typeof allQuests !== "undefined" ? allQuests.filter((q) => q.kind === "quest").length : 0), // toutes (les sans-coords sont ancrées ville)
+        mp: (typeof _myPinsGet === "function" ? _myPinsGet().map((p) => p.id).join("|") : ""), // mes adresses perso
         me: myUserId,
         hm: (typeof getHomeMode === "function") ? getHomeMode() : "travel",
         qc: _questCity,
@@ -11533,7 +11611,7 @@
 
       // À partir d'ici tout est synchrone : on vide puis on reconstruit d'un bloc.
       if (homeCluster) homeCluster.clearLayers();
-      homeMarkersByType = { places: [], mates: [], activities: [], checkins: [], quests: [] };
+      homeMarkersByType = { places: [], mates: [], activities: [], checkins: [], quests: [], mypins: [] };
       if (homeMeMarker) { homeLeaf.removeLayer(homeMeMarker); homeMeMarker = null; }
       const allMarkers = [];
 
@@ -11638,6 +11716,15 @@
         am.smType = "activities"; homeMarkersByType.activities.push(am); allMarkers.push(am);
       });
 
+      // 📌 MES ADRESSES PERSO : privées, locales à l'appareil (jamais en base)
+      _myPinsGet().forEach((p) => {
+        if (p.lat == null || p.lng == null) return;
+        const noteLn = p.note ? `<br><span class="muted" style="font-size:.74rem">${escapeHtml(p.note)}</span>` : "";
+        const mk = L.marker([p.lat, p.lng], { icon: epinIcon("📌", "#8B5E3C") })
+          .bindPopup(`<div class="mappop-mini"><span class="mq-tag" style="background:#8B5E3C">🔒 ${i18nT("Mon adresse perso")}</span><br><b>${escapeHtml(p.title || "")}</b>${noteLn}<br><span class="muted" style="font-size:.68rem">${i18nT("Visible par toi seul·e · gardée sur cet appareil")}</span><br><button class="mappop-btn ghost" data-hmdelpin="${escapeHtml(p.id)}">🗑️ ${i18nT("Retirer de mon carnet")}</button></div>`);
+        mk.smType = "mypins"; homeMarkersByType.mypins.push(mk); allMarkers.push(mk);
+      });
+
       // 🛟 Positions partagées au cercle (GPS réel), visibles 1 h puis expirées
       const recentShares = (circleLocs || []).filter((l) => l.lat != null && nowMs - new Date(l.created_at).getTime() < HOUR);
       let myShare = null; const seenShareUser = new Set();
@@ -11674,7 +11761,17 @@
       const dbGeoQuests = (typeof allQuests !== "undefined" ? allQuests : [])
         .filter((q) => q.kind === "quest" && q.lat != null && q.lng != null)
         .map((q) => ({ key: q.key, emoji: q.emoji || "🎯", lat: q.lat, lng: q.lng, title: q.title, desc: q.description || "", xp: q.points || 0, badge: q.badge_name || "un badge", city: q.city || "Autre" }));
-      const allQuestPts = dbGeoQuests.length ? dbGeoQuests
+      // Quêtes SANS coordonnées (ex : « Pause café secrète » à Lisbonne) : on les ANCRE sur un
+      // vrai lieu de leur ville (déterministe via cityCoords) → elles apparaissent quand même
+      // sur la carte, marquées « position approximative ». Plus aucune quête invisible.
+      const dbCityQuests = (typeof allQuests !== "undefined" ? allQuests : [])
+        .filter((q) => q.kind === "quest" && (q.lat == null || q.lng == null) && q.city)
+        .map((q) => {
+          const ll = cityCoords(q.city, "q-" + q.key);
+          if (!ll || !isFinite(ll[0])) return null;
+          return { key: q.key, emoji: q.emoji || "🎯", lat: ll[0], lng: ll[1], title: q.title, desc: q.description || "", xp: q.points || 0, badge: q.badge_name || "un badge", city: q.city, approx: true };
+        }).filter(Boolean);
+      const allQuestPts = (dbGeoQuests.length || dbCityQuests.length) ? dbGeoQuests.concat(dbCityQuests)
         : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS.map((q) => Object.assign({ city: "Paris, France" }, q)) : []);
       // Menu des villes = TOUTE la carte (quêtes + lieux sûrs), pas seulement les quêtes.
       _homeCityPts = allQuestPts.map((q) => ({ lat: q.lat, lng: q.lng, city: q.city || "" }))
@@ -11700,8 +11797,9 @@
       questPts.forEach((q) => {
         // Distance depuis ta position (si connue) · cohérent avec le radar « quête la plus proche ».
         const distTxt = (lastKnownGeo && typeof haversineKm === "function") ? ` · 📍 à ${_fmtDist(haversineKm(lastKnownGeo, { lat: q.lat, lng: q.lng }))}` : "";
+        const approxTxt = q.approx ? `<br><span class="muted" style="font-size:.68rem">📍 ${i18nT("position approximative · les détails sont dans la quête")}</span>` : "";
         const mk = L.marker([q.lat, q.lng], { icon: epinIcon(q.emoji, "#E8961F", "quest") })
-          .bindPopup(`<div class="mappop-mini mappop-quest"><span class="mq-tag">⚡ Quête${distTxt}</span><br><b>${escapeHtml(q.title)}</b><br><span class="muted" style="font-size:.74rem">${escapeHtml(q.desc)}</span><div class="mq-rew">+${q.xp} XP · 🏅 ${escapeHtml(q.badge)}</div><button class="mappop-btn" data-hmqplay="${escapeHtml(q.key)}">${soloLabel}</button>${grpBtn}</div>`);
+          .bindPopup(`<div class="mappop-mini mappop-quest"><span class="mq-tag">⚡ Quête${distTxt}</span><br><b>${escapeHtml(q.title)}</b><br><span class="muted" style="font-size:.74rem">${escapeHtml(q.desc)}</span>${approxTxt}<div class="mq-rew">+${q.xp} XP · 🏅 ${escapeHtml(q.badge)}</div><button class="mappop-btn" data-hmqplay="${escapeHtml(q.key)}">${soloLabel}</button>${grpBtn}</div>`);
         mk.smType = "quests"; homeMarkersByType.quests.push(mk); allMarkers.push(mk);
       });
 
@@ -11711,6 +11809,7 @@
       setHomeChipCount("activities", homeMarkersByType.activities.length);
       setHomeChipCount("checkins", homeMarkersByType.checkins.length);
       setHomeChipCount("quests", homeMarkersByType.quests.length);
+      setHomeChipCount("mypins", homeMarkersByType.mypins.length);
 
       homeAllMarkers = allMarkers;
       applyHomeLayers();
@@ -11861,6 +11960,13 @@
       // On affiche l'ADRESSE (géocodage inverse), pas des coordonnées « façon GPS »,
       // et on la mémorise pour l'enregistrer avec l'activité.
       homeAddAddress = null;
+      // 📌 reset du choix « Garder pour moi » + libellé du bouton qui suit le choix
+      const pv = $("actPrivate"), sv = $("actSave");
+      if (pv) {
+        pv.checked = false;
+        if (!pv._wired) { pv._wired = true; pv.addEventListener("change", () => { if (sv) sv.textContent = pv.checked ? i18nT("📌 Garder dans mon carnet") : i18nT("Publier sur la carte"); }); }
+      }
+      if (sv) sv.textContent = i18nT("Publier sur la carte");
       $("actPos").textContent = "📍 Recherche de l'adresse…";
       fetch("https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&lat=" + latlng.lat + "&lon=" + latlng.lng)
         .then((r) => r.json())
@@ -11873,6 +11979,15 @@
       const title = $("actTitle").value.trim(), note = $("actNote").value.trim(), m = $("actMsg");
       if (!title) { m.style.color = "var(--danger)"; m.textContent = "Donne un titre à ton activité."; return; }
       if (!homeAddLatLng || !myUserId) return;
+      // 📌 « Garder pour moi » : enregistrement 100 % LOCAL (carnet perso), rien ne part en base.
+      const pv = $("actPrivate");
+      if (pv && pv.checked) {
+        addMyPin(homeAddLatLng.lat, homeAddLatLng.lng, title, note);
+        $("actCreate").classList.add("hidden");
+        if (typeof toast === "function") toast("📌", i18nT("Ajouté à ton carnet perso · visible par toi seul·e 🔒"));
+        renderHomeMap();
+        return;
+      }
       await once("mapact:" + myUserId, async () => {
         m.style.color = "var(--muted)"; m.textContent = "Publication…";
         const base = { creator: myUserId, title, note: note || null, lat: homeAddLatLng.lat, lng: homeAddLatLng.lng };
@@ -11922,12 +12037,12 @@
 
     function renderHomeLegend() {
       const el = $("homeMapLegend"); if (!el) return;
-      el.innerHTML = [["#FF5A4D", "📍 Lieux sûrs"], ["#7a5cff", "🧑 Mates"], ["#ff9f1c", "🎉 Activités"], ["#17a99b", "✅ Check-ins"], ["#ff5e9f", "📣 Partagées"]]
+      el.innerHTML = [["#FF5A4D", "📍 Lieux sûrs"], ["#7a5cff", "🧑 Mates"], ["#ff9f1c", "🎉 Activités"], ["#17a99b", "✅ Check-ins"], ["#ff5e9f", "📣 Partagées"], ["#8B5E3C", "📌 Mes adresses"]]
         .map(([c, l]) => `<span><i style="background:${c}"></i>${l}</span>`).join("");
     }
 
     // Calques de la carte : bouton → panneau DA de toggles (remplace le scroll horizontal des chips).
-    const HM_LAYERS = [["places", "📍", "Lieux"], ["mates", "🧑", "Mates"], ["activities", "🎉", "Activités"], ["checkins", "✅", "Check-ins"], ["quests", "🎯", "Quêtes"]];
+    const HM_LAYERS = [["places", "📍", "Lieux"], ["mates", "🧑", "Mates"], ["activities", "🎉", "Activités"], ["checkins", "✅", "Check-ins"], ["quests", "🎯", "Quêtes"], ["mypins", "📌", "Mes adresses"]];
     function updateLayersBtn() { const c = $("hmLayersCnt"); if (c) c.textContent = Object.values(homeLayerOn).filter(Boolean).length; }
     function openLayersSheet() {
       let ov = $("hmLayersOv");
@@ -12572,8 +12687,15 @@
     const nameById = (id) => (travelerMap[id]?.username) || "Un voyageur";
 
     // ---- Toasts (notifications éphémères) ----
-    function toast(emoji, html, onClick) {
-      const wrap = $("toastWrap"); if (!wrap) return;
+    function toast(emoji, html, onClick, opts) {
+      // opts.low : toast affiché EN BAS (au-dessus de la nav) — pour ne pas recouvrir ce que
+      // l'utilisateur est en train de toucher en haut (ex : appui long sur le bouton thème).
+      let wrap;
+      if (opts && opts.low) {
+        wrap = $("toastWrapLow");
+        if (!wrap) { wrap = document.createElement("div"); wrap.id = "toastWrapLow"; document.body.appendChild(wrap); }
+      } else { wrap = $("toastWrap"); }
+      if (!wrap) return;
       const el = document.createElement("div");
       el.className = "toast";
       el.innerHTML = `<div class="tico">${emoji}</div><div class="ttxt">${html}</div>`;
@@ -14104,7 +14226,7 @@
     $("themeToggle").addEventListener("click", () => {
       if (_seasonLpFired) { _seasonLpFired = false; return; } // le relâché de l'appui long ne doit pas re-basculer
       const s = seasonMode();
-      if (s) { const next = s === "winter" ? "tropic" : "winter"; applySeason(next, true); toast(next === "winter" ? "❄️" : "🌴", next === "winter" ? i18nT("Mode hiver ❄️") : i18nT("Mode tropiques 🌴")); return; }
+      if (s) { const next = s === "winter" ? "tropic" : "winter"; applySeason(next, true); toast(next === "winter" ? "❄️" : "🌴", next === "winter" ? i18nT("Mode hiver ❄️") : i18nT("Mode tropiques 🌴"), null, { low: true }); return; }
       const next = document.body.classList.contains("theme-dusk") ? "day" : "dusk";
       localStorage.setItem("sm_theme", next); applyTheme(next);
     });
@@ -14112,11 +14234,12 @@
       const start = () => { clearTimeout(_lpT); clearTimeout(_lpHint);
         // Easter egg : l'indice à 3 s ne s'affiche qu'à ceux qui SAVENT (admin, ou déjà en
         // mode saison — il faut bien pouvoir en sortir). Les autres découvrent par hasard.
-        _lpHint = setTimeout(() => { const initie = seasonMode() || (myProfile && myProfile.is_admin); if (initie && typeof toast === "function") toast(seasonMode() ? "🌞" : "❄️", i18nT("Continue d'appuyer (10 s) pour changer de saison…")); }, 3000);
+        // Toast EN BAS (low) : sinon le bandeau recouvrait le bouton qu'on est en train de tenir.
+        _lpHint = setTimeout(() => { const initie = seasonMode() || (myProfile && myProfile.is_admin); if (initie && typeof toast === "function") toast(seasonMode() ? "🌞" : "❄️", i18nT("Continue d'appuyer (10 s) pour changer de saison…"), null, { low: true }); }, 3000);
         _lpT = setTimeout(() => {
           _seasonLpFired = true;
-          if (seasonMode()) { applySeason("", true); toast("🌞", i18nT("Retour au mode normal (jour / nuit)")); }
-          else { applySeason("winter", true); toast("❄️", i18nT("Mode hiver activé ! Un clic sur ce bouton bascule ❄️ hiver / 🌴 tropiques.")); }
+          if (seasonMode()) { applySeason("", true); toast("🌞", i18nT("Retour au mode normal (jour / nuit)"), null, { low: true }); }
+          else { applySeason("winter", true); toast("❄️", i18nT("Mode hiver activé ! Un clic sur ce bouton bascule ❄️ hiver / 🌴 tropiques."), null, { low: true }); }
           if (navigator.vibrate) { try { navigator.vibrate(80); } catch (e) {} }
         }, 10000);
       };
@@ -14138,8 +14261,8 @@
             .then((r) => r.json()).then((j) => {
               const t = j && j.current && j.current.temperature_2m;
               if (typeof t !== "number") return;
-              if (t <= 0 && seasonMode() !== "winter") { applySeason("winter"); toast("❄️", i18nT("{t} °C dehors : mode hiver ! (appui long 10 s sur le bouton thème pour en sortir)", { t: Math.round(t) })); }
-              else if (t >= 30 && seasonMode() !== "tropic") { applySeason("tropic"); toast("🌴", i18nT("{t} °C dehors : mode tropiques ! (appui long 10 s pour en sortir)", { t: Math.round(t) })); }
+              if (t <= 0 && seasonMode() !== "winter") { applySeason("winter"); toast("❄️", i18nT("{t} °C dehors : mode hiver ! (appui long 10 s sur le bouton thème pour en sortir)", { t: Math.round(t) }), null, { low: true }); }
+              else if (t >= 30 && seasonMode() !== "tropic") { applySeason("tropic"); toast("🌴", i18nT("{t} °C dehors : mode tropiques ! (appui long 10 s pour en sortir)", { t: Math.round(t) }), null, { low: true }); }
             }).catch(() => {});
         }, () => {}, { maximumAge: 3600000, timeout: 8000 });
       }).catch(() => {});
@@ -15098,6 +15221,23 @@
       "Pourquoi tu kiffes cet endroit ?": "Why do you love this place?",
       "Note enregistrée ✨": "Note saved ✨",
       "Mes adresses favorites": "My favourite places",
+      // 📌 Carnet d'adresses perso (mémoire solo, local)
+      "Mes adresses": "My addresses",
+      "📌 Mes adresses": "📌 My addresses",
+      "Mon adresse perso": "My personal spot",
+      "Visible par toi seul·e · gardée sur cet appareil": "Only you can see it · stored on this device",
+      "Retirer de mon carnet": "Remove from my notebook",
+      "Retirer cette adresse ?": "Remove this address?",
+      "Elle ne sera retirée que de TON carnet (personne d'autre ne la voit).": "It will only be removed from YOUR notebook (nobody else can see it).",
+      "Retirer": "Remove",
+      "Adresse retirée de ton carnet": "Address removed from your notebook",
+      "Ajouté à ton carnet perso · visible par toi seul·e 🔒": "Added to your personal notebook · only you can see it 🔒",
+      "Garder pour moi": "Keep it for me",
+      "Mon carnet d'adresses perso : visible par toi seul·e, gardé sur cet appareil.": "My personal address book: only you can see it, stored on this device.",
+      "📌 Garder dans mon carnet": "📌 Save to my notebook",
+      "Publier sur la carte": "Post on the map",
+      "position approximative · les détails sont dans la quête": "approximate position · details are in the quest",
+      "Position approximative dans la ville · les détails exacts sont dans la quête 😉": "Approximate position in its city · the exact details are in the quest 😉",
       "Mode hiver ❄️": "Winter mode ❄️",
       "Mode tropiques 🌴": "Tropics mode 🌴",
       "Continue d'appuyer (10 s) pour changer de saison…": "Keep holding (10 s) to switch season…",
