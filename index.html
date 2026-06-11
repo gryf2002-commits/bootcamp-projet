@@ -114,8 +114,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=434"></script>
-  <script src="sunmates-icons.js?v=434"></script>
+  <script src="sunmates-badges.js?v=435"></script>
+  <script src="sunmates-icons.js?v=435"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -1162,7 +1162,7 @@
     .tour-spot.no-anim { transition: opacity .22s ease; }
     .tour-pop { position: absolute; left: 50%; transform: translateX(-50%); width: calc(100% - 2rem); max-width: 360px;
       background: var(--card); color: var(--ink); border-radius: 20px; padding: 1.1rem 1.2rem; box-shadow: 0 24px 60px rgba(0,0,0,.5);
-      text-align: center; opacity: 0; transition: opacity .2s ease; }
+      text-align: center; opacity: 0; transition: opacity .2s ease, top .3s cubic-bezier(.22,.8,.3,1); } /* #30 : la bulle GLISSE */
     .tour-emoji { font-size: 40px; margin-bottom: .3rem; }
     .tour-pop h4 { margin: 0 0 .35rem; font-size: 1.15rem; }
     .tour-pop p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
@@ -2591,7 +2591,12 @@
     #toastWrap { position: fixed; top: calc(.7rem + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: var(--z-toast); display: flex; flex-direction: column; gap: .5rem; width: calc(100% - 1.5rem); max-width: 430px; pointer-events: none; }
     /* Variante BASSE (au-dessus de la nav) : pour les messages liés à un élément qu'on touche en haut */
     #toastWrapLow { position: fixed; bottom: calc(86px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); z-index: var(--z-toast); display: flex; flex-direction: column; gap: .5rem; width: calc(100% - 1.5rem); max-width: 430px; pointer-events: none; }
-    .toast { pointer-events: auto; background: rgba(45,35,50,.96); color: #fff; border-radius: 14px; padding: .7rem .9rem; display: flex; align-items: center; gap: .6rem; box-shadow: 0 12px 30px rgba(0,0,0,.3); animation: toastIn .3s cubic-bezier(.2,.8,.3,1) both; cursor: pointer; }
+    /* #36 : toast THÉMÉ par mode (liseré accent + encre du thème, plus un gris unique partout) */
+    .toast { pointer-events: auto; background: rgba(45,35,50,.96); color: #fff; border-left: 3px solid var(--accent);
+      border-radius: 14px; padding: .7rem .9rem; display: flex; align-items: center; gap: .6rem; box-shadow: 0 12px 30px rgba(0,0,0,.3); animation: toastIn .3s cubic-bezier(.2,.8,.3,1) both; cursor: pointer; touch-action: pan-y; }
+    body.theme-winter .toast { background: rgba(20,40,64,.96); }
+    body.theme-tropic .toast { background: rgba(12,46,36,.96); }
+    body.theme-dusk .toast { background: rgba(32,24,48,.97); }
     .toast .tico { font-size: 1.35rem; flex-shrink: 0; }
     .toast .ttxt { font-size: .85rem; line-height: 1.25; } .toast .ttxt b { font-weight: 700; }
     @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) scale(.96); } to { opacity: 1; transform: none; } }
@@ -3269,6 +3274,12 @@
       background: var(--accent-soft); border: 1px solid rgba(255,90,77,.25); border-radius: 14px; padding: .7rem .8rem; }
     body.theme-dusk .chat-conn-notice { background: rgba(255,126,114,.12); border-color: rgba(255,126,114,.25); color: #f3e9f3; }
 
+    /* #33 : grille du board UNIFORME (tuiles d'égale hauteur, lisibles, 3 colonnes) */
+    #adminDash .pgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .45rem; }
+    #adminDash .pcell { min-height: 62px; display: flex; flex-direction: column; justify-content: center; }
+    #adminDash .pcell .k { font-size: .68rem; }
+    #adminDash .pcell.pcell-jump { border: 1px solid rgba(232,150,31,.3); }
+
     /* #26 : bandeau EN DIRECT du board admin (pastille verte qui pulse + mini-grille) */
     .adm-live { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .65rem .7rem; margin-bottom: .7rem; box-shadow: var(--shadow-sm); }
     body.theme-dusk .adm-live { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.09); }
@@ -3651,6 +3662,12 @@
     #seasonFx .sfx-p { position: absolute; top: -10%; animation: sfxFall 1.5s cubic-bezier(.3,.4,.6,1) forwards; will-change: transform; }
     #seasonFx .sfx-p svg { display: block; filter: drop-shadow(0 2px 6px rgba(0,0,0,.18)); }
     @keyframes sfxFall { to { transform: translateY(125vh) rotate(240deg); } }
+
+    /* #25 : modale/feuille ouverte = la page derrière NE défile plus */
+    body.modal-open { overflow: hidden; }
+    /* #24 : les tuiles-détail (Données admin & co) défilent DANS la carte, jamais derrière */
+    #pickerOverlay.info .picker-card { max-height: 82vh; }
+    #pickerBody { overflow-y: auto; min-height: 0; overscroll-behavior: contain; }
 
     /* #29 : les sous-onglets Mates (Messages / Découvrir / Demandes) glissent en douceur */
     .mates-seg:not(.hidden) { animation: viewIn .24s cubic-bezier(.2,.8,.3,1); }
@@ -6780,9 +6797,29 @@
       if (b) { b.textContent = st === "1" ? "✓ Hôte actif" : (st === "pending" ? "⏳ Demande envoyée · voir le statut" : (st === "rejected" ? "Retenter ma chance" : "Je veux aider")); b.disabled = false; b.style.opacity = ""; }
       const pb = $("profileHostBadge"); if (pb) show(pb, st === "1"); // badge profil seulement si validé
     }
+    // #21 : la pastille 🛟 Hôte du profil est CLIQUABLE (explication + gestion du statut)
+    { const pb = $("profileHostBadge"); if (pb) { pb.style.cursor = "pointer"; pb.setAttribute("role", "button");
+      pb.addEventListener("click", () => { const hb = $("hostBtn"); if (hb) hb.click(); else popInfo("🛟", "Hôte SunMates", "Un hôte accueille et conseille les voyageurs de passage dans sa ville : bons spots, café d'accueil, coup de main. Statut validé par l'équipe 💛"); }); } }
     { const hb = $("hostBtn"); if (hb) hb.addEventListener("click", () => {
       const st = hostState();
-      if (st === "1") { popInfo("🛟", "Tu es hôte SunMates", "Merci ! Les voyageurs de passage savent qu'ils peuvent compter sur toi dans ta ville 💛"); return; }
+      if (st === "1") {
+        // #22 : on peut enfin faire MARCHE ARRIÈRE même une fois hôte validé.
+        popInfo("🛟", "Tu es hôte SunMates",
+          "Merci ! Les voyageurs de passage savent qu'ils peuvent compter sur toi dans ta ville 💛" +
+          '<button class="btn-ghost btn-block" id="hostStopBtn" style="margin-top:.8rem;color:var(--muted)">✕ Ne plus être hôte</button>');
+        setTimeout(() => { const c = $("hostStopBtn"); if (c) c.onclick = async () => {
+          if (!(await smConfirmP("🛟", "Ne plus être hôte ?", "Ton badge 🛟 disparaîtra. Tu pourras redemander quand tu veux.", "Confirmer", true))) return;
+          once("hoststop:" + myUserId, async () => {
+            try { localStorage.removeItem("sm_host"); } catch (e) {}
+            const { error } = await db.from("profiles").update({ host_status: null }).eq("id", myUserId);
+            if (!error && myProfile) myProfile.host_status = null;
+            const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden");
+            if (typeof toast === "function") toast("🛟", i18nT("Tu n'es plus hôte · merci pour tout 💛"));
+            renderHost();
+          });
+        }; }, 40);
+        return;
+      }
       if (st === "pending") {
         // Demande en cours : statut + bouton pour ANNULER (avant : aucun moyen de revenir en arrière).
         popInfo("⏳", "Demande en cours",
@@ -8215,13 +8252,20 @@
         ? `<div class="adm-live"><div class="al-head"><span class="al-dot"></span> EN DIRECT <button class="btn-ghost" id="admLiveR" style="margin-left:auto;padding:.18rem .55rem;font-size:.72rem">↻</button></div>
             <div class="al-grid">${lcell("🟢", lv.active_now, "actifs maintenant")}${lcell("☀️", lv.active_today, "actifs aujourd'hui")}${lcell("💬", lv.messages_today, "messages aujourd'hui")}${lcell("📍", lv.checkins_today, "check-ins aujourd'hui")}${lcell("✨", lv.new_users_today, "inscrits aujourd'hui")}</div></div>`
         : '<p class="muted" style="font-size:.74rem;margin:.1rem 0 .6rem">📡 Stats en direct indisponibles · lance <b>supabase_migration_admin_live.sql</b> dans Supabase.</p>';
-      const cell = (k, v, jump) => `<div class="pcell${jump ? " pcell-jump" : ""}"${jump ? ` data-dashjump="${jump}" style="cursor:pointer"` : ""}><div class="k">${k}${jump ? " ›" : ""}</div><div class="v">${v ?? 0}</div></div>`;
+      // #33 : sauts UTILES — chaque tuile cliquable ouvre SON panneau, y scrolle, et applique
+      // le bon filtre (ex : Suspendus → liste Membres déjà filtrée sur les suspendus).
+      const cell = (k, v, jump, filt) => `<div class="pcell${jump ? " pcell-jump" : ""}"${jump ? ` data-dashjump="${jump}"${filt ? ` data-dashfilter="${filt}"` : ""} style="cursor:pointer"` : ""}><div class="k">${k}${jump ? " ›" : ""}</div><div class="v">${v ?? 0}</div></div>`;
       el.innerHTML = liveHtml + cell("Membres actifs", data.users, "users") + cell("Vérifiés", data.verified, "users") + cell("Gold 👑", data.gold)
-        + cell("Admins 🛡️", data.admins) + cell("Suspendus 🚫", data.banned, "users") + cell("Connexions", data.connections) + cell("Demandes", data.pending_conn)
+        + cell("Admins 🛡️", data.admins) + cell("Suspendus 🚫", data.banned, "users", "suspend") + cell("Connexions", data.connections) + cell("Demandes", data.pending_conn)
         + cell("Check-ins", data.checkins) + cell("Quêtes finies", data.quests_done) + cell("Messages", data.messages)
         + cell("Défis", data.suggestions) + cell("Badges", data.badges) + cell("Coupons", data.coupons)
         + cell("Parrainages 🍹", data.referrals) + cell("Lieux", data.places, "places") + cell("Signalements", data.reports_pending, "reports") + cell("Devis B2B", data.quotes, "quotes");
-      el.querySelectorAll("[data-dashjump]").forEach((c) => c.addEventListener("click", () => showAdminSegment(c.dataset.dashjump)));
+      el.querySelectorAll("[data-dashjump]").forEach((c) => c.addEventListener("click", () => {
+        showAdminSegment(c.dataset.dashjump);
+        const f = c.dataset.dashfilter;
+        if (f) setTimeout(() => { const b = [...document.querySelectorAll(".au-fbtn")].find((x) => (x.textContent || "").toLowerCase().includes(f)); if (b) b.click(); }, 480);
+        setTimeout(() => { const p = document.querySelector('[data-asegpanel="' + c.dataset.dashjump + '"]'); if (p) p.scrollIntoView({ behavior: "smooth", block: "start" }); }, 140);
+      }));
       { const r = $("admLiveR"); if (r) r.addEventListener("click", () => loadAdminDash()); }
       // Auto-rafraîchi toutes les 30 s TANT QUE le board est visible (sinon on s'arrête).
       clearTimeout(_admLiveT);
@@ -9454,7 +9498,7 @@
 
     // ====================== UTILITAIRE ======================
     // Normalise pour la recherche : minuscules + accents retirés (« José » trouvable en tapant « jose »).
-    function _deburr(s) { return String(s == null ? "" : s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim(); }
+    function _deburr(s) { return String(s == null ? "" : s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim(); }
     function escapeHtml(s) {
       return String(s).replace(/[&<>"']/g, (c) =>
         ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -9755,8 +9799,15 @@
         const fresh = myBadges.filter((b) => !myBadgeKeys.has(b.badge_key));
         if (fresh.length && typeof celebrate === "function") {
           celebrate();
-          fresh.forEach((b) => toast(window.SMBadge && SMBadge.hasEmblem(b.badge_key) ? SMBadge(b.badge_key, { size: 38 }) : (b.emoji || "🏅"), `Badge débloqué : <b>${escapeHtml(b.name || "Nouveau badge")}</b> 🎉`,
-            () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); }));
+          // #36 : plus de 3 badges d'un coup (ex: migration qui débloque tout) → UN SEUL toast
+          // résumé cliquable, fini l'écran recouvert de bandeaux.
+          if (fresh.length > 3) {
+            toast("🏅", i18nT("<b>{n}</b> badges débloqués d'un coup 🎉 · touche pour voir", { n: fresh.length }),
+              () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); });
+          } else {
+            fresh.forEach((b) => toast(window.SMBadge && SMBadge.hasEmblem(b.badge_key) ? SMBadge(b.badge_key, { size: 38 }) : (b.emoji || "🏅"), `Badge débloqué : <b>${escapeHtml(b.name || "Nouveau badge")}</b> 🎉`,
+              () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); }));
+          }
         }
       }
       myBadgeKeys = new Set(myBadges.map((b) => b.badge_key));
@@ -11567,6 +11618,13 @@
           grid.prepend(cell);
         } catch (e) {}
       })();
+      // #21 : la cellule « Hôte SunMates » de la fiche est CLIQUABLE (explication du statut)
+      { const grid = $("tpGrid");
+        if (grid && p.host_status === "approved") {
+          const hc = [...grid.querySelectorAll(".pcell")].find((c) => /Hôte SunMates/.test(c.textContent || ""));
+          if (hc) { hc.style.cursor = "pointer"; hc.addEventListener("click", () => popInfo("🛟", "Hôte SunMates",
+            "<b>" + escapeHtml(p.username || "Ce voyageur") + "</b> accueille et conseille les voyageurs de passage dans sa ville : bons spots, café d'accueil, coup de main. Statut vérifié par l'équipe 💛")); }
+        } }
       // Prompts (seulement ceux qui ont une réponse)
       const prompts = [[p.prompt1_q, p.prompt1_a], [p.prompt2_q, p.prompt2_a], [p.prompt3_q, p.prompt3_a]].filter((x) => x[1]);
       $("tpPrompts").innerHTML = prompts.map((x) =>
@@ -11856,6 +11914,24 @@
     // Lignes "Sécurité & confidentialité" / "Préférences", fonctionnelles
     document.querySelectorAll("[data-secu]").forEach((el) =>
       el.addEventListener("click", () => handleSecu(el.dataset.secu)));
+
+    // #25 : VERROU DE DÉFILEMENT — tant qu'une modale/feuille est visible, la page derrière
+    // ne bouge plus (body.modal-open). Observé sur les classes des overlays connus.
+    (function scrollLock() {
+      const isOpen = (el) => el.classList.contains("sm-selsheet-ov") ? el.classList.contains("show") : !el.classList.contains("hidden");
+      const cands = () => [
+        $("pickerOverlay"), $("popInfoOv"), $("qrModal"), $("trustModal"), $("matesListModal"), $("groupChat"), $("tour"), $("qrScanModal"),
+        ...document.querySelectorAll(".act-overlay"), ...document.querySelectorAll(".sm-selsheet-ov"),
+      ].filter(Boolean);
+      const sync = () => { try { document.body.classList.toggle("modal-open", cands().some(isOpen)); } catch (e) {} };
+      const mo = new MutationObserver(sync);
+      const hook = (el) => { try { mo.observe(el, { attributes: true, attributeFilter: ["class"] }); } catch (e) {} };
+      cands().forEach(hook);
+      new MutationObserver((muts) => { muts.forEach((m) => m.addedNodes.forEach((n) => {
+        if (n.nodeType === 1 && n.classList && (n.classList.contains("sm-selsheet-ov") || n.classList.contains("act-overlay") || n.id === "popInfoOv")) { hook(n); sync(); }
+      })); }).observe(document.body, { childList: true });
+      sync();
+    })();
 
     // #24 : cartes REPLIABLES dans « Besoin d'aide » — toucher le titre replie/déplie,
     // et l'état est GARDÉ (localStorage) jusqu'à réouverture manuelle.
@@ -12313,7 +12389,11 @@
     let homeMapSig = null;                                   // signature des données du dernier rendu carte (perf : évite un rebuild identique)
     let _questCity = "";                                     // ville sélectionnée pour les quêtes ("" = toutes)
     let _homeCityPts = [];                                   // TOUS les points datés d'une ville (quêtes + lieux sûrs) → menu villes + cadrage
-    const _cityNorm = (c) => String(c || "").replace(/, France$/i, "").trim().toLowerCase();
+    // #14 : normalisation RENFORCÉE — on coupe à la virgule (n'importe quel pays, pas que la
+    // France) et on retire les accents → « Lisbonne », « Lisbonne, Portugal » et « Lisbonnè »
+    // ne font plus qu'UNE ville dans les menus.
+    const _cityNorm = (c) => String(c || "").split(",")[0].trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const _sameCity = (a, b) => _cityNorm(a) === _cityNorm(b); // « Paris » et « Paris, France » = même ville
     let _questTodoOnly = false;                              // n'afficher que les quêtes pas encore accomplies
     let homeMeMarker = null;
@@ -12508,6 +12588,8 @@
       ensureIaPersonas();
       if (!homeLeaf) {
         homeLeaf = L.map(el, { scrollWheelZoom: false, zoomSnap: 0.5, wheelPxPerZoomLevel: 120, zoomControl: false, maxZoom: 19,
+          // #12 : UN seul monde (fini les cartes côte à côte au dézoom) + bords élastiques doux
+          minZoom: 2.4, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 0.8, worldCopyJump: false,
           preferCanvas: true, tap: false, zoomAnimation: true, fadeAnimation: true, inertiaDeceleration: 2600 }).setView([46.6, 2.3], 4);
         // Fond vectoriel SunMates : rendu GPU continu (fini le chargement tuile par tuile),
         // recoloré dans la DA. Le service worker met style/glyphes/tuiles en cache → offline OK.
@@ -13287,9 +13369,9 @@
       $("tourProg").textContent = (i + 1) + " / " + _activeTour.length;
       $("tourNext").textContent = i === _activeTour.length - 1 ? "Terminer 🎉" : "Suivant →";
       show($("tourPrev"), i > 0); // « Précédent » caché à la 1re étape
-      // La BULLE est toujours masquée le temps du placement (sinon « apparaît en haut puis redescend »).
-      // Le SPOTLIGHT n'est masqué qu'à la 1re étape (ensuite il GLISSE de façon fluide vers la cible).
-      { const sp = $("tourSpot"), pp = $("tourPop"); if (pp) pp.style.opacity = "0"; if (sp && i === 0) { sp.style.opacity = "0"; sp.classList.add("no-anim"); } }
+      // #30 : la bulle ne CLIGNOTE plus entre les étapes — elle reste visible et GLISSE vers
+      // sa nouvelle place (masquée seulement à la toute 1re étape, le temps du placement).
+      { const sp = $("tourSpot"), pp = $("tourPop"); if (i === 0) { if (pp) pp.style.opacity = "0"; if (sp) { sp.style.opacity = "0"; sp.classList.add("no-anim"); } } }
       setTimeout(() => positionTour(st, i === 0), tabChanges ? 200 : 60);
     }
     function positionTour(st, isFirst) {
@@ -13303,9 +13385,14 @@
         const r = el.getBoundingClientRect(), pad = 8;
         spot.style.left = (r.left - pad) + "px"; spot.style.top = (r.top - pad) + "px";
         spot.style.width = (r.width + pad * 2) + "px"; spot.style.height = (r.height + pad * 2) + "px";
-        if (window.innerHeight - r.bottom > 240) { pop.style.top = (r.bottom + 14) + "px"; pop.style.bottom = "auto"; }
-        else if (r.top > 240) { pop.style.bottom = (window.innerHeight - r.top + 14) + "px"; pop.style.top = "auto"; }
-        else { pop.style.top = "auto"; pop.style.bottom = "16px"; } // élément plein écran → bulle en bas
+        // #30 : position TOUJOURS exprimée en top → la transition CSS anime le GLISSEMENT
+        // (avant : alternance top/bottom = saut impossible à animer → « disparaît/réapparaît »).
+        const ph = pop.offsetHeight || 180;
+        let top;
+        if (window.innerHeight - r.bottom > ph + 26) top = r.bottom + 14;
+        else if (r.top > ph + 26) top = r.top - ph - 14;
+        else top = window.innerHeight - ph - 16; // élément plein écran → bulle en bas
+        pop.style.bottom = "auto"; pop.style.top = Math.max(8, top) + "px";
         spot.style.opacity = "1"; pop.style.opacity = "1"; // placés → on révèle (fondu doux)
         if (isFirst) { void spot.offsetWidth; spot.classList.remove("no-anim"); } // réactive le glissement pour les étapes suivantes
       }));
@@ -13748,21 +13835,30 @@
     const nameById = (id) => (travelerMap[id]?.username) || "Un voyageur";
 
     // ---- Toasts (notifications éphémères) ----
+    // #36 : notifs civilisées — 2 visibles MAX (les autres font la file), glissement vers le
+    // HAUT pour balayer, cliquables (curseur + fermeture propre), thémées via les variables.
+    const _toastQ = { top: [], low: [] };
     function toast(emoji, html, onClick, opts) {
-      // opts.low : toast affiché EN BAS (au-dessus de la nav) — pour ne pas recouvrir ce que
-      // l'utilisateur est en train de toucher en haut (ex : appui long sur le bouton thème).
-      let wrap;
-      if (opts && opts.low) {
-        wrap = $("toastWrapLow");
-        if (!wrap) { wrap = document.createElement("div"); wrap.id = "toastWrapLow"; document.body.appendChild(wrap); }
-      } else { wrap = $("toastWrap"); }
+      const low = !!(opts && opts.low);
+      let wrap = low ? $("toastWrapLow") : $("toastWrap");
+      if (low && !wrap) { wrap = document.createElement("div"); wrap.id = "toastWrapLow"; document.body.appendChild(wrap); }
       if (!wrap) return;
+      if (wrap.children.length >= 2) { (low ? _toastQ.low : _toastQ.top).push([emoji, html, onClick, opts]); return; }
       const el = document.createElement("div");
       el.className = "toast";
       el.innerHTML = `<div class="tico">${emoji}</div><div class="ttxt">${html}</div>`;
-      if (onClick) el.addEventListener("click", () => { onClick(); el.remove(); });
+      const kill = (delay) => setTimeout(() => {
+        if (el._dead) return; el._dead = true;
+        try { el.style.transition = "opacity .25s, transform .25s"; el.style.opacity = "0"; el.style.transform = "translateY(-16px)"; } catch (e) {}
+        setTimeout(() => { el.remove(); const q = low ? _toastQ.low : _toastQ.top; const nx = q.shift(); if (nx) toast(nx[0], nx[1], nx[2], nx[3]); }, 260);
+      }, delay);
+      if (onClick) { el.style.cursor = "pointer"; el.addEventListener("click", () => { try { onClick(); } catch (e) {} kill(0); }); }
+      let sy = null;
+      el.addEventListener("touchstart", (e) => { sy = e.touches[0].clientY; }, { passive: true });
+      el.addEventListener("touchmove", (e) => { if (sy == null) return; const dy = e.touches[0].clientY - sy; if (dy < 0) el.style.transform = `translateY(${dy}px)`; }, { passive: true });
+      el.addEventListener("touchend", (e) => { const dy = e.changedTouches[0].clientY - (sy == null ? e.changedTouches[0].clientY : sy); sy = null; if (dy < -36) kill(0); else el.style.transform = ""; });
       wrap.appendChild(el);
-      setTimeout(() => { el.style.transition = "opacity .3s"; el.style.opacity = "0"; setTimeout(() => el.remove(), 320); }, 5200);
+      kill(5200);
     }
 
     // ---- popInfo : une vraie TUILE qui pop au centre (remplace les bandeaux toast pour les explications) ----
@@ -17742,7 +17838,25 @@
 
     // -------------------- Réglages : haptique + présence --------------------
     (function initToggles() {
-      const h = $("hapticsToggle"); if (h) { h.checked = hapticsOn(); h.addEventListener("change", () => { localStorage.setItem("sm_haptics", h.checked ? "1" : "0"); if (h.checked) vibrate(20); }); }
+      // #17 : si l'appareil NE SUPPORTE PAS la vibration (iPhone/desktop), on le DIT en DA et
+      // on désactive d'office ; sinon, demande de confirmation DA + test immédiat à l'activation.
+      const h = $("hapticsToggle"); if (h) {
+        const supported = !!navigator.vibrate;
+        if (!supported) { h.checked = false; localStorage.setItem("sm_haptics", "0"); }
+        else h.checked = hapticsOn();
+        h.addEventListener("change", async () => {
+          if (!navigator.vibrate) {
+            h.checked = false; localStorage.setItem("sm_haptics", "0");
+            popInfo("📳", "Vibrations indisponibles", "Ton appareil (ou ton navigateur) ne propose pas la vibration aux applis web — c'est le cas des iPhone notamment. Rien à faire de ton côté 💛");
+            return;
+          }
+          if (h.checked) {
+            const ok = await smConfirmP("📳", "Activer les vibrations ?", "Un petit retour vibrant accompagnera les actions clés (navigation, succès, alertes). Tu peux couper quand tu veux.", "Activer", false);
+            if (!ok) { h.checked = false; localStorage.setItem("sm_haptics", "0"); return; }
+            localStorage.setItem("sm_haptics", "1"); vibrate([24, 40, 24]); toast("📳", i18nT("Vibrations activées · tu viens de le sentir 😉"), null, { low: true });
+          } else { localStorage.setItem("sm_haptics", "0"); }
+        });
+      }
       const pr = $("presenceToggle"); if (pr) { pr.checked = presenceEnabled(); pr.addEventListener("change", () => { localStorage.setItem("sm_presence", pr.checked ? "1" : "0"); if (pr.checked) startPresence(); else stopPresence(); }); }
       const pub = $("publicToggle"); if (pub) pub.addEventListener("change", async () => {
         const v = pub.checked;
