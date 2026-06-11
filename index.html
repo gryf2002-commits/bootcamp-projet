@@ -104,8 +104,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=399"></script>
-  <script src="sunmates-icons.js?v=399"></script>
+  <script src="sunmates-badges.js?v=400"></script>
+  <script src="sunmates-icons.js?v=400"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -1051,7 +1051,8 @@
     .onb-bg .orb { position: absolute; border-radius: 50%; filter: blur(32px); opacity: .55; animation: orbFloat 9s ease-in-out infinite; will-change: transform; }
     .onb-bg.orb-paused .orb { animation-play-state: paused; } /* fige les orbes pendant le glissement de slide (anti-saccade) */
     .onb-bg .o1 { width: 240px; height: 240px; background: #ff7e5f; top: -40px; left: -30px; }
-    .onb-bg .o2 { width: 200px; height: 200px; background: #6a5cff; bottom: -30px; right: -20px; animation-delay: -3s; }
+    /* Orbe du bas passé du bleu-violet au doré sunset (la « tache bleue » dénotait dans tous les modes) + plus discret */
+    .onb-bg .o2 { width: 200px; height: 200px; background: #ffc23d; bottom: -30px; right: -20px; animation-delay: -3s; opacity: .4; }
     .onb-bg .o3 { width: 160px; height: 160px; background: #29d8c2; top: 42%; right: 26%; animation-delay: -6s; }
     /* translate SEUL (pas de scale) : le flou n'est plus recalculé à chaque frame → fluide. */
     @keyframes orbFloat { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-22px,0); } }
@@ -1064,10 +1065,14 @@
     .onb-card.onb-sliding { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(20,13,38,.78); }
     .onb-skip { position: absolute; top: 1rem; right: 1.1rem; background: none; border: 0; color: rgba(255,255,255,.7); font-size: .82rem; cursor: pointer; }
     .onb-stage { position: relative; min-height: 280px; }
-    .onb-step { position: absolute; inset: 0; opacity: 0; transform: translateX(34px); transition: opacity .3s ease, transform .3s ease;
+    /* Glissement plus doux (courbe amortie) ; .fast = utilisateur pressé → transitions instantanées */
+    .onb-step { position: absolute; inset: 0; opacity: 0; transform: translateX(24px); transition: opacity .45s cubic-bezier(.22,1,.36,1), transform .45s cubic-bezier(.22,1,.36,1);
+
       pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; will-change: transform, opacity; backface-visibility: hidden; }
     .onb-step.active { opacity: 1; transform: none; pointer-events: auto; }
-    .onb-step.left { transform: translateX(-34px); }
+    .onb-step.left { transform: translateX(-24px); }
+    .onb-stage.fast .onb-step { transition: none; }
+    .onb-skip.hot { color: #ffd15c; font-weight: 800; text-decoration: underline; }
     .onb-emoji { font-size: 72px; margin-bottom: .8rem; filter: drop-shadow(0 10px 18px rgba(0,0,0,.4)); animation: floaty 3s ease-in-out infinite; }
     .onb-step h2 { font-size: 1.6rem; margin: 0 0 .6rem; color: #fff; }
     /* Dégradé limité au prénom (.grad-name) : la virgule et « Salut »/« ! » restent en couleur normale. */
@@ -2088,21 +2093,23 @@
     .ptl-ic { width: 26px; text-align: center; font-size: 1rem; flex-shrink: 0; }
     .ptl-tx { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
     .ptl-d { font-size: .72rem; flex-shrink: 0; }
-    /* Carte souvenir partageable (story) */
-    .souvenir-card { background: linear-gradient(160deg,#FF8A3D 0%,#FF5A4D 45%,#7A2E5E 100%); color: #fff; text-align: center; padding: 1.6rem 1.2rem 1.3rem; position: relative; overflow: hidden; }
-    .souvenir-card::after { content: ""; position: absolute; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.28), transparent 70%); top: -90px; right: -60px; }
-    .souvenir-card > * { position: relative; z-index: 1; }
-    .sv-brand { font-weight: 800; letter-spacing: .04em; font-size: .95rem; opacity: .95; }
-    .sv-avatar { width: 76px; height: 76px; border-radius: 50%; background: rgba(255,255,255,.25); display: grid; place-items: center; font-size: 30px; font-weight: 800; margin: .9rem auto .5rem; border: 3px solid rgba(255,255,255,.7); background-size: cover; background-position: center; }
-    .sv-name { font-size: 1.35rem; font-weight: 800; font-family: "Fraunces", serif; }
-    .sv-level { display: inline-block; margin-top: .35rem; font-size: .78rem; font-weight: 800; background: rgba(255,255,255,.22); padding: .2rem .6rem; border-radius: 999px; }
-    .sv-tag { font-size: .82rem; opacity: .9; margin-top: .35rem; }
+    /* Carte souvenir partageable (story) · DA « joaillerie » : coucher de soleil profond,
+       cadre doré fin (carte précieuse), pastille niveau dorée, stats émaillées lisibles */
+    .souvenir-card { background: linear-gradient(165deg,#FFB347 0%,#FF8A3D 30%,#FF5A4D 62%,#5E2B52 100%); color: #fff; text-align: center; padding: 1.7rem 1.2rem 1.4rem; position: relative; overflow: hidden; }
+    .souvenir-card::after { content: ""; position: absolute; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, rgba(255,229,170,.45), transparent 68%); top: -100px; right: -70px; }
+    .souvenir-card::before { content: ""; position: absolute; inset: 9px; border: 1.5px solid rgba(255,221,138,.55); border-radius: 16px; pointer-events: none; z-index: 1; }
+    .souvenir-card > * { position: relative; z-index: 2; }
+    .sv-brand { font-weight: 800; letter-spacing: .14em; text-transform: uppercase; font-size: .78rem; color: #FFE2A6; }
+    .sv-avatar { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,.25); display: grid; place-items: center; font-size: 32px; font-weight: 800; margin: .9rem auto .5rem; border: 3px solid #FFD98A; box-shadow: 0 6px 18px rgba(0,0,0,.25); background-size: cover; background-position: center; }
+    .sv-name { font-size: 1.5rem; font-weight: 900; font-family: "Fraunces", serif; text-shadow: 0 2px 8px rgba(0,0,0,.18); }
+    .sv-level { display: inline-block; margin-top: .4rem; font-size: .78rem; font-weight: 800; background: linear-gradient(135deg,#FFD15C,#F4A11E); color: #5a3d00; padding: .22rem .7rem; border-radius: 999px; box-shadow: 0 3px 8px rgba(0,0,0,.2); }
+    .sv-tag { font-size: .8rem; opacity: .92; margin-top: .4rem; letter-spacing: .02em; }
     .sv-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; margin: 1.1rem 0 .6rem; }
-    .sv-stat { background: rgba(255,255,255,.16); border-radius: 14px; padding: .6rem .3rem; backdrop-filter: blur(4px); }
-    .sv-stat .sv-n { font-size: 1.1rem; font-weight: 800; white-space: nowrap; }
-    .sv-stat .sv-l { font-size: .68rem; opacity: .85; }
-    .sv-badges { display: flex; flex-wrap: wrap; gap: .2rem; justify-content: center; font-size: 1.3rem; min-height: 1.4rem; }
-    .sv-foot { margin-top: .8rem; font-size: .8rem; font-weight: 700; opacity: .92; }
+    .sv-stat { background: rgba(40,12,40,.28); border: 1px solid rgba(255,221,138,.35); border-radius: 14px; padding: .65rem .3rem; }
+    .sv-stat .sv-n { font-size: 1.25rem; font-weight: 900; font-family: "Fraunces", serif; white-space: nowrap; }
+    .sv-stat .sv-l { font-size: .68rem; opacity: .9; font-weight: 700; letter-spacing: .02em; }
+    .sv-badges { display: flex; flex-wrap: wrap; gap: .25rem; justify-content: center; font-size: 1.35rem; min-height: 1.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,.25)); }
+    .sv-foot { margin-top: .9rem; font-size: .8rem; font-weight: 800; color: #FFE2A6; }
 
     /* ------------------------ Compatibilité ------------------------- */
     .compat { display: inline-block; padding: .28rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 800; }
@@ -3107,6 +3114,12 @@
     .sm-date-col { flex: 1; max-height: 36vh; overflow-y: auto; border: 1px solid var(--line); border-radius: 12px; padding: .25rem; }
     .sm-date-col .sm-selopt { padding: .5rem .4rem; justify-content: center; text-align: center; }
     body.theme-dusk .sm-date-col { border-color: rgba(255,255,255,.1); }
+
+    /* Faux appel décroché : grille de commandes factices (l'écran n'est plus vide) */
+    .fc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem .9rem; }
+    .fc-gbtn { display: flex; flex-direction: column; align-items: center; gap: .35rem; background: none; border: 0; color: #cfcfdd; font-size: .66rem; font-weight: 600; cursor: pointer; }
+    .fc-gbtn span { width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,.12); display: grid; place-items: center; font-size: 1.3rem; transition: background .15s; }
+    .fc-gbtn.on span { background: rgba(255,255,255,.85); }
   </style>
 </head>
 <body>
@@ -3207,7 +3220,16 @@
         <button class="fc-btn decline" id="fcDecline"><span>✕</span>Refuser</button>
         <button class="fc-btn accept" id="fcAccept"><span>📞</span>Répondre</button>
       </div>
-      <div class="fc-actions hidden" id="fcInCall">
+      <!-- Décroché : grille de commandes factices (façon vrai écran d'appel) + raccrocher -->
+      <div class="fc-actions hidden" id="fcInCall" style="flex-direction:column;gap:1.6rem">
+        <div class="fc-grid">
+          <button type="button" class="fc-gbtn" data-fcg><span>🔇</span>muet</button>
+          <button type="button" class="fc-gbtn" data-fcg><span>⌨️</span>clavier</button>
+          <button type="button" class="fc-gbtn" data-fcg><span>🔊</span>haut-parleur</button>
+          <button type="button" class="fc-gbtn" data-fcg><span>➕</span>ajouter</button>
+          <button type="button" class="fc-gbtn" data-fcg><span>📹</span>vidéo</button>
+          <button type="button" class="fc-gbtn" data-fcg><span>👤</span>contacts</button>
+        </div>
         <button class="fc-btn decline" id="fcHangup"><span>📵</span>Raccrocher</button>
       </div>
     </div>
@@ -3750,6 +3772,9 @@
           <div style="text-align:right;margin-top:.4rem"><a id="spotClear" style="cursor:pointer;display:none;color:var(--accent);font-weight:600;font-size:.82rem" data-i18n="spot.clear">Effacer</a></div>
           <div class="msg" id="spotMsg" style="text-align:center"></div>
         </details>
+
+        <!-- 💛 Mes adresses favorites (#33) : rempli par renderFavCard(), masqué si vide -->
+        <div class="card" id="favCard" style="display:none"></div>
         <div class="search" style="margin-top:.2rem"><span class="ico">🔍</span><input id="cafeSearch" type="text" maxlength="80" placeholder="Rechercher un lieu ou une ville…" data-i18n-ph="places.searchph" /></div>
         <!-- Filtres et tris SÉPARÉS visuellement (mêmes tuiles, même câblage #lieuxCats .cat-tile :
              un tri repart de « Tous », un filtre annule le tri → une seule tuile active, voulu) -->
@@ -6447,6 +6472,7 @@
         "</div>" +
         "<button class='btn-accent btn-block' id='cdCheckin' style='margin-top:.9rem'>🔒 Check-in (+10)</button>" +
         "<div style='display:flex;gap:.5rem;margin-top:.5rem'>" +
+          "<button class='btn-ghost' id='cdFav' style='flex:1'>" + (isFavPlace(c.id) ? "💛 Favori ✓" : "🤍 Favori") + "</button>" +
           "<button class='btn-ghost' id='cdReviews' style='flex:1'>⭐ Avis</button>" +
           (c.lat != null && c.lng != null ? "<button class='btn-ghost' id='cdMap' style='flex:1'>📍 Sur la carte</button>" : "") +
         "</div>" +
@@ -6456,10 +6482,42 @@
       setTimeout(() => {
         const close = () => { const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); };
         const ci = $("cdCheckin"); if (ci) ci.onclick = () => { close(); checkIn(c.id, c.name); };
+        const fv = $("cdFav"); if (fv) fv.onclick = () => { const was = isFavPlace(c.id); togglePlaceFav(c); if (!was) placeFavNote(c); else showCafeDetail(c); };
         const rv = $("cdReviews"); if (rv) rv.onclick = () => { close(); openReviews(c.id, c.name); };
         const mp = $("cdMap"); if (mp) mp.onclick = () => { close(); focusHomeMapOn(c.id); };
         const rc = $("cdRecommend"); if (rc) rc.onclick = () => { close(); recommendPlaceToMate(c); };
       }, 40);
+    }
+    // ---- 💛 Mes adresses favorites : gardées sur l'appareil, avec une note perso (#33) ----
+    function _favKey() { return "sm_favs_" + (myUserId || "x"); }
+    function _favs() { try { return JSON.parse(localStorage.getItem(_favKey()) || "{}") || {}; } catch (e) { return {}; } }
+    function _favSave(o) { try { localStorage.setItem(_favKey(), JSON.stringify(o)); } catch (e) {} }
+    function isFavPlace(id) { return !!_favs()[id]; }
+    function togglePlaceFav(c) {
+      const f = _favs();
+      if (f[c.id]) { delete f[c.id]; _favSave(f); if (typeof toast === "function") toast("💔", i18nT("Retiré de tes favoris")); }
+      else { f[c.id] = { note: "" }; _favSave(f); if (typeof toast === "function") toast("💛", i18nT("Ajouté à tes favoris !")); }
+      renderFavCard();
+    }
+    async function placeFavNote(c) {
+      const f = _favs(); if (!f[c.id]) return;
+      const v = await smPromptP("📝", i18nT("Ma note · {n}", { n: c.name }), i18nT("Pourquoi tu kiffes cet endroit ?"), { placeholder: f[c.id].note || "Ex : meilleur flat white du quartier", maxlength: 120 });
+      if (v) { f[c.id].note = v; _favSave(f); if (typeof toast === "function") toast("📝", i18nT("Note enregistrée ✨")); }
+      renderFavCard();
+    }
+    function renderFavCard() {
+      const box = $("favCard"); if (!box) return;
+      const f = _favs(); const byId = {}; (typeof allCafes !== "undefined" ? allCafes : []).forEach((c) => { byId[c.id] = c; });
+      const rows = Object.keys(f).map((id) => byId[id]).filter(Boolean);
+      if (!rows.length) { box.style.display = "none"; box.innerHTML = ""; return; }
+      box.style.display = "";
+      box.innerHTML = '<div class="section-head" style="margin:0 0 .4rem"><h3 style="margin:0">💛 ' + i18nT("Mes adresses favorites") + "</h3></div>"
+        + rows.map((c) => {
+          const note = (f[c.id] && f[c.id].note) || "";
+          return '<div class="qrow" data-favopen="' + c.id + '" style="cursor:pointer;gap:.5rem"><div class="qico">📍</div><div class="qname" style="flex:1">' + escapeHtml(c.name || "Lieu") + '<div class="meta muted" style="font-size:.74rem">' + escapeHtml(c.city || "") + (note ? " · « " + escapeHtml(note) + " »" : "") + '</div></div><button class="btn-ghost" data-favnote="' + c.id + '" style="padding:.25rem .55rem;font-size:.74rem" title="Ma note">📝</button></div>';
+        }).join("");
+      box.querySelectorAll("[data-favopen]").forEach((el) => el.addEventListener("click", (e) => { if (e.target.closest("button")) return; const c = byId[el.dataset.favopen]; if (c) showCafeDetail(c); }));
+      box.querySelectorAll("[data-favnote]").forEach((el) => el.addEventListener("click", () => { const c = byId[el.dataset.favnote]; if (c) placeFavNote(c); }));
     }
     // Recommander un lieu à un Mate connecté → message dans le chat avec un bouton « Voir le lieu ».
     function recommendPlaceToMate(c) {
@@ -6479,6 +6537,7 @@
     }
     function renderCafesList() {
       const list = $("cafesList"); if (!list) return;
+      renderFavCard(); // 💛 favoris synchronisés avec la liste des lieux
       if (!allCafes.length) { list.innerHTML = '<p class="muted">Aucun lieu pour l\'instant.</p>'; $("cafesCount").textContent = ""; return; }
       const q = (cafeFilter.q || "").toLowerCase();
       let arr = allCafes.filter((c) => {
@@ -8076,13 +8135,33 @@
     }); }
     { const d = $("fcDecline"); if (d) d.addEventListener("click", fcStop); }
     { const h = $("fcHangup"); if (h) h.addEventListener("click", fcStop); }
+    // Commandes factices de l'écran décroché : toggle visuel (réalisme, aucune fonction réelle)
+    document.querySelectorAll("#fcInCall [data-fcg]").forEach((b) => b.addEventListener("click", () => b.classList.toggle("on")));
+    // ⚙️ Faux contacts GÉRABLES (ajouter / supprimer), gardés sur l'appareil
+    function _fcContacts() { try { const a = JSON.parse(localStorage.getItem("sm_fc_contacts") || "null"); if (Array.isArray(a) && a.length) return a; } catch (e) {} return ["Maman", "Papa", "Léa", "Le boulot", "Numéro inconnu"]; }
+    function _fcSaveContacts(a) { try { localStorage.setItem("sm_fc_contacts", JSON.stringify(a.slice(0, 8))); } catch (e) {} }
+    function openFcContacts() {
+      const list = _fcContacts();
+      popInfo("⚙️", "Mes faux contacts",
+        "<p style='font-size:.82rem;margin:0 0 .6rem'>Jusqu'à 8 contacts pour tes faux appels. Ils restent sur ton appareil.</p>" +
+        list.map((n, i) => "<div class='qrow' style='gap:.5rem'><span style='flex:1;font-weight:700'>" + escapeHtml(n) + "</span><button class='btn-ghost' data-fcdel='" + i + "' style='padding:.25rem .55rem;font-size:.75rem'>✕</button></div>").join("") +
+        "<button class='btn-primary btn-block' id='fcAddContact' style='margin-top:.7rem'>➕ Ajouter un contact</button>");
+      setTimeout(() => {
+        document.querySelectorAll("[data-fcdel]").forEach((bt) => bt.onclick = () => { const a = _fcContacts(); a.splice(Number(bt.dataset.fcdel), 1); _fcSaveContacts(a.length ? a : ["Maman"]); openFcContacts(); });
+        const ad = $("fcAddContact"); if (ad) ad.onclick = async () => {
+          const v = await smPromptP("📇", "Nouveau faux contact", "Le nom qui s'affichera sur l'écran d'appel.", { placeholder: "Ex : Tonton Marc", maxlength: 24 });
+          if (v) { const a = _fcContacts(); if (!a.includes(v)) a.push(v); _fcSaveContacts(a); }
+          openFcContacts();
+        };
+      }, 40);
+    }
     { const b = $("fakeCallBtn"); if (b) b.addEventListener("click", () => {
-      const names = ["Maman", "Papa", "Léa", "Le boulot", "Numéro inconnu"];
+      const names = _fcContacts();
       const saved = (() => { try { return localStorage.getItem("sm_fc_name") || ""; } catch (e) { return ""; } })();
       const ringTxt = _hasCustomRing ? "🎵 Ma sonnerie (perso) ›" : "🎵 Choisir ma sonnerie ›";
       showInfo("📞 Configurer le faux appel", `
         <div style="text-align:left">
-          <label style="font-weight:700;font-size:.85rem">Nom de l'appelant</label>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem"><label style="font-weight:700;font-size:.85rem">Nom de l'appelant</label><button class="btn-ghost" id="fcManage" style="padding:.25rem .6rem;font-size:.74rem">⚙️ Gérer</button></div>
           <input id="fcNameInput" type="text" maxlength="24" placeholder="Ex : Maman, Le boulot…" value="${escapeHtml(saved)}" style="width:100%;box-sizing:border-box;padding:.6rem;border:1px solid var(--line);border-radius:10px;margin:.3rem 0 .6rem" />
           <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem">${names.map((n) => `<button class="btn-ghost fc-pickname" data-n="${escapeHtml(n)}" style="flex:0 0 auto;padding:.35rem .7rem;font-size:.82rem">${escapeHtml(n)}</button>`).join("")}</div>
           <button class="btn-ghost btn-block" id="fcRingBtn" style="margin-bottom:.6rem">${ringTxt}</button>
@@ -8091,6 +8170,7 @@
         </div>`);
       setTimeout(() => {
         document.querySelectorAll(".fc-pickname").forEach((bt) => bt.onclick = () => { const i = $("fcNameInput"); if (i) { i.value = bt.dataset.n; } });
+        const mg = $("fcManage"); if (mg) mg.onclick = () => openFcContacts();
         const rb = $("fcRingBtn"); if (rb) rb.onclick = () => openRingtonePicker();
         const lb = $("fcLaunch"); if (lb) lb.onclick = () => {
           const name = (($("fcNameInput") && $("fcNameInput").value) || "").trim() || "Maman";
@@ -11742,7 +11822,15 @@
       if (!seenLocal && !seenDb) setTimeout(openOnboarding, 600);
     }
     (function () {
-      const nx = $("onbNext"); if (nx) nx.addEventListener("click", () => { if (onbStep >= ONB_STEPS - 1) { closeOnbSlides(); goToTab("accueil"); setTimeout(startTour, 320); } else showOnbStep(onbStep + 1); });
+      // Utilisateur pressé (taps « Suivant » rapprochés) : transitions instantanées + « Passer » mis en avant
+      let _onbLastTap = 0, _onbFast = 0;
+      const nx = $("onbNext"); if (nx) nx.addEventListener("click", () => {
+        const now = performance.now();
+        if (now - _onbLastTap < 900) { _onbFast++; } else { _onbFast = 0; }
+        _onbLastTap = now;
+        if (_onbFast >= 2) { const st = document.querySelector(".onb-stage"); if (st) st.classList.add("fast"); const sk = $("onbSkip"); if (sk) sk.classList.add("hot"); }
+        if (onbStep >= ONB_STEPS - 1) { closeOnbSlides(); goToTab("accueil"); setTimeout(startTour, 320); } else showOnbStep(onbStep + 1);
+      });
       const pv = $("onbPrev"); if (pv) pv.addEventListener("click", () => showOnbStep(onbStep - 1));
       const sk = $("onbSkip"); if (sk) sk.addEventListener("click", finishOnboarding);
     })();
@@ -14659,6 +14747,12 @@
       "Album souvenir par ville": "Memory album by city",
       "🏡 Ta galerie SunMates": "🏡 Your SunMates gallery",
       "Tes souvenirs apparaîtront ici ✨": "Your memories will appear here ✨",
+      "Retiré de tes favoris": "Removed from your favourites",
+      "Ajouté à tes favoris !": "Added to your favourites!",
+      "Ma note · {n}": "My note · {n}",
+      "Pourquoi tu kiffes cet endroit ?": "Why do you love this place?",
+      "Note enregistrée ✨": "Note saved ✨",
+      "Mes adresses favorites": "My favourite places",
       "Tes Mates d'aventure": "Your adventure Mates",
       "Aucune connexion pour l'instant": "No failed logins yet.",
       "Toucher pour discuter 💬": "Tap to chat 💬",
