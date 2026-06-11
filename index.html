@@ -111,8 +111,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=420"></script>
-  <script src="sunmates-icons.js?v=420"></script>
+  <script src="sunmates-badges.js?v=421"></script>
+  <script src="sunmates-icons.js?v=421"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -1482,6 +1482,16 @@
     .fc-btn span { width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; box-shadow: 0 8px 20px rgba(0,0,0,.4); }
     .fc-btn.accept span { background: #34c759; animation: fcShake 1s ease-in-out infinite; }
     .fc-btn.decline span { background: #ff3b30; }
+    /* #15 : écran d'appel plus CRÉDIBLE — numéro affiché, halo qui pulse pendant la sonnerie,
+       puis en ligne : chrono bien visible, avatar réduit, grille réactive au toucher. */
+    .fc-num { color: rgba(255,255,255,.45); font-size: .92rem; margin-top: .3rem; letter-spacing: .4px; font-variant-numeric: tabular-nums; }
+    .fakecall.ringing .fc-avatar { animation: fcPulse 1.7s ease-in-out infinite; }
+    @keyframes fcPulse { 0%, 100% { box-shadow: 0 0 0 6px rgba(255,255,255,.08); } 50% { box-shadow: 0 0 0 16px rgba(255,255,255,.04), 0 0 0 6px rgba(255,255,255,.10); } }
+    .fakecall.incall .fc-status { font-size: 1.5rem; color: #fff; font-weight: 600; }
+    .fakecall.incall .fc-name { font-size: 1.35rem; }
+    .fakecall.incall .fc-avatar { width: 84px; height: 84px; font-size: 36px; margin-bottom: .9rem; }
+    .fc-gbtn span { transition: background .15s, transform .1s; }
+    .fc-gbtn:active span { transform: scale(.92); }
     @keyframes fcShake { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
     /* Catalogue des fonctionnalités (knowledge base admin) */
     .feat-zone { display: flex; align-items: center; gap: .5rem; font-weight: 800; font-size: .9rem; margin: 1rem 0 .5rem; padding-bottom: .35rem;
@@ -3490,6 +3500,7 @@
         <div class="fc-avatar" id="fcAvatar">📞</div>
         <div class="fc-name" id="fcName">Maman</div>
         <div class="fc-status" id="fcStatus">Appel entrant…</div>
+        <div class="fc-num" id="fcNum"></div>
       </div>
       <div class="fc-actions" id="fcRinging">
         <button class="fc-btn decline" id="fcDecline"><span>✕</span>Refuser</button>
@@ -8571,13 +8582,22 @@
         fileIn.value = "";
       });
     }
+    // #15 : faux numéro STABLE par nom (réalisme) — « Numéro inconnu » reste masqué.
+    function _fcFakeNum(name) {
+      if (/inconnu|masqué|unknown/i.test(name)) return "Numéro masqué";
+      let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+      const d = String(h % 100000000).padStart(8, "0");
+      return "+33 6 " + d.slice(0, 2) + " " + d.slice(2, 4) + " " + d.slice(4, 6) + " " + d.slice(6, 8);
+    }
     function startFakeCall(name) {
       name = name || "Maman";
       $("fcName").textContent = name;
       { const av = $("fcAvatar"); if (av) av.textContent = /inconnu/i.test(name) ? "📞" : (name.trim()[0] || "📞").toUpperCase(); }
+      { const nm = $("fcNum"); if (nm) nm.textContent = _fcFakeNum(name); }
       $("fcStatus").textContent = "Appel entrant…";
       show($("fcRinging"), true); show($("fcInCall"), false);
       $("fakeCall").classList.remove("hidden");
+      $("fakeCall").classList.add("ringing"); $("fakeCall").classList.remove("incall");
       _playFakeRing();
       if (navigator.vibrate) { try { navigator.vibrate([500, 250, 500]); } catch (e) {} fcRingTick = setInterval(() => { try { navigator.vibrate([500, 250, 500]); } catch (e) {} }, 1600); }
     }
@@ -8585,10 +8605,12 @@
       clearInterval(fcRingTick); clearInterval(fcCallTimer); clearTimeout(fcStartTimeout); _stopFakeRing();
       if (navigator.vibrate) { try { navigator.vibrate(0); } catch (e) {} }
       $("fakeCall").classList.add("hidden");
+      $("fakeCall").classList.remove("ringing", "incall");
     }
     { const a = $("fcAccept"); if (a) a.addEventListener("click", () => {
       clearInterval(fcRingTick); _stopFakeRing(); if (navigator.vibrate) { try { navigator.vibrate(0); } catch (e) {} }
       show($("fcRinging"), false); show($("fcInCall"), true);
+      $("fakeCall").classList.remove("ringing"); $("fakeCall").classList.add("incall");
       fcSeconds = 0; $("fcStatus").textContent = "00:00";
       fcCallTimer = setInterval(() => { fcSeconds++; const m = String(Math.floor(fcSeconds / 60)).padStart(2, "0"); const s = String(fcSeconds % 60).padStart(2, "0"); $("fcStatus").textContent = m + ":" + s; }, 1000);
     }); }
@@ -8614,29 +8636,42 @@
         };
       }, 40);
     }
+    // #15 : DÉLAI RÉGLABLE (5 s trop court pour ranger le téléphone) — persiste sur l'appareil.
+    const FC_DELAYS = [[5, "5 s"], [30, "30 s"], [60, "1 min"], [300, "5 min"]];
+    function _fcDelay() { try { const v = +localStorage.getItem("sm_fc_delay"); return FC_DELAYS.some(([s]) => s === v) ? v : 5; } catch (e) { return 5; } }
+    function _fcDelayTxt(s) { const f = FC_DELAYS.find(([x]) => x === s); return f ? f[1] : s + " s"; }
     { const b = $("fakeCallBtn"); if (b) b.addEventListener("click", () => {
       const names = _fcContacts();
       const saved = (() => { try { return localStorage.getItem("sm_fc_name") || ""; } catch (e) { return ""; } })();
       const ringTxt = _hasCustomRing ? "🎵 Ma sonnerie (perso) ›" : "🎵 Choisir ma sonnerie ›";
+      const curDelay = _fcDelay();
       showInfo("📞 Configurer le faux appel", `
         <div style="text-align:left">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem"><label style="font-weight:700;font-size:.85rem">Nom de l'appelant</label><button class="btn-ghost" id="fcManage" style="padding:.25rem .6rem;font-size:.74rem">⚙️ Gérer</button></div>
           <input id="fcNameInput" type="text" maxlength="24" placeholder="Ex : Maman, Le boulot…" value="${escapeHtml(saved)}" style="width:100%;box-sizing:border-box;padding:.6rem;border:1px solid var(--line);border-radius:10px;margin:.3rem 0 .6rem" />
-          <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem">${names.map((n) => `<button class="btn-ghost fc-pickname" data-n="${escapeHtml(n)}" style="flex:0 0 auto;padding:.35rem .7rem;font-size:.82rem">${escapeHtml(n)}</button>`).join("")}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.7rem">${names.map((n) => `<button class="btn-ghost fc-pickname" data-n="${escapeHtml(n)}" style="flex:0 0 auto;padding:.35rem .7rem;font-size:.82rem">${escapeHtml(n)}</button>`).join("")}</div>
+          <label style="font-weight:700;font-size:.85rem">Sonne dans</label>
+          <div style="display:flex;gap:.4rem;margin:.3rem 0 .7rem">${FC_DELAYS.map(([s, l]) => `<button class="btn-ghost fc-delay${s === curDelay ? " active" : ""}" data-s="${s}" style="flex:1;padding:.42rem .2rem;font-size:.82rem${s === curDelay ? ";background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:800" : ""}">${l}</button>`).join("")}</div>
           <button class="btn-ghost btn-block" id="fcRingBtn" style="margin-bottom:.6rem">${ringTxt}</button>
-          <button class="btn-primary btn-block" id="fcLaunch">📞 Lancer l'appel (dans 5 s)</button>
-          <p class="muted" style="font-size:.74rem;text-align:center;margin:.5rem 0 0">L'appel sonnera dans 5 s · range ton téléphone 😉</p>
+          <button class="btn-primary btn-block" id="fcLaunch">📞 Lancer l'appel (dans ${_fcDelayTxt(curDelay)})</button>
+          <p class="muted" style="font-size:.74rem;text-align:center;margin:.5rem 0 0">Garde l'app ouverte (ou tout juste en arrière-plan) : le web ne peut pas faire sonner une app fermée 😉</p>
         </div>`);
       setTimeout(() => {
         document.querySelectorAll(".fc-pickname").forEach((bt) => bt.onclick = () => { const i = $("fcNameInput"); if (i) { i.value = bt.dataset.n; } });
+        document.querySelectorAll(".fc-delay").forEach((bt) => bt.onclick = () => {
+          try { localStorage.setItem("sm_fc_delay", bt.dataset.s); } catch (e) {}
+          document.querySelectorAll(".fc-delay").forEach((x) => { const on = x === bt; x.classList.toggle("active", on); x.style.cssText = "flex:1;padding:.42rem .2rem;font-size:.82rem" + (on ? ";background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:800" : ""); });
+          const lb2 = $("fcLaunch"); if (lb2) lb2.textContent = "📞 Lancer l'appel (dans " + _fcDelayTxt(+bt.dataset.s) + ")";
+        });
         const mg = $("fcManage"); if (mg) mg.onclick = () => openFcContacts();
         const rb = $("fcRingBtn"); if (rb) rb.onclick = () => openRingtonePicker();
         const lb = $("fcLaunch"); if (lb) lb.onclick = () => {
           const name = (($("fcNameInput") && $("fcNameInput").value) || "").trim() || "Maman";
           try { localStorage.setItem("sm_fc_name", name); } catch (e) {}
+          const d = _fcDelay();
           closePicker();
-          toast("📞", "Appel simulé dans 5 s… range ton téléphone 😉");
-          fcStartTimeout = setTimeout(() => startFakeCall(name), 5000);
+          toast("📞", i18nT("Appel simulé dans {d}… range ton téléphone 😉", { d: _fcDelayTxt(d) }));
+          fcStartTimeout = setTimeout(() => startFakeCall(name), d * 1000);
         };
       }, 40);
     }); }
@@ -11186,14 +11221,37 @@
       { fr: "Charge ton téléphone : une batterie pleine, c'est ta meilleure sécurité.", en: "Charge your phone: a full battery is your best safety net." },
       { fr: "Renseigne-toi sur les arnaques courantes de ta destination avant d'arriver.", en: "Read up on common scams at your destination before you arrive." },
       { fr: "Le faux appel SunMates t'aide à quitter poliment une situation inconfortable.", en: "The SunMates fake call helps you politely leave an uncomfortable situation." },
+      // #14 : beaucoup plus de variété (40 conseils, rotation quotidienne + navigateur au clic)
+      { fr: "Prends uniquement des taxis officiels ou des VTC traçables, et vérifie la plaque avant de monter.", en: "Only take official taxis or trackable ride-shares, and check the plate before getting in." },
+      { fr: "Sur un wifi public, évite les opérations sensibles (banque) ou passe par un VPN.", en: "On public wifi, avoid sensitive operations (banking) or use a VPN." },
+      { fr: "Répartis ton argent et tes cartes à plusieurs endroits : jamais tout au même.", en: "Split your money and cards across several places: never all in one spot." },
+      { fr: "Dans la foule, porte ton sac devant toi, fermeture contre le corps.", en: "In a crowd, wear your bag in front of you, zipper against your body." },
+      { fr: "La nuit, choisis les rues éclairées et passantes, même si c'est plus long.", en: "At night, choose lit and busy streets, even if the way is longer." },
+      { fr: "Télécharge la carte de ta ville en HORS-LIGNE avant de sortir (métro inclus).", en: "Download your city's map OFFLINE before heading out (metro included)." },
+      { fr: "Une batterie externe dans le sac = jamais à court au mauvais moment.", en: "A power bank in your bag = never out of battery at the wrong time." },
+      { fr: "Vérifie le profil d'un Mate (badge vérifié, recommandations) avant une rencontre.", en: "Check a Mate's profile (verified badge, vouches) before meeting up." },
+      { fr: "Pour une première rencontre, préviens un proche : qui, où, à quelle heure.", en: "For a first meetup, tell someone close: who, where, what time." },
+      { fr: "Apprends à dire « non » fermement dans la langue locale. Pas besoin de t'excuser.", en: "Learn to say a firm “no” in the local language. No apology needed." },
+      { fr: "Si quelqu'un insiste pour t'accompagner « jusqu'à chez toi », change de destination.", en: "If someone insists on walking you “home”, change your destination." },
+      { fr: "Note l'adresse et le numéro de ton ambassade ou consulat le plus proche.", en: "Note the address and number of your nearest embassy or consulate." },
+      { fr: "Souscris une assurance voyage qui couvre les frais médicaux à l'étranger.", en: "Get travel insurance that covers medical costs abroad." },
+      { fr: "Vérifie les vaccins et l'eau potable de ta destination avant de partir.", en: "Check vaccines and tap-water safety for your destination before leaving." },
+      { fr: "Active la double authentification sur tes comptes importants avant le départ.", en: "Turn on two-factor authentication on your important accounts before you go." },
+      { fr: "Dans ton logement, repère les sorties de secours dès le premier soir.", en: "In your accommodation, locate the emergency exits on the very first night." },
+      { fr: "Un cadenas à code sur ton sac dans les dortoirs, et tes objets de valeur près de toi la nuit.", en: "A code lock on your bag in dorms, and valuables close to you at night." },
+      { fr: "Évite d'exhiber téléphone, bijoux ou appareil photo dans les zones bondées.", en: "Avoid flashing your phone, jewelry or camera in crowded areas." },
+      { fr: "Surveille la météo locale et les alertes officielles (orages, canicule, séismes).", en: "Watch local weather and official alerts (storms, heatwaves, earthquakes)." },
+      { fr: "Si tu te sens suivi·e, entre dans un commerce ouvert et appelle quelqu'un.", en: "If you feel followed, step into an open shop and call someone." },
+      { fr: "Garde ton verre à la main en soirée, et refuse les boissons déjà ouvertes.", en: "Keep your drink in hand on nights out, and refuse drinks already opened." },
+      { fr: "Envoie une photo de la plaque du taxi à un proche avant un long trajet.", en: "Send a photo of the taxi's plate to someone close before a long ride." },
+      { fr: "Repère les distributeurs en intérieur (banques, centres commerciaux) plutôt qu'en rue.", en: "Use indoor ATMs (banks, malls) rather than street ones." },
+      { fr: "Fais des points réguliers avec ton cercle quand tu changes de ville.", en: "Check in regularly with your circle whenever you change cities." },
+      { fr: "Méfie-toi des « aides spontanées » aux distributeurs et aux guichets automatiques.", en: "Beware of “spontaneous helpers” at ATMs and ticket machines." },
     ];
     let detectedCountryName = null; // pays courant détecté par géoloc (déclaré ici pour éviter le TDZ)
-    function renderSafetyTip() {
-      const el = $("safetyTipText"); if (!el) return;
-      const now = new Date();
-      const day = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000); // jour de l'année
-      const tip = SAFETY_TIPS[day % SAFETY_TIPS.length];
-      const en = (currentLang === "en");
+    function _tipDay() { const now = new Date(); return Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000); }
+    function _tipText(idx) {
+      const en = (currentLang === "en"); const tip = SAFETY_TIPS[idx];
       let txt = en ? tip.en : tip.fr;
       // Adapté au pays détecté (si déjà connu via les numéros d'urgence) : on ajoute
       // le numéro local. PAS de prompt géoloc non sollicité ici.
@@ -11201,8 +11259,32 @@
         const e = EMERGENCY_NUMBERS.find((x) => x.c.toLowerCase() === detectedCountryName.toLowerCase());
         if (e) txt += en ? ` · 📍 In ${e.c}, emergency: ${e.n}.` : ` · 📍 En ${e.c}, urgences : ${e.n}.`;
       }
-      el.textContent = txt;
+      return txt;
     }
+    function renderSafetyTip() {
+      const el = $("safetyTipText"); if (!el) return;
+      el.textContent = _tipText(_tipDay() % SAFETY_TIPS.length);
+    }
+    // #14 : la tuile « Conseil du jour » est CLIQUABLE → navigateur de tous les conseils.
+    let _tipIdx = 0;
+    function showSafetyTipBrowser(idx) {
+      const en = (currentLang === "en"); const n = SAFETY_TIPS.length;
+      _tipIdx = ((idx % n) + n) % n;
+      popInfo("💡", en ? "Safety tips" : "Conseils sécurité", `<div style="text-align:center">
+        <p style="font-size:.98rem;line-height:1.65;margin:.2rem 0 .7rem">${escapeHtml(_tipText(_tipIdx))}</p>
+        <div class="muted" style="font-size:.74rem;margin-bottom:.7rem">${_tipIdx + 1} / ${n}</div>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn-ghost" id="tipPrevBtn" style="flex:1">‹ ${en ? "Previous" : "Précédent"}</button>
+          <button class="btn-primary" id="tipNextBtn" style="flex:1">${en ? "Next" : "Suivant"} ›</button>
+        </div></div>`);
+      setTimeout(() => {
+        const nx = $("tipNextBtn"), pv = $("tipPrevBtn");
+        if (nx) nx.addEventListener("click", () => showSafetyTipBrowser(_tipIdx + 1));
+        if (pv) pv.addEventListener("click", () => showSafetyTipBrowser(_tipIdx - 1));
+      }, 30);
+    }
+    { const tc = $("safetyTip"); if (tc) { tc.style.cursor = "pointer"; tc.setAttribute("role", "button");
+      tc.addEventListener("click", () => { showSafetyTipBrowser(_tipDay() % SAFETY_TIPS.length); if (window.SMSound) { try { SMSound.play("tap"); } catch (e) {} } }); } }
     function showSecuView(id) {
       ["secuHome", "secuHelp"].forEach((v) => show($(v), v === id));
       if (id === "secuHome" && typeof renderSafetyTip === "function") renderSafetyTip();
@@ -15457,7 +15539,7 @@
       "Activité publiée sur la carte ✅": "Activity posted on the map ✅", "Activité supprimée": "Activity deleted", "Ajouté à tes envies !": "Added to your wishlist!", "Tu participes au classement !": "You're on the leaderboard!",
       "Mot de passe modifié": "Password changed", "Mot de passe incorrect": "Incorrect password", "Profil vérifié, +30 points de confiance 🛡️": "Profile verified, +30 trust points 🛡️", "Badges du profil mis à jour": "Profile badges updated",
       "Objectifs de la semaine bouclés, bravo !": "Weekly goals completed, well done!", "Profil complété à 100 %, bravo !": "Profile 100% complete, well done!", "Ton cercle est rassuré, content de te savoir en sécurité 🌞": "Your circle is reassured, glad you're safe 🌞",
-      "Parcours copié, colle-le où tu veux !": "Journey copied, paste it anywhere!", "Appel simulé dans 5 s… range ton téléphone 😉": "Simulated call in 5s… put your phone away 😉", "Profil introuvable": "Profile not found",
+      "Parcours copié, colle-le où tu veux !": "Journey copied, paste it anywhere!", "Appel simulé dans 5 s… range ton téléphone 😉": "Simulated call in 5s… put your phone away 😉", "Appel simulé dans {d}… range ton téléphone 😉": "Simulated call in {d}… put your phone away 😉", "Profil introuvable": "Profile not found",
       "Signalement supprimé": "Report deleted", "Signalement traité": "Report handled", "Indique une destination et une date 🙂": "Enter a destination and a date 🙂", "Voyage planifié ! Bons préparatifs ✨": "Trip planned! Happy packing ✨",
       "Quête accomplie ! 🎉": "Quest completed! 🎉", "Demande de connexion envoyée": "Connection request sent", "Connexion réussie !": "Logged in!", "Tu n'es plus hôte.": "You're no longer a host.", "Tu es hôte ! Merci 💛": "You're a host! Thank you 💛",
       // · Batch 11 : bannière PWA + divers noms propres composés —
