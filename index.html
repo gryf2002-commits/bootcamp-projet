@@ -104,8 +104,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=403"></script>
-  <script src="sunmates-icons.js?v=403"></script>
+  <script src="sunmates-badges.js?v=404"></script>
+  <script src="sunmates-icons.js?v=404"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -3067,7 +3067,11 @@
       background: linear-gradient(135deg, #FFF6E9, #FFE7DA); border: 1px solid rgba(255,122,89,.28); border-left: 4px solid var(--accent);
       border-radius: 16px; padding: .8rem .9rem; font-weight: 700; color: var(--ink); box-shadow: var(--shadow-sm); }
     .help-cta:active { transform: scale(.99); }
+    .help-cta .hc-txt { display: flex; flex-direction: column; gap: .12rem; min-width: 0; }
+    .help-cta .hc-sub { font-weight: 500; font-size: .73rem; line-height: 1.35; opacity: .78; white-space: normal; }
     body.theme-dusk .help-cta { background: linear-gradient(135deg, #2c2140, #241b35); color: #f3e9f3; border-color: rgba(255,170,130,.22); border-left-color: var(--accent); }
+    body.theme-winter .help-cta { background: linear-gradient(135deg, #F4FAFF, #E4F0FB); border-color: rgba(58,143,217,.28); border-left-color: var(--accent); }
+    body.theme-tropic .help-cta { background: linear-gradient(135deg, #FDFBE8, #EDF6DF); border-color: rgba(15,163,124,.28); border-left-color: var(--accent); }
 
     /* Souvenirs : vitrine compacte (avatars empilés) + galerie en feuille */
     .hm-gal-open { display: flex; align-items: center; width: 100%; gap: .15rem; padding: .55rem .7rem; margin-top: .25rem;
@@ -4558,12 +4562,12 @@
           </div>
           <button class="btn-ghost btn-block" id="shareRecapBtn" style="margin-top:.5rem">📸 Mon récap à partager (story)</button>
 
-          <!-- Aide & support : FAQ retirée (revient quand la démo guidée sera finie) ;
-               contact = bientôt dispo (pas d'email perso affiché). -->
+          <!-- Aide & support : FAQ supprimée (infos pas à jour) → seule la visite guidée
+               reste ici. Ton chaleureux SunMates : titre + petite phrase qui conseille. -->
           <div class="set-grouptitle">Aide &amp; support</div>
-          <button class="btn-ghost btn-block help-cta" data-secu="aide">❓ <span>Centre d'aide · FAQ</span></button>
-          <button class="btn-ghost btn-block help-cta" data-secu="contactus" style="margin-top:.5rem">✉️ Nous contacter</button>
-          <button class="btn-ghost btn-block help-cta" id="betaFeedbackBtn" style="margin-top:.5rem">🧪 App en bêta · donne ton avis</button>
+          <button class="btn-ghost btn-block help-cta" data-secu="aide">🎬 <span class="hc-txt"><b>La visite guidée</b><span class="hc-sub">Perdu·e ? Laisse l'app te montrer tout ce qu'elle sait faire, à ton rythme ✨</span></span></button>
+          <button class="btn-ghost btn-block help-cta" data-secu="contactus" style="margin-top:.5rem">✉️ <span class="hc-txt"><b>Écris-nous</b><span class="hc-sub">Une question, un pépin ? On te lit et on te répond ici, dans l'app 💛</span></span></button>
+          <button class="btn-ghost btn-block help-cta" id="betaFeedbackBtn" style="margin-top:.5rem">🧪 <span class="hc-txt"><b>Ton avis compte</b><span class="hc-sub">SunMates grandit avec toi : raconte-nous ce que tu changerais</span></span></button>
 
           <!-- Application -->
           <div class="set-grouptitle">Application</div>
@@ -7054,6 +7058,7 @@
         ["⚡", "Accès rapides (8 tuiles)", "Tuiles éclatantes : Mates, Sécurité, Lieux, Jeux & Quêtes, Classement, Coupons, Boutique, Profil."],
         ["🏠", "Bascule Voyage / Maison", "L'accueil s'adapte : carte de rencontre en Voyage, hub solo à la Maison."],
         ["🎯", "Filtre quêtes « à faire »", "Sur la carte : n'affiche que les quêtes pas encore accomplies."],
+        ["🌅", "Ma journée de voyage", "Lance ta journée le matin ; le soir, ton WRAPPED du jour (quêtes, check-ins, nouveaux Mates, XP) en carte souvenir."],
       ]],
       ["📍 Lieux sûrs", [
         ["☕", "Catalogue de lieux", "Cartes photo : éco, check-ins, note, top noté."],
@@ -7061,6 +7066,9 @@
         ["🧭", "Filtres & tris en tuiles", "Tous / Éco / Près de moi / Top notés / Populaires."],
         ["⭐", "Avis sur les lieux", "Note + commentaires, 1 avis/personne, top noté ≥4.5."],
         ["☀️", "Spot du jour", "Statut éphémère 24 h façon story."],
+        ["💛", "Adresses favorites", "Un cœur sur la fiche d'un lieu + ta note perso → carte « Mes adresses favorites »."],
+        ["🕐", "Horaires & prix", "Infos pratiques affichées sur les fiches de lieux (renseignées par l'équipe)."],
+        ["✍️", "Mon idée de spot", "Propose un lieu à la communauté, publié directement dans le fil."],
       ]],
       ["🎮 Jeux, XP & classement", [
         ["🪪", "Vignette de niveau", "Carte joueur en haut de l'onglet : avatar, niveau, barre d'XP, série (streak)."],
@@ -7088,17 +7096,18 @@
         ["📈", "Progression solo", "Chiffres cliquables → tuile d'explication (défis, rituels, XP, série)."],
         ["💡", "Inspiration du jour", "Vraie fiche destination : pourquoi y aller, incontournables, quand/budget/sécurité, ajout en 1 tap."],
         ["🧳", "Préparer mon voyage", "Check-list par catégories + FICHE PAYS réelle (formalités, argent, transport, eau, prise, coutumes, sécurité) selon la destination."],
+        ["📚", "Histoire & culture", "Dans chaque fiche pays : vocabulaire de survie (5 phrases), histoire en 20 s, fun facts et tradition à vivre."],
         ["👋", "De passage chez toi", "Voyageurs qui explorent ta ville ; devenir hôte/ambassadeur."],
-        ["🏡", "HomeMates · souvenirs", "Récap de tes aventures (Mates, villes, quêtes, check-ins) gardé au retour ; partage en carte souvenir."],
+        ["🛟", "Devenir hôte", "Demande vérifiée par l'équipe (profil vérifié, ancienneté) → badge 🛟 visible des voyageurs."],
+        ["🏡", "HomeMates · souvenirs", "Récap de tes aventures (Mates, villes, quêtes, check-ins) gardé au retour ; galerie de cartes souvenirs partageables."],
       ]],
       ["🏅 Badges", [
         ["🏅", "Catalogue de badges", "Médaillons ronds à emoji, couleurs variées (DA), grisés tant que verrouillés."],
-        ["❓", "Badges secrets", "Cachés au public (teaser), conditions visibles par l'admin."],
         ["⭐", "Badges-jalons auto", "Premier check-in, vérifié, 5 quêtes, polyglotte, profil 100 %…"],
         ["📌", "Épinglage profil", "Choisis 3 badges à afficher sur ton profil."],
       ]],
       ["🤝 Mates & messagerie", [
-        ["✨", "Inviter des amis (parrainage)", "Partage d'un lien ?ref → coupon « 1er verre offert » au filleul ET au parrain."],
+        ["✨", "Inviter des amis", "Partage ton lien SunMates en 1 tap (le programme de parrainage récompensé arrive bientôt)."],
         ["🔍", "Découvrir", "Cartes riches (tags, présence, compatibilité)."],
         ["❤️", "Compatibilité", "Score + détail « pourquoi vous matchez » (tuile cliquable)."],
         ["💬", "Chat temps réel", "Messages, « en train d'écrire », accusés de lecture, traduction."],
@@ -7112,7 +7121,8 @@
       ]],
       ["🛡️ Sécurité (boîte à outils solo)", [
         ["🆘", "SOS & alerte cercle", "112 + diffusion de position au cercle de confiance (24 h)."],
-        ["📞", "Faux appel", "Écran d'appel réaliste pour s'extraire d'une situation."],
+        ["📞", "Faux appel sur mesure", "Écran d'appel réaliste (décroché compris) avec tes contacts factices personnalisables."],
+        ["⏱️", "Minuteur « tout va bien »", "Si tu ne confirmes pas à temps, ton cercle reçoit une alerte avec ta position."],
         ["🔦", "Signal d'aide", "Écran lumineux « J'ai besoin d'aide » (tap pour fermer)."],
         ["🌍", "Numéros par pays", "Europe 112 + destinations populaires, recherche."],
         ["📇", "Contacts d'urgence", "Jusqu'à 3 proches en 1 tap (local, privé)."],
@@ -7144,6 +7154,13 @@
         ["🔊", "Banque de sons", "Test des sons synthétisés + toggle global."],
         ["🧰", "Système & déploiement", "Build/SW/cache/réseau, copier le rapport de stats, forcer la mise à jour (vider cache)."],
         ["👁️", "Aperçu mode gratuit", "Voir l'app comme un compte non-Gold."],
+      ]],
+      // 🥚 Easter eggs : zone marquée « admin » → JAMAIS dans le livre blanc ni le catalogue
+      // public (filtre _isAdminZone). Aucune mention de ces surprises côté utilisateur.
+      ["🥚 Easter eggs (réservé admin · ne pas divulguer)", [
+        ["❄️", "Modes saison hiver / tropiques", "Appui long 10 s sur le bouton thème (puis 1 clic = ❄️↔🌴) ; auto météo : <0 °C hiver, >30 °C tropiques."],
+        ["❓", "Badges secrets", "Invisibles tant que pas débloqués ; conditions révélées à l'admin dans la fiche badge."],
+        ["🌟", "Badge « Légende de SunMates »", "Le badge secret ultime, palier endgame."],
       ]],
     ];
     // Mappe une zone du catalogue vers l'onglet correspondant (pour la démo « ▶ Voir »).
@@ -7356,7 +7373,7 @@
         run: () => { adCleanup(); A(() => goToTab("jeux")); setTimeout(() => { if (typeof openJeuxSheet === "function") openJeuxSheet("quests"); }, 500); } },
       { title: "🏅 La collection de badges", text: "Des médaillons à débloquer : grisés tant que verrouillés, façon jeu vidéo.", ms: 5500,
         run: () => { adCleanup(); A(() => goToTab("jeux")); setTimeout(() => { if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); }, 450); } },
-      { title: "🌟 Badges prestige & secret", text: "Des paliers endgame très exigeants… et un badge SECRET « Légende de SunMates » à découvrir.", ms: 6000,
+      { title: "🌟 Badges prestige", text: "Des paliers endgame très exigeants, réservés aux explorateurs les plus assidus… et qui sait, peut-être quelques surprises 👀", ms: 6000,
         run: () => { A(() => goToTab("jeux")); setTimeout(() => { if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); }, 350); } },
       { title: "🛍️ La boutique de titres", text: "Dépense ton XP en titres exclusifs qui s'affichent sur ton profil.", ms: 5500,
         run: () => { adCleanup(); A(() => goToTab("jeux")); setTimeout(() => { if (typeof showJeuxView === "function") showJeuxView("jeuxShop"); }, 450); } },
@@ -8833,7 +8850,9 @@
       const base = location.href.split("#")[0].split("?")[0];
       const url = myUserId ? (base + "?ref=" + encodeURIComponent(myUserId)) : base;
       // P2.21 : message SANS l'URL (sinon navigator.share l'ajoute via le champ `url` → lien en double).
-      const msg = "🌍 Rejoins-moi sur SunMates ☀️ · l'appli pour voyager solo en sécurité et se faire de vrais potes en route. On démarre avec un verre offert à tous les deux 🍹";
+      // PAS de promesse de récompense ici : le programme de parrainage (1er verre offert)
+      // n'est pas encore branché côté serveur — on le rajoutera quand il sera réel.
+      const msg = "🌍 Rejoins-moi sur SunMates ☀️ · l'appli pour voyager solo en sécurité et se faire de vrais potes en route.";
       try { if (typeof track === "function") track("invite_shared", {}); } catch (e) {}
       // Compteur local d'invitations partagées (sert au badge « Early Bird » de la campagne de lancement)
       try { const k = "sm_invites_shared"; localStorage.setItem(k, String((parseInt(localStorage.getItem(k) || "0", 10) || 0) + 1)); } catch (e) {}
@@ -9215,7 +9234,6 @@
       const isAdmin = !!(myProfile && myProfile.is_admin);
       // Non-admin : on MASQUE complètement les secrets non débloqués (pas de slot révélateur).
       const shown = defs.filter((b) => isAdmin || !b.is_secret || myBadgeKeys.has(b.key));
-      const hiddenSecrets = isAdmin ? 0 : defs.filter((b) => b.is_secret && !myBadgeKeys.has(b.key)).length;
       const earned = shown.filter((d) => myBadgeKeys.has(d.key)).length;
       { const bc = $("badgeCollCount"); if (bc) bc.textContent = earned + " / " + shown.length; } // vrai compteur (fini le 36/44 codé en dur)
       // Tous ronds pour l'instant (1er pas) ; on garde la variété de COULEURS (déterministe par clé).
@@ -9232,10 +9250,11 @@
           <div class="bname">${escapeHtml(b.name || "")}${b.is_secret && isAdmin ? ' <span style="font-size:.55rem;color:var(--accent)">🔒</span>' : ""}</div>
           <div class="bprog">${done ? "✅ débloqué" : "🔒 à débloquer"}</div>
         </div>`;
-      }).join("")
-        + (hiddenSecrets ? (() => { const foundSec = defs.filter((b) => b.is_secret && myBadgeKeys.has(b.key)).length; return `<div class="bitem secret" id="secretTeaser" style="cursor:pointer">${window.SMBadge ? `<div class="smbadge-wrap">${SMBadge("legend", { secret: true, locked: true, size: 72 })}</div>` : '<div class="hex">❓</div>'}<div class="bname">Badges secrets</div><div class="bprog">${i18nT("🔮 {a}/{b} découverts", { a: foundSec, b: foundSec + hiddenSecrets })}</div></div>`; })() : "");
+      }).join("");
+      // Badges secrets : VRAIS easter eggs → aucune mention pour les non-admins (plus de
+      // tuile teaser « 🔮 x/y découverts »). Ils apparaissent seulement une fois débloqués ;
+      // l'admin, lui, les voit dans la grille (condition révélée dans la fiche).
       $("badgeGrid").querySelectorAll("[data-badge]").forEach((el) => el.addEventListener("click", () => showBadgeInfo(el.dataset.badge)));
-      { const tz = $("secretTeaser"); if (tz) tz.addEventListener("click", () => showInfo("Badges secrets 🔒", `<p style="text-align:center;line-height:1.6">Il existe <b>${hiddenSecrets} badge(s) secret(s)</b> à débloquer en explorant SunMates… 👀<br><br>À toi de les découvrir, ils apparaîtront ici une fois obtenus !</p>`)); }
       // Compteurs remis à la réalité (0 si rien d'accompli)
       { const ob = $("openBadges"); const bm = ob && ob.querySelector(".t-meta"); if (bm) bm.textContent = earned + "/" + defs.length + " débloqués"; }
       { const oc = $("openCoupons"); const cm = oc && oc.querySelector(".t-meta"); if (cm) cm.textContent = myCoupons.length + " disponible" + (myCoupons.length > 1 ? "s" : ""); }
@@ -10289,7 +10308,7 @@
         <div class="fb-chips" style="display:flex;gap:.4rem;margin-bottom:.7rem">${chips}</div>
         <textarea id="fbText" rows="4" maxlength="2000" placeholder="Décris le bug, l'idée ou le détail visuel à corriger…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.6rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea>
         <button class="btn-primary btn-block" id="fbSend" style="margin-top:.7rem">Envoyer mon retour</button>
-        <p class="muted" style="font-size:.7rem;margin:.5rem 0 0;text-align:center">Anonymisé si tu n'es pas connecté · version ${typeof _appBuild === "function" ? _appBuild() : ""}</p>`);
+        <p class="muted" style="font-size:.7rem;margin:.5rem 0 0;text-align:center">Anonymisé si tu n'es pas connecté</p>`);
       setTimeout(() => {
         document.querySelectorAll("[data-fbt]").forEach((b) => b.addEventListener("click", () => {
           _fbType = b.dataset.fbt;
@@ -10346,7 +10365,7 @@
         <textarea id="fbText" rows="4" maxlength="2000" placeholder="Explique-nous en quelques mots…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.6rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea>
         <button class="btn-primary btn-block" id="fbSend" style="margin-top:.7rem">Envoyer à l'équipe</button>
         <p style="font-size:.78rem;margin:.7rem 0 0;text-align:center">En cas d'<b>urgence</b> : le <b>112</b>, tes <b>contacts d'urgence</b> ou ton <b>cercle de confiance</b>.</p>
-        <p class="muted" style="font-size:.7rem;margin:.4rem 0 0;text-align:center">Ta réponse arrivera par une notif dans l'app · version ${typeof _appBuild === "function" ? _appBuild() : ""}</p>`);
+        <p class="muted" style="font-size:.7rem;margin:.4rem 0 0;text-align:center">Ta réponse arrivera par une notif dans l'app 💛</p>`);
       setTimeout(() => { const sb = $("fbSend"); if (sb) sb.addEventListener("click", submitBetaFeedback); }, 30);
     }
 
@@ -10872,35 +10891,11 @@
           <a href="tel:112" class="btn-danger btn-block" style="text-decoration:none;text-align:center;display:block;margin-top:.7rem">☎️ Appeler le 112</a>
           <p class="muted" style="font-size:.72rem;margin:.6rem 0 0">Ces tips ne remplacent pas une formation aux premiers secours (PSC1).</p>
         </div>`);
-      } else if (action === "aide" && typeof currentLang !== "undefined" && currentLang === "en") {
-        // Version EN rédigée (ton SunMates) · data-no-tr : on coupe le filet auto (sinon il "re-traduirait" l'anglais)
-        showInfo("Help center ❓", `<div class="faq-secu" data-no-tr>
-          <button class="btn-primary btn-block" id="faqDemoBtn" style="margin-bottom:.7rem">🎬 (Re)watch the app's guided demo</button>
-          <details open><summary>🎯 How do I earn XP and badges?</summary><p>Complete <b>quests</b> (Games tab or straight from the map), take on <b>solo challenges</b> and <b>rituals</b> in Home mode. Each quest asks for a quick <b>note</b> (anti-cheat).</p></details>
-          <details><summary>🛟 How does location sharing work?</summary><p>Your location is only shared with your <b>trusted circle</b> (accepted connections), visible for 24 h. The emergency alert broadcasts it instantly.</p></details>
-          <details><summary>🤝 How do I meet Mates safely?</summary><p>Go for <b>verified</b> profiles (the small round logo), meet up in <b>validated places</b>, and you can <b>block/report</b> anytime.</p></details>
-          <details><summary>🍹 What's the referral perk?</summary><p>Invite a friend via "Invite your friends": you both get a <b>first drink on us</b> coupon 🍹</p></details>
-          <details><summary>💛 How do favourites work?</summary><p>On any place card, tap <b>🤍 Favourite</b>: it lands in <b>My favourite places</b> (Places tab) with your personal note.</p></details>
-          <details><summary>🌅 What's "my travel day"?</summary><p>Tap <b>Start my travel day</b> in the morning (Travel mode). In the evening, end it to get your <b>daily WRAPPED</b>: quests, check-ins, new Mates and XP of the day.</p></details>
-          <details><summary>❄️ Winter / tropics modes?</summary><p>Hold the theme button (top right) for <b>10 seconds</b> to switch seasons; one tap then toggles ❄️/🌴. Hold 10 s again to come back to day/night.</p></details>
-          <details><summary>🛟 How do I become a host?</summary><p>In Home mode, tap <b>I want to help</b>: your request is reviewed (verified profile, seniority). Once approved, travellers see your 🛟 host badge.</p></details>
-          <details><summary>🔒 What about my data?</summary><p>Settings → Personal data: <b>download a copy</b> of everything or <b>delete your account</b> (irreversible). Safety features are free for everyone, forever.</p></details>
-        </div>`);
-        setTimeout(() => { const b = $("faqDemoBtn"); if (b) b.onclick = () => { if (typeof closePicker === "function") closePicker(); if (typeof startAutoDemo === "function") startAutoDemo(0); }; }, 40);
       } else if (action === "aide") {
-        showInfo("Centre d'aide ❓", `<div class="faq-secu">
-          <button class="btn-primary btn-block" id="faqDemoBtn" style="margin-bottom:.7rem">🎬 (Re)voir la démo guidée de l'app</button>
-          <details open><summary>🎯 Comment gagner de l'XP et des badges ?</summary><p>Accomplis des <b>quêtes</b> (onglet Jeux ou sur la carte), relève des <b>défis solo</b> et des <b>rituels</b> en mode Maison. Chaque quête demande une petite <b>justification</b> (anti-triche).</p></details>
-          <details><summary>🛟 Comment fonctionne le partage de position ?</summary><p>Ta position n'est partagée qu'avec ton <b>cercle de confiance</b> (connexions acceptées), visible 24 h. L'alerte d'urgence la diffuse aussitôt.</p></details>
-          <details><summary>🤝 Comment rencontrer des Mates en sécurité ?</summary><p>Privilégie les profils <b>vérifiés</b> (petit logo rond), retrouve-toi dans des <b>lieux validés</b>, et tu peux <b>bloquer/signaler</b> à tout moment.</p></details>
-          <details><summary>🍹 C'est quoi le parrainage ?</summary><p>Invite un ami via « Inviter tes amis » : vous recevez tous les deux un coupon <b>1er verre offert</b> 🍹</p></details>
-          <details><summary>💛 Comment marchent les favoris ?</summary><p>Sur la fiche d'un lieu, touche <b>🤍 Favori</b> : il rejoint <b>Mes adresses favorites</b> (onglet Lieux) avec ta petite note perso.</p></details>
-          <details><summary>🌅 C'est quoi « ma journée de voyage » ?</summary><p>Le matin, touche <b>Lancer ma journée</b> (mode Voyage). Le soir, termine-la pour recevoir ton <b>WRAPPED du jour</b> : quêtes, check-ins, nouveaux Mates et XP de la journée.</p></details>
-          <details><summary>❄️ Les modes hiver / tropiques ?</summary><p>Reste appuyé·e <b>10 secondes</b> sur le bouton thème (en haut à droite) pour passer en mode saison ; un simple clic bascule ensuite ❄️/🌴. Re-appuie 10 s pour revenir au jour/nuit.</p></details>
-          <details><summary>🛟 Comment devenir hôte ?</summary><p>En mode Maison, touche <b>Je veux aider</b> : ta demande est vérifiée (profil vérifié, ancienneté). Une fois validée, les voyageurs voient ton badge 🛟 d'hôte.</p></details>
-          <details><summary>🔒 Et mes données ?</summary><p>Réglages → Données personnelles : <b>télécharge une copie</b> de tout ou <b>supprime ton compte</b> (irréversible). Les fonctions de sécurité restent gratuites pour tout le monde, pour toujours.</p></details>
-        </div>`);
-        setTimeout(() => { const b = $("faqDemoBtn"); if (b) b.onclick = () => { if (typeof closePicker === "function") closePicker(); if (typeof startAutoDemo === "function") startAutoDemo(0); }; }, 40);
+        // La FAQ est retirée (elle promettait des choses pas encore en place et spoilait
+        // les surprises) : « aide » = lancer directement la visite guidée de l'app.
+        if (typeof closePicker === "function") closePicker();
+        if (typeof startAutoDemo === "function") startAutoDemo(0);
       } else if (action === "contactus" || action === "support2") {
         if (typeof openSupport === "function") openSupport();
       } else if (action === "voyage") {
@@ -11961,7 +11956,7 @@
         { tab: "lieux", sel: "#lieuxCats", emoji: "📍", title: "Lieux sûrs", text: "Cafés et spots validés : filtre (éco, près de toi, top notés), fais un check-in pour gagner des points, et publie ton « spot du jour »." },
         { tab: "jeux", view: "jeuxHome", sel: "#playerBadge", emoji: "⭐", title: "Ton niveau", text: "Gagne de l'XP en accomplissant des quêtes. Touche ce badge pour voir ta progression, tes titres et ta série." },
         { tab: "jeux", sel: "#jeuxNav", emoji: "🎯", title: "Quêtes & jeux", text: "Quêtes, jeux, badges, coupons, classement, boutique : tout est ici." },
-        { tab: "connexions", sel: "#inviteFriendsBtn", emoji: "✨", title: "Inviter des amis", text: "Fais venir tes amis : un coupon « 1er verre offert » pour vous deux 🍹" },
+        { tab: "connexions", sel: "#inviteFriendsBtn", emoji: "✨", title: "Inviter des amis", text: "Fais venir tes amis sur SunMates : plus on est, plus c'est sûr & fun 🌍" },
         { tab: "connexions", sel: ".mseg", emoji: "🤝", title: "Tes Mates", text: "Messages, Découvrir de nouveaux voyageurs, et Demandes de connexion." },
         { tab: "securite", sel: '[data-tab="securite"]', emoji: "🛡️", title: "Sécurité", text: "SOS, faux appel, partage de position au cercle, contacts d'urgence · pour voyager serein·e." },
         { tab: "profil", sel: "#editProfileBtn", emoji: "👤", title: "Ton profil", text: "Complète-le pour de meilleurs matchs. Mon parcours et ton BFF sont dans la carte juste en dessous." },
@@ -13951,7 +13946,9 @@
     });
     { const tt = $("themeToggle"); let _lpT = null, _lpHint = null;
       const start = () => { clearTimeout(_lpT); clearTimeout(_lpHint);
-        _lpHint = setTimeout(() => { if (typeof toast === "function") toast(seasonMode() ? "🌞" : "❄️", i18nT("Continue d'appuyer (10 s) pour changer de saison…")); }, 3000);
+        // Easter egg : l'indice à 3 s ne s'affiche qu'à ceux qui SAVENT (admin, ou déjà en
+        // mode saison — il faut bien pouvoir en sortir). Les autres découvrent par hasard.
+        _lpHint = setTimeout(() => { const initie = seasonMode() || (myProfile && myProfile.is_admin); if (initie && typeof toast === "function") toast(seasonMode() ? "🌞" : "❄️", i18nT("Continue d'appuyer (10 s) pour changer de saison…")); }, 3000);
         _lpT = setTimeout(() => {
           _seasonLpFired = true;
           if (seasonMode()) { applySeason("", true); toast("🌞", i18nT("Retour au mode normal (jour / nuit)")); }
@@ -14124,7 +14121,16 @@
       "Invite tes amis sur SunMates": "Invite your friends to SunMates", "Plus on est, plus c'est sûr & fun 🌍": "The more we are, the safer & funnier 🌍", "Partager ›": "Share ›",
       "Note vocale (30 s max)": "Voice note (30 s max)", "Envoyer un poc 🔥": "Send a flame 🔥", "Enregistrement…": "Recording…", "Envoyer ➤": "Send ➤", "Annuler": "Cancel",
       "🔥 Flammes (24 h)": "🔥 Flames (24 h)", "🔔 Notifications : activées": "🔔 Notifications: on", "🔕 Notifications : coupées": "🔕 Notifications: off", "🚫 Bloquer / signaler": "🚫 Block / report", "🗑️ Supprimer la conversation": "🗑️ Delete conversation",
-      "Aide & support": "Help & support", "Centre d'aide · FAQ": "Help center · FAQ", "Nous contacter": "Contact us", "✏️ Modifier mon profil": "✏️ Edit my profile", "‹ Fermer l'édition": "‹ Close editing",
+      "Aide & support": "Help & support",
+      "La visite guidée": "The guided tour",
+      "Perdu·e ? Laisse l'app te montrer tout ce qu'elle sait faire, à ton rythme ✨": "Lost? Let the app walk you through everything it can do, at your own pace ✨",
+      "Écris-nous": "Write to us",
+      "Une question, un pépin ? On te lit et on te répond ici, dans l'app 💛": "A question, a hiccup? We read everything and reply right here, in the app 💛",
+      "Ton avis compte": "Your opinion matters",
+      "SunMates grandit avec toi : raconte-nous ce que tu changerais": "SunMates grows with you: tell us what you would change",
+      "Ta réponse arrivera par une notif dans l'app 💛": "Your reply will arrive as a notification in the app 💛",
+      "Fais venir tes amis sur SunMates : plus on est, plus c'est sûr & fun 🌍": "Bring your friends to SunMates: the more of us, the safer & more fun it gets 🌍",
+      "Nous contacter": "Contact us", "✏️ Modifier mon profil": "✏️ Edit my profile", "‹ Fermer l'édition": "‹ Close editing",
       "Touche une quête, accomplis-la dans la vraie vie, puis valide-la pour gagner XP + badge (3 par jour max).": "Tap a quest, do it in real life, then validate it to earn XP + a badge (3 per day max).",
       "🧭 Visites guidées interactives": "🧭 Interactive guided tours", "▶ Visite complète (A → Z)": "▶ Full tour (A → Z)",
       "Mes Mates": "My Mates", "Rencontre & discute": "Meet & chat", "Sécurité": "Safety", "Position & alerte": "Location & alert",
