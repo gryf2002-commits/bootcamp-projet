@@ -104,8 +104,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=402"></script>
-  <script src="sunmates-icons.js?v=402"></script>
+  <script src="sunmates-badges.js?v=403"></script>
+  <script src="sunmates-icons.js?v=403"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -2768,28 +2768,8 @@
     /* --- Posts du fil --- */
     .post-body { background: linear-gradient(160deg, #fff, var(--cream)) !important; }
 
-    /* =================== MODE SOMBRE retravaillé (nuit pétrole) =================== */
-    body.theme-dusk {
-      --bg: #0E1F1D; --card: #152A27; --paper: #152A27; --cream: #1C322E;
-      --accent: #E07C5B; --accent-2: #E89B7E; --accent-3: #E6B45E;
-      --accent-soft: rgba(224,124,91,.16);
-      --accent-grad: linear-gradient(135deg, #E6B45E 0%, #DE8460 48%, #C95E45 100%);
-      --ink: #F4ECDC; --ink-warm: #F7F0E2; --text: #D7CFBF; --muted: #94A39B;
-      --line: rgba(255,255,255,.08); --retro-teal: #59C9B9; --ok: #57C99A;
-      color: var(--text);
-      background: radial-gradient(130% 80% at 50% -8%, #2a4f4a 0%, #16332f 36%, #0f2421 64%, #0E1F1D 100%);
-    }
-    body.theme-dusk .app-shell { background: radial-gradient(120% 55% at 50% -12%, rgba(224,124,91,.26) 0%, rgba(224,124,91,0) 58%), var(--bg) !important; }
-    body.theme-dusk .card { background: linear-gradient(180deg, #163029 0%, #12231f 100%) !important; }
-    body.theme-dusk input, body.theme-dusk textarea, body.theme-dusk select, body.theme-dusk .search input { background: #1C322E !important; color: #f0ece0; }
-    body.theme-dusk .feed-card, body.theme-dusk .post-body, body.theme-dusk .pcell, body.theme-dusk .pprompt,
-    body.theme-dusk .stat-box, body.theme-dusk .dstat, body.theme-dusk .tile, body.theme-dusk .gcard,
-    body.theme-dusk .chip, body.theme-dusk .mseg, body.theme-dusk .coupon { background: #1C322E !important; }
-    body.theme-dusk .bottom-nav { background: rgba(14,31,29,.88); }
-    body.theme-dusk .topbar { background: linear-gradient(rgba(14,31,29,.86), rgba(14,31,29,0)); }
-    body.theme-dusk .bubble.them { background: #1C322E; color: #f0ece0; }
-    body.theme-dusk .iconbtn { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.13); }
-    body.theme-dusk .notif-card, body.theme-dusk .picker-card { background: #152A27; }
+    /* (Couche « nuit pétrole » SUPPRIMÉE : morte-écrasée par la couche « nuit tropicale »
+       plus bas dans la feuille · vérifié par captures avant/après identiques.) */
 
     /* ===================================================================
        SUNMATES, IDENTITÉ v3  « VIBRANT VACANCES » 🌅🌴
@@ -3142,6 +3122,13 @@
     .fc-gbtn { display: flex; flex-direction: column; align-items: center; gap: .35rem; background: none; border: 0; color: #cfcfdd; font-size: .66rem; font-weight: 600; cursor: pointer; }
     .fc-gbtn span { width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,.12); display: grid; place-items: center; font-size: 1.3rem; transition: background .15s; }
     .fc-gbtn.on span { background: rgba(255,255,255,.85); }
+
+    /* A11y · réglage système « réduire les animations » respecté PARTOUT (ne concerne que
+       les personnes qui l'ont demandé · le peps reste intact pour tout le monde d'autre) */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      html { scroll-behavior: auto !important; }
+    }
   </style>
 </head>
 <body>
@@ -14404,7 +14391,7 @@
       "cercle de confiance": "circle of trust",
       "(connexions acceptées), visible 24 h.": "(connections accepted), visible 24 hours.",
       ": diffuse aussitôt ta position à ton cercle en cas d'urgence.": ": immediately spread your position to your circle in case of emergency.",
-      "Aucun contact. Ajoute un proche à prévenir en cas de besoin.": "No contact. Adds a relative to be notified if needed.",
+      "Aucun contact. Ajoute un proche à prévenir en cas de besoin.": "No contacts yet. Add a loved one to alert in one tap if needed.",
       "↻ Rafraîchir": "Refresh",
       "Seules les positions de tes": "Only the positions of your",
       "connexions acceptées": "Connections accepted",
@@ -14464,7 +14451,7 @@
       "Petit retour vibrant sur les actions clés": "Vibrant feedback on key actions",
       "« En ligne » sur ton avatar": "\"Online\" on your avatar",
       "Apparaître dans le": "Appear in the",
-      ". Désactive pour rester discret·ète.": ". Disables to remain discreet.",
+      ". Désactive pour rester discret·ète.": ". Turn off to stay low-key.",
       "Mon profil partageable": "My Shareable Profile",
       "📲 Installer l'app sur mon téléphone": "📲 Install the app on my phone",
       "Nouveau mot de passe": "New password",
@@ -14788,7 +14775,7 @@
       "🎛️ Filtrer la carte": "Filter Map",
       "Chaque catégorie est une couche que l'on affiche ou masque d'un geste.": "Each category is a layer that is displayed or hidden with a gesture.",
       "🎯 Recentrer la carte": "🎯 Refocus map",
-      "Un bouton « Autour de moi » te localise, un autre « Tout voir » recadre sur l'ensemble.": "A \"Around me\" button locates you, another \"See all\" framed on the whole.",
+      "Un bouton « Autour de moi » te localise, un autre « Tout voir » recadre sur l'ensemble.": "An \"Around me\" button centres the map on you; \"See all\" reframes everything.",
       "📍 Ouvrir un lieu": "📍 Open Location",
       "On touche une pastille pour voir le lieu : sa photo, son activité récente et le bouton de check-in.": "You touch a patch to see the place: its photo, its recent activity and the check-in button.",
       "🖥️ Plein écran": "Fullscreen",
@@ -14966,29 +14953,29 @@
       "Boucler la journée ✅": "Wrap up the day ✅",
       "Astuce : fais une capture d'écran pour le partager en story 📸": "Tip: take a screenshot to share it as a story 📸",
       "Tes Mates d'aventure": "Your adventure Mates",
-      "Aucune connexion pour l'instant": "No failed logins yet.",
+      "Aucune connexion pour l'instant": "No connections yet",
       "Toucher pour discuter 💬": "Tap to chat 💬",
       "Pas encore de conversation": "No conversation yet!",
       "Connecte-toi avec des voyageurs pour commencer à discuter en sécurité.": "Connect with guests to start a safe conversation.",
       "Intérêts communs": "Common interests",
       "Langues partagées": "Shared languages",
       "Mêmes envies de voyage": "Same travel cravings",
-      "Confiance / sécurité": "□ confidence □ security",
+      "Confiance / sécurité": "Trust & safety",
       " intérêt": "Interest",
       "📍 Dans ta ville en ce moment": "📍 In your city right now",
       "à découvrir": "to discover",
       "Essaie d'élargir tes filtres ou de modifier ta recherche.": "Try expanding your filters or changing your search.",
       "Connexion acceptée ✅": "Connection accepted",
       "Profil au top": "Profile at the top",
-      "· prêt·e pour de nouvelles aventures 🌞": "·ready for new adventures 🌞",
+      "· prêt·e pour de nouvelles aventures 🌞": "· ready for new adventures 🌞",
       "Mon parcours SunMates": "My SunMates Journey",
       "Soirée VIP partenaires": "Partner VIP Party",
       "offert chez nos partenaires": "offered by our partners",
       "Accès à une soirée privée dans un lieu partenaire : +50 points de confiance et un cocktail premium offert. Réservé aux membres Gold.": "Access to a private evening at a partner venue: +50 points of trust and a complimentary premium cocktail. For Gold members only.",
       "Comment ça marche ?": "How does it work?",
       "⭐ L'XP & les niveaux": "⭐ The XP & levels",
-      " à explorer": "Where to explore",
-      "✅ débloqué": "Disbursed",
+      " à explorer": " to explore",
+      "✅ débloqué": "✅ unlocked",
       "🔒 à débloquer": "🔒 to unlock",
       " débloqués": "Unblocked",
       "#jeuxBadges .badge.warn, #jeuxBadges .badge.ok": "#gamesBadges .badge.warn, #gamesBadges .badge.ok",
@@ -15073,7 +15060,7 @@
       "Charge ton téléphone : une batterie pleine, c'est ta meilleure sécurité.": "Charge your phone: a full battery is your best security.",
       "Renseigne-toi sur les arnaques courantes de ta destination avant d'arriver.": "Learn about common scams at your destination before you arrive.",
       "Le faux appel SunMates t'aide à quitter poliment une situation inconfortable.": "The fake SunMates call helps you politely leave an uncomfortable situation.",
-      "Aucun voyageur à signaler pour l'instant.": "No guests to report at this time.",
+      "Aucun voyageur à signaler pour l'instant.": "No travellers to report right now.",
       "Pour quelle raison signales-tu « ": "Why are you reporting \"",
       " » ?\n(ex : comportement déplacé, faux profil, spam…)": "»?\n(e.g. inappropriate behaviour, fake profile, spam, etc.)",
       "Signalement pris en compte 🛡️": "Reporting taken into account 🛡️",
@@ -15942,6 +15929,23 @@
       if (k === "shop") { showJeuxView("jeuxShop"); if (typeof renderShop === "function") renderShop(); return; }
       openJeuxSheet(k); // quests | games -> feuille overlay
     }));
+
+    // A11y · FOCUS-TRAP clavier : quand une modale/feuille est ouverte, Tab reste à
+    // l'intérieur (avant : le focus partait derrière la modale). Priorité au calque le plus haut.
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab") return;
+      const top = document.querySelector("#fakeCall:not(.hidden)")
+        || document.querySelector("#popInfoOv:not(.hidden)")
+        || document.querySelector(".sm-selsheet-ov.show")
+        || document.querySelector("#pickerOverlay:not(.hidden)")
+        || [...document.querySelectorAll(".act-overlay:not(.hidden)")].pop();
+      if (!top) return;
+      const foc = [...top.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')].filter((el) => !el.disabled && el.offsetParent !== null);
+      if (!foc.length) { e.preventDefault(); return; }
+      const first = foc[0], last = foc[foc.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !top.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !top.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+    });
 
     // Boutons d'action des états vides (« Découvrir des Mates », « Voir les lieux »…)
     document.addEventListener("click", (e) => {
