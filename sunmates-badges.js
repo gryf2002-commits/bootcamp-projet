@@ -192,6 +192,7 @@
 
   // Choix DA (Maxime) : badges RONDS à EMOJI partout → on désactive les emblèmes SVG sertis.
   window.SMBadge.hasEmblem = function (badgeKey) { return false; };
+  window.SMBadge.familyOf = function (badgeKey) { return FAM[String(badgeKey || '').replace(/^badge_/, '')] || null; };
   window.SMBadge.isSecret = function (badgeKey) { return !!SECRETS[String(badgeKey || '').replace(/^badge_/, '')]; };
   // Synchronise le registre depuis le catalogue Supabase (is_secret)
   window.SMBadge.setSecrets = function (keys) {

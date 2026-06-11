@@ -111,8 +111,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=417"></script>
-  <script src="sunmates-icons.js?v=417"></script>
+  <script src="sunmates-badges.js?v=418"></script>
+  <script src="sunmates-icons.js?v=418"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -347,12 +347,15 @@
     .cat-tile .clbl { font-size: .74rem; font-weight: 700; color: var(--ink); white-space: nowrap; }
     .cat-tile.active { border-color: var(--accent); box-shadow: 0 6px 16px rgba(255,90,77,.2); }
     .cic.c-sun { background: var(--accent-grad); }
-    /* DA : pas de vert vif ni de bleu ciel « hors-DA » → turquoise bijou + indigo nuit (palette émaillée). */
-    .cic.c-green { background: linear-gradient(135deg,#4ED8B8,#179E8C); }
-    .cic.c-blue { background: linear-gradient(135deg,#9D86FF,#5E3FE0); }
-    .cic.c-purp { background: linear-gradient(135deg,#b9a6ff,#7c5cff); }
-    .cic.c-gold { background: linear-gradient(135deg,#FFD15C,#F4A11E); }
-    .cic.c-pink { background: linear-gradient(135deg,#ffa7d1,#ff5e9f); }
+    /* DA : pas de vert vif ni de bleu ciel « hors-DA » → turquoise bijou + indigo nuit (palette émaillée).
+       #16 : les couleurs passent par --c1/--c2 → la couche « palette malléable » (fin de feuille)
+       les MARIE au thème actif (nuit/hiver/tropiques) via color-mix, plus de couleurs figées. */
+    .cic.c-green { --c1:#4ED8B8; --c2:#179E8C; }
+    .cic.c-blue { --c1:#9D86FF; --c2:#5E3FE0; }
+    .cic.c-purp { --c1:#b9a6ff; --c2:#7c5cff; }
+    .cic.c-gold { --c1:#FFD15C; --c2:#F4A11E; }
+    .cic.c-pink { --c1:#ffa7d1; --c2:#ff5e9f; }
+    .cic.c-green, .cic.c-blue, .cic.c-purp, .cic.c-gold, .cic.c-pink { background: linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); }
     /* Hiérarchie de l'onglet Jeux : 2 groupes (Jouer / Progresser) + 2 tuiles PRIMAIRES plus grandes.
        #jeuxNav était une grille 3-col (l.292) → on repasse en bloc pour empiler les groupes. */
     #jeuxNav { display: block; }
@@ -1562,10 +1565,13 @@
     .hex.shape-circle { clip-path: none; border-radius: 50%; }
     .hex.shape-shield { clip-path: polygon(50% 0, 100% 16%, 100% 60%, 50% 100%, 0 60%, 0 16%); }
     .hex.shape-star { clip-path: polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%); font-size: 22px; }
-    .hex.grad-violet { background: linear-gradient(135deg,#9b7bff,#6a4bff); }
-    .hex.grad-gold { background: linear-gradient(135deg,#FFD15C,#E89B2B); }
-    .hex.grad-teal { background: linear-gradient(135deg,#5fe0c0,#1f9e8c); }
-    .bitem.locked .hex { background: #e9e4e4 !important; color: #bdb6b6; box-shadow: none; }
+    .hex.grad-violet { --c1:#9b7bff; --c2:#6a4bff; }
+    .hex.grad-gold { --c1:#FFD15C; --c2:#E89B2B; }
+    .hex.grad-teal { --c1:#5fe0c0; --c2:#1f9e8c; }
+    .hex.grad-violet, .hex.grad-gold, .hex.grad-teal { background: linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); }
+    /* #10 : verrouillé = TOUT gris, y compris l'emoji (un emoji couleur ignore `color:` →
+       il fallait un filter). Règle produit : badges non débloqués grisés façon jeu vidéo. */
+    .bitem.locked .hex { background: #e9e4e4 !important; color: #bdb6b6; box-shadow: none; filter: grayscale(1) opacity(.75); }
     /* Badge secret (non débloqué, non-admin) : look « mystère » façon jeu vidéo */
     .bitem.secret .hex { background: linear-gradient(135deg,#3a3450,#241f33); color: #8b84a3; box-shadow: none; }
     body.theme-dusk .bitem.secret .hex { background: linear-gradient(135deg,#2a2440,#161226); }
@@ -1587,7 +1593,7 @@
     /* Icônes maison sur tuile : fond crème (l'icône porte la couleur, DA chaude) */
     /* Tuile-joyau : dégradé sunset bombé + gloss + rim-light + ombre chaude (zéro crème) */
     .cic[data-smicon], .jo-ic[data-smicon] { position: relative; isolation: isolate; overflow: hidden; border: none;
-      background: radial-gradient(120% 90% at 28% 22%, rgba(255,255,255,.42), rgba(255,255,255,0) 42%), linear-gradient(135deg, var(--c1,#FF8A3D), var(--c2,#FF5A4D));
+      background: radial-gradient(120% 90% at 28% 22%, rgba(255,255,255,.42), rgba(255,255,255,0) 42%), linear-gradient(135deg, var(--ic1, var(--c1,#FF8A3D)), var(--ic2, var(--c2,#FF5A4D)));
       box-shadow: 0 7px 15px -4px rgba(255,90,77,.5), 0 2px 4px rgba(180,60,40,.3), inset 0 1px 1px rgba(255,246,236,.85), inset 0 -2px 3px rgba(150,45,30,.32); }
     /* Reflet TOP plus léger (avant : blanc .5 sur 42% → givrait/floutait le glyphe). */
     .cic[data-smicon]::after, .jo-ic[data-smicon]::after { content:""; position:absolute; left:8%; right:8%; top:6%; height:34%; border-radius:50% 50% 60% 60%/70% 70% 100% 100%; background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.02)); pointer-events:none; z-index:0; }
@@ -1597,12 +1603,12 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg { display:block; position:relative; z-index:1; }
     .cat-tile.active .cic[data-smicon] { box-shadow: 0 10px 22px -4px rgba(255,90,77,.6), 0 2px 4px rgba(180,60,40,.32), inset 0 1px 1px rgba(255,246,236,.9), inset 0 -2px 3px rgba(150,45,30,.32); }
     /* Palette par tuile : un spectre DA distinct par catégorie (anti-uniformité) */
-    [data-smicon="quest"]{--c1:#FF7A4D;--c2:#FF5238} [data-smicon="games"]{--c1:#8a5cff;--c2:#6638d6} [data-smicon="medal"]{--c1:#E8A33A;--c2:#A8500F} [data-smicon="coupon"]{--c1:#FF6FA5;--c2:#E84D86} [data-smicon="rank"]{--c1:#5E74E8;--c2:#3641B8} [data-smicon="shop"]{--c1:#FF5A8A;--c2:#C43A8A}
-    [data-smicon="coffee"]{--c1:#E89A4E;--c2:#A85A1C} [data-smicon="eco"]{--c1:#34C98F;--c2:#0E9E6B} [data-smicon="near"]{--c1:#FF9A3D;--c2:#FF6A1F} [data-smicon="rating"]{--c1:#FFB23D;--c2:#E07E12} [data-smicon="popular"]{--c1:#FF5A4D;--c2:#E83247} [data-smicon="trip"]{--c1:#FF8A4D;--c2:#FF5A4D}
+    [data-smicon="quest"]{--c1:#FF7A4D;--c2:#FF5238} [data-smicon="games"]{--c1:#8a5cff;--c2:#6638d6} [data-smicon="medal"]{--c1:#E8A33A;--c2:#D07F10} [data-smicon="coupon"]{--c1:#FF6FA5;--c2:#E84D86} [data-smicon="rank"]{--c1:#5E74E8;--c2:#3641B8} [data-smicon="shop"]{--c1:#FF5A8A;--c2:#C43A8A}
+    [data-smicon="coffee"]{--c1:#E89A4E;--c2:#C26A1E} [data-smicon="eco"]{--c1:#34C98F;--c2:#0E9E6B} [data-smicon="near"]{--c1:#FF9A3D;--c2:#FF6A1F} [data-smicon="rating"]{--c1:#FFB23D;--c2:#E07E12} [data-smicon="popular"]{--c1:#FF5A4D;--c2:#E83247} [data-smicon="trip"]{--c1:#FF8A4D;--c2:#FF5A4D}
     [data-smicon="users"]{--c1:#9b7bff;--c2:#6a4fe0} [data-smicon="shieldsafe"]{--c1:#1FB38C;--c2:#0C7E6E} [data-smicon="usersolo"]{--c1:#FF9A5C;--c2:#E8631F} [data-smicon="crown"]{--c1:#8a5cff;--c2:#5028b0} [data-smicon="phone"]{--c1:#2BC48A;--c2:#15897A} [data-smicon="signal"]{--c1:#FFC04E;--c2:#E8901F}
     [data-smicon="alert"]{--c1:#FF4D4D;--c2:#D81E2A} [data-smicon="aid"]{--c1:#FF7A4D;--c2:#FF9A3D} [data-smicon="chat"]{--c1:#7a8cff;--c2:#5560f0}
     /* Pastille-joyau réutilisable (icône ivoire sur dégradé) pour harmoniser les emojis hors tuiles */
-    .smgem { background: linear-gradient(135deg, var(--c1,#FF8A3D), var(--c2,#FF5A4D)) !important; box-shadow: 0 4px 10px rgba(255,90,77,.28), inset 0 1px 1px rgba(255,246,236,.6) !important; color: #fff !important; }
+    .smgem { background: linear-gradient(135deg, var(--ic1, var(--c1,#FF8A3D)), var(--ic2, var(--c2,#FF5A4D))) !important; box-shadow: 0 4px 10px rgba(255,90,77,.28), inset 0 1px 1px rgba(255,246,236,.6) !important; color: #fff !important; }
     .smgem svg { filter: drop-shadow(0 1px 1px rgba(122,36,21,.25)); }
     .sv-stat .sv-ico { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; vertical-align: -5px; margin-right: 4px; }
 
@@ -1781,9 +1787,8 @@
     .qm-ic{ width:42px; height:42px; display:grid; place-items:center; font-size:22px; border-radius:13px; color:#fff;
       box-shadow:inset 0 -6px 12px rgba(0,0,0,.14), inset 0 2px 3px rgba(255,255,255,.45), 0 5px 12px rgba(0,0,0,.12); }
     .qm-coral .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), linear-gradient(135deg,#FF8A3D,#FF5A4D); }
-    .qm-teal .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), linear-gradient(135deg,#34c98f,#1f9e8c); }
-    .qm-gold .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.55), rgba(255,255,255,0) 55%), linear-gradient(135deg,#FFD15C,#E8961F); }
-    .qm-violet .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), linear-gradient(135deg,#9b7bff,#7a5cff); }
+    .qm-teal{ --c1:#34c98f; --c2:#1f9e8c; } .qm-gold{ --c1:#FFD15C; --c2:#E8961F; } .qm-violet{ --c1:#9b7bff; --c2:#7a5cff; }
+    .qm-teal .qm-ic, .qm-gold .qm-ic, .qm-violet .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); }
     .qm-name{ font-weight:800; font-size:.8rem; line-height:1.15; color:var(--ink); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .qm-xp{ margin-top:auto; font-weight:800; font-size:.74rem; color:#B5740E; background:rgba(255,209,92,.22); padding:.12rem .45rem; border-radius:999px; }
     body.theme-dusk .qm-card{ background:#2a2140; border-color:rgba(255,255,255,.08); } body.theme-dusk .qm-xp{ color:#FFD79A; background:rgba(255,209,92,.14); }
@@ -1830,9 +1835,10 @@
       border-radius:var(--radius); background:var(--card); border:1px solid rgba(201,138,30,.14); box-shadow:var(--shadow-sm); transition:transform .16s ease, box-shadow .16s ease; }
     .sc-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); } .sc-card:active{ transform:scale(.97); }
     .sc-ic{ flex-shrink:0; width:46px; height:46px; display:grid; place-items:center; font-size:1.5rem; border-radius:14px; background:var(--accent-grad); box-shadow:0 6px 14px rgba(255,90,77,.28), inset 0 1px 0 rgba(255,255,255,.5); }
-    .sc-card.sc-teal .sc-ic{ background:linear-gradient(135deg,#34c98f,#1f9e8c); box-shadow:0 6px 14px rgba(31,158,140,.30), inset 0 1px 0 rgba(255,255,255,.4); }
-    .sc-card.sc-gold .sc-ic{ background:linear-gradient(135deg,#FFD15C,#E8961F); box-shadow:0 6px 14px rgba(232,150,31,.32), inset 0 1px 0 rgba(255,255,255,.5); }
-    .sc-card.sc-violet .sc-ic{ background:linear-gradient(135deg,#9b7bff,#7a5cff); box-shadow:0 6px 14px rgba(122,92,255,.30), inset 0 1px 0 rgba(255,255,255,.4); }
+    .sc-card.sc-teal{ --c1:#34c98f; --c2:#1f9e8c; } .sc-card.sc-gold{ --c1:#FFD15C; --c2:#E8961F; } .sc-card.sc-violet{ --c1:#9b7bff; --c2:#7a5cff; }
+    .sc-card.sc-teal .sc-ic{ background:linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); box-shadow:0 6px 14px rgba(31,158,140,.30), inset 0 1px 0 rgba(255,255,255,.4); }
+    .sc-card.sc-gold .sc-ic{ background:linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); box-shadow:0 6px 14px rgba(232,150,31,.32), inset 0 1px 0 rgba(255,255,255,.5); }
+    .sc-card.sc-violet .sc-ic{ background:linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); box-shadow:0 6px 14px rgba(122,92,255,.30), inset 0 1px 0 rgba(255,255,255,.4); }
     .sc-body{ flex:1; min-width:0; display:flex; flex-direction:column; gap:.12rem; }
     .sc-name{ font-weight:800; font-size:.95rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .sc-desc{ font-size:.8rem; color:var(--text); line-height:1.25; }
@@ -2571,20 +2577,21 @@
        (avant : 2 libellés texte flottant dans un bandeau beige = « pas scindé / moche »). */
     #profSegNav { background: transparent !important; border: 0 !important; padding: 0 !important; gap: .55rem; margin: .7rem 0 .2rem; }
     #profSegNav button { flex: 1; border-radius: 13px; padding: .62rem .5rem; font-size: .82rem; font-weight: 800; border: 1.5px solid var(--line); background: var(--card); box-shadow: var(--shadow-sm); }
-    /* Premium = doré (spécial) ; Admin = terracotta sunset sobre (outil) → 2 tons DA distincts, zéro indigo hors-DA. */
-    /* Dégradés plus soutenus (les pâles disparaissaient en plein soleil sur mobile) */
+    /* Premium = doré (spécial) ; Admin = FRAMBOISE SUNSET (retour Maxime : le terracotta
+       faisait « marron morose/terreux » hors DA) → rose-corail profond, vivant, distinct
+       du Premium or ET du corail global de l'app. */
     #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#FFDD8A,#F0AD3A); border-color: rgba(200,130,20,.6); color: #5f3e00; }
-    #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#F6CDB4,#E59B72); border-color: rgba(185,85,45,.6); color: #732b10; }
+    #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#FFC2CC,#F4798F); border-color: rgba(220,60,100,.55); color: #7a1230; }
     /* État ACTIF : chaque tuile garde SA couleur (avant : tout passait corail → le Premium
-       n'était plus jaune). Premium actif = OR franc, Admin actif = terracotta profond. */
+       n'était plus jaune). Premium actif = OR franc, Admin actif = framboise profond. */
     #profSegNav button.active { background: var(--accent-grad) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 6px 16px rgba(255,90,77,.28); }
     #profSegNav button[data-pseg="premium"].active { background: linear-gradient(135deg,#FFC93C,#E89A12) !important; color: #4a3200 !important; box-shadow: 0 6px 16px rgba(232,154,18,.35); }
-    #profSegNav button[data-pseg="admin"].active { background: linear-gradient(135deg,#E08A55,#B95A2D) !important; color: #fff !important; box-shadow: 0 6px 16px rgba(185,90,45,.32); }
+    #profSegNav button[data-pseg="admin"].active { background: linear-gradient(135deg,#F2607E,#C92D55) !important; color: #fff !important; box-shadow: 0 6px 16px rgba(201,45,85,.32); }
     body.theme-dusk #profSegNav button { background: #2a2140; border-color: rgba(255,255,255,.1); color: #f3e7d8; }
     body.theme-dusk #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#4a3a1a,#5a4520); border-color: rgba(240,169,58,.4); color: #ffd98a; }
-    body.theme-dusk #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#4a2a1c,#5e3825); border-color: rgba(208,108,72,.5); color: #ffc8a8; }
+    body.theme-dusk #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#451b2a,#5a2438); border-color: rgba(244,121,143,.45); color: #ffb8c8; }
     body.theme-dusk #profSegNav button[data-pseg="premium"].active { background: linear-gradient(135deg,#D9A21B,#A87708) !important; color: #fff8e6 !important; }
-    body.theme-dusk #profSegNav button[data-pseg="admin"].active { background: linear-gradient(135deg,#9C4F26,#7C3A18) !important; color: #ffe8da !important; }
+    body.theme-dusk #profSegNav button[data-pseg="admin"].active { background: linear-gradient(135deg,#B83558,#8E2342) !important; color: #ffe3ea !important; }
     /* HIVER : or givré + bleu acier (raccord palette glacier) */
     body.theme-winter #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#F8EBC4,#EBCB78); border-color: rgba(170,130,40,.45); color: #5a4300; }
     body.theme-winter #profSegNav button[data-pseg="premium"].active { background: linear-gradient(135deg,#F2CE5E,#D9A21B) !important; color: #4a3200 !important; box-shadow: 0 6px 16px rgba(217,162,27,.3); }
@@ -3109,18 +3116,15 @@
       background: var(--card); border: 1px solid var(--line);
       border-radius: 16px; padding: .7rem .8rem; font-weight: 700; color: var(--ink); box-shadow: var(--shadow-sm); }
     .help-cta:active { transform: scale(.99); }
-    .help-cta .hc-ic { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; font-size: 1.2rem;
-      border-radius: 13px; background: linear-gradient(135deg, #FFD9A8, #FF9A7B); box-shadow: inset 0 1px 0 rgba(255,255,255,.55); }
+    /* #17 : emoji NU, sans pastille de fond (retour Maxime « pourquoi les emojis ont un fond ? ») */
+    .help-cta .hc-ic { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; font-size: 1.5rem; }
     .help-cta .hc-txt { display: flex; flex-direction: column; gap: .12rem; min-width: 0; }
     .help-cta .hc-sub { font-weight: 500; font-size: .73rem; line-height: 1.35; color: var(--muted); white-space: normal; }
     /* Thèmes : la carte suit (la nuit ne redéfinit pas --card → il faut l'explicite) */
     body.theme-dusk .help-cta { background: #241b35; border-color: rgba(255,255,255,.09); color: #f3e9f3; }
     body.theme-dusk .help-cta .hc-sub { color: #a99fbe; }
-    body.theme-dusk .help-cta .hc-ic { background: linear-gradient(135deg, #5a3a28, #7a4630); box-shadow: none; }
     body.theme-winter .help-cta { background: #fff; border-color: rgba(58,143,217,.20); }
-    body.theme-winter .help-cta .hc-ic { background: linear-gradient(135deg, #DCEBF8, #BFD9F2); }
     body.theme-tropic .help-cta { background: #fff; border-color: rgba(15,163,124,.20); }
-    body.theme-tropic .help-cta .hc-ic { background: linear-gradient(135deg, #EDF4D4, #CDE8B8); }
 
     /* Souvenirs : vitrine compacte (avatars empilés) + galerie en feuille */
     .hm-gal-open { display: flex; align-items: center; width: 100%; gap: .15rem; padding: .55rem .7rem; margin-top: .25rem;
@@ -3281,6 +3285,21 @@
     .fc-gbtn { display: flex; flex-direction: column; align-items: center; gap: .35rem; background: none; border: 0; color: #cfcfdd; font-size: .66rem; font-weight: 600; cursor: pointer; }
     .fc-gbtn span { width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,.12); display: grid; place-items: center; font-size: 1.3rem; transition: background .15s; }
     .fc-gbtn.on span { background: rgba(255,255,255,.85); }
+
+    /* ============ #16 PALETTE MALLÉABLE (fin de feuille = gagne la cascade) ============
+       Toutes les pastilles/joyaux colorés exposent leur couleur en --c1/--c2 ; ici on les
+       MARIE au thème actif via color-mix : une seule règle par thème au lieu de re-déclarer
+       chaque famille. Jour = couleurs d'origine. Nuit = encre violette (tons bijou sur fond
+       sombre). Hiver = givre (poudré + acier). Tropiques = jus (soleil + lagon). */
+    body.theme-dusk .cic, body.theme-dusk .qm-ic, body.theme-dusk .sc-ic, body.theme-dusk .hex, body.theme-dusk .jo-ic, body.theme-dusk .smgem {
+      --ic1: color-mix(in oklab, var(--c1, #FF8A3D) 74%, #322352);
+      --ic2: color-mix(in oklab, var(--c2, #FF5A4D) 78%, #1E1638); }
+    body.theme-winter .cic, body.theme-winter .qm-ic, body.theme-winter .sc-ic, body.theme-winter .hex, body.theme-winter .jo-ic, body.theme-winter .smgem {
+      --ic1: color-mix(in oklab, var(--c1, #FF8A3D) 66%, #DCEBF7);
+      --ic2: color-mix(in oklab, var(--c2, #FF5A4D) 72%, #4A6F96); }
+    body.theme-tropic .cic, body.theme-tropic .qm-ic, body.theme-tropic .sc-ic, body.theme-tropic .hex, body.theme-tropic .jo-ic, body.theme-tropic .smgem {
+      --ic1: color-mix(in oklab, var(--c1, #FF8A3D) 72%, #FFD66B);
+      --ic2: color-mix(in oklab, var(--c2, #FF5A4D) 76%, #14805F); }
 
     /* A11y · réglage système « réduire les animations » respecté PARTOUT (ne concerne que
        les personnes qui l'ont demandé · le peps reste intact pour tout le monde d'autre) */
@@ -9488,10 +9507,17 @@
       const shown = defs.filter((b) => isAdmin || !b.is_secret || myBadgeKeys.has(b.key));
       const earned = shown.filter((d) => myBadgeKeys.has(d.key)).length;
       { const bc = $("badgeCollCount"); if (bc) bc.textContent = earned + " / " + shown.length; } // vrai compteur (fini le 36/44 codé en dur)
-      // Tous ronds pour l'instant (1er pas) ; on garde la variété de COULEURS (déterministe par clé).
+      // #10 : couleur par FAMILLE DA (exploration=corail, social=violet, sécurité=teal,
+      // accomplissement=or) — avant : hash aléatoire par clé → polyglotte tombait sur l'or
+      // sans raison. Le hash ne sert plus que de repli pour les badges hors catalogue.
       const SHAPES = ["shape-circle"];
       const GRADS = ["grad-sun", "grad-violet", "grad-gold", "grad-teal"];
-      const badgeStyle = (k) => { let h = 0; for (let i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) >>> 0; return SHAPES[h % SHAPES.length] + " " + GRADS[(h >> 3) % GRADS.length]; };
+      const FAMGRAD = { exploration: "grad-sun", social: "grad-violet", securite: "grad-teal", accomplissement: "grad-gold" };
+      const badgeStyle = (k) => {
+        const fam = (window.SMBadge && SMBadge.familyOf) ? SMBadge.familyOf(k) : null;
+        if (fam && FAMGRAD[fam]) return "shape-circle " + FAMGRAD[fam];
+        let h = 0; for (let i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) >>> 0; return SHAPES[h % SHAPES.length] + " " + GRADS[(h >> 3) % GRADS.length];
+      };
       $("badgeGrid").innerHTML = shown.map((b) => {
         const done = myBadgeKeys.has(b.key);
         const bvis = (window.SMBadge && SMBadge.hasEmblem(b.key))
