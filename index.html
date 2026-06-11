@@ -114,8 +114,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=430"></script>
-  <script src="sunmates-icons.js?v=430"></script>
+  <script src="sunmates-badges.js?v=431"></script>
+  <script src="sunmates-icons.js?v=431"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -3141,6 +3141,11 @@
     .city-pick .sm-sel-trigger .sm-sel-val::before { content: "📍 "; }
     .city-pick .sm-sel-trigger .sm-sel-chev { color: var(--accent); }
     body.theme-dusk .city-pick .sm-sel-trigger { background: var(--dcard, #2a2140); border-color: rgba(255,209,92,.22); }
+    /* Retour Maxime : la ville était ÉCRASÉE par « À faire » + « Filtres » (il ne restait que
+       « Cho… ») → la ville prend SA ligne entière, les 2 outils se partagent la ligne dessous. */
+    .city-pick { flex-wrap: wrap; }
+    .city-pick .sm-sel { flex: 1 1 100%; }
+    .city-pick .todo-toggle, .city-pick .hm-layers-btn { flex: 1 1 0; justify-content: center; }
 
     .sm-selsheet-ov { position: fixed; inset: 0; z-index: var(--z-sheet); background: rgba(20,8,30,.5); backdrop-filter: blur(2px);
       display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .18s; }
@@ -3257,7 +3262,22 @@
     .player-badge.player-hud { width: auto; height: auto; border-radius: 999px; overflow: visible;
       display: flex; align-items: center; gap: .55rem; padding: .3rem .8rem .3rem .32rem;
       background: linear-gradient(135deg, #2A1E0E, #44310F); border: 1.5px solid rgba(255,209,92,.55);
-      box-shadow: 0 6px 16px rgba(232,150,31,.32), inset 0 1px 0 rgba(255,233,176,.18); }
+      /* halo ADOUCI (retour Maxime « halo moche ») : assise discrète, plus de lueur orange baveuse */
+      box-shadow: 0 4px 12px rgba(90,50,15,.22), inset 0 1px 0 rgba(255,233,176,.18); }
+    body.theme-dusk .player-badge.player-hud { box-shadow: 0 4px 12px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,233,176,.14); }
+    /* …et la plaque se DÉCLINE par mode (retour : « pas adaptée à tous les modes ») */
+    body.theme-winter .player-badge.player-hud { background: linear-gradient(135deg, #1D3A5C, #0F2741); border-color: rgba(140,196,242,.55); box-shadow: 0 4px 12px rgba(40,80,130,.25), inset 0 1px 0 rgba(191,226,248,.18); }
+    body.theme-winter .player-badge.player-hud .hud-lvl { color: #BFE2F8; }
+    body.theme-winter .player-badge.player-hud .hud-xp { color: rgba(191,226,248,.85); }
+    body.theme-winter .player-badge.player-hud .hud-bar { background: rgba(191,226,248,.2); }
+    body.theme-winter .player-badge.player-hud .hud-bar i { background: linear-gradient(90deg, #8CC4F2, #3A8FD9); }
+    body.theme-winter .player-badge.player-hud .pb-av { box-shadow: 0 0 0 2px #8CC4F2, 0 0 10px rgba(111,180,232,.4); background-color: #16314E; }
+    body.theme-tropic .player-badge.player-hud { background: linear-gradient(135deg, #0E4D3C, #072B21); border-color: rgba(92,216,168,.5); box-shadow: 0 4px 12px rgba(15,120,90,.25), inset 0 1px 0 rgba(154,219,190,.16); }
+    body.theme-tropic .player-badge.player-hud .hud-lvl { color: #FFE3A0; }
+    body.theme-tropic .player-badge.player-hud .hud-xp { color: rgba(154,219,190,.9); }
+    body.theme-tropic .player-badge.player-hud .hud-bar { background: rgba(154,219,190,.2); }
+    body.theme-tropic .player-badge.player-hud .hud-bar i { background: linear-gradient(90deg, #FFC23D, #2BC48A); }
+    body.theme-tropic .player-badge.player-hud .pb-av { box-shadow: 0 0 0 2px #FFC23D, 0 0 10px rgba(43,196,138,.4); background-color: #143427; }
     .player-badge.player-hud .pb-av { position: relative; inset: auto; width: 42px; height: 42px; border-radius: 50%;
       display: grid; place-items: center; font-size: 1.25rem; background-size: cover; background-position: center;
       box-shadow: 0 0 0 2px #FFD15C, 0 0 12px rgba(255,201,60,.45); background-color: #5a4520; }
@@ -3316,26 +3336,9 @@
     [data-coll] .coll-chev { color: var(--accent); font-size: .85em; font-weight: 800; }
 
     /* ====== 🥚 Easter eggs (effets visuels · jamais documentés côté public) ====== */
-    /* #19 Golden Hour v2 : le soleil S'ATTRAPE et se POSE sur la carte (fini l'app réchauffée). */
-    #eggSunCatch { position: fixed; left: 0; top: 0; z-index: 99998; cursor: grab; touch-action: none;
-      transition: opacity .5s ease; filter: drop-shadow(0 6px 18px rgba(255,170,40,.6)); }
-    #eggSunCatch svg { animation: eggSunBob 2.2s ease-in-out infinite; }
-    #eggSunCatch.grab { cursor: grabbing; } #eggSunCatch.grab svg { animation: none; }
-    #eggSunCatch.out { opacity: 0; }
-    @keyframes eggSunBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
-    .egg-gold-wrap { pointer-events: none; }
-    .egg-gold-halo { width: 180px; height: 180px; border-radius: 50%; animation: eggGoldPulse 2.4s ease-in-out infinite;
-      background: radial-gradient(circle, rgba(255,221,120,.55) 0%, rgba(255,201,60,.28) 45%, rgba(255,201,60,0) 70%); }
-    @keyframes eggGoldPulse { 0%, 100% { transform: scale(1); opacity: .95; } 50% { transform: scale(1.14); opacity: .72; } }
-    .egg-gold-label { font-weight: 800; font-size: 15px; text-align: center; white-space: nowrap; background-size: 200% 100%;
-      background-image: linear-gradient(90deg, #B8771B, #FFD15C 30%, #FFF3C4 50%, #FFD15C 70%, #B8771B);
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-      filter: drop-shadow(0 1px 6px rgba(255,200,80,.8)); animation: eggGoldShine 2.6s linear infinite; }
+    /* (Golden Hour « 7 taps » SUPPRIMÉ — retour Maxime, il ne l'aimait pas au final.
+       eggGoldShine est GARDÉ : l'écrin Premium s'en sert pour le titre Gold scintillant.) */
     @keyframes eggGoldShine { to { background-position: 200% 0; } }
-    /* Lever de soleil vectoriel à l'activation */
-    .egg-sunrise { position: fixed; left: 50%; bottom: -150px; margin-left: -60px; z-index: 99998; pointer-events: none;
-      filter: drop-shadow(0 0 28px rgba(255,190,60,.85)); animation: eggSunrise 3s ease-out forwards; }
-    @keyframes eggSunrise { 0% { bottom: -150px; opacity: 0; } 22% { opacity: 1; } 70% { bottom: 30vh; opacity: 1; } 100% { bottom: 38vh; opacity: 0; } }
     .eg-rays { transform-origin: 32px 32px; animation: egRaysSpin 7s linear infinite; }
     @keyframes egRaysSpin { to { transform: rotate(360deg); } }
     /* Baleine VECTORIELLE : surgissement, flottement, jet d'eau, ondulations, plongeon */
@@ -7742,7 +7745,6 @@
         ["❄️", "Modes saison hiver / tropiques", "Appui long 10 s sur le bouton thème = entrer/sortir du mode saison ; en saison, 1 clic = ❄️↔🌴 ; nuit d'hiver / nuit tropicale via Réglages → Mode nuit (ou bascule auto du soir) ; auto météo : <0 °C hiver, >30 °C tropiques."],
         ["❓", "Badges secrets", "Invisibles tant que pas débloqués ; conditions révélées à l'admin dans la fiche badge."],
         ["🌟", "Badge « Légende de SunMates »", "Le badge secret ultime, palier endgame."],
-        ["🌅", "Golden Hour", "7 taps sur le logo soleil → un soleil se lève et S'ATTRAPE : pose-le sur la carte, l'endroit se dore 30 s (halo + écriture dorée) + badge « Chercheur d'or ». 1×/jour."],
         ["🐋", "La baleine", "Zoomer au large (centre de la carte sur l'eau, zoom ≥10) → une baleine apparaît 12 s + badge « Capitaine Achab » (1×/jour)."],
         ["🎂", "Anniversaire", "Ouvrir l'app le jour de sa date de naissance → confettis + carte + badge « Année dorée » (1×/an)."],
         ["☀️", "Mot magique", "Taper « soleil » (ou sunshine/sunmates) dans la recherche accueil → soleil qui traverse l'écran + badge."],
@@ -14911,71 +14913,7 @@
     const EGG_SUN_SVG = (px) => `<svg viewBox="0 0 64 64" width="${px}" height="${px}"><defs><radialGradient id="egsun" cx="50%" cy="45%"><stop offset="0%" stop-color="#FFE9A8"/><stop offset="55%" stop-color="#FFC93C"/><stop offset="100%" stop-color="#FF8A3D"/></radialGradient></defs><g class="eg-rays" stroke="#FFB13C" stroke-width="3.4" stroke-linecap="round"><line x1="32" y1="2" x2="32" y2="11"/><line x1="32" y1="53" x2="32" y2="62"/><line x1="2" y1="32" x2="11" y2="32"/><line x1="53" y1="32" x2="62" y2="32"/><line x1="11" y1="11" x2="17" y2="17"/><line x1="47" y1="47" x2="53" y2="53"/><line x1="53" y1="11" x2="47" y2="17"/><line x1="17" y1="47" x2="11" y2="53"/></g><circle cx="32" cy="32" r="16" fill="url(#egsun)"/></svg>`;
     const EGG_BALLOON_SVG = (c1, c2, w) => `<svg viewBox="0 0 40 66" width="${w || 30}" height="${Math.round((w || 30) * 1.65)}"><path d="M20 3C11.2 3 4.5 10 4.5 18.5 4.5 28 13 36.5 20 41.5 27 36.5 35.5 28 35.5 18.5 35.5 10 28.8 3 20 3z" fill="${c1}"/><path d="M13.5 8.5c-3 2-5 5.5-5 9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none" opacity=".65"/><path d="M20 41.5l-2.6 4.5h5.2z" fill="${c2}"/><path d="M20 46c1.4 6-2.2 9 .4 17" stroke="${c2}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/></svg>`;
 
-    // 🌅 GOLDEN HOUR v2 (#19) — 7 taps sur le logo : le soleil se lève… et il S'ATTRAPE.
-    // Glisse-le sur la carte → l'endroit se dore 30 s (halo + écriture dorée qui s'efface).
-    // 1×/jour (l'admin rejoue avec le mini-cooldown). L'ancien « app réchauffée 1 h » est retiré.
-    (function eggGoldenHour() {
-      try { document.body.classList.remove("golden-hour"); localStorage.removeItem("sm_golden_until"); } catch (e) {}
-      function sunrise() { // lever de soleil : le soleil vectoriel monte du bas de l'écran puis s'efface
-        try {
-          const d = document.createElement("div"); d.className = "egg-sunrise"; d.innerHTML = EGG_SUN_SVG(120);
-          document.body.appendChild(d); setTimeout(() => d.remove(), 3200);
-        } catch (e) {}
-      }
-      function goldTouch(ll) { // le « toucher d'or » : halo + écriture dorée, 30 s puis s'efface
-        try {
-          const day = new Date().toISOString().slice(0, 10);
-          // Halo en divIcon (PAS un L.circle : avec preferCanvas il partirait dans le canvas,
-          // invisible pour le CSS → pas de pulsation possible).
-          const circle = L.marker(ll, { icon: L.divIcon({ className: "egg-gold-wrap", html: '<div class="egg-gold-halo"></div>', iconSize: [180, 180], iconAnchor: [90, 90] }), zIndexOffset: 1590, interactive: false }).addTo(homeLeaf);
-          const label = L.marker(ll, { icon: L.divIcon({ className: "egg-gold-wrap", html: '<div class="egg-gold-label">✨ ' + escapeHtml(i18nT("Béni par le soleil")) + ' ✨</div>', iconSize: [230, 40], iconAnchor: [115, 52] }), zIndexOffset: 1600, interactive: false }).addTo(homeLeaf);
-          if (window.SMSound) { try { SMSound.play("star"); } catch (e) {} }
-          if (typeof toast === "function") toast("🌅", i18nT("Tu as posé le soleil ✨ l'endroit restera doré 30 secondes"), null, { low: true });
-          awardSecretBadge("badge_goldenhour");
-          try { localStorage.setItem("sm_egg_golden_day", day); } catch (e) {}
-          setTimeout(() => { try { homeLeaf.removeLayer(circle); homeLeaf.removeLayer(label); } catch (e) {} }, 30000);
-        } catch (e) {}
-      }
-      function spawnCatchSun() { // un soleil flottant à attraper (pointer events, pas de lib)
-        try {
-          const old = document.getElementById("eggSunCatch"); if (old) old.remove();
-          const d = document.createElement("div"); d.id = "eggSunCatch"; d.innerHTML = EGG_SUN_SVG(64);
-          document.body.appendChild(d);
-          let x = window.innerWidth / 2 - 32, y = 110, dragging = false, offX = 0, offY = 0;
-          const move = () => { d.style.transform = "translate(" + x + "px," + y + "px)"; };
-          move();
-          const fadeOut = () => { try { d.classList.add("out"); setTimeout(() => d.remove(), 600); } catch (e) {} };
-          const idleT = setTimeout(fadeOut, 25000); // ignoré 25 s → il se couche tout seul
-          d.addEventListener("pointerdown", (e) => { dragging = true; try { d.setPointerCapture(e.pointerId); } catch (err) {} offX = e.clientX - x; offY = e.clientY - y; d.classList.add("grab"); e.preventDefault(); });
-          d.addEventListener("pointermove", (e) => { if (!dragging) return; x = e.clientX - offX; y = e.clientY - offY; move(); });
-          d.addEventListener("pointerup", (e) => {
-            dragging = false; d.classList.remove("grab");
-            try {
-              const mapEl = $("homeMap"); const r = mapEl ? mapEl.getBoundingClientRect() : null;
-              if (r && homeLeaf && r.width > 0 && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
-                clearTimeout(idleT); fadeOut();
-                goldTouch(homeLeaf.containerPointToLatLng([e.clientX - r.left, e.clientY - r.top]));
-              } // raté la carte → le soleil reste attrapable
-            } catch (err) {}
-          });
-        } catch (e) {}
-      }
-      const brand = document.querySelector("#appView .brand"); if (!brand) return;
-      let taps = 0, t0 = 0;
-      brand.addEventListener("click", () => {
-        const now = Date.now();
-        if (now - t0 > 4000) { taps = 0; t0 = now; }
-        if (++taps < 7) return;
-        taps = 0;
-        if (!_eggCool("golden", 30000)) return;
-        if (!_eggAdmin() && localStorage.getItem("sm_egg_golden_day") === new Date().toISOString().slice(0, 10)) return; // 1×/jour
-        if (typeof goToTab === "function") goToTab("accueil"); // la carte doit être visible pour y poser le soleil
-        sunrise();
-        if (window.SMSound) { try { SMSound.play("star"); } catch (e) {} }
-        setTimeout(spawnCatchSun, 1700);
-        if (typeof toast === "function") toast("🌅", i18nT("Attrape le soleil et pose-le sur ta carte ☀️"), null, { low: true });
-      });
-    })();
+    // (Golden Hour « 7 taps » SUPPRIMÉ — retour Maxime : il ne l aimait pas au final.)
 
     // 🐋 LA BALEINE — zoomer au large (le centre de la carte est sur l'eau) : elle apparaît.
     let _whaleMk = null;
@@ -15788,10 +15726,6 @@
       "Tu es hôte SunMates": "You're a SunMates host", "Demande en cours": "Request pending", "Devenir hôte SunMates": "Become a SunMates host",
       "✕ Annuler ma demande": "✕ Cancel my request",
       // 🥚 (textes d'eggs : visibles seulement quand l'egg se déclenche)
-      "Golden Hour ! L'app se dore au soleil pendant 1 h ✨": "Golden Hour! The app basks in gold for 1 h ✨",
-      "Attrape le soleil et pose-le sur ta carte ☀️": "Catch the sun and drop it on your map ☀️",
-      "Tu as posé le soleil ✨ l'endroit restera doré 30 secondes": "You placed the sun ✨ the spot will stay golden for 30 seconds",
-      "Béni par le soleil": "Blessed by the sun",
       "Une baleine te salue… puis replonge dans le grand bleu": "A whale says hi… then dives back into the big blue",
       "Joyeux anniversaire !": "Happy birthday!",
       "Toute l'équipe SunMates te souhaite une journée dorée, {n} ☀️ Que cette nouvelle année t'emmène loin.": "The whole SunMates team wishes you a golden day, {n} ☀️ May this new year take you far.",
