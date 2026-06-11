@@ -111,8 +111,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=409"></script>
-  <script src="sunmates-icons.js?v=409"></script>
+  <script src="sunmates-badges.js?v=410"></script>
+  <script src="sunmates-icons.js?v=410"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -6141,6 +6141,19 @@
       if (hs === "rejected") return "rejected";
       try { return localStorage.getItem("sm_host") || "none"; } catch (e) { return "none"; }
     } // "none" | "pending" | "rejected" | "1"
+    // AUTO-RÉPARATION : une demande faite AVANT la migration hosts restait coincée en local
+    // (« pending » sur le téléphone, RIEN en base → l'admin ne recevait jamais rien).
+    // Au chargement du profil : si le local dit « pending » mais la base est vide, on renvoie.
+    function syncHostRequest() {
+      try {
+        if (!myUserId || !myProfile) return;
+        if (localStorage.getItem("sm_host") === "pending" && !myProfile.host_status) {
+          db.from("profiles").update({ host_status: "pending" }).eq("id", myUserId).then(({ error }) => {
+            if (!error) { myProfile.host_status = "pending"; renderHost(); console.info("[SunMates] demande d'hôte resynchronisée en base ✅"); }
+          });
+        }
+      } catch (e) {}
+    }
     function isHost() { return hostState() === "1"; }
     function renderHost() {
       const st = hostState();
@@ -6159,14 +6172,37 @@
     { const hb = $("hostBtn"); if (hb) hb.addEventListener("click", () => {
       const st = hostState();
       if (st === "1") { popInfo("🛟", "Tu es hôte SunMates", "Merci ! Les voyageurs de passage savent qu'ils peuvent compter sur toi dans ta ville 💛"); return; }
-      if (st === "pending") { popInfo("⏳", "Demande en cours", "Ta demande d'hôte est <b>en cours de validation</b> (on vérifie ton profil : vérifié, ancienneté, sérieux). Tu seras prévenu·e dès que c'est bon ✨"); return; }
+      if (st === "pending") {
+        // Demande en cours : statut + bouton pour ANNULER (avant : aucun moyen de revenir en arrière).
+        popInfo("⏳", "Demande en cours",
+          "Ta demande d'hôte est <b>en cours de validation</b> (on vérifie ton profil : vérifié, ancienneté, sérieux). Tu seras prévenu·e dès que c'est bon ✨" +
+          '<button class="btn-ghost btn-block" id="hostCancelBtn" style="margin-top:.8rem;color:var(--muted)">✕ Annuler ma demande</button>');
+        setTimeout(() => { const c = $("hostCancelBtn"); if (c) c.onclick = () => {
+          once("hostcancel:" + myUserId, async () => {
+            try { localStorage.removeItem("sm_host"); } catch (e) {}
+            const { error } = await db.from("profiles").update({ host_status: null }).eq("id", myUserId);
+            if (!error && myProfile) myProfile.host_status = null;
+            const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden");
+            if (typeof toast === "function") toast("🛟", i18nT("Demande annulée · tu peux la refaire quand tu veux 💛"));
+            renderHost();
+          });
+        }; }, 40);
+        return;
+      }
       // Première demande (ou nouvelle tentative après refus) : envoyée AU BACKEND pour que
-      // l'admin la voie dans Membres ; repli local si la colonne n'existe pas encore.
-      try { localStorage.setItem("sm_host", "pending"); } catch (e) {}
+      // l'admin la voie dans Membres. Si l'écriture échoue, on le DIT (avant : warn silencieux
+      // → l'utilisateur croyait sa demande envoyée, l'admin ne recevait rien).
       if (myUserId) db.from("profiles").update({ host_status: "pending" }).eq("id", myUserId).then(({ error }) => {
-        if (error) console.warn("[SunMates] colonne host_status absente · lance supabase_migration_hosts.sql");
-        else if (myProfile) { myProfile.host_status = "pending"; }
+        if (error) {
+          try { localStorage.removeItem("sm_host"); } catch (e) {}
+          if (typeof toast === "function") toast("⚠️", i18nT("La demande n'est pas partie, réessaie dans un instant."));
+          renderHost();
+        } else {
+          try { localStorage.setItem("sm_host", "pending"); } catch (e) {}
+          if (myProfile) { myProfile.host_status = "pending"; }
+        }
       });
+      try { localStorage.setItem("sm_host", "pending"); } catch (e) {}
       renderHost();
       popInfo("🛟", "Devenir hôte SunMates",
         "<div style='text-align:left;line-height:1.6;font-size:.9rem'>" +
@@ -6297,6 +6333,7 @@
       if (typeof retentionNudge === "function") retentionNudge(); // relance douce si retour après ≥3 jours
       if (typeof setHomeMode === "function") setHomeMode("travel", false); // on arrive TOUJOURS sur la carte (mode Voyage), le mode Maison reste accessible via la bascule
       if (typeof renderHost === "function") renderHost(); // badge hôte sur la carte profil
+      if (typeof syncHostRequest === "function") syncHostRequest(); // répare une demande d'hôte restée locale
       const badge = $("verifBadge");
       // Vérifié = petit logo rond SunMates (sans le mot). Non vérifié = rien (le bouton « Demander » suffit).
       badge.innerHTML = data.is_verified ? '<span class="vchip lg" title="Compte vérifié">✓</span>' : "";
@@ -11880,6 +11917,10 @@
       card.classList.toggle("fs", on);
       document.body.style.overflow = homeFsFallback ? "hidden" : "";
       const link = $("hmFull"); if (link) link.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran";
+      // PERF plein écran : le canvas GPU devient ~4× plus grand → on baisse la résolution de
+      // rendu à ×1.3 le temps du plein écran (imperceptible, gros gain de fluidité), et on
+      // restaure la netteté ×2 en revenant en vue carte réduite.
+      try { _smGlMaps.forEach((m) => { if (m && typeof m.setPixelRatio === "function") m.setPixelRatio(on ? 1.3 : Math.min(window.devicePixelRatio || 1, 2)); }); } catch (e) {}
       if (homeLeaf) {
         if (homeLeaf.scrollWheelZoom) { on ? homeLeaf.scrollWheelZoom.enable() : homeLeaf.scrollWheelZoom.disable(); }
         // iOS : le conteneur change de taille via CSS sans event resize natif fiable.
@@ -11894,7 +11935,8 @@
             if (homeCluster && typeof homeCluster.refreshClusters === "function") { try { homeCluster.refreshClusters(); } catch (e) {} }
           } catch (e) {}
         };
-        [60, 220, 450, 800].forEach((d) => setTimeout(redraw, d));
+        // 3 resync (au lieu de 4) : chaque redraw re-rend le fond GPU, on allège la transition.
+        [80, 350, 800].forEach((d) => setTimeout(redraw, d));
       }
     }
     // Plein écran 100 % CSS (fiable partout). L'API Fullscreen native se refermait
@@ -14298,6 +14340,9 @@
       "✓ Ajouté à tes envies": "✓ Added to your wishlist",
       // · Hôte —
       "Tu es hôte SunMates": "You're a SunMates host", "Demande en cours": "Request pending", "Devenir hôte SunMates": "Become a SunMates host",
+      "✕ Annuler ma demande": "✕ Cancel my request",
+      "Demande annulée · tu peux la refaire quand tu veux 💛": "Request cancelled · you can send it again any time 💛",
+      "La demande n'est pas partie, réessaie dans un instant.": "The request didn't go through, try again in a moment.",
       // · Profil / photo / vérif —
       "Optimisation & envoi…": "Optimising & uploading…",
       "Choisis une image.": "Choose an image.", "Fichier trop lourd (max 15 Mo).": "File too big (max 15 MB).",
