@@ -111,8 +111,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=412"></script>
-  <script src="sunmates-icons.js?v=412"></script>
+  <script src="sunmates-badges.js?v=413"></script>
+  <script src="sunmates-icons.js?v=413"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -2585,6 +2585,16 @@
     body.theme-dusk #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#4a2a1c,#5e3825); border-color: rgba(208,108,72,.5); color: #ffc8a8; }
     body.theme-dusk #profSegNav button[data-pseg="premium"].active { background: linear-gradient(135deg,#D9A21B,#A87708) !important; color: #fff8e6 !important; }
     body.theme-dusk #profSegNav button[data-pseg="admin"].active { background: linear-gradient(135deg,#9C4F26,#7C3A18) !important; color: #ffe8da !important; }
+    /* HIVER : or givré + bleu acier (raccord palette glacier) */
+    body.theme-winter #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#F8EBC4,#EBCB78); border-color: rgba(170,130,40,.45); color: #5a4300; }
+    body.theme-winter #profSegNav button[data-pseg="premium"].active { background: linear-gradient(135deg,#F2CE5E,#D9A21B) !important; color: #4a3200 !important; box-shadow: 0 6px 16px rgba(217,162,27,.3); }
+    body.theme-winter #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#DCE9F6,#BBD2E9); border-color: rgba(70,120,170,.4); color: #2C4A66; }
+    body.theme-winter #profSegNav button[data-pseg="admin"].active { background: linear-gradient(135deg,#6E97BE,#48719A) !important; color: #fff !important; box-shadow: 0 6px 16px rgba(72,113,154,.3); }
+    /* TROPIQUES : or mangue + vert feuille (raccord palette jungle) */
+    body.theme-tropic #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#FFE9A8,#F1C249); border-color: rgba(170,130,20,.45); color: #5a4200; }
+    body.theme-tropic #profSegNav button[data-pseg="premium"].active { background: linear-gradient(135deg,#F7C948,#DBA413) !important; color: #4a3200 !important; box-shadow: 0 6px 16px rgba(219,164,19,.3); }
+    body.theme-tropic #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#DCEEC6,#B7DA9D); border-color: rgba(70,130,50,.4); color: #2F4A1F; }
+    body.theme-tropic #profSegNav button[data-pseg="admin"].active { background: linear-gradient(135deg,#7FAF5E,#5C8C3E) !important; color: #fff !important; box-shadow: 0 6px 16px rgba(92,140,62,.3); }
     /* Nav admin : emoji + libellé → chips qui s'adaptent au texte et passent à la ligne proprement */
     .aseg-nav button { flex: 0 1 auto; padding: .5rem .7rem; white-space: nowrap; }
     /* Liste membres admin : en-tête comptes actifs/suspendus + filtre */
@@ -2952,6 +2962,14 @@
     .brand .mark svg.logo-night { display: none; }
     body.theme-dusk .brand .mark svg.logo-day { display: none; }
     body.theme-dusk .brand .mark svg.logo-night { display: block; }
+    /* Logos SAISON : flocon en hiver, palmier en tropiques (priment sur jour/nuit) */
+    .brand .mark svg.logo-winter, .brand .mark svg.logo-tropic { display: none; }
+    body.theme-winter .brand .mark svg.logo-day, body.theme-winter .brand .mark svg.logo-night { display: none; }
+    body.theme-winter .brand .mark svg.logo-winter { display: block; }
+    body.theme-tropic .brand .mark svg.logo-day, body.theme-tropic .brand .mark svg.logo-night { display: none; }
+    body.theme-tropic .brand .mark svg.logo-tropic { display: block; }
+    body.theme-winter .brand .mark { background: linear-gradient(135deg, #6FB4E8, #3A8FD9); }
+    body.theme-tropic .brand .mark { background: linear-gradient(135deg, #36C495, #0FA37C); }
     body.theme-dusk .brand .mark { background: linear-gradient(150deg, #7A2E5E, #C2502E) !important; } /* coucher de soleil sombre */
     /* Hero de connexion : ambiance NUIT en mode sombre */
     body.theme-dusk .auth-hero { background: linear-gradient(160deg, rgba(58,42,110,.74), rgba(40,24,78,.82) 58%, rgba(18,26,86,.86)), url('https://picsum.photos/seed/sunmates-night/820/740') center/cover !important; }
@@ -3095,6 +3113,14 @@
       border-radius: 13px; background: linear-gradient(135deg, #FFD9A8, #FF9A7B); box-shadow: inset 0 1px 0 rgba(255,255,255,.55); }
     .help-cta .hc-txt { display: flex; flex-direction: column; gap: .12rem; min-width: 0; }
     .help-cta .hc-sub { font-weight: 500; font-size: .73rem; line-height: 1.35; color: var(--muted); white-space: normal; }
+    /* Thèmes : la carte suit (la nuit ne redéfinit pas --card → il faut l'explicite) */
+    body.theme-dusk .help-cta { background: #241b35; border-color: rgba(255,255,255,.09); color: #f3e9f3; }
+    body.theme-dusk .help-cta .hc-sub { color: #a99fbe; }
+    body.theme-dusk .help-cta .hc-ic { background: linear-gradient(135deg, #5a3a28, #7a4630); box-shadow: none; }
+    body.theme-winter .help-cta { background: #fff; border-color: rgba(58,143,217,.20); }
+    body.theme-winter .help-cta .hc-ic { background: linear-gradient(135deg, #DCEBF8, #BFD9F2); }
+    body.theme-tropic .help-cta { background: #fff; border-color: rgba(15,163,124,.20); }
+    body.theme-tropic .help-cta .hc-ic { background: linear-gradient(135deg, #EDF4D4, #CDE8B8); }
 
     /* Souvenirs : vitrine compacte (avatars empilés) + galerie en feuille */
     .hm-gal-open { display: flex; align-items: center; width: 100%; gap: .15rem; padding: .55rem .7rem; margin-top: .25rem;
@@ -3130,10 +3156,15 @@
     body.theme-tropic .sm-date-preview { background: linear-gradient(135deg, #FDFBE8, #EDF6DF); }
 
     /* ====== 🥚 Easter eggs (effets visuels · jamais documentés côté public) ====== */
-    /* Golden Hour : voile doré multiplié au-dessus de TOUTE l'app (pointer-events none) */
+    /* Golden Hour : bain doré FLAGRANT au-dessus de TOUTE l'app (pointer-events none) —
+       voile multiplié + sépia/saturation du contenu dessous (backdrop-filter) */
     #goldenFx { position: fixed; inset: 0; z-index: 99999; pointer-events: none;
-      background: linear-gradient(160deg, rgba(255,196,64,.22), rgba(255,150,61,.13) 55%, rgba(255,99,72,.10));
-      mix-blend-mode: multiply; }
+      background:
+        radial-gradient(120% 80% at 50% 0%, rgba(255,214,90,.40), rgba(255,160,60,.24) 55%, rgba(255,110,70,.18)),
+        linear-gradient(160deg, rgba(255,196,64,.26), rgba(255,140,60,.18));
+      mix-blend-mode: multiply;
+      -webkit-backdrop-filter: sepia(.32) saturate(1.3) brightness(1.04);
+      backdrop-filter: sepia(.32) saturate(1.3) brightness(1.04); }
     /* Baleine au large : flottement doux */
     .egg-whale { font-size: 2.3rem; filter: drop-shadow(0 4px 10px rgba(0,60,80,.35)); animation: eggWhaleBob 1.8s ease-in-out infinite alternate, eggWhaleIn .6s ease; }
     @keyframes eggWhaleBob { from { transform: translateY(0) rotate(-4deg); } to { transform: translateY(-7px) rotate(4deg); } }
@@ -3563,6 +3594,9 @@
       <div class="brand"><span class="mark">
         <svg class="logo-day" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="3.4" stroke-linecap="round"><line x1="32" y1="8" x2="32" y2="15"/><line x1="15" y1="16" x2="20" y2="21"/><line x1="49" y1="16" x2="44" y2="21"/><line x1="9" y1="34" x2="16" y2="34"/><line x1="48" y1="34" x2="55" y2="34"/></g><circle cx="32" cy="34" r="11" fill="#fff"/><path d="M13 47h38" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg>
         <svg class="logo-night" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"><line x1="32" y1="13" x2="32" y2="18"/><line x1="18" y1="20" x2="22" y2="24"/><line x1="46" y1="20" x2="42" y2="24"/></g><circle cx="32" cy="37" r="11" fill="#fff"/><path d="M10 41h44" stroke="#FFD15C" stroke-width="3.6" stroke-linecap="round"/><path d="M17 47h30" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg>
+        <!-- Logos SAISON (easter egg hiver/tropiques) : soleil-flocon et soleil-palmier -->
+        <svg class="logo-winter" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="3.2" stroke-linecap="round"><line x1="32" y1="10" x2="32" y2="46"/><line x1="16" y1="19" x2="48" y2="37"/><line x1="48" y1="19" x2="16" y2="37"/><path d="M26 15l6 6 6-6M26 41l6-6 6 6"/></g><path d="M13 53h38" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg>
+        <svg class="logo-tropic" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="3.2" stroke-linecap="round" fill="none"><path d="M28 52c2-12 1-21-3-28"/></g><path d="M25 24c-6-6-13-7-18-4 7 0 12 2 18 4z" fill="#fff"/><path d="M25 24c-2-8 1-14 7-17-3 6-4 11-2 17z" fill="#fff"/><path d="M25 24c6-5 13-6 19-3-7 1-13 3-19 3z" fill="#fff"/><circle cx="49" cy="15" r="6" fill="#fff"/><path d="M11 53h42" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg>
       </span><b><span class="sun">Sun</span>Mates</b></div>
       <div class="topbar-actions hidden" id="userBox">
         <button class="iconbtn" id="themeToggle" title="Changer de thème" aria-label="Changer de thème jour / nuit">🌙</button>
@@ -6200,6 +6234,18 @@
             if (!error) { myProfile.host_status = "pending"; renderHost(); console.info("[SunMates] demande d'hôte resynchronisée en base ✅"); }
           });
         }
+        // TRANSITION : la demande locale disait « pending » et la base dit maintenant
+        // « approved »/« rejected » → on fête / on informe, et on aligne le miroir local.
+        const localSt = localStorage.getItem("sm_host");
+        if (localSt === "pending" && myProfile.host_status === "approved") {
+          try { localStorage.setItem("sm_host", "1"); } catch (e) {}
+          if (typeof celebrate === "function") celebrate();
+          popInfo("🛟", i18nT("Tu es hôte SunMates !"), i18nT("Ta demande a été validée 🎉 Les voyageurs de passage voient maintenant ton badge 🛟 — merci de rendre ta ville plus accueillante 💛"));
+          renderHost();
+        } else if (localSt === "pending" && myProfile.host_status === "rejected") {
+          try { localStorage.removeItem("sm_host"); } catch (e) {}
+          renderHost();
+        }
       } catch (e) {}
     }
     function isHost() { return hostState() === "1"; }
@@ -6880,8 +6926,7 @@
       $("reviewMsg").textContent = ""; toast("⭐", "Merci pour ton avis !");
       // Badge "Critique avisé" au 1er avis
       if (typeof allBadgeDefs !== "undefined" && allBadgeDefs.some((b) => b.key === "badge_reviewer") && !myBadgeKeys.has("badge_reviewer")) {
-        const def = allBadgeDefs.find((b) => b.key === "badge_reviewer") || {};
-        await db.from("user_badges").upsert({ user_id: myUserId, badge_key: "badge_reviewer", name: def.name || null, emoji: def.emoji || null }, { onConflict: "user_id,badge_key" });
+        await grantBadgeServer("badge_reviewer"); // RPC de confiance (RLS bloque l'écriture directe)
         if (typeof loadGameData === "function") loadGameData();
       }
       await loadReviews(reviewCafeId);
@@ -7849,8 +7894,11 @@
       wrap.querySelectorAll("[data-au-ban]").forEach((b) => b.addEventListener("click", () => { const u = adminUsersCache.find((x) => x.id === b.dataset.auBan); if (typeof banChooser === "function") banChooser(u, upd); }));
       wrap.querySelectorAll("[data-au-admin]").forEach((b) => b.addEventListener("click", () => { const u = adminUsersCache.find((x) => x.id === b.dataset.auAdmin); upd(b.dataset.auAdmin, { is_admin: !u.is_admin }); }));
       // Demandes d'hôte : accepter / refuser (le membre voit son statut changer à sa prochaine ouverture)
-      wrap.querySelectorAll("[data-au-hostok]").forEach((b) => b.addEventListener("click", () => once("hostok:" + b.dataset.auHostok, () => { upd(b.dataset.auHostok, { host_status: "approved" }); toast("🛟", "Hôte validé ✅"); })));
-      wrap.querySelectorAll("[data-au-hostno]").forEach((b) => b.addEventListener("click", () => once("hostno:" + b.dataset.auHostno, () => { upd(b.dataset.auHostno, { host_status: "rejected" }); toast("🛟", "Demande refusée (le membre pourra retenter)"); })));
+      // Si l'admin traite SA PROPRE demande : son écran Maison se met à jour immédiatement
+      // (avant : le statut en mémoire restait « pending » jusqu'au rechargement).
+      const _hostSelfSync = (id, st) => { if (id === myUserId && myProfile) { myProfile.host_status = st; try { localStorage.setItem("sm_host", st === "approved" ? "1" : ""); if (st !== "approved") localStorage.removeItem("sm_host"); } catch (e) {} if (typeof renderHost === "function") renderHost(); } };
+      wrap.querySelectorAll("[data-au-hostok]").forEach((b) => b.addEventListener("click", () => once("hostok:" + b.dataset.auHostok, () => { upd(b.dataset.auHostok, { host_status: "approved" }); _hostSelfSync(b.dataset.auHostok, "approved"); toast("🛟", "Hôte validé ✅"); })));
+      wrap.querySelectorAll("[data-au-hostno]").forEach((b) => b.addEventListener("click", () => once("hostno:" + b.dataset.auHostno, () => { upd(b.dataset.auHostno, { host_status: "rejected" }); _hostSelfSync(b.dataset.auHostno, "rejected"); toast("🛟", "Demande refusée (le membre pourra retenter)"); })));
       // Toute la ligne ouvre la fiche (sauf clic sur un bouton d'action) → tuile bien cliquable.
       wrap.querySelectorAll("[data-au-row]").forEach((r) => r.addEventListener("click", (e) => { if (e.target.closest("button")) return; openAdminUser(r.dataset.auRow); }));
     }
@@ -8129,8 +8177,7 @@
             if (isEmergency && typeof setAlertActive === "function") setAlertActive(true); // alerte → carte « Je vais bien » + pastille onglet
             // Badge "Veilleur" au 1er partage de position
             if (typeof allBadgeDefs !== "undefined" && allBadgeDefs.some((b) => b.key === "badge_guardian_helper") && !myBadgeKeys.has("badge_guardian_helper")) {
-              const def = allBadgeDefs.find((b) => b.key === "badge_guardian_helper") || {};
-              db.from("user_badges").upsert({ user_id: myUserId, badge_key: "badge_guardian_helper", name: def.name || null, emoji: def.emoji || null }, { onConflict: "user_id,badge_key" }).then(() => { if (typeof loadGameData === "function") loadGameData(); });
+              grantBadgeServer("badge_guardian_helper").then(() => { if (typeof loadGameData === "function") loadGameData(); });
             }
           }
           resolve();
@@ -8870,8 +8917,7 @@
       want("badge_legend_secret", !!(myProfile && myProfile.is_verified) && questsDone >= 50 && _citiesDone >= 10 && ck >= 50);
       if (!toGrant.length) return;
       for (const key of toGrant) {
-        const def = allBadgeDefs.find((b) => b.key === key) || {};
-        await db.from("user_badges").upsert({ user_id: myUserId, badge_key: key, name: def.name || null, emoji: def.emoji || null }, { onConflict: "user_id,badge_key" });
+        await grantBadgeServer(key); // RPC de confiance (la RLS bloque l'écriture directe)
       }
       await loadGameData(); // rafraîchit la grille + fête les nouveaux badges (confettis)
     }
@@ -11583,6 +11629,22 @@
         const _homeBase = smBaseLayer().addTo(homeLeaf);
         // Accès au moteur GL (sert à l'egg 🐋 : savoir si le centre de la carte est sur l'eau).
         window._homeGlMap = () => { try { return _homeBase.getMaplibreMap ? _homeBase.getMaplibreMap() : null; } catch (e) { return null; } };
+        // ★ PERF GLISSEMENT (surtout plein écran) : par défaut le plugin RE-REND tout le fond
+        // GPU à CHAQUE frame de drag (event "move") → ça rame sur grand canvas. Pendant le
+        // geste, Leaflet déplace déjà le canvas en CSS et notre padding 0.3 pré-rend les bords :
+        // on peut donc resynchroniser le GL ~12 fois/s seulement, puis à fond en fin de geste.
+        try {
+          if (typeof _homeBase._update === "function") {
+            homeLeaf.off("move", _homeBase._update, _homeBase);
+            let _glLast = 0, _glTrail = null;
+            homeLeaf.on("move", () => {
+              const now = Date.now();
+              if (now - _glLast > 80) { _glLast = now; try { _homeBase._update(); } catch (e) {} }
+              else { clearTimeout(_glTrail); _glTrail = setTimeout(() => { _glLast = Date.now(); try { _homeBase._update(); } catch (e) {} }, 90); }
+            });
+            homeLeaf.on("moveend", () => { try { _homeBase._update(); } catch (e) {} });
+          }
+        } catch (e) {}
         homeLeaf.on("moveend", () => { try { if (typeof _eggWhaleCheck === "function") _eggWhaleCheck(); if (typeof _eggTitanicCheck === "function") _eggTitanicCheck(); } catch (e) {} });
         homeLeaf.attributionControl.setPrefix(false).setPosition("bottomleft"); // retire le logo Leaflet, déplace à gauche
         try { homeLeaf.attributionControl.addAttribution("© OpenStreetMap · OpenFreeMap"); } catch (e) {} // mention légale OSM garantie
@@ -11986,10 +12048,10 @@
       card.classList.toggle("fs", on);
       document.body.style.overflow = homeFsFallback ? "hidden" : "";
       const link = $("hmFull"); if (link) link.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran";
-      // PERF plein écran : le canvas GPU devient ~4× plus grand → on baisse la résolution de
-      // rendu à ×1.3 le temps du plein écran (imperceptible, gros gain de fluidité), et on
-      // restaure la netteté ×2 en revenant en vue carte réduite.
-      try { _smGlMaps.forEach((m) => { if (m && typeof m.setPixelRatio === "function") m.setPixelRatio(on ? 1.3 : Math.min(window.devicePixelRatio || 1, 2)); }); } catch (e) {}
+      // PERF plein écran : le canvas GPU devient ~4× plus grand → résolution de rendu ×1.0
+      // le temps du plein écran (légèrement moins net, BEAUCOUP plus fluide), netteté ×2
+      // restaurée en revenant en vue carte réduite.
+      try { _smGlMaps.forEach((m) => { if (m && typeof m.setPixelRatio === "function") m.setPixelRatio(on ? 1 : Math.min(window.devicePixelRatio || 1, 2)); }); } catch (e) {}
       if (homeLeaf) {
         if (homeLeaf.scrollWheelZoom) { on ? homeLeaf.scrollWheelZoom.enable() : homeLeaf.scrollWheelZoom.disable(); }
         // iOS : le conteneur change de taille via CSS sans event resize natif fiable.
@@ -14050,15 +14112,30 @@
        dans le catalogue ADMIN. Chaque egg débloque un badge SECRET (badges : lancer
        supabase_migration_easter_eggs.sql). Tout est best-effort : un egg qui casse ne doit
        JAMAIS gêner l'app (try/catch partout). */
+    // Attribution UNIVERSELLE d'un badge CATALOGUE (jalons/prestige/eggs) : passe par la RPC
+    // serveur sm_grant_badge (la policy INSERT client sur user_badges a été supprimée par le
+    // durcissement → l'écriture directe échouait EN SILENCE = « les badges ne se débloquent
+    // pas »). Repli sur l'ancien chemin direct si la RPC n'est pas encore migrée.
+    async function grantBadgeServer(key) {
+      try {
+        const { data, error } = await db.rpc("sm_grant_badge", { p_key: key });
+        if (!error) return !(data && data.ok === false);
+      } catch (e) {}
+      try { // repli (vieille base sans la RPC) : tentative directe — peut être bloquée par la RLS
+        const def = (typeof allBadgeDefs !== "undefined" && allBadgeDefs.find((b) => b.key === key)) || {};
+        const { error: e2 } = await db.from("user_badges").upsert({ user_id: myUserId, badge_key: key, name: def.name || null, emoji: def.emoji || null }, { onConflict: "user_id,badge_key" });
+        return !e2;
+      } catch (e) { return false; }
+    }
+    const _eggAwarded = {}; // anti-spam mémoire : 1 tentative réussie par badge et par session
     async function awardSecretBadge(key) {
       try {
-        if (!myUserId) return;
-        const k = "sm_egg_badge_" + key + "_" + myUserId;
-        if (localStorage.getItem(k)) return;
-        localStorage.setItem(k, "1");
-        const def = (typeof allBadgeDefs !== "undefined" && allBadgeDefs.find((b) => b.key === key)) || {};
-        await db.from("user_badges").upsert({ user_id: myUserId, badge_key: key, name: def.name || null, emoji: def.emoji || null }, { onConflict: "user_id,badge_key" });
-        if (typeof loadGameData === "function") loadGameData(); // la grille fête le nouveau badge
+        if (!myUserId || _eggAwarded[key]) return;
+        if (typeof myBadgeKeys !== "undefined" && myBadgeKeys && myBadgeKeys.has(key)) { _eggAwarded[key] = 1; return; } // déjà en poche
+        const ok = await grantBadgeServer(key);
+        // IMPORTANT : on ne « verrouille » qu'APRÈS un succès (avant : un échec posait un verrou
+        // localStorage définitif → le badge ne pouvait plus JAMAIS se débloquer).
+        if (ok) { _eggAwarded[key] = 1; if (typeof loadGameData === "function") loadGameData(); }
       } catch (e) {}
     }
 
@@ -14223,6 +14300,8 @@
         if (now - t0 > 3000) { taps = 0; t0 = now; }
         if (++taps < 5) return;
         taps = 0;
+        if (window._eggBalloonsLock) return; // anti-spam : 1 envol par minute
+        window._eggBalloonsLock = true; setTimeout(() => { window._eggBalloonsLock = false; }, 60000);
         try {
           const w = document.createElement("div"); w.className = "egg-balloons";
           w.innerHTML = Array.from({ length: 11 }, (_, i) => `<span style="left:${5 + i * 9}%;animation-delay:${(i * 0.18).toFixed(2)}s;font-size:${(1.3 + (i % 3) * 0.5).toFixed(1)}rem">🎈</span>`).join("") + '<span style="left:46%;animation-delay:.9s;font-size:1.6rem">🏠</span>';
@@ -14633,7 +14712,12 @@
       if (s) document.body.classList.remove("theme-dusk"); // la saison remplace jour/nuit
       else applyTheme(localStorage.getItem("sm_theme") || "day");
       try { if (s) localStorage.setItem("sm_season", s); else localStorage.removeItem("sm_season"); if (manual) localStorage.setItem("sm_season_lock", "1"); } catch (e) {}
-      const tt = $("themeToggle"); if (tt) tt.dataset.season = s || "";
+      const tt = $("themeToggle"); if (tt) {
+        tt.dataset.season = s || "";
+        // Icône du bouton thème assortie à la saison (❄ flocon / 🌴 palmier dessinés main).
+        if (s === "winter") tt.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><g stroke="#3A8FD9" stroke-width="2" stroke-linecap="round"><line x1="12" y1="3" x2="12" y2="21"/><line x1="4.2" y1="7.5" x2="19.8" y2="16.5"/><line x1="19.8" y1="7.5" x2="4.2" y2="16.5"/><path d="M9.6 4.6L12 7l2.4-2.4M9.6 19.4L12 17l2.4 2.4"/></g></svg>';
+        else if (s === "tropic") tt.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><path d="M10.6 20c.8-4.6.4-8-1.1-10.6" stroke="#0FA37C" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M9.5 9.4C7.2 7.2 4.6 6.8 2.6 7.9c2.6 0 4.7.7 6.9 1.5z" fill="#0FA37C"/><path d="M9.5 9.4c-.7-2.9.4-5.2 2.7-6.4-1.2 2.3-1.5 4.2-.7 6.4z" fill="#0FA37C"/><path d="M9.5 9.4c2.3-1.9 5-2.3 7.3-1.1-2.7.4-5 .9-7.3 1.1z" fill="#0FA37C"/><circle cx="18.4" cy="5.6" r="2.6" fill="#FFC93C"/></svg>';
+      }
       const meta = document.querySelector('meta[name="theme-color"]'); if (meta && s) meta.setAttribute("content", s === "winter" ? "#EAF3FB" : "#F7F9EC");
       if (typeof smRefreshMapTheme === "function") smRefreshMapTheme(); // la carte suit la saison
     }
@@ -14731,6 +14815,8 @@
       "« Je suis le roi du monde ! » · attention à l'iceberg…": "“I'm the king of the world!” · mind the iceberg…",
       "Que la Force soit avec toi, voyageur·se.": "May the Force be with you, traveller.",
       "Demande annulée · tu peux la refaire quand tu veux 💛": "Request cancelled · you can send it again any time 💛",
+      "Tu es hôte SunMates !": "You're a SunMates host!",
+      "Ta demande a été validée 🎉 Les voyageurs de passage voient maintenant ton badge 🛟 — merci de rendre ta ville plus accueillante 💛": "Your request has been approved 🎉 Travellers passing through can now see your 🛟 badge — thank you for making your city more welcoming 💛",
       "La demande n'est pas partie, réessaie dans un instant.": "The request didn't go through, try again in a moment.",
       // · Profil / photo / vérif —
       "Optimisation & envoi…": "Optimising & uploading…",
