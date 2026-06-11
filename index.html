@@ -114,8 +114,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=429"></script>
-  <script src="sunmates-icons.js?v=429"></script>
+  <script src="sunmates-badges.js?v=430"></script>
+  <script src="sunmates-icons.js?v=430"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -1203,13 +1203,9 @@
       background: linear-gradient(158deg, rgba(255,255,255,.62) 0%, rgba(255,255,255,.22) 15%, rgba(255,255,255,.03) 36%, rgba(255,255,255,0) 58%);
       box-shadow: inset 0 1.5px 0 rgba(255,255,255,.65), inset 0 -16px 26px rgba(0,0,0,.12);
       pointer-events: none; }
-    /* Palette BIJOU (alignée sur les .cic v378) : fini les tons pastel délavés */
-    .tile .thumb.green { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#4ED8B8,#179E8C); box-shadow: 0 6px 16px rgba(23,169,155,.24); } /* DA : teal bijou */
-    .tile .thumb.blue  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#6FA8FF,#2D6FE0); box-shadow: 0 6px 16px rgba(45,111,224,.26); } /* saphir */
-    .tile .thumb.purp  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#9D86FF,#5E3FE0); box-shadow: 0 6px 16px rgba(94,63,224,.26); } /* indigo nuit */
-    .tile .thumb.gold  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.45), rgba(255,255,255,0) 55%), linear-gradient(135deg,#FFD15C,#F4A11E); box-shadow: 0 6px 16px rgba(244,161,30,.28); } /* doré bijou */
-    .tile .thumb.red   { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#ff8a6b,#e23b2e); box-shadow: 0 6px 16px rgba(226,59,46,.26); }
-    .tile .thumb.teal  { background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), linear-gradient(135deg,#7fe3d3,#17a99b); box-shadow: 0 6px 16px rgba(23,169,155,.24); }
+    /* (Anciennes couleurs/ombres figées SUPPRIMÉES — retour Maxime : le « halo » sous les
+       tuiles restait aux vieilles couleurs quel que soit le thème. Désormais l'ombre est
+       DÉRIVÉE de la couleur réelle de la tuile via color-mix → elle suit chaque mode.) */
     .tile .t-name { font-weight: 700; color: var(--ink); font-size: .92rem; }
     .tile .t-meta { color: var(--muted); font-size: .78rem; }
 
@@ -1633,7 +1629,8 @@
     /* Tuile-joyau : dégradé sunset bombé + gloss + rim-light + ombre chaude (zéro crème) */
     .cic[data-smicon], .jo-ic[data-smicon] { position: relative; isolation: isolate; overflow: hidden; border: none;
       background: radial-gradient(120% 90% at 28% 22%, rgba(255,255,255,.42), rgba(255,255,255,0) 42%), linear-gradient(135deg, var(--ic1, var(--c1,#FF8A3D)), var(--ic2, var(--c2,#FF5A4D)));
-      box-shadow: 0 7px 15px -4px rgba(255,90,77,.5), 0 2px 4px rgba(180,60,40,.3), inset 0 1px 1px rgba(255,246,236,.85), inset 0 -2px 3px rgba(150,45,30,.32); }
+      /* halo dérivé de la couleur réelle de la pastille (suit le thème) — fini l'ombre corail figée */
+      box-shadow: 0 7px 15px -4px color-mix(in oklab, var(--ic2, var(--c2, #FF5A4D)) 52%, transparent), 0 2px 4px rgba(60,28,14,.22), inset 0 1px 1px rgba(255,246,236,.85), inset 0 -2px 3px rgba(60,25,12,.26); }
     /* Reflet TOP plus léger (avant : blanc .5 sur 42% → givrait/floutait le glyphe). */
     .cic[data-smicon]::after, .jo-ic[data-smicon]::after { content:""; position:absolute; left:8%; right:8%; top:6%; height:34%; border-radius:50% 50% 60% 60%/70% 70% 100% 100%; background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.02)); pointer-events:none; z-index:0; }
     /* Les icônes joaillerie ont déjà leur propre reflet (::after + gloss interne au SVG) →
@@ -2947,7 +2944,11 @@
     .thumb.teal  { --c1:#4ED8B8; --c2:#149E8C; } /* lagon émaillé */
     .thumb.red   { --c1:#FF5A4D; --c2:#C9281F; } /* corail-rouge d'alerte */
     .thumb.green, .thumb.blue, .thumb.purp, .thumb.coral, .thumb.lime, .thumb.indigo, .thumb.rose, .thumb.gold, .thumb.teal, .thumb.red {
-      background: linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))) !important; }
+      background: linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))) !important;
+      /* halo DÉRIVÉ de la couleur réelle (suit le thème) + assise neutre douce */
+      box-shadow: 0 7px 16px color-mix(in oklab, var(--ic2, var(--c2, #C0392B)) 36%, transparent), 0 2px 5px rgba(40,18,8,.14) !important; }
+    body.theme-dusk .thumb.green, body.theme-dusk .thumb.blue, body.theme-dusk .thumb.purp, body.theme-dusk .thumb.coral, body.theme-dusk .thumb.lime, body.theme-dusk .thumb.indigo, body.theme-dusk .thumb.rose, body.theme-dusk .thumb.gold, body.theme-dusk .thumb.teal, body.theme-dusk .thumb.red {
+      box-shadow: 0 7px 16px color-mix(in oklab, var(--ic2, var(--c2, #C0392B)) 30%, transparent), 0 3px 8px rgba(0,0,0,.35) !important; }
 
     /* Navigation : icônes vives */
     .bottom-nav { background: #fff7f2; box-shadow: 0 -8px 28px rgba(255,90,77,.10); }
@@ -3021,8 +3022,9 @@
     .brand .mark svg.logo-night { display: none; }
     body.theme-dusk .brand .mark svg.logo-day { display: none; }
     body.theme-dusk .brand .mark svg.logo-night { display: block; }
-    /* Logos SAISON : flocon en hiver, palmier en tropiques (priment sur jour/nuit) */
-    .brand .mark svg.logo-winter, .brand .mark svg.logo-tropic { display: none; }
+    /* Logos SAISON : cristal en hiver, palmier-lagon en tropiques — et leurs VRAIES variantes
+       NUIT (croissant de lune + flocon / palmier sous la lune), retour Maxime. */
+    .brand .mark svg.logo-winter, .brand .mark svg.logo-tropic, .brand .mark svg.logo-winter-n, .brand .mark svg.logo-tropic-n { display: none; }
     body.theme-winter .brand .mark svg.logo-day, body.theme-winter .brand .mark svg.logo-night { display: none; }
     body.theme-winter .brand .mark svg.logo-winter { display: block; }
     body.theme-tropic .brand .mark svg.logo-day, body.theme-tropic .brand .mark svg.logo-night { display: none; }
@@ -3030,6 +3032,12 @@
     body.theme-winter .brand .mark { background: linear-gradient(135deg, #6FB4E8, #3A8FD9); }
     body.theme-tropic .brand .mark { background: linear-gradient(135deg, #36C495, #0FA37C); }
     body.theme-dusk .brand .mark { background: linear-gradient(150deg, #7A2E5E, #C2502E) !important; } /* coucher de soleil sombre */
+    body.theme-winter.theme-dusk .brand .mark svg.logo-winter { display: none; }
+    body.theme-winter.theme-dusk .brand .mark svg.logo-winter-n { display: block; }
+    body.theme-winter.theme-dusk .brand .mark { background: linear-gradient(150deg, #1B3A5E, #0E2740) !important; } /* nuit polaire */
+    body.theme-tropic.theme-dusk .brand .mark svg.logo-tropic { display: none; }
+    body.theme-tropic.theme-dusk .brand .mark svg.logo-tropic-n { display: block; }
+    body.theme-tropic.theme-dusk .brand .mark { background: linear-gradient(150deg, #0E4D3C, #07291F) !important; } /* nuit de jungle */
     /* Hero de connexion : ambiance NUIT en mode sombre */
     body.theme-dusk .auth-hero { background: linear-gradient(160deg, rgba(58,42,110,.74), rgba(40,24,78,.82) 58%, rgba(18,26,86,.86)), url('https://picsum.photos/seed/sunmates-night/820/740') center/cover !important; }
     body.theme-dusk .auth-hero .logo-badge { background: rgba(20,16,40,.88) !important; box-shadow: 0 12px 30px rgba(0,0,0,.4), 0 0 0 6px rgba(255,255,255,.12) !important; }
@@ -3127,6 +3135,12 @@
     body.theme-dusk .sm-sel-trigger { background: var(--card); border-color: rgba(255,255,255,.12); color: var(--ink); }
     /* Contextes flex (le select était enfant flex direct) : le wrapper reprend le flex. */
     .city-pick .sm-sel, #advFilters .sm-sel { flex: 1 1 auto; min-width: 0; }
+    /* « Choisir une ville » au-dessus de la carte : pilule DA soignée (retour Maxime « bof ») */
+    .city-pick .sm-sel-trigger { border-radius: 999px; font-weight: 800; padding: .45rem .75rem;
+      background: linear-gradient(180deg, var(--cream), var(--card)); border: 1px solid rgba(232,150,31,.32); box-shadow: var(--shadow-sm); }
+    .city-pick .sm-sel-trigger .sm-sel-val::before { content: "📍 "; }
+    .city-pick .sm-sel-trigger .sm-sel-chev { color: var(--accent); }
+    body.theme-dusk .city-pick .sm-sel-trigger { background: var(--dcard, #2a2140); border-color: rgba(255,209,92,.22); }
 
     .sm-selsheet-ov { position: fixed; inset: 0; z-index: var(--z-sheet); background: rgba(20,8,30,.5); backdrop-filter: blur(2px);
       display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .18s; }
@@ -3465,8 +3479,8 @@
     /* (les pastilles .thumb des accès rapides/sécurité font partie du lot — retour Maxime ;
        mix NUIT adouci : l'ancien 74/78 % rendait les tuiles « trop sombres ») */
     body.theme-dusk .cic, body.theme-dusk .qm-ic, body.theme-dusk .sc-ic, body.theme-dusk .hex, body.theme-dusk .jo-ic, body.theme-dusk .smgem, body.theme-dusk .thumb {
-      --ic1: color-mix(in oklab, var(--c1, #FF8A3D) 86%, #43326B);
-      --ic2: color-mix(in oklab, var(--c2, #FF5A4D) 87%, #2B2052); }
+      --ic1: color-mix(in oklab, var(--c1, #FF8A3D) 82%, #43326B);
+      --ic2: color-mix(in oklab, var(--c2, #FF5A4D) 84%, #2B2052); }
     body.theme-winter .cic, body.theme-winter .qm-ic, body.theme-winter .sc-ic, body.theme-winter .hex, body.theme-winter .jo-ic, body.theme-winter .smgem, body.theme-winter .thumb {
       --ic1: color-mix(in oklab, var(--c1, #FF8A3D) 70%, #DCEBF7);
       --ic2: color-mix(in oklab, var(--c2, #FF5A4D) 76%, #4A6F96); }
@@ -3922,8 +3936,11 @@
         <svg class="logo-day" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="3.4" stroke-linecap="round"><line x1="32" y1="8" x2="32" y2="15"/><line x1="15" y1="16" x2="20" y2="21"/><line x1="49" y1="16" x2="44" y2="21"/><line x1="9" y1="34" x2="16" y2="34"/><line x1="48" y1="34" x2="55" y2="34"/></g><circle cx="32" cy="34" r="11" fill="#fff"/><path d="M13 47h38" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg>
         <svg class="logo-night" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"><line x1="32" y1="13" x2="32" y2="18"/><line x1="18" y1="20" x2="22" y2="24"/><line x1="46" y1="20" x2="42" y2="24"/></g><circle cx="32" cy="37" r="11" fill="#fff"/><path d="M10 41h44" stroke="#FFD15C" stroke-width="3.6" stroke-linecap="round"/><path d="M17 47h30" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg>
         <!-- Logos SAISON (easter egg hiver/tropiques) : soleil-flocon et soleil-palmier -->
-        <svg class="logo-winter" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="3.2" stroke-linecap="round"><line x1="32" y1="10" x2="32" y2="46"/><line x1="16" y1="19" x2="48" y2="37"/><line x1="48" y1="19" x2="16" y2="37"/><path d="M26 15l6 6 6-6M26 41l6-6 6 6"/></g><path d="M13 53h38" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg>
-        <svg class="logo-tropic" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="3.2" stroke-linecap="round" fill="none"><path d="M28 52c2-12 1-21-3-28"/></g><path d="M25 24c-6-6-13-7-18-4 7 0 12 2 18 4z" fill="#fff"/><path d="M25 24c-2-8 1-14 7-17-3 6-4 11-2 17z" fill="#fff"/><path d="M25 24c6-5 13-6 19-3-7 1-13 3-19 3z" fill="#fff"/><circle cx="49" cy="15" r="6" fill="#fff"/><path d="M11 53h42" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg>
+        <!-- Logos saison REDESSINÉS : cristal d'hiver ciselé / palmier-lagon · + vraies variantes NUIT -->
+        <svg class="logo-winter" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="2.8" stroke-linecap="round"><line x1="32" y1="7" x2="32" y2="57"/><line x1="10.4" y1="19.5" x2="53.6" y2="44.5"/><line x1="53.6" y1="19.5" x2="10.4" y2="44.5"/><path d="M25 12.5l7 7 7-7M25 51.5l7-7 7 7"/><path d="M11 27l9.5 5-9.5 5M53 27l-9.5 5 9.5 5"/></g><circle cx="32" cy="32" r="4.4" fill="#fff"/><g fill="#fff" opacity=".85"><circle cx="14" cy="10" r="1.6"/><circle cx="52" cy="54" r="1.6"/></g></svg>
+        <svg class="logo-winter-n" viewBox="0 0 64 64" width="22" height="22"><path d="M40 7a21 21 0 1 0 16 35A24 24 0 0 1 40 7z" fill="#fff" opacity=".95"/><g stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".9"><line x1="18" y1="38" x2="18" y2="54"/><line x1="11" y1="42" x2="25" y2="50"/><line x1="25" y1="42" x2="11" y2="50"/></g><g fill="#fff"><circle cx="12" cy="14" r="1.8"/><circle cx="24" cy="24" r="1.3"/><circle cx="50" cy="52" r="1.5"/></g></svg>
+        <svg class="logo-tropic" viewBox="0 0 64 64" width="22" height="22"><path d="M30 54c1.5-12 .5-22-4-30" stroke="#fff" stroke-width="3.4" stroke-linecap="round" fill="none"/><g fill="#fff"><path d="M26 24C18 16 9 15 3 19c8 0 14 2 23 5z"/><path d="M26 24c-3-10 0-17 8-21-4 7-6 13-8 21z"/><path d="M26 24c8-7 17-8 24-3-9 0-16 1-24 3z"/><path d="M26 24c10-2 18 3 21 10-8-5-14-7-21-10z"/><circle cx="29" cy="28" r="3"/><circle cx="22" cy="29" r="3"/></g><circle cx="52" cy="12" r="5.6" fill="#fff"/><path d="M6 55q7-5 13 0t13 0 13 0 13 0" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".9"/></svg>
+        <svg class="logo-tropic-n" viewBox="0 0 64 64" width="22" height="22"><path d="M30 54c1.5-12 .5-22-4-30" stroke="#fff" stroke-width="3.4" stroke-linecap="round" fill="none"/><g fill="#fff"><path d="M26 24C18 16 9 15 3 19c8 0 14 2 23 5z"/><path d="M26 24c-3-10 0-17 8-21-4 7-6 13-8 21z"/><path d="M26 24c8-7 17-8 24-3-9 0-16 1-24 3z"/><path d="M26 24c10-2 18 3 21 10-8-5-14-7-21-10z"/></g><path d="M52 6a12 12 0 1 0 9 20 13.5 13.5 0 0 1-9-20z" fill="#fff" opacity=".95"/><g fill="#fff"><circle cx="42" cy="28" r="1.5"/><circle cx="56" cy="34" r="1.2"/></g><path d="M6 55q7-5 13 0t13 0 13 0 13 0" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".8"/></svg>
       </span><b><span class="sun">Sun</span>Mates</b></div>
       <div class="topbar-actions hidden" id="userBox">
         <button class="iconbtn" id="themeToggle" title="Changer de thème" aria-label="Changer de thème jour / nuit">🌙</button>
@@ -8117,6 +8134,12 @@
       const cgames = (typeof CLIENT_GAMES !== "undefined") ? CLIENT_GAMES : [];
       const countries = (typeof COUNTRY_TIPS !== "undefined") ? COUNTRY_TIPS : [];
       const moods = (typeof FEED_MOODS !== "undefined") ? FEED_MOODS : [];
+      // Contenus qui MANQUAIENT à l'inventaire (retour Maxime)
+      const tips = (typeof SAFETY_TIPS !== "undefined") ? SAFETY_TIPS : [];
+      const loreKeys = (typeof COUNTRY_LORE !== "undefined") ? Object.keys(COUNTRY_LORE) : [];
+      const gd = (typeof _GD !== "undefined") ? _GD : {};
+      const soundKeys = (typeof SOUND_LABELS !== "undefined") ? Object.keys(SOUND_LABELS) : [];
+      const gdTotal = Object.values(gd).reduce((a, x) => a + (Array.isArray(x) ? x.length : 0), 0);
 
       // On mémorise le contenu détaillé des tuiles cliquables (popent au clic)
       const POP = {};
@@ -8129,6 +8152,10 @@
       POP["nums"] = ["🌍 Numéros d'urgence (" + nums.length + " pays)", list(nums.map((n) => (n.f || "🏳️") + " <b>" + esc(n.c) + "</b> · " + esc(n.n)))];
       POP["countries"] = ["🧳 Fiches pays (préparatifs)", list(countries.map((c) => c.flag + " <b>" + esc(c.name) + "</b>"))];
       POP["moods"] = ["📰 Tuiles du fil (humeurs + spots)", list(moods.concat(typeof FEED_SPOTS !== "undefined" ? FEED_SPOTS : []).map((m) => esc(m)))];
+      POP["tips"] = ["💡 Conseils sécurité (" + tips.length + ")", list(tips.map((t) => "💡 " + esc(t.fr)))];
+      POP["lore"] = ["📚 Histoire & culture (" + loreKeys.length + " pays)", list(loreKeys.map((k) => "📚 " + esc(k)))];
+      POP["gd"] = ["🎲 Textes des mini-jeux (" + gdTotal + ")", list(Object.keys(gd).map((k) => "🎲 <b>" + esc(k) + "</b> · " + (Array.isArray(gd[k]) ? gd[k].length : 0) + " entrées"))];
+      POP["sounds"] = ["🔔 Banque de sons (" + soundKeys.length + ")", list(soundKeys.map((k) => esc((SOUND_LABELS[k] || k))))];
       window._adminDataPop = POP;
 
       const cell = (k, v, pop) => `<div class="pcell${pop ? " pcell-jump" : ""}"${pop ? ` data-datapop="${pop}" style="cursor:pointer"` : ""}><div class="k">${esc(k)}${pop ? " ›" : ""}</div><div class="v">${v ?? 0}</div></div>`;
@@ -8158,6 +8185,10 @@
           ${cell("Pays urgence", nums.length, "nums")}
           ${cell("Tuiles du fil", moods.length + (typeof FEED_SPOTS !== "undefined" ? FEED_SPOTS.length : 0), "moods")}
           ${cell("Jeux BDD", games.length)}
+          ${cell("Conseils sécu", tips.length, "tips")}
+          ${cell("Histoire & culture", loreKeys.length, "lore")}
+          ${cell("Textes mini-jeux", gdTotal, "gd")}
+          ${cell("Sons", soundKeys.length, "sounds")}
         </div>`;
 
       const stack = `
@@ -12292,7 +12323,9 @@
       // TOUTES les villes de la carte (quêtes ET lieux sûrs), dédupliquées (« Paris » == « Paris, France »).
       const seen = new Map();
       (pts || []).forEach((q) => { const c = q.city; if (!c) return; const k = _cityNorm(c); if (k && !seen.has(k)) seen.set(k, c); });
-      const cities = [...seen.values()].sort((a, b) => a.localeCompare(b, "fr"));
+      // Retour Maxime : la pseudo-ville « Partout » (spots cachés/géo-libres en base) ne doit
+      // PAS apparaître comme un choix — ce n'est pas une ville, et ça spoile les secrets.
+      const cities = [...seen.values()].filter((c) => !/^\s*partout\s*$/i.test(c)).sort((a, b) => a.localeCompare(b, "fr"));
       const sig = cities.join("|");
       if (sig === _questCitiesSig) return; // pas de changement → on garde le menu (et la sélection)
       _questCitiesSig = sig;
@@ -15636,12 +15669,20 @@
         setTimeout(() => { try { fx.remove(); } catch (e) {} }, 1700);
       } catch (e) {}
     }
-    // Icône du bouton thème : flocon/palmier en saison, sinon soleil/lune (posée par applyTheme).
+    // Icône du bouton thème : cristal/palmier en saison (avec VARIANTE NUIT), sinon soleil/lune.
     function _seasonIcon(s) {
       const tt = $("themeToggle"); if (!tt) return;
       tt.dataset.season = s || "";
-      if (s === "winter") tt.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><g stroke="#3A8FD9" stroke-width="2" stroke-linecap="round"><line x1="12" y1="3" x2="12" y2="21"/><line x1="4.2" y1="7.5" x2="19.8" y2="16.5"/><line x1="19.8" y1="7.5" x2="4.2" y2="16.5"/><path d="M9.6 4.6L12 7l2.4-2.4M9.6 19.4L12 17l2.4 2.4"/></g></svg>';
-      else if (s === "tropic") tt.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><path d="M10.6 20c.8-4.6.4-8-1.1-10.6" stroke="#0FA37C" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M9.5 9.4C7.2 7.2 4.6 6.8 2.6 7.9c2.6 0 4.7.7 6.9 1.5z" fill="#0FA37C"/><path d="M9.5 9.4c-.7-2.9.4-5.2 2.7-6.4-1.2 2.3-1.5 4.2-.7 6.4z" fill="#0FA37C"/><path d="M9.5 9.4c2.3-1.9 5-2.3 7.3-1.1-2.7.4-5 .9-7.3 1.1z" fill="#0FA37C"/><circle cx="18.4" cy="5.6" r="2.6" fill="#FFC93C"/></svg>';
+      const night = document.body.classList.contains("theme-dusk");
+      if (s === "winter") {
+        tt.innerHTML = night
+          ? '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><path d="M15 2.6a8 8 0 1 0 6 13.4A9 9 0 0 1 15 2.6z" fill="#8CC4F2"/><g stroke="#8CC4F2" stroke-width="1.6" stroke-linecap="round"><line x1="6.5" y1="14" x2="6.5" y2="20.5"/><line x1="3.6" y1="15.6" x2="9.4" y2="18.9"/><line x1="9.4" y1="15.6" x2="3.6" y2="18.9"/></g></svg>'
+          : '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><g stroke="#3A8FD9" stroke-width="1.9" stroke-linecap="round"><line x1="12" y1="2.6" x2="12" y2="21.4"/><line x1="3.9" y1="7.3" x2="20.1" y2="16.7"/><line x1="20.1" y1="7.3" x2="3.9" y2="16.7"/><path d="M9.4 4.6L12 7.2l2.6-2.6M9.4 19.4L12 16.8l2.6 2.6"/><path d="M4.2 10.1l3.5 1.9-3.5 1.9M19.8 10.1l-3.5 1.9 3.5 1.9"/></g><circle cx="12" cy="12" r="1.7" fill="#3A8FD9"/></svg>';
+      } else if (s === "tropic") {
+        tt.innerHTML = night
+          ? '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><path d="M10.6 20c.8-4.6.4-8-1.1-10.6" stroke="#2BC48A" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M9.5 9.4C7.2 7.2 4.6 6.8 2.6 7.9c2.6 0 4.7.7 6.9 1.5z" fill="#2BC48A"/><path d="M9.5 9.4c-.7-2.9.4-5.2 2.7-6.4-1.2 2.3-1.5 4.2-.7 6.4z" fill="#2BC48A"/><path d="M9.5 9.4c2.3-1.9 5-2.3 7.3-1.1-2.7.4-5 .9-7.3 1.1z" fill="#2BC48A"/><path d="M19 2.8a4.6 4.6 0 1 0 3.4 7.7A5.2 5.2 0 0 1 19 2.8z" fill="#FFD98A"/></svg>'
+          : '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><path d="M10.6 20c.8-4.6.4-8-1.1-10.6" stroke="#0FA37C" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M9.5 9.4C7.2 7.2 4.6 6.8 2.6 7.9c2.6 0 4.7.7 6.9 1.5z" fill="#0FA37C"/><path d="M9.5 9.4c-.7-2.9.4-5.2 2.7-6.4-1.2 2.3-1.5 4.2-.7 6.4z" fill="#0FA37C"/><path d="M9.5 9.4c2.3-1.9 5-2.3 7.3-1.1-2.7.4-5 .9-7.3 1.1z" fill="#0FA37C"/><path d="M9.5 9.4c3.6-.7 6.4 1 7.6 3.5-2.9-1.7-5-2.5-7.6-3.5z" fill="#0FA37C"/><circle cx="18.4" cy="5.6" r="2.6" fill="#FFC93C"/><path d="M3.5 21q3-2 5.5 0t5.5 0 5.5 0" stroke="#0FA37C" stroke-width="1.7" stroke-linecap="round" fill="none" opacity=".8"/></svg>';
+      }
     }
     function applySeason(s, manual) {
       document.body.classList.toggle("theme-winter", s === "winter");
