@@ -111,8 +111,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=423"></script>
-  <script src="sunmates-icons.js?v=423"></script>
+  <script src="sunmates-badges.js?v=424"></script>
+  <script src="sunmates-icons.js?v=424"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -3204,6 +3204,20 @@
     body.theme-winter .sm-date-preview { background: linear-gradient(135deg, #F4FAFF, #E4F0FB); }
     body.theme-tropic .sm-date-preview { background: linear-gradient(135deg, #FDFBE8, #EDF6DF); }
 
+    /* #25 : anti « écran noir » — tant que la photo n'est pas chargée, shimmer crème sunset
+       (l'attribut data-lazybg disparaît au chargement → le shimmer aussi). */
+    [data-lazybg] { background-color: #F6E3CE;
+      background-image: linear-gradient(110deg, rgba(255,255,255,0) 38%, rgba(255,255,255,.55) 50%, rgba(255,255,255,0) 62%), linear-gradient(135deg, #FBE6CC, #F2D5B2);
+      background-size: 220% 100%, 100% 100%; animation: lzShimmer 1.25s linear infinite; }
+    body.theme-dusk [data-lazybg] { background-color: var(--dcard, #2a2140);
+      background-image: linear-gradient(110deg, rgba(255,255,255,0) 38%, rgba(255,255,255,.08) 50%, rgba(255,255,255,0) 62%), linear-gradient(135deg, var(--dcard, #2a2140), var(--dcard2, #241b35)); }
+    @keyframes lzShimmer { to { background-position: -120% 0, 0 0; } }
+
+    /* #24 : cartes repliables (Besoin d'aide) — fermé = seul le titre reste, chevron indicateur */
+    [data-coll].coll-closed > :not(h3):not(.section-head) { display: none; }
+    [data-coll].coll-closed h3 { margin-bottom: 0 !important; }
+    [data-coll] .coll-chev { color: var(--accent); font-size: .85em; font-weight: 800; }
+
     /* ====== 🥚 Easter eggs (effets visuels · jamais documentés côté public) ====== */
     /* #19 Golden Hour v2 : le soleil S'ATTRAPE et se POSE sur la carte (fini l'app réchauffée). */
     #eggSunCatch { position: fixed; left: 0; top: 0; z-index: 99998; cursor: grab; touch-action: none;
@@ -4369,14 +4383,14 @@
             </div>
           </div>
 
-          <div class="card" id="iceCard">
+          <div class="card" id="iceCard" data-coll="ice">
             <h3 style="margin-top:0">📇 Mes contacts d'urgence</h3>
             <p class="muted" style="font-size:.8rem;margin-top:0">Tes proches à joindre en un geste. Stockés sur ton appareil (privé).</p>
             <div id="iceList"></div>
             <button class="btn-ghost btn-block" id="iceAddBtn" style="margin-top:.4rem">+ Ajouter un contact</button>
           </div>
 
-          <div class="card" id="circleCard">
+          <div class="card" id="circleCard" data-coll="circle">
             <div class="section-head">
               <h3 style="margin:0">🛟 Cercle de confiance</h3>
               <button class="btn-ghost" id="refreshCircleBtn" style="padding:.4rem .8rem;font-size:.8rem">↻ Rafraîchir</button>
@@ -4396,19 +4410,19 @@
             <div class="tile" data-help="support"><div class="thumb teal" data-smicon="chat" data-smicon-size="30">💬</div><div class="t-name">Support SunMates</div><div class="t-meta">Écris-nous</div></div>
           </div>
 
-          <div class="card" style="margin-top:1.4rem">
+          <div class="card" style="margin-top:1.4rem" data-coll="conseils">
             <h3 style="margin-top:0">Conseils &amp; secours</h3>
             <div class="qrow" data-secu="secours"><div class="qico" data-smicon="firstaid" data-smicon-size="27">🩺</div><div class="qname">Premiers secours · gestes qui sauvent</div><div class="qarrow">›</div></div>
             <div class="qrow" data-secu="voyage"><div class="qico" data-smicon="safetravel" data-smicon-size="27">🧭</div><div class="qname">Voyager en sécurité</div><div class="qarrow">›</div></div>
           </div>
 
-          <div class="card">
+          <div class="card" data-coll="confid">
             <h3 style="margin-top:0">Sécurité &amp; confidentialité</h3>
             <div class="qrow" data-secu="reportmenu"><div class="qico" data-smicon="report" data-smicon-size="27">🚩</div><div class="qname">Signaler un voyageur</div><div class="qarrow">›</div></div>
             <!-- (Historique des rencontres déplacé hors de Sécurité : il vit côté Mates/Profil) -->
           </div>
 
-          <div class="card">
+          <div class="card" data-coll="prefs">
             <h3 style="margin-top:0">Préférences</h3>
             <div class="qrow" data-secu="contact"><div class="qico" data-smicon="contact" data-smicon-size="27">📢</div><div class="qname">Qui peut me contacter</div><div class="qarrow" id="contactPrefVal">›</div></div>
           </div>
@@ -6720,7 +6734,9 @@
     // On ne CHARGE l'image que lorsqu'elle approche de l'écran → temps de chargement
     // initial bien plus court (surtout les listes avec beaucoup de photos de gens).
     const _lazyIO = ("IntersectionObserver" in window) ? new IntersectionObserver((ents, io) => {
-      ents.forEach((en) => { if (!en.isIntersecting) return; const el = en.target; const u = _safeImgUrl(el.getAttribute("data-lazybg")); if (u) { el.style.backgroundImage = "url('" + u + "')"; } el.removeAttribute("data-lazybg"); io.unobserve(el); });
+      // #25 : fond CHAUD posé en dur avant l'image → le temps du téléchargement on voit du
+      // crème sunset, plus jamais un rectangle noir.
+      ents.forEach((en) => { if (!en.isIntersecting) return; const el = en.target; const u = _safeImgUrl(el.getAttribute("data-lazybg")); if (u) { el.style.backgroundColor = document.body.classList.contains("theme-dusk") ? "#2a2140" : "#F2DCC2"; el.style.backgroundImage = "url('" + u + "')"; } el.removeAttribute("data-lazybg"); io.unobserve(el); });
     }, { rootMargin: "400px 0px" }) : null;
     function observeLazy(root) {
       const nodes = (root || document).querySelectorAll ? (root || document).querySelectorAll("[data-lazybg]") : [];
@@ -9407,11 +9423,32 @@
     // Photos liées à la VILLE/capitale (LoremFlickr = photos Flickr libres par
     // mot-clé). `lock` rend l'image stable. Un dégradé vif reste derrière, donc
     // jamais d'image cassée. Mots-clés distincts → villes/pays variés.
+    // #25 : pools THÉMATIQUES triés à la planche-contact (_sheet2.png) — la photo raconte enfin
+    // ce qu'est la quête / le lieu (café → tasse, rando → canyon, soirée → lanternes…).
+    // Toujours DÉTERMINISTE (même clé → même photo, ne change plus jamais) + cache média SW.
+    const PHOTO_POOLS = {
+      cafe: [30, 63, 192, 225, 326],
+      food: [292, 429, 488, 493],
+      nature: [28, 29, 206, 257, 287, 511],
+      eau: [122, 124, 384, 501],
+      nuit: [158, 232, 249, 274, 305],
+      culture: [24, 164, 320],
+      route: [49, 101, 155, 339, 514],
+      ville: [1, 45, 56, 155, 210, 221, 232, 265, 320, 331, 342, 397, 419, 430, 441, 639, 672, 694, 815, 826, 859, 936, 947, 1013],
+    };
+    function _photoPool(kw) {
+      const k = String(kw || "").toLowerCase();
+      if (/(café|cafe|coffee|espresso|brunch|thé|tea|co-?living|cowork)/.test(k)) return PHOTO_POOLS.cafe;
+      if (/(food|resto|restaurant|cuisine|marché|market|gourmand|gastro|plat|dessert|goûte)/.test(k)) return PHOTO_POOLS.food;
+      if (/(parc|park|nature|rando|hik|jardin|montagne|mountain|alpes|interlaken|forêt|vert|cascade|panorama|pano)/.test(k)) return PHOTO_POOLS.nature;
+      if (/(plage|beach|mer\b|sea|ocean|océan|lac|lake|canal|rivière|river|île)/.test(k)) return PHOTO_POOLS.eau;
+      if (/(bar\b|nuit|night|soirée|party|cocktail|rooftop|club|concert|fête)/.test(k)) return PHOTO_POOLS.nuit;
+      if (/(musée|museum|culture|art\b|galerie|monument|histoire|librairie|book|église|cathédrale)/.test(k)) return PHOTO_POOLS.culture;
+      if (/(road|trip|train|tram|vélo|gare|aéroport|pont|bridge|van\b)/.test(k)) return PHOTO_POOLS.route;
+      return PHOTO_POOLS.ville;
+    }
     function flickrImg(keywords, seed) {
-      // v379 : photos TRIÉES À LA MAIN (planche-contact picsum) · intérieurs chauds, devantures,
-      // ruelles, tram, lumières… Fini la photo au hasard (une montagne pour un café 🙃).
-      // Toujours DÉTERMINISTE (même lieu → même photo) + cache média SW → instantané.
-      const POOL = [1, 45, 56, 155, 210, 221, 232, 265, 320, 331, 342, 397, 419, 430, 441, 639, 672, 694, 815, 826, 859, 936, 947, 1013];
+      const POOL = _photoPool(keywords);
       const s = String(seed || "") + "|" + String(keywords || ""); let n = 0;
       for (let i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) >>> 0;
       return `https://picsum.photos/id/${POOL[n % POOL.length]}/640/320`;
@@ -9431,7 +9468,9 @@
       gold_vip: "cocktail,party,rooftop",
     };
     function questImage(q) {
-      const kw = (q && QUEST_CITY[q.key]) || ((q && q.city) ? q.city.split(",")[0] : "travel");
+      // #25 : le TITRE de la quête entre dans les mots-clés → le pool thématique matche
+      // (« Café en solo » → tasse, « Chasse au panorama » → nature…), pas juste la ville.
+      const kw = ((q && QUEST_CITY[q.key]) || ((q && q.city) ? q.city.split(",")[0] : "travel")) + " " + ((q && q.title) || "");
       return flickrImg(kw, q && q.key);
     }
     // Photo d'un lieu : URL fournie par l'admin (la VRAIE photo du lieu, champ « Image » du
@@ -9440,7 +9479,9 @@
     // collisions → « photos similaires » sur les check-ins) et elle ne change plus jamais.
     function cafeImage(c) {
       if (c.image_url) return c.image_url;
-      const POOL = [1, 45, 56, 155, 210, 221, 232, 265, 320, 331, 342, 397, 419, 430, 441, 639, 672, 694, 815, 826, 859, 936, 947, 1013];
+      // #25 : pool choisi d'après le NOM du lieu (café → tasses/intérieurs chauds), toujours
+      // ancré par id (séquentiel → deux lieux voisins n'ont jamais la même photo).
+      const POOL = _photoPool(c.name || ""); // « Café Lomi » → tasses ; sinon pool ville varié
       let n = Number(c.id);
       if (!isFinite(n)) { const s = String(c.name || c.id || ""); n = 0; for (let i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) >>> 0; }
       return `https://picsum.photos/id/${POOL[n % POOL.length]}/640/320`;
@@ -11326,6 +11367,29 @@
     // Lignes "Sécurité & confidentialité" / "Préférences", fonctionnelles
     document.querySelectorAll("[data-secu]").forEach((el) =>
       el.addEventListener("click", () => handleSecu(el.dataset.secu)));
+
+    // #24 : cartes REPLIABLES dans « Besoin d'aide » — toucher le titre replie/déplie,
+    // et l'état est GARDÉ (localStorage) jusqu'à réouverture manuelle.
+    (function collapsibleCards() {
+      document.querySelectorAll("[data-coll]").forEach((card) => {
+        const key = "sm_coll_" + card.dataset.coll;
+        const head = card.querySelector(".section-head") || card.querySelector("h3");
+        if (!head) return;
+        const h3 = head.tagName === "H3" ? head : head.querySelector("h3");
+        const chev = document.createElement("span"); chev.className = "coll-chev"; chev.setAttribute("aria-hidden", "true");
+        (h3 || head).appendChild(chev);
+        const apply = (closed) => { card.classList.toggle("coll-closed", closed); chev.textContent = closed ? " ▸" : " ▾"; };
+        let closed = false; try { closed = localStorage.getItem(key) === "1"; } catch (e) {}
+        apply(closed);
+        head.style.cursor = "pointer";
+        head.addEventListener("click", (e) => {
+          if (e.target.closest("button")) return; // les boutons du header (↻ Rafraîchir…) gardent leur rôle
+          closed = !closed; apply(closed);
+          try { localStorage.setItem(key, closed ? "1" : "0"); } catch (err) {}
+          if (window.SMSound) { try { SMSound.play("toggle"); } catch (err) {} }
+        });
+      });
+    })();
 
     async function handleSecu(action) {
       const m = $("helpMsg"); m.style.color = "var(--text)";
