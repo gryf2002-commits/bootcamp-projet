@@ -104,8 +104,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=397"></script>
-  <script src="sunmates-icons.js?v=397"></script>
+  <script src="sunmates-badges.js?v=398"></script>
+  <script src="sunmates-icons.js?v=398"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -3081,6 +3081,26 @@
       border-radius: 16px; padding: .8rem .9rem; font-weight: 700; color: var(--ink); box-shadow: var(--shadow-sm); }
     .help-cta:active { transform: scale(.99); }
     body.theme-dusk .help-cta { background: linear-gradient(135deg, #2c2140, #241b35); color: #f3e9f3; border-color: rgba(255,170,130,.22); border-left-color: var(--accent); }
+
+    /* Souvenirs : vitrine compacte (avatars empilés) + galerie en feuille */
+    .hm-gal-open { display: flex; align-items: center; width: 100%; gap: .15rem; padding: .55rem .7rem; margin-top: .25rem;
+      background: linear-gradient(135deg, #FFF6E9, #FFE7DA); border: 1px solid rgba(255,122,89,.25); border-radius: 14px;
+      cursor: pointer; box-shadow: var(--shadow-sm); }
+    .hmg-av { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center; font-weight: 800; font-size: .85rem;
+      color: #fff; background-color: var(--accent); background-size: cover; background-position: center; border: 2px solid #fff; margin-left: -10px; }
+    .hm-gal-open .hmg-av:first-child { margin-left: 0; }
+    .hmg-more { font-size: .74rem; font-weight: 800; color: var(--accent); margin-left: .3rem; }
+    .hmg-lbl { margin-left: auto; font-weight: 800; font-size: .82rem; color: var(--accent); white-space: nowrap; }
+    body.theme-dusk .hm-gal-open { background: linear-gradient(135deg, #2c2140, #241b35); border-color: rgba(255,170,130,.22); }
+    body.theme-dusk .hmg-av { border-color: #241b35; }
+    .hmg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .55rem; }
+    .hmg-cell { display: flex; flex-direction: column; align-items: center; gap: .25rem; background: none; border: 0; cursor: pointer; padding: .2rem 0; }
+    .hmg-av.big { width: 54px; height: 54px; margin-left: 0; font-size: 1.1rem; box-shadow: var(--shadow-sm); }
+    .hmg-name { font-size: .7rem; font-weight: 700; color: var(--ink); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Collection de quêtes : quêtes en grille 2 colonnes (fini le listing interminable) */
+    .coll-list { display: grid; grid-template-columns: 1fr 1fr; gap: .3rem .45rem; }
+    .coll-list .coll-row { font-size: .78rem; }
   </style>
 </head>
 <body>
@@ -3714,6 +3734,7 @@
             <button type="button" data-spotq="Au parc, au calme 🌳">🌳 Parc</button>
             <button type="button" data-spotq="Spot coucher de soleil 🌇">🌇 Sunset</button>
             <button type="button" data-spotq="Musée / expo 🖼️">🖼️ Culture</button>
+            <button type="button" id="spotOwnIdea">✍️ Mon idée</button>
           </div>
           <div class="spot-step">3 · Décris &amp; publie</div>
           <div class="spot-compose">
@@ -4613,7 +4634,7 @@
             </div>
             <button class="capitale" id="capitaleDuJour" style="display:none">
               <span class="cap-ic">🏙️</span>
-              <span class="cap-txt"><b id="capName">—</b><span>Ville à l'honneur du jour · explore ses quêtes (ou repère-les pour ton prochain voyage)</span></span>
+              <span class="cap-txt"><b id="capName">—</b><span id="capFact">Ville à l'honneur du jour · explore ses quêtes (ou repère-les pour ton prochain voyage)</span></span>
               <span class="cap-go">Explorer ›</span>
             </button>
           </div>
@@ -12547,7 +12568,10 @@
       }
       ov.querySelector("h4").textContent = _feedKind === "spot" ? "📍 Ton spot du moment" : "✨ Ton humeur du jour";
       const list = $("feedPickList");
-      list.innerHTML = items.map((t) => `<button type="button" class="sm-selopt" data-fpick="${escapeHtml(t)}"><span>${escapeHtml(t)}</span><span class="sm-selopt-check" style="opacity:.4">›</span></button>`).join("");
+      // « Ma propre idée » en tête : le champ libre d'abord, les suggestions ensuite
+      list.innerHTML = '<button type="button" class="sm-selopt" data-fpown="1"><span>✍️ ' + i18nT("Ma propre idée") + '</span><span class="sm-selopt-check" style="opacity:.4">›</span></button>'
+        + items.map((t) => `<button type="button" class="sm-selopt" data-fpick="${escapeHtml(t)}"><span>${escapeHtml(t)}</span><span class="sm-selopt-check" style="opacity:.4">›</span></button>`).join("");
+      { const o = list.querySelector("[data-fpown]"); if (o) o.addEventListener("click", () => { ov.classList.remove("show"); const fi = $("feedInput"); if (fi) { fi.value = ""; fi.focus(); } if (window.SMSound) { try { SMSound.play("tap"); } catch (e) {} } }); }
       list.querySelectorAll("[data-fpick]").forEach((c) => c.addEventListener("click", () => {
         feedPrefill(c.dataset.fpick); ov.classList.remove("show");
         if (window.SMSound) { try { SMSound.play("tap"); } catch (e) {} }
@@ -12752,11 +12776,29 @@
       const cf = full[(typeof _dayIdx === "function" ? _dayIdx() : 0) % full.length];
       el.style.display = "flex";
       const n = $("capName"); if (n) n.textContent = cf.replace(/, France$/, "");
+      // Teasing : un fun fact sur la ville du jour (donne envie de toucher la tuile)
+      const CITY_FACTS = {
+        "paris": "Un seul panneau STOP dans tout Paris… et il a disparu en 2016 🤯",
+        "lyon": "Capitale de la gastronomie ET berceau du cinéma (merci les frères Lumière) 🎬",
+        "marseille": "La plus vieille ville de France : 2 600 ans et toujours le même accent ☀️",
+        "bordeaux": "Son miroir d'eau est le plus grand du monde, parfait pour les photos 📸",
+        "lille": "Sa braderie est le plus grand marché aux puces d'Europe 🛍️",
+        "toulouse": "La ville rose fabrique des avions ET un cassoulet légendaire 🛩️",
+        "nice": "La baie des Anges doit son nom à des requins-anges, pas aux chérubins 😇",
+        "nantes": "Un éléphant mécanique de 12 mètres se balade dans la ville 🐘",
+        "strasbourg": "Sa cathédrale a été le plus haut bâtiment du monde pendant 227 ans ⛪",
+        "montpellier": "Grande ville sans fleuve… mais avec la mer à 11 km 🌊",
+        "biarritz": "Le surf européen est né ici, sur un tournage hollywoodien en 1957 🏄",
+        "annecy": "Son lac est réputé être le plus pur d'Europe 💧",
+      };
+      const fact = CITY_FACTS[_cityNorm(cf)] || "";
+      { const ft = $("capFact"); if (ft) ft.textContent = fact || "Ville à l'honneur du jour · explore ses quêtes (ou repère-les pour ton prochain voyage)"; }
       el.onclick = () => {
         // Pas de redirection sèche : on TEASE d'abord la ville (mini-fiche qui pop), puis bouton pour explorer.
         const cityName = cf.replace(/, France$/, "");
         const qn = (typeof allQuests !== "undefined" ? allQuests : []).filter((q) => q.kind === "quest" && q.city === cf).length;
         popInfo("🏙️", cityName + " à l'honneur",
+          (fact ? "<p style='margin:.1rem 0 .5rem;font-weight:600'>💡 " + escapeHtml(fact) + "</p>" : "") +
           "Aujourd'hui on met <b>" + escapeHtml(cityName) + "</b> en avant : <b>" + qn + " quête" + (qn > 1 ? "s" : "") + "</b> à y débusquer. " +
           "Que tu y sois ou que tu prépares ton prochain voyage, repère-les dès maintenant. ✨" +
           "<button class='btn-primary btn-block' id='capExplore' style='margin-top:1rem'>Explorer les quêtes ›</button>");
@@ -13121,32 +13163,52 @@
         if (!mdWrap) { mdWrap = document.createElement("div"); mdWrap.className = "hm-mateday-wrap"; row.parentNode.insertBefore(mdWrap, row); }
         mdWrap.innerHTML = '<div class="hm-mateday"><div class="avatar"' + (mdBg ? " style=\"background-image:url('" + mdBg + "')\"" : "") + ">" + (mdBg ? "" : escapeHtml((md.username || "?")[0].toUpperCase())) + '</div><div class="hmd-tx"><b>' + escapeHtml(md.username || "Mate") + "</b><span>" + i18nT("Ton Mate du jour · un petit coucou ? ☀️") + '</span></div><button class="btn-accent hmd-btn" data-hmmate="' + escapeHtml(md.id) + '">💬</button></div>';
         mdWrap.querySelectorAll("[data-hmmate]").forEach((el) => el.addEventListener("click", () => { goToTab("connexions"); if (typeof openChat === "function") openChat(el.dataset.hmmate); }));
-        row.innerHTML = mates.slice(0, 12).map((p) => { const bg = _safeImgUrl(p.avatar_url); return '<div class="hm-mate" data-hmmate="' + escapeHtml(p.id) + '"><div class="avatar"' + (bg ? " style=\"background-image:url('" + bg + "')\"" : "") + ">" + (bg ? "" : escapeHtml((p.username || "?")[0].toUpperCase())) + '</div><div class="hm-mate-n">' + escapeHtml(p.username || "Mate") + "</div></div>"; }).join("");
-        row.querySelectorAll("[data-hmmate]").forEach((el) => el.addEventListener("click", () => { goToTab("connexions"); if (typeof openChat === "function") openChat(el.dataset.hmmate); }));
+        // VITRINE compacte (avant : 12 avatars + album dépliable = section imposante) :
+        // avatars empilés + un seul bouton qui ouvre la galerie complète.
+        const stack = mates.slice(0, 5).map((p) => { const bg = _safeImgUrl(p.avatar_url); return '<span class="hmg-av"' + (bg ? " style=\"background-image:url('" + bg + "')\"" : "") + ">" + (bg ? "" : escapeHtml((p.username || "?")[0].toUpperCase())) + "</span>"; }).join("");
+        row.innerHTML = '<button type="button" class="hm-gal-open" id="hmGalOpen">' + stack
+          + (mates.length > 5 ? '<span class="hmg-more">+' + (mates.length - 5) + "</span>" : "")
+          + '<span class="hmg-lbl">' + i18nT("🖼️ Ouvrir ma galerie") + " ›</span></button>";
+        { const go = $("hmGalOpen"); if (go) go.addEventListener("click", openSouvGallery); }
       } else { if (lbl) lbl.textContent = ""; const mw = sec.querySelector(".hm-mateday-wrap"); if (mw) mw.remove(); row.innerHTML = '<p class="muted" style="font-size:.8rem">Pas encore de Mate · pars à la rencontre sur la carte ✨</p>'; }
-      // Teaser : on montre un bout du 1er souvenir SUR le résumé fermé → donne envie d'ouvrir l'album.
-      const firstNoted = cities.find((c) => _souvGet(c));
-      const teaser = firstNoted ? ' <span style="font-weight:500;color:var(--muted);font-size:.78rem">· ' + escapeHtml(firstNoted) + ' : « ' + escapeHtml(_souvGet(firstNoted).slice(0, 42)) + (_souvGet(firstNoted).length > 42 ? "…" : "") + ' »</span>' : "";
-      $("hmCities").innerHTML = cities.length
-        ? '<details class="hm-album"><summary>📖 Album souvenir par ville (' + cities.length + ')' + teaser + '</summary>' + cities.slice(0, 8).map((c) => {
-            const note = _souvGet(c);
-            return '<div class="hm-city-row" data-souvcity="' + escapeHtml(c) + '" style="cursor:pointer">'
-              + '<span>📍</span><span class="hc-name">' + escapeHtml(c) + (note ? ' <span style="font-weight:500;color:var(--text)">· « ' + escapeHtml(note) + ' »</span>' : "") + '</span>'
-              + '<span class="hc-n">' + (note ? "✏️" : "➕ souvenir") + "</span></div>";
-          }).join("") + "</details>"
+      // L'album souvenir vit dans la galerie ; sans Mate mais avec des villes, on garde un accès direct.
+      $("hmCities").innerHTML = (cities.length && !mates.length)
+        ? '<button type="button" class="hm-gal-open" id="hmGalOpen2"><span class="hmg-lbl">📖 ' + i18nT("Album souvenir par ville") + " (" + cities.length + ") ›</span></button>" : "";
+      { const g2 = $("hmGalOpen2"); if (g2) g2.addEventListener("click", openSouvGallery); }
+    }
+    // Galerie vitrine : Mates en grille + album souvenir par ville, dans une feuille dédiée.
+    function openSouvGallery() {
+      const mates = (typeof connectedIds !== "undefined" && connectedIds ? [...connectedIds] : []).map((id) => travelerMap[id]).filter(Boolean);
+      const doneQuests = (typeof myQuestRows !== "undefined" ? myQuestRows : []).filter((r) => r.status === "completed");
+      const qCity = {}; (typeof allQuests !== "undefined" ? allQuests : []).forEach((q) => { if (q.key) qCity[q.key] = (q.city || "").replace(/, France$/, ""); });
+      const byCity = {}; doneQuests.forEach((r) => { const c = qCity[r.quest_key]; if (c) byCity[c] = (byCity[c] || 0) + 1; });
+      const cities = Object.keys(byCity).sort((a, b) => byCity[b] - byCity[a]);
+      const matesHtml = mates.length
+        ? '<div class="set-grouptitle" style="margin-top:.2rem">🤝 ' + i18nT("Tes Mates d'aventure") + '</div><div class="hmg-grid">' + mates.slice(0, 24).map((p) => { const bg = _safeImgUrl(p.avatar_url); return '<button type="button" class="hmg-cell" data-galmate="' + escapeHtml(p.id) + '"><span class="hmg-av big"' + (bg ? " style=\"background-image:url('" + bg + "')\"" : "") + ">" + (bg ? "" : escapeHtml((p.username || "?")[0].toUpperCase())) + '</span><span class="hmg-name">' + escapeHtml(p.username || "Mate") + "</span></button>"; }).join("") + "</div>"
         : "";
-      $("hmCities").querySelectorAll("[data-souvcity]").forEach((el) => el.addEventListener("click", () => {
-        const c = el.dataset.souvcity; const cur = _souvGet(c);
-        popInfo("📖", "Souvenir · " + c,
-          "<p style='font-size:.84rem;margin:0 0 .6rem'>Un moment, une rencontre, une émotion à " + escapeHtml(c) + "…</p>" +
-          "<textarea id='souvInput' maxlength='140' rows='3' placeholder='Ton plus beau souvenir ici…' style='width:100%;box-sizing:border-box;padding:.6rem;border:1px solid var(--line);border-radius:10px;resize:none;font:inherit'>" + (cur ? escapeHtml(cur) : "") + "</textarea>" +
-          "<button class='btn-primary btn-block' id='souvSave' style='margin-top:.7rem'>Enregistrer</button>" +
-          (cur ? "<button class='btn-ghost btn-block' id='souvDel' style='margin-top:.4rem'>Effacer</button>" : ""));
-        setTimeout(() => {
-          const sv = $("souvSave"); if (sv) sv.onclick = () => { const v = (($("souvInput") && $("souvInput").value) || "").trim().slice(0, 140); _souvSet(c, v); const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); if (typeof toast === "function") toast("📖", v ? "Souvenir enregistré ✨" : "Souvenir effacé"); renderHomeMates(); };
-          const dl = $("souvDel"); if (dl) dl.onclick = () => { _souvSet(c, ""); const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); renderHomeMates(); };
-        }, 50);
-      }));
+      const albumHtml = cities.length
+        ? '<div class="set-grouptitle" style="margin-top:.8rem">📖 ' + i18nT("Album souvenir par ville") + "</div>" + cities.slice(0, 12).map((c) => {
+            const note = _souvGet(c);
+            return '<div class="hm-city-row" data-galsouv="' + escapeHtml(c) + '" style="cursor:pointer"><span>📍</span><span class="hc-name">' + escapeHtml(c) + (note ? ' <span style="font-weight:500;color:var(--text)">· « ' + escapeHtml(note) + ' »</span>' : "") + '</span><span class="hc-n">' + (note ? "✏️" : "➕ souvenir") + "</span></div>";
+          }).join("")
+        : "";
+      showInfo(i18nT("🏡 Ta galerie SunMates"), (matesHtml || albumHtml) ? matesHtml + albumHtml : '<p class="muted" style="text-align:center;padding:1rem">' + i18nT("Tes souvenirs apparaîtront ici ✨") + "</p>");
+      const body = $("pickerBody");
+      body.querySelectorAll("[data-galmate]").forEach((el) => el.addEventListener("click", () => { if (typeof closePicker === "function") closePicker(); goToTab("connexions"); if (typeof openChat === "function") openChat(el.dataset.galmate); }));
+      body.querySelectorAll("[data-galsouv]").forEach((el) => el.addEventListener("click", () => _souvEdit(el.dataset.galsouv, true)));
+    }
+    // Édition d'un souvenir de ville (popInfo PAR-DESSUS la galerie ; la galerie se rafraîchit après).
+    function _souvEdit(c, fromGallery) {
+      const cur = _souvGet(c);
+      popInfo("📖", "Souvenir · " + c,
+        "<p style='font-size:.84rem;margin:0 0 .6rem'>Un moment, une rencontre, une émotion à " + escapeHtml(c) + "…</p>" +
+        "<textarea id='souvInput' maxlength='140' rows='3' placeholder='Ton plus beau souvenir ici…' style='width:100%;box-sizing:border-box;padding:.6rem;border:1px solid var(--line);border-radius:10px;resize:none;font:inherit'>" + (cur ? escapeHtml(cur) : "") + "</textarea>" +
+        "<button class='btn-primary btn-block' id='souvSave' style='margin-top:.7rem'>Enregistrer</button>" +
+        (cur ? "<button class='btn-ghost btn-block' id='souvDel' style='margin-top:.4rem'>Effacer</button>" : ""));
+      setTimeout(() => {
+        const sv = $("souvSave"); if (sv) sv.onclick = () => { const v = (($("souvInput") && $("souvInput").value) || "").trim().slice(0, 140); _souvSet(c, v); const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); if (typeof toast === "function") toast("📖", v ? "Souvenir enregistré ✨" : "Souvenir effacé"); renderHomeMates(); if (fromGallery) openSouvGallery(); };
+        const dl = $("souvDel"); if (dl) dl.onclick = () => { _souvSet(c, ""); const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); renderHomeMates(); if (fromGallery) openSouvGallery(); };
+      }, 50);
     }
     // Album souvenir : 1 note marquante par ville, stockée en local (léger, perso).
     function _souvKey(c) { return "sm_souv_" + (myUserId || "x") + "_" + c; }
@@ -13186,7 +13248,7 @@
           const ok = isDone(q);
           return `<div class="coll-row${ok ? " done" : ""}"><span class="coll-ck">${ok ? "✅" : "⬜"}</span><span class="coll-q">${escapeHtml(q.title || "Quête")}</span></div>`;
         }).join("");
-        return `<details class="coll-city"${explored ? " open" : ""}>
+        return `<details class="coll-city">
           <summary><span>${explored ? "🏙️" : "🗺️"} ${escapeHtml(c)}</span><b>${cdone}/${list.length}${explored ? "" : " · à explorer"}</b></summary>
           <div class="coll-bar"><span style="width:${pct}%"></span></div>
           <div class="coll-list">${rows}</div></details>`;
@@ -14464,6 +14526,12 @@
       "Des cadeaux à débloquer": "Gifts to unlock",
       "Le meilleur, bientôt": "The best, coming soon",
       "Ton aura voyageuse": "Your traveller aura",
+      "Ma propre idée": "My own idea",
+      "🖼️ Ouvrir ma galerie": "🖼️ Open my gallery",
+      "Album souvenir par ville": "Memory album by city",
+      "🏡 Ta galerie SunMates": "🏡 Your SunMates gallery",
+      "Tes souvenirs apparaîtront ici ✨": "Your memories will appear here ✨",
+      "Tes Mates d'aventure": "Your adventure Mates",
       "Aucune connexion pour l'instant": "No failed logins yet.",
       "Toucher pour discuter 💬": "Tap to chat 💬",
       "Pas encore de conversation": "No conversation yet!",
@@ -14900,7 +14968,10 @@
       pick.innerHTML = SPOT_EMOJIS.map((e) => `<button type="button" data-spotemoji="${e}" class="${e === selectedSpotEmoji ? "active" : ""}">${e}</button>`).join("");
       pick.querySelectorAll("[data-spotemoji]").forEach((b) => b.addEventListener("click", () => { selectedSpotEmoji = b.dataset.spotemoji; pick.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b)); }));
       // Suggestions rapides : remplissent le champ en 1 tap (plus pratique)
-      { const q = $("spotQuick"); if (q && !q.dataset.wired) { q.dataset.wired = "1"; q.querySelectorAll("[data-spotq]").forEach((b) => b.addEventListener("click", () => { const i = $("spotInput"); if (i) { i.value = b.dataset.spotq; } if (window.SMSound) SMSound.play("tap"); })); } }
+      { const q = $("spotQuick"); if (q && !q.dataset.wired) { q.dataset.wired = "1"; q.querySelectorAll("[data-spotq]").forEach((b) => b.addEventListener("click", () => { const i = $("spotInput"); if (i) { i.value = b.dataset.spotq; } if (window.SMSound) SMSound.play("tap"); }));
+        // « Mon idée » : on saute direct à l'étape 3 avec le champ libre prêt à écrire
+        const own = $("spotOwnIdea"); if (own) own.addEventListener("click", () => { const i = $("spotInput"); if (i) { i.value = ""; i.focus(); } if (window.SMSound) SMSound.play("tap"); });
+      } }
       const cur = $("spotCurrent"), clr = $("spotClear"), sum = $("spotSummary");
       if (myProfile && isSpotActive(myProfile)) {
         selectedSpotEmoji = myProfile.status_emoji || selectedSpotEmoji;
