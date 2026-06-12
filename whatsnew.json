@@ -1,20 +1,14 @@
 {
-  "candidate": "v442",
+  "candidate": "v443",
   "items": [
-    "🎨 Panneau de contrôle DA (Admin → DA) : couleurs des 6 modes lues en direct, dégradés, typos, familles de badges, pastilles — tap = copier, bouton « kit DA » = export JSON complet",
-    "🧩 Inventaire des visuels : tout ce qui fait un visuel dans l'app (emojis, logos, médaillons, scènes, photos, carte) expliqué dans le panneau DA et inclus dans le kit",
-    "😀 Grille des emojis en service : visualisables zone par zone dans le panneau DA, tap = copier",
-    "🔘 Composants & statuts rendus EN DIRECT dans le panneau DA : sceau vérifié ✓, boutons, chips, présence, compteurs… avec leurs couleurs sondées — et le kit exporté les embarque dans les 6 modes (LE kit complet)",
-    "🖐️ Mini-carte « tap pour explorer » : badge toujours visible quand elle dort, un tap la réveille (liseré corail, 100% réactive), toucher en dehors la rendort — le scroll reste naturel",
-    "📐 Plus aucune tuile-détail ne déborde de l'écran (prévisu, Données…) : hauteur bornée + défilement interne",
-    "🌅 Header transparent raffiné : le fondu revient, opaque en haut (status bar nickel), sans la « barre » de fin",
-    "🗺️ Plein écran carte fluide « à la Plans » SANS rien perdre : fond SunMates adapté au mode (jour/nuit/hiver/tropiques), resync à chaque frame + ~60% de pixels GPU en moins (résolution de mouvement + marge optimisées)",
-    "◀️ Retour téléphone natif : ferme la fenêtre ouverte, sinon revient à l'Accueil, sinon quitte",
-    "🖐️ Mini-carte coopérative : 1 doigt = la page défile, pincement = zoom, exploration en plein écran",
-    "✍️ Pseudo dès l'inscription (fini l'email affiché au premier Bonjour)",
-    "🌦️ Météo & conseils ajoutée au catalogue, catalogue admin complété (préversion, versions archivées…)",
-    "🗃️ Galerie de l'évolution : genèse, v1 toute moche, premier coup de pinceau, étapes 75/150, v225/300/375 — ouvrables depuis Admin → Système",
-    "🧹 Banque SVG v1 (désactivée depuis « emojis natifs partout ») supprimée : base saine pour la future banque v2",
-    "⚡ Célébrations fluides : confettis allégés, fête de streak après le boot, overlays sans flou coûteux sur mobile"
+    "🎮 Mini-jeux en VRAIES SESSIONS : paquet mélangé sans répétition, compteur (ex. « Question 3 sur 10 »), écran de fin avec score et record, bouton Nouvelle session — fini la boucle infinie des mêmes questions",
+    "📚 Banques enrichies : Quiz 8→20 questions, Brise-glace 10→24, Roue des défis 10→20",
+    "🎒 « La valise folle » retirée (mal née, on fera mieux)",
+    "🌙 Fix « Tâche inconnue » sur les rituels : la coche passe toujours, et une migration SQL (solo_tasks_sync) synchronise la base pour re-créditer l'XP",
+    "📓 Carnet d'adresses en ACCÈS DIRECT à côté de Filtres (fini le scroll dans le panneau)",
+    "✍️ « Écris quelque chose… » enfin centré dans le fil + halo du bouton Publier adouci (il voilait la note en dessous)",
+    "🏅 La plaque Niveau de l'onglet Jeux ne déborde plus sur les petits écrans",
+    "📱 Status bar du téléphone alignée dès le 1er rendu (fini la barre crème qui jurait au lancement en mode nuit) + bannière d'alerte sous la Dynamic Island corrigée",
+    "📏 Textes des tuiles : retour à la ligne propre au lieu de couper (plus de « s » mangé)"
   ]
 }

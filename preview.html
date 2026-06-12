@@ -85,6 +85,17 @@
   <!-- PWA : app installable sur le téléphone -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#fbeee9" />
+  <script>
+    // P8 : couleur de la status bar ALIGNÉE dès le 1er rendu — avant, elle restait crème ~1 s
+    // au lancement en mode nuit/saison (la « vieille barre » qui jurait sous l'heure du téléphone).
+    (function () { try {
+      var t = localStorage.getItem("sm_theme"), h = new Date().getHours();
+      var dusk = t ? t === "dusk" : (h >= 19 || h < 7);
+      var s = localStorage.getItem("sm_season") || "";
+      var c = s === "winter" ? (dusk ? "#0F1B2B" : "#EAF3FB") : (s === "tropic" ? (dusk ? "#0C1D17" : "#F7F9EC") : (dusk ? "#171026" : "#fbeee9"));
+      var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", c);
+    } catch (e) {} })();
+  </script>
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="icon" type="image/svg+xml" href="icon.svg" />
   <link rel="apple-touch-icon" href="icon-180.png" />
@@ -114,8 +125,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=442"></script>
-  <script src="sunmates-icons.js?v=442"></script>
+  <script src="sunmates-badges.js?v=443"></script>
+  <script src="sunmates-icons.js?v=443"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
     // la préversion (preview.html) ni une version archivée (releases/…) : elles se testent
@@ -361,7 +372,8 @@
     .cat-tile:active { transform: scale(.96); }
     .cat-tile .cic { position: relative; overflow: hidden; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 1.25rem; line-height: 1; margin: 0 auto .35rem; color: #fff; box-shadow: inset 0 -8px 16px rgba(0,0,0,.08); }
     .cat-tile .cic::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(157deg, rgba(255,255,255,.34) 0%, rgba(255,255,255,.08) 26%, rgba(255,255,255,0) 54%); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); pointer-events: none; }
-    .cat-tile .clbl { font-size: .74rem; font-weight: 700; color: var(--ink); white-space: nowrap; }
+    /* P8 : le libellé peut REVENIR à la ligne au lieu de déborder (textes EN plus longs, petits écrans) */
+    .cat-tile .clbl { font-size: .74rem; font-weight: 700; color: var(--ink); white-space: normal; overflow-wrap: anywhere; line-height: 1.15; }
     .cat-tile.active { border-color: var(--accent); box-shadow: 0 6px 16px rgba(255,90,77,.2); }
     .cic.c-sun { background: var(--accent-grad); }
     /* DA : pas de vert vif ni de bleu ciel « hors-DA » → turquoise bijou + indigo nuit (palette émaillée).
@@ -430,9 +442,10 @@
     .feed-composer .fc-row { display: flex; gap: .6rem; align-items: center; min-width: 0; }
     .feed-composer .fc-av { font-size: 1.4rem; flex-shrink: 0; line-height: 1; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: var(--cream); }
     body.theme-dusk .feed-composer .fc-av { background: var(--dcard,#2a2140); }
-    /* min-height 42px + padding .5rem .4rem : la ligne (≈21px) tient SANS être rognée et reste
-       centrée face à l'avatar (P1.4/P1.14). overflow-y:auto seulement quand ça dépasse plusieurs lignes. */
-    .feed-composer textarea { flex: 1 1 auto; min-width: 0; width: 100%; box-sizing: border-box; border: 0; background: transparent; resize: none; font: inherit; color: var(--ink); padding: .5rem .4rem; min-height: 52px; max-height: 7rem; overflow-y: auto; line-height: 1.4; word-break: break-word; }
+    /* P8 : VRAI centrage du placeholder — min-height 44px avec padding symétrique (11,5px ×2
+       + ligne 21px = 44px pile), face à l'avatar 38px. Avant : 52px avec 8px en haut → le
+       « Écris quelque chose… » flottait en haut. */
+    .feed-composer textarea { flex: 1 1 auto; min-width: 0; width: 100%; box-sizing: border-box; border: 0; background: transparent; resize: none; font: inherit; color: var(--ink); padding: .72rem .4rem; min-height: 44px; max-height: 7rem; overflow-y: auto; line-height: 1.4; word-break: break-word; }
     .feed-composer textarea:focus { outline: none; }
     .feed-composer .fc-bottom { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .4rem; flex-wrap: wrap; }
     .feed-composer .fc-kinds { display: flex; gap: .25rem; background: var(--cream); border-radius: 999px; padding: .2rem; }
@@ -446,7 +459,9 @@
     .fc-hint { font-size: .72rem; color: var(--muted); font-weight: 600; margin-top: .35rem; }
     .fc-kind { font-size: .76rem; font-weight: 700; padding: .35rem .75rem; border-radius: 999px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
     .fc-kind.active { background: var(--accent-grad); color: #fff; box-shadow: 0 2px 8px rgba(255,90,77,.3); }
-    .fc-send { padding: .45rem 1rem; font-size: .85rem; }
+    /* P8 : halo du bouton Publier ADOUCI et remonté (l'ombre descendait sur la note
+       « Visible par toute la communauté » juste en dessous et la voilait). */
+    .fc-send { padding: .45rem 1rem; font-size: .85rem; box-shadow: 0 2px 6px color-mix(in oklab, var(--accent, #FF5A4D) 22%, transparent) !important; }
     body.theme-dusk .fc-kind { background: var(--dcard,#2a2140); color: #eee; border-color: rgba(255,255,255,.1); }
     /* Post : barre d'actions (like / supprimer) */
     .fpost-body { margin-top: .55rem; font-size: .92rem; color: var(--ink); line-height: 1.4; white-space: pre-wrap; word-break: break-word; }
@@ -1469,7 +1484,7 @@
        fond transparent (le médaillon a déjà son serti), médaillon parfaitement centré. */
     #detailBadgeIco { width: 54px; height: 54px; background: transparent; }
     #detailBadgeRow { align-items: center; }
-    .qrow .qname { font-weight: 600; color: var(--ink); flex: 1; }
+    .qrow .qname { font-weight: 600; color: var(--ink); flex: 1; min-width: 0; overflow-wrap: anywhere; } /* P8 : un nom long REVIENT à la ligne (plus de « s » mangé) */
     .qrow .qrow-sub { font-weight: 600; font-size: .73rem; color: var(--accent); margin-top: .15rem; }
     .qrow .qarrow { color: var(--accent); font-weight: 800; }
 
@@ -2290,7 +2305,8 @@
     /* ------------------------ Bannière d'alerte --------------------- */
     #alertBanner {
       position: fixed; top: 0; left: 50%; transform: translateX(-50%); max-width: 460px; width: 100%; z-index: var(--z-alert);
-      background: var(--danger); color: #fff; padding: .9rem 1.2rem; text-align: center;
+      /* P8 : ne passe plus sous la Dynamic Island / caméra (safe-area dans le padding) */
+      background: var(--danger); color: #fff; padding: calc(.9rem + env(safe-area-inset-top, 0px)) 1.2rem .9rem; text-align: center;
       font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.3); animation: pulse 1s ease-in-out infinite alternate;
     }
     #alertBanner a { color: #fff; text-decoration: underline; }
@@ -3346,6 +3362,18 @@
     .da-comp-row { display: flex; align-items: center; gap: .6rem; padding: .45rem 0; border-bottom: 1px dashed var(--line); }
     .da-comp-row:last-child { border-bottom: 0; }
     .da-comp-live { flex-shrink: 0; min-width: 92px; display: inline-flex; justify-content: center; }
+    /* P8 : la plaque NIVEAU (onglet Jeux) ne déborde plus sur les écrans étroits */
+    .player-badge.player-hud { max-width: 100%; min-width: 0; }
+    @media (max-width: 374px) {
+      .player-badge.player-hud { padding: .26rem .6rem .26rem .28rem; gap: .4rem; }
+      .player-badge.player-hud .pb-av { width: 36px; height: 36px; font-size: 1.1rem; }
+      .player-badge.player-hud .hud-info { min-width: 64px; }
+      .player-badge.player-hud .hud-bar { width: 64px; }
+    }
+    @media (orientation: landscape) and (max-height: 560px) {
+      .player-badge.player-hud .hud-info { min-width: 70px; }
+      .player-badge.player-hud .hud-bar { width: 70px; }
+    }
     .da-emo-zone { font-size: .68rem; font-weight: 800; letter-spacing: .04em; color: var(--muted); margin: .55rem 0 .25rem; text-transform: uppercase; }
     .da-emo-grid { display: flex; flex-wrap: wrap; gap: .3rem; }
     .da-emo { width: 38px; height: 38px; display: grid; place-items: center; font-size: 1.15rem; background: var(--cream, #faf3ec); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; padding: 0; }
@@ -3485,24 +3513,7 @@
     .bottom-nav button.egp-land { animation: egpLand .8s cubic-bezier(.3,1.6,.4,1); }
     @keyframes egpLand { 0% { transform: translateY(0); } 30% { transform: translateY(-7px) scale(1.1); } 100% { transform: translateY(0); } }
 
-    /* #40 : La valise folle — scène crème, valise géante réactive, GO doré pulsant, chips scores */
-    .vf-stage { position: relative; display: flex; flex-direction: column; align-items: center; gap: .3rem;
-      background: linear-gradient(160deg, var(--cream), var(--card)); border: 1px solid var(--line); border-radius: 16px; padding: .9rem .6rem .7rem; }
-    .vf-case { font-size: 56px; line-height: 1; background: none; border: 0; cursor: pointer; padding: .2rem .9rem; border-radius: 20px;
-      transition: transform .1s ease; filter: grayscale(.45) opacity(.8); touch-action: manipulation; }
-    .vf-case:active { transform: scale(.92); }
-    .vf-case.wait { filter: grayscale(.7) opacity(.65); animation: vfWob 1.1s ease-in-out infinite alternate; }
-    @keyframes vfWob { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
-    .vf-case.lit { filter: none; background: radial-gradient(circle, rgba(255,209,92,.5), rgba(255,201,60,0) 70%); animation: vfLit .4s cubic-bezier(.3,1.6,.4,1); }
-    @keyframes vfLit { from { transform: scale(.85); } to { transform: scale(1.08); } }
-    .vf-msg { font-size: .82rem; font-weight: 700; color: var(--ink); min-height: 1.2em; }
-    .vf-board { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
-    .vf-chip { font-size: .74rem; font-weight: 800; padding: .25rem .6rem; border-radius: 999px; background: var(--cream); border: 1px solid var(--line); color: var(--text); }
-    .vf-chip.vf-best { background: linear-gradient(135deg, rgba(255,209,92,.3), rgba(255,154,61,.14)); border-color: rgba(232,150,31,.4); color: #B5740E; }
-    body.theme-dusk .vf-stage { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.08); }
-    body.theme-dusk .vf-msg { color: #f3e9f3; }
-    body.theme-dusk .vf-chip { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.1); color: #ded3e6; }
-    body.theme-dusk .vf-chip.vf-best { background: rgba(255,209,92,.14); color: #FFD79A; }
+    /* (#40 « La valise folle » RETIRÉE — retour Maxime passe 3 : mal programmée.) */
 
     /* #38 : album souvenir PLUS PRÉSENT (lignes plus grandes, accents chauds) */
     .gal-city { padding: .65rem .55rem !important; font-size: .95rem; border: 1px solid var(--line); border-radius: 12px; margin-top: .4rem; background: var(--card); }
@@ -4404,7 +4415,8 @@
           <!-- Sélecteur de ville (menu déroulant) : concentre la carte sur une ville de jeu -->
           <!-- UNE seule rangée au-dessus de la carte : ville + À faire + Filtres (avant : 2 rangées éparpillées) -->
           <!-- Retour Maxime : plus d'option « toutes les villes » sélectionnable (le bouton 🌍 Tout voir fait déjà ça) -->
-          <div class="city-pick"><select id="questCitySelect" aria-label="Choisir une ville"></select><button class="todo-toggle" id="questTodoToggle" type="button" title="N'afficher que les quêtes pas encore faites"><span class="tt-ic">🎯</span><span class="tt-lbl">À faire</span><span class="tt-state" id="todoState">OFF</span></button><button type="button" class="hm-layers-btn" id="hmLayersBtn">🗂️ Filtres <span class="hlb-cnt" id="hmLayersCnt">5</span></button></div>
+          <!-- P8 : 📓 carnet d'adresses en ACCÈS DIRECT (avant : enfoui en bas du panneau Filtres) -->
+          <div class="city-pick"><select id="questCitySelect" aria-label="Choisir une ville"></select><button class="todo-toggle" id="questTodoToggle" type="button" title="N'afficher que les quêtes pas encore faites"><span class="tt-ic">🎯</span><span class="tt-lbl">À faire</span><span class="tt-state" id="todoState">OFF</span></button><button type="button" class="hm-layers-btn" id="hmLayersBtn">🗂️ Filtres <span class="hlb-cnt" id="hmLayersCnt">5</span></button><button type="button" class="hm-layers-btn" id="hmPinsQuick" title="Mon carnet d'adresses" aria-label="Ouvrir mon carnet d'adresses">📓 Carnet</button></div>
           <!-- Chips gardés en DOM (pilotés par le panneau Filtres) mais plus affichés ici -->
           <div class="chips wrap homemap-filters as-btn" id="homeMapFilters" style="display:none">
             <button class="chip active cl-places" data-layer="places">📍 Lieux <b data-cnt></b></button>
@@ -5477,14 +5489,7 @@
               <div class="cat-tile" data-jeuxnav="shop"><div class="cic c-pink" data-smicon="shop" data-smicon-size="36">🛍️</div><div class="clbl">Boutique</div></div>
             </div>
           </div>
-          <!-- #40 : mini-jeu OUVERT, jouable direct sous Quêtes/Jeux — « La valise folle »
-               (réflexe pur) avec mini-classement local (record + 3 derniers). -->
-          <section class="card vf-card" id="valiseCard" aria-label="La valise folle">
-            <div class="section-head" style="margin-bottom:.15rem"><h3 style="margin:0">🎒 La valise folle</h3><span class="muted" style="font-size:.72rem">réflexe pur</span></div>
-            <p class="muted" style="font-size:.78rem;margin:.1rem 0 .5rem">Touche la valise <b>dès qu'elle s'allume</b> · 5 manches, moyenne en millisecondes.</p>
-            <div class="vf-stage"><button type="button" id="vfCase" class="vf-case">🎒</button><div class="vf-msg" id="vfMsg">Touche la valise pour lancer</div></div>
-            <div class="vf-board" id="vfBoard"></div>
-          </section>
+          <!-- (#40 « La valise folle » RETIRÉE — retour Maxime : mal programmée.) -->
 
           <!-- ⚡ QUÊTE DU JOUR (spotlight) · moteur renderQuestSpotlight ressuscité (le DOM avait sauté
                lors d'un dédoublonnage : le renderer tournait dans le vide). Contenu vivant au cœur du hub. -->
@@ -8323,8 +8328,7 @@
         ["🔒", "Anti-triche quêtes", "Justification OBLIGATOIRE (code de lieu ou note honneur) avant toute validation."],
         ["🎯", "Quêtes du jour", "Ouvertes en feuille avec BARRE DE RECHERCHE + tri « près de moi » (anti-listing géant), 3/jour + cooldown."],
         ["🗺️", "Ma collection", "Listing des quêtes accomplies / à faire par ville + villes explorées (plus de redirect)."],
-        ["🎮", "Jeux populaires (6 mini-jeux)", "Jouables tout de suite : Roue des défis, Brise-glace, Quiz voyageur, 2 vérités 1 mensonge, Décide pour moi, Bingo de voyage."],
-        ["🎒", "La valise folle", "Mini-jeu de réflexe intégré à l'onglet Jeux : touche la valise dès qu'elle s'allume, 5 manches, record + 3 derniers scores gardés en local."],
+        ["🎮", "Jeux populaires (6 mini-jeux)", "Jouables tout de suite, en SESSIONS qui se terminent (paquet mélangé sans répétition, compteur, écran de fin + score) : Roue des défis, Brise-glace, Quiz voyageur (20 questions), 2 vérités 1 mensonge, Décide pour moi, Bingo de voyage."],
         ["👥", "Quêtes de groupe", "Confirmées par un Mate → bonus XP partagé."],
         ["🎲", "Défis entre Mates", "Propose une quête à un Mate."],
         ["⭐", "XP (monnaie de jeu)", "Gagnée via les quêtes, séparée du score de confiance. Anti-triche serveur."],
@@ -10407,9 +10411,12 @@
       { key: "decide", emoji: "🪙", color: "purp", name: "Décide pour moi", desc: "Hésitant·e ? Laisse le sort choisir ta prochaine aventure." },
       { key: "bingo", emoji: "🗺️", color: "rose", name: "Bingo de voyage", desc: "Coche les expériences vécues, vise la ligne complète !" },
     ];
+    // P8 (retour Maxime) : BANQUES ENRICHIES (quiz 8→20, brise-glace 10→24, roue 10→20)
     const _GD = {
-      wheel: ["Apprends à dire « bonjour » dans une nouvelle langue aujourd'hui", "Prends en photo le plus beau ciel de ta journée", "Offre un vrai compliment à un·e inconnu·e", "Goûte un plat que tu n'as jamais essayé", "Marche 15 min sans téléphone, juste à observer", "Demande à un local son spot préféré", "Note 3 choses pour lesquelles tu es reconnaissant·e", "Engage la conversation avec un·e voyageur·se", "Trouve le meilleur café du quartier", "Prends un chemin que tu n'as jamais emprunté"],
-      ice: ["Quel est le voyage qui t'a le plus changé·e ?", "Plutôt montagne ou océan ?", "Le plat le plus fou que tu aies goûté en voyage ?", "Si tu pouvais vivre n'importe où, ce serait où ?", "Ta pire galère de voyage (et tu en ris maintenant) ?", "Une destination totalement sous-cotée selon toi ?", "Team planifier ou team improviser ?", "La rencontre la plus marquante de tes voyages ?", "Ton indispensable que tu emportes partout ?", "Le prochain pays sur ta liste ?"],
+      wheel: ["Apprends à dire « bonjour » dans une nouvelle langue aujourd'hui", "Prends en photo le plus beau ciel de ta journée", "Offre un vrai compliment à un·e inconnu·e", "Goûte un plat que tu n'as jamais essayé", "Marche 15 min sans téléphone, juste à observer", "Demande à un local son spot préféré", "Note 3 choses pour lesquelles tu es reconnaissant·e", "Engage la conversation avec un·e voyageur·se", "Trouve le meilleur café du quartier", "Prends un chemin que tu n'as jamais emprunté",
+        "Envoie une carte postale (une vraie !) à quelqu'un", "Apprends à compter jusqu'à 5 dans une nouvelle langue", "Photographie une seule couleur : que du rouge, ou que du bleu", "Demande son plat préféré à un·e commerçant·e", "Écris 3 lignes de carnet de voyage sur ta journée", "Trouve un point de vue en hauteur et admire 5 minutes", "Salue 3 personnes dans la langue locale", "Improvise un pique-nique avec un produit local", "Repère l'endroit le plus calme du quartier", "Offre ton aide à quelqu'un qui semble perdu"],
+      ice: ["Quel est le voyage qui t'a le plus changé·e ?", "Plutôt montagne ou océan ?", "Le plat le plus fou que tu aies goûté en voyage ?", "Si tu pouvais vivre n'importe où, ce serait où ?", "Ta pire galère de voyage (et tu en ris maintenant) ?", "Une destination totalement sous-cotée selon toi ?", "Team planifier ou team improviser ?", "La rencontre la plus marquante de tes voyages ?", "Ton indispensable que tu emportes partout ?", "Le prochain pays sur ta liste ?",
+        "Ton lever de soleil le plus mémorable ?", "Plutôt grandes villes ou petits villages ?", "Le truc le plus gentil qu'un·e inconnu·e ait fait pour toi en voyage ?", "Une habitude d'un autre pays que tu as adoptée ?", "Ton meilleur souvenir de street-food ?", "On part demain, tu choisis en 5 secondes : c'est où ?", "La chanson qui te met direct en mode voyage ?", "Plutôt lever ou coucher de soleil ?", "Un endroit où tu retournerais les yeux fermés ?", "Le mot étranger que tu trouves le plus beau ?", "Train de nuit ou vol direct ?", "Ton objet-souvenir le plus précieux ?", "Une peur que le voyage t'a aidé·e à dépasser ?", "Le métier que tu ferais si tu vivais à l'étranger ?"],
       quiz: [
         { q: "Quelle ville est surnommée « la Cité éternelle » ?", c: ["Athènes", "Rome", "Le Caire"], a: 1 },
         { q: "Dans quel pays se trouve le Machu Picchu ?", c: ["Bolivie", "Chili", "Pérou"], a: 2 },
@@ -10419,19 +10426,29 @@
         { q: "La « Sagrada Família » se trouve à…", c: ["Madrid", "Lisbonne", "Barcelone"], a: 2 },
         { q: "Quelle monnaie utilise-t-on au Japon ?", c: ["Won", "Yen", "Yuan"], a: 1 },
         { q: "Les aurores boréales sont visibles surtout…", c: ["Près des pôles", "À l'équateur", "En altitude"], a: 0 },
+        { q: "La Grande Barrière de corail est au large de…", c: ["l'Australie", "du Brésil", "des Philippines"], a: 0 },
+        { q: "Quelle est la capitale du Canada ?", c: ["Toronto", "Vancouver", "Ottawa"], a: 2 },
+        { q: "Le Taj Mahal se trouve en…", c: ["Inde", "Thaïlande", "Turquie"], a: 0 },
+        { q: "Dans quel pays paie-t-on en forints ?", c: ["Pologne", "Hongrie", "Roumanie"], a: 1 },
+        { q: "Quelle ville est traversée par le Bosphore ?", c: ["Athènes", "Istanbul", "Dubaï"], a: 1 },
+        { q: "Quelle est la plus grande île du monde ?", c: ["Madagascar", "Groenland", "Bornéo"], a: 1 },
+        { q: "La capitale du Maroc est…", c: ["Casablanca", "Marrakech", "Rabat"], a: 2 },
+        { q: "Dans quel pays se trouve Petra ?", c: ["Jordanie", "Égypte", "Liban"], a: 0 },
+        { q: "Le plus grand désert chaud du monde est…", c: ["le Gobi", "le Sahara", "l'Atacama"], a: 1 },
+        { q: "À Lisbonne, le célèbre tramway jaune porte le numéro…", c: ["28", "12", "7"], a: 0 },
+        { q: "Quelle langue parle-t-on au Brésil ?", c: ["L'espagnol", "Le portugais", "Le brésilien"], a: 1 },
+        { q: "L'Angkor Wat se trouve au…", c: ["Vietnam", "Cambodge", "Laos"], a: 1 },
       ],
       twolies: ["Lance-toi : dis 2 vérités et 1 mensonge sur tes voyages. Aux autres de deviner le mensonge !", "Astuce : glisse un détail improbable mais VRAI, ça brouille les pistes 😏", "Variante : 2 vérités et 1 rêve (une destination que tu n'as pas encore faite)."],
       decide: null, // géré à part (pile ou face / oui-non)
       bingo: ["Parler à un inconnu", "Goûter un plat local", "Prendre une photo de coucher de soleil", "Visiter un lieu gratuit", "Apprendre un mot en langue locale", "Marcher +5 000 pas", "Boire un café en terrasse", "Découvrir une ruelle cachée", "Aider un·e voyageur·se"],
     };
-    // Tirage aléatoire SANS répétition immédiate (mémorise le dernier index par jeu).
-    const _gameLast = {};
-    function _pickNoRepeat(arr, key) {
-      if (arr.length <= 1) return arr[0];
-      let i; do { i = Math.floor(Math.random() * arr.length); } while (i === _gameLast[key]);
-      _gameLast[key] = i; return arr[i];
-    }
-    let _quizScore = 0;   // bonnes réponses d'affilée dans la session de quiz
+    // P8 : SESSIONS FINIES — paquet MÉLANGÉ sans répétition, compteur x/N, écran de fin.
+    // (avant : tirage aléatoire infini → « c'est toujours les mêmes qui tournent »)
+    const _gmSess = {};                                  // { key: { deck, i, score, n } }
+    const _GM_LEN = { wheel: 8, ice: 8, quiz: 10, twolies: 3 };
+    function _gmShuffle(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+    function _gmStart(key) { const full = _gmShuffle(_GD[key]); const n = Math.min(_GM_LEN[key] || 8, full.length); _gmSess[key] = { deck: full.slice(0, n), i: 0, score: 0, n: n }; return _gmSess[key]; }
     // Records LOCAUX des mini-jeux (compétition avec soi-même → envie de revenir)
     const _gmBest = (k) => { try { return parseInt(localStorage.getItem("sm_best_" + k + "_" + (myUserId || "x")) || "0", 10) || 0; } catch (e) { return 0; } };
     const _gmSetBest = (k, v) => { try { if (v > _gmBest(k)) localStorage.setItem("sm_best_" + k + "_" + (myUserId || "x"), String(v)); } catch (e) {} };
@@ -10447,41 +10464,52 @@
         setTimeout(() => { const inp = $("chatInput"); if (inp) { inp.value = i18nT("🎮 Je te défie : « {g} » sur SunMates{s} · à toi de jouer !", { g: gameName, s: scoreTxt ? " · " + scoreTxt : "" }); inp.focus(); } }, 450);
       });
     }
-    function playGame(key) {
+    function playGame(key, fresh) {
       const g = CLIENT_GAMES.find((x) => x.key === key); if (!g) return;
       // FIX « bug d'affichage qui pop » : la feuille Jeux restait OUVERTE sous la modale du
       // mini-jeu → double voile sombre + deux cartes empilées. On la ferme proprement
       // (même recette que « Défier un Mate » v386).
       { const sh = $("jeuxSheet"); if (sh) sh.classList.add("hidden"); }
-      const reBtn = "<button class='btn-accent btn-block' id='gameAgain' style='margin-top:1rem'>🔄 Rejouer</button>"
-        + "<button class='btn-ghost btn-block' id='gameChallenge' style='margin-top:.4rem'>🤝 " + i18nT("Défier un Mate") + "</button>";
+      const challengeBtn = "<button class='btn-ghost btn-block' id='gameChallenge' style='margin-top:.4rem'>🤝 " + i18nT("Défier un Mate") + "</button>";
+      const reBtn = "<button class='btn-accent btn-block' id='gameAgain' style='margin-top:1rem'>🔄 Rejouer</button>" + challengeBtn;
       const wireChallenge = (scoreTxt) => { const c = $("gameChallenge"); if (c) c.onclick = () => challengeMate(g.name, scoreTxt || ""); };
       if (window.SMSound) SMSound.play("pop");
-      if (key === "wheel" || key === "ice" || key === "twolies") {
-        popInfo(g.emoji, g.name, "<p style='font-size:1.04rem;line-height:1.5;margin:.3rem 0'>" + escapeHtml(_pickNoRepeat(_GD[key], key)) + "</p>" + reBtn);
-        setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); wireChallenge(""); }, 30);
+      // --- P8 : jeux à SESSION (paquet fini mélangé, compteur x/N, écran de fin) ---
+      if (key === "wheel" || key === "ice" || key === "twolies" || key === "quiz") {
+        let s = _gmSess[key];
+        if (fresh || !s) s = _gmStart(key);
+        if (s.i >= s.n) { _gmEnd(key, g, s, wireChallenge, challengeBtn); return; }
+        const head = "<div style='font-size:.76rem;color:var(--muted);margin-bottom:.35rem'>" +
+          (key === "quiz" ? i18nT("Question {i} sur {n}", { i: s.i + 1, n: s.n }) + " · ✅ " + s.score : i18nT("Carte {i} sur {n}", { i: s.i + 1, n: s.n })) + "</div>";
+        if (key === "quiz") {
+          const qz = s.deck[s.i];
+          popInfo("❓", g.name, head +
+            "<p style='font-weight:700;margin:.2rem 0 .7rem'>" + escapeHtml(qz.q) + "</p>" +
+            qz.c.map((c, i) => "<button class='btn-ghost btn-block qzc' data-i='" + i + "' style='margin:.25rem 0'>" + escapeHtml(c) + "</button>").join("") +
+            "<div id='qzFb' style='text-align:center;font-weight:700;margin-top:.6rem;min-height:1.2rem'></div>");
+          setTimeout(() => { let answered = false; document.querySelectorAll(".qzc").forEach((b) => b.onclick = () => {
+            if (answered) return; answered = true;
+            const ok = Number(b.dataset.i) === qz.a;
+            document.querySelectorAll(".qzc").forEach((x) => x.style.opacity = ".55");
+            const good = document.querySelector(".qzc[data-i='" + qz.a + "']");
+            if (good) { good.style.background = "var(--accent-grad)"; good.style.color = "#fff"; good.style.opacity = "1"; }
+            if (!ok) { b.style.background = "#e0463b"; b.style.color = "#fff"; b.style.opacity = "1"; }
+            const fb = $("qzFb"); if (fb) { fb.textContent = ok ? "Bravo ! 🎉" : "Raté 😅"; fb.style.color = ok ? "var(--accent)" : "#e0463b"; }
+            if (ok) { s.score++; if (window.SMSound) SMSound.play("success"); }
+            s.i++;
+            setTimeout(() => playGame(key), 1100);
+          }); }, 30);
+        } else {
+          const item = s.deck[s.i], isLast = s.i + 1 >= s.n;
+          popInfo(g.emoji, g.name, head +
+            "<p style='font-size:1.04rem;line-height:1.5;margin:.3rem 0'>" + escapeHtml(item) + "</p>" +
+            "<button class='btn-accent btn-block' id='gameNext' style='margin-top:1rem'>" + (isLast ? "🏁 " + i18nT("Terminer") : i18nT("Suivant") + " →") + "</button>" + challengeBtn);
+          setTimeout(() => { const b = $("gameNext"); if (b) b.onclick = () => { s.i++; playGame(key); }; wireChallenge(""); }, 30);
+        }
       } else if (key === "decide") {
         const opts = ["✅ Fonce, c'est oui !", "❌ Pas cette fois.", "🤷 À toi de voir… relance !", "🔥 Carrément, vas-y à fond !", "⏳ Attends un peu.", "💯 Aucun doute, go !"];
-        popInfo("🪙", "Décide pour moi", "<p style='font-size:1.25rem;font-weight:900;margin:.5rem 0;color:var(--accent)'>" + escapeHtml(_pickNoRepeat(opts, "decide")) + "</p>" + reBtn);
+        popInfo("🪙", "Décide pour moi", "<p style='font-size:1.25rem;font-weight:900;margin:.5rem 0;color:var(--accent)'>" + escapeHtml(opts[Math.floor(Math.random() * opts.length)]) + "</p>" + reBtn);
         setTimeout(() => { const b = $("gameAgain"); if (b) b.onclick = () => playGame(key); wireChallenge(""); }, 30);
-      } else if (key === "quiz") {
-        const qz = _pickNoRepeat(_GD.quiz, "quiz");
-        const bq = _gmBest("quiz");
-        popInfo("❓", "Quiz du voyageur", "<div style='font-size:.78rem;color:var(--muted);margin-bottom:.3rem'>Série : <b>" + _quizScore + "</b> ✅" + (bq ? " · 🏆 " + i18nT("Record : {n}", { n: bq }) : "") + "</div>" +
-          "<p style='font-weight:700;margin:.2rem 0 .7rem'>" + escapeHtml(qz.q) + "</p>" +
-          qz.c.map((c, i) => "<button class='btn-ghost btn-block qzc' data-i='" + i + "' style='margin:.25rem 0'>" + escapeHtml(c) + "</button>").join("") +
-          "<div id='qzFb' style='text-align:center;font-weight:700;margin-top:.6rem;min-height:1.2rem'></div>");
-        setTimeout(() => { let answered = false; document.querySelectorAll(".qzc").forEach((b) => b.onclick = () => {
-          if (answered) return; answered = true;
-          const ok = Number(b.dataset.i) === qz.a;
-          document.querySelectorAll(".qzc").forEach((x) => x.style.opacity = ".55");
-          const good = document.querySelector(".qzc[data-i='" + qz.a + "']");
-          if (good) { good.style.background = "var(--accent-grad)"; good.style.color = "#fff"; good.style.opacity = "1"; }
-          if (!ok) { b.style.background = "#e0463b"; b.style.color = "#fff"; b.style.opacity = "1"; }
-          const fb = $("qzFb"); if (fb) { fb.textContent = ok ? "Bravo ! 🎉" : "Raté 😅"; fb.style.color = ok ? "var(--accent)" : "#e0463b"; }
-          if (ok) { _quizScore++; _gmSetBest("quiz", _quizScore); if (window.SMSound) SMSound.play("success"); } else { _quizScore = 0; }
-          setTimeout(() => playGame("quiz"), 1200);
-        }); wireChallenge(_gmBest("quiz") ? i18nT("Record : {n}", { n: _gmBest("quiz") }) : ""); }, 30);
       } else if (key === "bingo") {
         let st = {}; try { st = JSON.parse(localStorage.getItem("sm_bingo_" + (myUserId || "x")) || "{}") || {}; } catch (e) {}
         const cells = _GD.bingo.map((t, i) => "<button class='bingo-cell" + (st[i] ? " on" : "") + "' data-bi='" + i + "'>" + escapeHtml(t) + "</button>").join("");
@@ -10505,6 +10533,26 @@
           wireChallenge(_gmBest("bingo") ? _gmBest("bingo") + "/9" : "");
         }, 30);
       }
+    }
+    // P8 : écran de FIN DE SESSION — score (quiz) ou récap, record gardé, « Nouvelle session ».
+    function _gmEnd(key, g, s, wireChallenge, challengeBtn) {
+      let html;
+      if (key === "quiz") {
+        _gmSetBest("quiz", s.score);
+        const b = _gmBest("quiz");
+        html = "<div style='font-size:2.2rem;margin:.2rem 0'>" + (s.score >= s.n * 0.8 ? "🏆" : (s.score >= s.n / 2 ? "🌞" : "🌱")) + "</div>" +
+          "<p style='font-weight:800;font-size:1.05rem;margin:.2rem 0'>" + i18nT("Session terminée !") + "</p>" +
+          "<p style='margin:.2rem 0'>" + i18nT("Bonnes réponses : {s} sur {n}", { s: s.score, n: s.n }) +
+          (b ? "<br><span class='muted' style='font-size:.8rem'>🏆 " + i18nT("Record : {n}", { n: b }) + "/" + s.n + "</span>" : "") + "</p>";
+        if (s.score === s.n && typeof celebrate === "function") celebrate();
+      } else {
+        html = "<div style='font-size:2.2rem;margin:.2rem 0'>🎉</div>" +
+          "<p style='font-weight:800;font-size:1.05rem;margin:.2rem 0'>" + i18nT("Session terminée !") + "</p>" +
+          "<p class='muted' style='font-size:.85rem;margin:.2rem 0'>" + i18nT("Toutes les cartes sont passées — relance pour un nouveau paquet mélangé.") + "</p>";
+      }
+      popInfo(g.emoji, g.name, html + "<button class='btn-accent btn-block' id='gameAgain' style='margin-top:1rem'>🔄 " + i18nT("Nouvelle session") + "</button>" + challengeBtn);
+      setTimeout(() => { const b2 = $("gameAgain"); if (b2) b2.onclick = () => playGame(key, true); wireChallenge(key === "quiz" ? s.score + "/" + s.n : ""); }, 30);
+      if (window.SMSound) SMSound.play("levelup");
     }
     window.playGame = playGame;
 
@@ -12248,45 +12296,7 @@
         else showMatesView("matesHome");
       }));
 
-    // ====================== #40 LA VALISE FOLLE (mini-jeu réflexe intégré) ======================
-    // 5 manches : la valise s'allume après un délai aléatoire → tape vite. Moyenne en ms,
-    // record + 3 derniers gardés en local. Trop tôt = faute (la manche recommence).
-    (function valiseFolle() {
-      const cs = $("vfCase"), msg = $("vfMsg"), board = $("vfBoard"); if (!cs || !msg || !board) return;
-      const K = () => "sm_vf_" + (myUserId || "anon");
-      const load = () => { try { return JSON.parse(localStorage.getItem(K()) || "{}") || {}; } catch (e) { return {}; } };
-      const save = (d) => { try { localStorage.setItem(K(), JSON.stringify(d)); } catch (e) {} };
-      let state = "idle", litAt = 0, round = 0, times = [], timer = null;
-      function renderBoard() {
-        const d = load();
-        board.innerHTML = (d.best ? `<span class="vf-chip vf-best">🥇 ${d.best} ms</span>` : `<span class="vf-chip muted">🥇 — joue ta première partie !</span>`)
-          + (d.last || []).map((t) => `<span class="vf-chip">${t} ms</span>`).join("");
-      }
-      function reset(txt) { state = "idle"; round = 0; times = []; clearTimeout(timer); cs.classList.remove("lit", "wait"); msg.textContent = txt || "Touche la valise pour lancer"; }
-      function arm() {
-        state = "wait"; cs.classList.add("wait"); cs.classList.remove("lit");
-        msg.textContent = `Manche ${round + 1}/5 · attends qu'elle s'allume…`;
-        timer = setTimeout(() => { state = "lit"; litAt = performance.now(); cs.classList.add("lit"); cs.classList.remove("wait"); msg.textContent = "GO ! 🎒✨"; if (window.SMSound) { try { SMSound.play("pop"); } catch (e) {} } }, 800 + Math.random() * 1700);
-      }
-      cs.addEventListener("click", () => {
-        if (state === "idle") { round = 0; times = []; arm(); return; }
-        if (state === "wait") { clearTimeout(timer); cs.classList.remove("wait"); msg.textContent = "Trop tôt 😅 · on rejoue la manche"; state = "idle2"; setTimeout(arm, 800); return; }
-        if (state !== "lit") return;
-        const t = Math.round(performance.now() - litAt); times.push(t); round++;
-        cs.classList.remove("lit");
-        if (window.SMSound) { try { SMSound.play("coin"); } catch (e) {} }
-        if (round < 5) { msg.textContent = `${t} ms ⚡`; setTimeout(arm, 650); return; }
-        const avg = Math.round(times.reduce((a, x) => a + x, 0) / times.length);
-        const d = load(); const isRecord = !d.best || avg < d.best;
-        d.last = [avg].concat(d.last || []).slice(0, 3);
-        if (isRecord) d.best = avg;
-        save(d); renderBoard();
-        msg.textContent = isRecord ? `🏆 NOUVEAU RECORD : ${avg} ms !` : `Moyenne : ${avg} ms · record ${d.best} ms`;
-        if (isRecord && typeof celebrate === "function") celebrate();
-        state = "idle";
-      });
-      renderBoard();
-    })();
+    // (#40 « La valise folle » RETIRÉE — retour Maxime : mal programmée.)
 
     // ====================== #6 CONVERSATIONS DE GROUPE (events à plusieurs) ======================
     // Tables group_chats / group_members / group_messages (migration supabase_migration_groupes.sql).
@@ -13911,6 +13921,8 @@
     // #6 : LE CARNET D'ADRESSES PERSO — liste complète des 📌, avec CATÉGORIES (tap sur
     // l'emoji = on fait défiler café/resto/bar/dodo/spot/divers), note, voir-sur-carte, retirer.
     const PIN_CATS = [["📌", "Divers"], ["☕", "Café"], ["🍽️", "Resto"], ["🍹", "Bar"], ["🛏️", "Dodo"], ["🌅", "Spot"]];
+    // P8 : accès direct au carnet depuis la barre d'outils de la carte (fini le scroll dans Filtres)
+    { const b = $("hmPinsQuick"); if (b) b.addEventListener("click", () => openMyPinsBook()); }
     function openMyPinsBook() {
       const pins = _myPinsGet();
       const rows = pins.length ? pins.map((p, i) => {
@@ -15467,6 +15479,12 @@
     async function grantSoloXp(key, amount, proofUrl) {
       try {
         const { data, error } = await db.rpc("grant_solo_xp", { p_key: key, p_proof_url: proofUrl || null });
+        // P8 fix « Tâche inconnue. » : la tâche existe côté CLIENT (rituels/défis ajoutés en passe 9)
+        // mais la table solo_tasks de la base est en retard → on COCHE quand même (sans XP, honnête)
+        // au lieu d'un message d'erreur brut. → lancer supabase_migration_solo_tasks_sync.sql.
+        if (!error && data && data.ok === false && /inconnue/i.test(data.message || "")) {
+          return { ok: true, xp: 0, soft: i18nT("Coché ✓ — l'XP arrivera après la synchro de la base") };
+        }
         if (!error && data) { if (data.ok && myProfile) myProfile.xp = (myProfile.xp || 0) + (data.xp || 0); return { ok: !!data.ok, xp: data.xp || 0, message: data.message }; }
       } catch (e) {}
       try { if (myUserId && myProfile) { const nx = (myProfile.xp || 0) + amount; const { error } = await db.from("profiles").update({ xp: nx }).eq("id", myUserId); if (!error) { myProfile.xp = nx; return { ok: true, xp: amount }; } } } catch (e) {}
@@ -15590,7 +15608,7 @@
       const res = await grantSoloXp(key, r.xp);
       if (!res.ok) { if (typeof toast === "function") toast("🌙", res.message || "Limite atteinte"); return; }
       s.rit[key] = true; _soloSave(s);
-      if (typeof toast === "function") toast("⭐", "+" + res.xp + " XP");
+      if (typeof toast === "function") toast("⭐", res.soft || ("+" + res.xp + " XP"));
       if (window.SMSound) SMSound.play("success");
       if (typeof renderGameHub === "function") renderGameHub();
       renderSoloProgress(); renderRituals();
@@ -17163,6 +17181,13 @@
       "Plein écran pour explorer la carte": "Full screen to explore the map",
       "Quoi de neuf dans cette préversion": "What's new in this preview",
       "Touche la carte pour l'explorer": "Tap the map to explore it",
+      // · P8 : mini-jeux en sessions + divers —
+      "Question {i} sur {n}": "Question {i} of {n}", "Carte {i} sur {n}": "Card {i} of {n}",
+      "Session terminée !": "Session complete!", "Nouvelle session": "New session",
+      "Suivant": "Next", "Terminer": "Finish",
+      "Bonnes réponses : {s} sur {n}": "Correct answers: {s} of {n}",
+      "Toutes les cartes sont passées — relance pour un nouveau paquet mélangé.": "All cards have been played — start again for a freshly shuffled deck.",
+      "Coché ✓ — l'XP arrivera après la synchro de la base": "Checked ✓ — XP will arrive after the database sync",
       // · Batch 5 : gaps onglet Sécurité —
       "Partage de position, alerte d'urgence, cercle de confiance et plus.": "Location sharing, emergency alert, trust circle and more.",
       "En cas d'urgence": "In an emergency", "Un geste, et tu n'es plus seul·e.": "One tap, and you're not alone.", "📍 Partager ma position (sans urgence)": "📍 Share my location (no emergency)",
