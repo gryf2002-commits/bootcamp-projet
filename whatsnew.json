@@ -1,6 +1,9 @@
 {
   "candidate": "v444",
   "items": [
+    "🎨 CHANGEMENT DE DA ANNONCÉ : les ombres de TOUTE l'app sont dé-rougies (le halo corail sous chaque carte/bouton/badge devient un brun chaud neutre, dans tous les modes) — la chaleur reste, le rouge part ; seuls les signaux d'attention volontaires restent corail (pulse des épingles, SOS)",
+    "🧪 Le ruban affiche maintenant le NUMÉRO de la préversion (tu sais toujours laquelle tu testes) et le bouton admin l'ouvre toujours FRAÎCHE (anti-cache — c'est pour ça que « rien n'avait changé » !)",
+    "🗺️ Plein écran : pane composité GPU en continu (drag encore plus soyeux)",
     "🩹 FIX du « fond rose » en mode sombre : c'était un bug (le fond de la page restait sur la couleur jour), PAS un changement de DA — le fond suit de nouveau ton mode partout, overscroll compris",
     "🌅 La coupure nette en haut venait du calque ajouté au round précédent : supprimé — le fondu transparent du header reprend ses droits jusqu'à la status bar",
     "⚡ Gestes rapides : resync ponctuelle pendant les longues glissades (les bords ne « hésitent » plus), inertie plus réactive (120 ms), zoom/dézoom rapide recalé net dès la fin du pincement",
