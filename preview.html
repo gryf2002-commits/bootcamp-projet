@@ -2386,7 +2386,7 @@
     .feature, .detail-hero { box-shadow: var(--shadow-pop); }
 
     /* Barre de complétion : petite lueur */
-    .completion-bar span { box-shadow: 0 0 10px rgba(255,90,77,.55); }
+    .completion-bar span { box-shadow: 0 0 6px rgba(255,90,77,.25); } /* P11 audit : halo .55 trop criard pour la DA */
 
     /* Écran de connexion : soleil flou dans le héros */
     .auth-hero { position: relative; overflow: hidden; box-shadow: 0 18px 40px rgba(255,90,77,.34); }
@@ -5361,7 +5361,7 @@
             <!-- P2.10 : bac à essai AVANT déploiement -->
             <div class="card">
               <h3 style="margin-top:0">🧪 Préversion (bac à essai)</h3>
-              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Les grosses nouveautés sont d'abord déployées sur <b>preview.html</b> : tu y testes la PROCHAINE version en conditions réelles (même base, même compte), <b>sans toucher</b> à l'app de tout le monde ni à son cache. Quand tu valides, elle est promue en version officielle (1 commit). Un ruban violet 🧪 rappelle qu'on est dans le bac à essai.</p>
+              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Les grosses nouveautés sont d'abord déployées sur <b>preview.html</b> : tu y testes la PROCHAINE version en conditions réelles (même base, même compte), <b>sans toucher</b> à l'app de tout le monde ni à son cache. Quand tu valides, elle est promue en version officielle (1 commit). <b>Touche le ruban violet 🧪</b> dans la préversion : il affiche le récap de tout ce qui a changé.</p>
               <button class="btn-primary btn-block" id="sysOpenPreview">🧪 Ouvrir la préversion</button>
             </div>
             <!-- P2.11 : versions abouties gardées en l'état -->
@@ -8082,6 +8082,7 @@
       ["🟣", "Pastilles émaillées", "Dégradés --c1/--c2 recolorés par mode via la couche color-mix (palette complète ci-dessous)."],
       ["🖼️", "Photos d'ambiance", "Banque thématique (cafés, plats, nature, eau, nuit, culture, route, ville) choisie par mots-clés du contenu + shimmer crème pendant le chargement."],
       ["🎬", "Scènes & célébrations", "100 % CSS/SVG maison : hakuna matata (silhouettes de savane), ballons « Là-haut », petit globe, avion en papier, baleine, confettis-soleils, pluie de saison (flocons/feuilles/étoiles)."],
+      ["💬", "Bulles de chat", "Arrondies asymétriques : « moi » = dégradé accent, « l'autre » = carte du thème ; état « en attente » grisé, bulle rouge touchable en cas d'échec d'envoi ; nom d'auteur dans les groupes."],
       ["📱", "QR & cartes à partager", "QR en écrin DA (cadre sunset, papier ivoire, encre aubergine) ; récap story et cartes souvenirs dessinés au canvas avec la typo Fraunces."],
       ["🗺️", "Carte", "Fond vectoriel recoloré DA (4 palettes : jour/nuit/hiver/tropiques) + épingles par type (lieux corail · mates violet · activités ambre · check-ins teal), fluide en plein écran."],
       ["✓", "Sceau vérifié", "Pastille ronde dégradé sunset→teal avec ✓ blanc — LA marque de confiance de l'app (profils, lieux). Jamais de vert criard."],
@@ -8343,7 +8344,7 @@
         ["🔒", "Anti-triche quêtes", "Justification OBLIGATOIRE (code de lieu ou note honneur) avant toute validation."],
         ["🎯", "Quêtes du jour", "Ouvertes en feuille avec BARRE DE RECHERCHE + tri « près de moi » (anti-listing géant), 3/jour + cooldown."],
         ["🗺️", "Ma collection", "Listing des quêtes accomplies / à faire par ville + villes explorées (plus de redirect)."],
-        ["🎮", "Jeux populaires (6 mini-jeux)", "Jouables tout de suite, en SESSIONS qui se terminent (paquet mélangé sans répétition, compteur, écran de fin + score) : Roue des défis, Brise-glace, Quiz voyageur (20 questions), 2 vérités 1 mensonge, Décide pour moi, Bingo de voyage."],
+        ["🎮", "Jeux populaires (6 mini-jeux)", "Jouables tout de suite, en SESSIONS qui se terminent (paquet mélangé sans répétition, compteur, écran de fin + score) : Roue des défis, Brise-glace, Quiz du voyageur (20 questions), 2 vérités, 1 mensonge, Décide pour moi, Bingo de voyage."],
         ["👥", "Quêtes de groupe", "Confirmées par un Mate → bonus XP partagé."],
         ["🎲", "Défis entre Mates", "Propose une quête à un Mate."],
         ["⭐", "XP (monnaie de jeu)", "Gagnée via les quêtes, séparée du score de confiance. Anti-triche serveur."],
@@ -17216,6 +17217,15 @@
       "Bonnes réponses : {s} sur {n}": "Correct answers: {s} of {n}",
       "Toutes les cartes sont passées — relance pour un nouveau paquet mélangé.": "All cards have been played — start again for a freshly shuffled deck.",
       "Coché ✓ — l'XP arrivera après la synchro de la base": "Checked ✓ — XP will arrive after the database sync",
+      // · P11 (audit agents) : noms & descriptions des mini-jeux — manquaient au dico EN —
+      "Roue des défis": "Challenge wheel", "Brise-glace": "Icebreaker", "Quiz du voyageur": "Traveller quiz",
+      "2 vérités, 1 mensonge": "Two truths, one lie", "Décide pour moi": "Decide for me", "Bingo de voyage": "Travel bingo",
+      "Un défi fun tiré au sort, à relever seul·e ou avec un Mate.": "A fun random challenge, to take on alone or with a Mate.",
+      "Une question parfaite pour lancer la conversation avec un Mate.": "The perfect question to spark a conversation with a Mate.",
+      "Teste ta culture voyage, une question à la fois.": "Test your travel knowledge, one question at a time.",
+      "Le jeu ultime pour apprendre à se connaître.": "The ultimate game to get to know each other.",
+      "Hésitant·e ? Laisse le sort choisir ta prochaine aventure.": "Can't decide? Let fate pick your next adventure.",
+      "Coche les expériences vécues, vise la ligne complète !": "Tick off what you've lived, aim for the full line!",
       // · Batch 5 : gaps onglet Sécurité —
       "Partage de position, alerte d'urgence, cercle de confiance et plus.": "Location sharing, emergency alert, trust circle and more.",
       "En cas d'urgence": "In an emergency", "Un geste, et tu n'es plus seul·e.": "One tap, and you're not alone.", "📍 Partager ma position (sans urgence)": "📍 Share my location (no emergency)",

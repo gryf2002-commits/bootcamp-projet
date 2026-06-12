@@ -4,6 +4,7 @@
     "🩹 FIX du « fond rose » en mode sombre : c'était un bug (le fond de la page restait sur la couleur jour), PAS un changement de DA — le fond suit de nouveau ton mode partout, overscroll compris",
     "🌅 La coupure nette en haut venait du calque ajouté au round précédent : supprimé — le fondu transparent du header reprend ses droits jusqu'à la status bar",
     "⚡ Gestes rapides : resync ponctuelle pendant les longues glissades (les bords ne « hésitent » plus), inertie plus réactive (120 ms), zoom/dézoom rapide recalé net dès la fin du pincement",
+    "🕵️ Passe d'audit par agents : traductions EN des 6 mini-jeux ajoutées, halo criard de la barre de complétion adouci, bulles de chat ajoutées à l'inventaire DA, texte du panneau Système précisé (ruban-récap)",
     "🗺️ Plein écran carte « Google Maps » : pendant le geste, PLUS AUCUNE resynchronisation — fond et épingles glissent parfaitement solidaires en pur CSS (fini le tremblement qui donnait mal au crâne) ; resync nette au relâcher, espacée pendant l'inertie",
     "🔍 Netteté du plein écran restaurée (rendu ×1) : le GPU ne travaille plus pendant le geste, il rend net aux moments calmes",
     "🛡️ Marge de pré-rendu élargie pour couvrir les bords pendant les longues glissades"
