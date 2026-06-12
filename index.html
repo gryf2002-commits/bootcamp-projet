@@ -114,8 +114,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=437"></script>
-  <script src="sunmates-icons.js?v=437"></script>
+  <script src="sunmates-badges.js?v=438"></script>
+  <script src="sunmates-icons.js?v=438"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -4318,6 +4318,8 @@
             <button class="chip active cl-acts" data-layer="activities">🎉 Activités <b data-cnt></b></button>
             <button class="chip active cl-checkins" data-layer="checkins">✅ Check-ins <b data-cnt></b></button>
             <button class="chip active cl-quests" data-layer="quests">🎯 Quêtes <b data-cnt></b></button>
+            <!-- #6 : la chip MANQUAIT → le filtre « Mes adresses » du panneau tournait dans le vide -->
+            <button class="chip active cl-mypins" data-layer="mypins">📌 Mes adresses <b data-cnt></b></button>
           </div>
           <div class="homemap-wrap">
             <div id="homeMap" class="homemap"></div>
@@ -5050,8 +5052,8 @@
 
         <div class="prof-seg hidden" data-psegpanel="admin">
           <div class="mseg aseg-nav" style="flex-wrap:wrap">
-            <button data-aseg="demo" class="active">🎤 Démo</button>
-            <button data-aseg="livre">📖 Livre blanc</button>
+            <!-- #34 : Démo + Livre blanc + Catalogue FUSIONNÉS en un seul hub (zéro doublon) -->
+            <button data-aseg="demo" class="active">📖 Livre blanc &amp; démo</button>
             <button data-aseg="dash">📊 Bord</button>
             <button data-aseg="users">👥 Membres</button>
             <button data-aseg="places">📍 Lieux</button>
@@ -5087,16 +5089,8 @@
             </details>
           </div>
 
-          <!-- 📖 LIVRE BLANC (#25) : purement explicatif (aucune mention back-office ni versions),
-               chaque section a sa démo interactive façon tuto vidéo -->
-          <div class="aseg hidden" data-asegpanel="livre">
-            <div class="card">
-              <h3 style="margin-top:0">📖 Le livre blanc SunMates</h3>
-              <p class="muted" style="font-size:.84rem;margin:.2rem 0 .6rem">Tout ce que fait l'app, expliqué simplement, section par section. Touche <b>▶ Démo guidée</b> sur une section pour la voir en action, comme un tuto vidéo interactif.</p>
-              <div class="search" style="margin:.4rem 0 .6rem"><span class="ico">🔍</span><input id="lbWhiteSearch" type="text" maxlength="80" placeholder="Rechercher une fonctionnalité…" /></div>
-              <div id="livreBlancList"></div>
-            </div>
-          </div>
+          <!-- (#34 : l'ancien panneau « Livre blanc » séparé a fusionné dans le hub Démo
+               ci-dessus — le catalogue public y vit déjà via #featureCatalog, zéro doublon.) -->
 
           <div class="aseg hidden" data-asegpanel="dash">
             <div class="card"><h3 style="margin-top:0">📊 Tableau de bord</h3><div id="adminDash" class="pgrid"><p class="muted">Chargement…</p></div></div>
@@ -7748,6 +7742,7 @@
     function showAdminSegment(seg) {
       // #11 : aucun panneau/chargement admin si pas admin (les loadAdmin* ne partent jamais pour un non-admin).
       if (!(myProfile && myProfile.is_admin)) return;
+      if (seg === "livre") seg = "demo"; // #34 : fusionnés (alias pour les anciens appels)
       document.querySelectorAll("[data-aseg]").forEach((b) => b.classList.toggle("active", b.dataset.aseg === seg));
       document.querySelectorAll("[data-asegpanel]").forEach((p) => show(p, p.dataset.asegpanel === seg));
       if (seg === "demo") renderDemoScript();
@@ -10558,16 +10553,20 @@
             return '<div class="qstep ' + cls + '"><span class="qstep-n">' + mark + '</span><span>' + l + "</span></div>";
           }).join('<span class="qstep-line"></span>');
         } }
-      // Récompense badge
+      // Récompense badge (#9 : coche DA, plus de ✅ vert)
       if (window.SMBadge && SMBadge.hasEmblem(q.badge_key)) $("detailBadgeIco").innerHTML = SMBadge(q.badge_key, { size: 46 });
       else $("detailBadgeIco").textContent = q.badge_emoji || "🏅";
       $("detailBadgeName").textContent = q.badge_name || "Badge";
-      $("detailBadgeState").textContent = myBadgeKeys.has(q.badge_key) ? "✅ Débloqué" : "À débloquer";
-      // Récompense coupon (si la mission en accorde un)
+      $("detailBadgeState").innerHTML = myBadgeKeys.has(q.badge_key) ? '<span class="vchip" style="width:13px;height:13px;font-size:8px;vertical-align:-2px">✓</span> Débloqué' : "À débloquer";
+      // Récompense coupon (#9 : la tuile coupon est CLIQUABLE et mène vraiment aux coupons)
       if (q.coupon_title) {
         $("detailCouponBox").style.display = "";
         $("detailCouponName").textContent = q.coupon_title;
         $("detailCouponDesc").textContent = q.coupon_desc || "";
+        { const cb = $("detailCouponBox"); if (cb && !cb._wired) { cb._wired = true; cb.style.cursor = "pointer";
+          cb.addEventListener("click", () => { const st = myQuestStatus[(currentQuest || {}).key];
+            if (st === "completed") { showJeuxView("jeuxCoupons"); if (typeof renderJeux === "function") renderJeux(); }
+            else popInfo("🎟️", "Coupon à débloquer", "Accomplis la quête pour recevoir ce coupon dans <b>Jeux → Coupons</b> 🎁"); }); } }
       } else { $("detailCouponBox").style.display = "none"; }
       // Champ code si la quête se valide par code (et pas déjà accomplie)
       $("detailCodeBox").style.display = (q.requires_code && status !== "completed") ? "" : "none";
@@ -10588,7 +10587,16 @@
         // Quête de groupe : option "valider avec un Mate" (+ bonus) uniquement quand elle est rejointe
         if (grpBtn) grpBtn.style.display = (q.is_group && status === "joined") ? "" : "none";
         $("detailMsg").style.color = "var(--muted)";
-        $("detailMsg").textContent = status === "completed" ? "✅ Quête accomplie !" : (status === "joined" ? "🎒 Quête en cours · accomplis-la puis valide" : "Rejoins la quête pour la démarrer");
+        if (status === "completed") {
+          // #9 : « Quête accomplie » devient une LIGNE CLIQUABLE → tuile d'infos (date, solo/à deux)
+          const row = (myQuestRows || []).find((r) => r.quest_key === q.key && r.status === "completed");
+          const when = row && row.completed_at ? new Date(row.completed_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : null;
+          $("detailMsg").innerHTML = '<button type="button" class="btn-ghost" id="detailDoneInfo" style="padding:.4rem .8rem;font-size:.84rem"><span class="vchip" style="width:14px;height:14px;font-size:9px;vertical-align:-2px">✓</span> Quête accomplie · détails ›</button>';
+          setTimeout(() => { const b = $("detailDoneInfo"); if (b) b.onclick = () => popInfo("🎉", "Quête accomplie",
+            `<div style="line-height:1.8;text-align:left"><div>📅 <b>${when || "Date inconnue"}</b></div><div>${q.is_group ? "👥 Réalisable à deux (bonus XP partagé)" : "🧍 Accomplie en solo"}</div><div>⭐ +${q.points || 0} XP gagnés</div>${q.badge_name ? "<div>🏅 Badge « " + escapeHtml(q.badge_name) + " »</div>" : ""}</div>`); }, 40);
+        } else {
+          $("detailMsg").textContent = status === "joined" ? "🎒 Quête en cours · accomplis-la puis valide" : "Rejoins la quête pour la démarrer";
+        }
       }
       // P2.12 : on peut QUITTER une quête rejointe (mais pas une déjà accomplie).
       { const lv = $("detailLeaveBtn"); if (lv) lv.style.display = (!q.demo && status === "joined") ? "" : "none"; }
@@ -12986,7 +12994,8 @@
       _myPinsGet().forEach((p) => {
         if (p.lat == null || p.lng == null) return;
         const noteLn = p.note ? `<br><span class="muted" style="font-size:.74rem">${escapeHtml(p.note)}</span>` : "";
-        const mk = L.marker([p.lat, p.lng], { icon: epinIcon("📌", "#8B5E3C") })
+        const pinEmo = (typeof PIN_CATS !== "undefined" && PIN_CATS[(p.cat || 0) % PIN_CATS.length] || ["📌"])[0]; // #6 : l'épingle porte sa catégorie
+        const mk = L.marker([p.lat, p.lng], { icon: epinIcon(pinEmo, "#8B5E3C") })
           .bindPopup(`<div class="mappop-mini"><span class="mq-tag" style="background:#8B5E3C">🔒 ${i18nT("Mon adresse perso")}</span><br><b>${escapeHtml(p.title || "")}</b>${noteLn}<br><span class="muted" style="font-size:.68rem">${i18nT("Visible par toi seul·e · gardée sur cet appareil")}</span><br><button class="mappop-btn ghost" data-hmdelpin="${escapeHtml(p.id)}">🗑️ ${i18nT("Retirer de mon carnet")}</button></div>`);
         mk.smType = "mypins"; homeMarkersByType.mypins.push(mk); allMarkers.push(mk);
       });
@@ -13329,15 +13338,53 @@
         list.innerHTML = HM_LAYERS.map(([k, ic, name]) => {
           const on = homeLayerOn[k]; const cnt = (homeMarkersByType[k] || []).length;
           return `<button type="button" class="hm-layer-row${on ? " on" : ""}" data-l="${k}"><span class="hlr-ic">${ic}</span><span class="hlr-name">${name}</span><span class="hlr-cnt">${cnt}</span><span class="hlr-sw"></span></button>`;
-        }).join("");
+        }).join("")
+          // #6 : accès direct au CARNET d'adresses perso depuis les filtres
+          + `<button type="button" class="btn-ghost btn-block" id="hmPinsBook" style="margin-top:.5rem">📓 ${i18nT("Ouvrir mon carnet d'adresses")} (${_myPinsGet().length})</button>`;
         list.querySelectorAll(".hm-layer-row").forEach((b) => b.addEventListener("click", () => {
           const k = b.dataset.l; const chip = document.querySelector(`#homeMapFilters .chip[data-layer="${k}"]`);
           if (chip) chip.click(); else { homeLayerOn[k] = !homeLayerOn[k]; applyHomeLayers(); }
           render(); updateLayersBtn();
           if (window.SMSound) { try { SMSound.play("tap"); } catch (e) {} }
         }));
+        { const bk = $("hmPinsBook"); if (bk) bk.addEventListener("click", () => { ov.classList.remove("show"); openMyPinsBook(); }); }
       };
       render(); ov.classList.add("show");
+    }
+    // #6 : LE CARNET D'ADRESSES PERSO — liste complète des 📌, avec CATÉGORIES (tap sur
+    // l'emoji = on fait défiler café/resto/bar/dodo/spot/divers), note, voir-sur-carte, retirer.
+    const PIN_CATS = [["📌", "Divers"], ["☕", "Café"], ["🍽️", "Resto"], ["🍹", "Bar"], ["🛏️", "Dodo"], ["🌅", "Spot"]];
+    function openMyPinsBook() {
+      const pins = _myPinsGet();
+      const rows = pins.length ? pins.map((p, i) => {
+        const cat = PIN_CATS[(p.cat || 0) % PIN_CATS.length];
+        return `<div class="qrow" style="gap:.5rem"><button type="button" class="qico pin-cat" data-pincat="${i}" title="${i18nT("Changer la catégorie")}" style="cursor:pointer;border:0;background:var(--accent-soft)">${cat[0]}</button>
+          <div class="qname" style="flex:1"><b>${escapeHtml(p.title || "Sans titre")}</b><div class="meta muted" style="font-size:.72rem">${cat[1]}${p.note ? " · " + escapeHtml(p.note) : ""}</div></div>
+          <button type="button" class="btn-ghost" data-pingo="${i}" style="padding:.25rem .5rem;font-size:.78rem" title="Voir sur la carte">🎯</button>
+          <button type="button" class="btn-ghost" data-pindel="${i}" style="padding:.25rem .5rem;font-size:.78rem" title="Retirer">🗑️</button></div>`;
+      }).join("") : `<p class="muted" style="text-align:center;padding:1rem">${i18nT("Carnet vide · ajoute une adresse via « Partager une activité » → « Garder pour moi » 📌")}</p>`;
+      popInfo("📓", i18nT("Mon carnet d'adresses"), `<div style="text-align:left">${rows}</div>
+        <p class="muted" style="font-size:.7rem;text-align:center;margin:.6rem 0 0">🔒 ${i18nT("Visible par toi seul·e · gardé sur cet appareil")}</p>`);
+      setTimeout(() => {
+        document.querySelectorAll("[data-pincat]").forEach((b) => b.addEventListener("click", () => {
+          const list = _myPinsGet(); const p = list[Number(b.dataset.pincat)]; if (!p) return;
+          p.cat = ((p.cat || 0) + 1) % PIN_CATS.length; _myPinsSave(list);
+          b.textContent = PIN_CATS[p.cat][0];
+          const meta = b.parentElement.querySelector(".meta"); if (meta) meta.textContent = PIN_CATS[p.cat][1] + (p.note ? " · " + p.note : "");
+          if (window.SMSound) { try { SMSound.play("tap"); } catch (e) {} }
+        }));
+        document.querySelectorAll("[data-pingo]").forEach((b) => b.addEventListener("click", () => {
+          const p = _myPinsGet()[Number(b.dataset.pingo)]; if (!p || p.lat == null) return;
+          if (typeof closePopInfo === "function") closePopInfo(); goToTab("accueil");
+          setTimeout(() => { try { homeFitDone = true; _homeForceCenter = true; homeLeaf.setView([p.lat, p.lng], 16); setTimeout(() => { _homeForceCenter = null; }, 1200); } catch (e) {} }, 350);
+        }));
+        document.querySelectorAll("[data-pindel]").forEach((b) => b.addEventListener("click", async () => {
+          if (!(await smConfirmP("🗑️", i18nT("Retirer cette adresse ?"), i18nT("Elle disparaîtra de ton carnet et de ta carte."), i18nT("Retirer"), true))) return;
+          const list = _myPinsGet(); list.splice(Number(b.dataset.pindel), 1); _myPinsSave(list);
+          if (typeof renderHomeMap === "function") renderHomeMap();
+          openMyPinsBook();
+        }));
+      }, 40);
     }
     // Filtres (afficher/masquer une couche au clic)
     (function () {
