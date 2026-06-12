@@ -229,6 +229,12 @@
       -webkit-user-select: text; user-select: text; -webkit-touch-callout: default;
     }
     html, body { height: 100%; }
+    /* P9 : l'app « collée » au téléphone — le fond de la page porte LA couleur du thème
+       (zones d'overscroll comprises), et la zone de la status bar est TOUJOURS peinte
+       par un calque fixe aux couleurs de l'app → plus de bande qui jure en haut. */
+    html { background: var(--bg); }
+    body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px);
+      background: var(--bg); z-index: 55; pointer-events: none; }
     /* Barre de défilement thémée DA (fini le blanc système). Firefox + WebKit/Blink.
        Les conteneurs en scrollbar-width:none (chips, etc.) restent masqués (specificité de classe). */
     /* #7 : JOUR = barre neutre chaude discrète (le corail vif était trop agressif en clair) ;
@@ -1071,9 +1077,8 @@
     .homemap-filters .chip.active { opacity: 1; }
     .homemap-filters .chip b { font-weight: 800; opacity: .85; }
     .homemap-wrap { position: relative; isolation: isolate; } /* contient les outils carte (z-index) -> ne débordent plus sur la nav du bas */
-    /* P2.7 : un chouia plus GRANDE (240→266px) — possible maintenant que le scroll de la page
-       ne se fait plus avaler par la carte (geste coopératif : 1 doigt = page, plein écran = drag). */
-    .homemap { height: 266px; border-radius: 14px; overflow: hidden; background: var(--cream); position: relative; z-index: 0; isolation: isolate; }
+    /* P9 : la carte est LA star de l'accueil — rehaussée à 300px (zone du dessus dégraissée). */
+    .homemap { height: 300px; border-radius: 14px; overflow: hidden; background: var(--cream); position: relative; z-index: 0; isolation: isolate; }
     /* P7 : pastille « touche la carte » — EN HAUT de la carte (le bas porte déjà Partager/
        Autour de moi/Tout voir), aux couleurs DA (carte + encre, déclinée par mode), avec la
        petite main qui tapote pour l'intuition. */
@@ -3394,7 +3399,7 @@
     .player-badge.player-hud { width: auto; height: auto; border-radius: 999px; overflow: visible;
       display: flex; align-items: center; gap: .55rem; padding: .3rem .8rem .3rem .32rem;
       background: linear-gradient(135deg, #FFF6E0, #FFE7BC); border: 1.5px solid rgba(232,150,31,.5);
-      box-shadow: 0 4px 12px rgba(200,130,40,.18), inset 0 1px 0 rgba(255,255,255,.7); }
+      box-shadow: 0 3px 8px rgba(200,130,40,.12), inset 0 1px 0 rgba(255,255,255,.7); } /* P9 : halo plaque adouci */
     .player-badge.player-hud .hud-lvl { color: #B5740E; }
     .player-badge.player-hud .hud-xp { color: rgba(140,90,20,.85); }
     .player-badge.player-hud .hud-bar { background: rgba(181,116,14,.18); }
@@ -3424,15 +3429,20 @@
     body.theme-tropic.theme-dusk .player-badge.player-hud .hud-xp { color: rgba(154,219,190,.9); }
     body.theme-tropic.theme-dusk .player-badge.player-hud .hud-bar { background: rgba(154,219,190,.2); }
     body.theme-tropic.theme-dusk .player-badge.player-hud .pb-av { background-color: #143427; }
+    /* P9 : halo de l'avatar ADOUCI (le glow doré 12px dénotait, surtout hors mode jour) */
     .player-badge.player-hud .pb-av { position: relative; inset: auto; width: 42px; height: 42px; border-radius: 50%;
       display: grid; place-items: center; font-size: 1.25rem; background-size: cover; background-position: center;
-      box-shadow: 0 0 0 2px #FFD15C, 0 0 12px rgba(255,201,60,.45); background-color: #5a4520; }
+      box-shadow: 0 0 0 2px #FFD15C, 0 0 6px rgba(255,201,60,.22); background-color: #5a4520; }
     .player-badge.player-hud .hud-info { display: flex; flex-direction: column; gap: .16rem; min-width: 92px; text-align: left; }
-    .player-badge.player-hud .hud-lvl { font-size: .68rem; font-weight: 800; letter-spacing: .08em; color: #FFD98A; line-height: 1; }
-    .player-badge.player-hud .hud-bar { width: 92px; height: 7px; border-radius: 999px; background: rgba(255,233,176,.18); overflow: hidden; }
+    /* P9 FIX LISIBILITÉ : ces règles de base (héritées de l'ANCIENNE plaque sombre) imposaient
+       des COULEURS crème déclarées APRÈS les variantes par mode → en JOUR, « 0/100 XP » était
+       crème sur crème (illisible). Les couleurs vivent désormais UNIQUEMENT dans les blocs
+       par mode (jour/nuit/hiver/tropiques + nuits de saison) plus haut. */
+    .player-badge.player-hud .hud-lvl { font-size: .68rem; font-weight: 800; letter-spacing: .08em; line-height: 1; }
+    .player-badge.player-hud .hud-bar { width: 92px; height: 7px; border-radius: 999px; overflow: hidden; }
     .player-badge.player-hud .hud-bar i { display: block; height: 100%; width: 0; border-radius: 999px;
       background: linear-gradient(90deg, #FFC93C, #FF8A3D); transition: width .5s ease; }
-    .player-badge.player-hud .hud-xp { font-size: .6rem; font-weight: 700; color: rgba(255,233,176,.82); line-height: 1; }
+    .player-badge.player-hud .hud-xp { font-size: .6rem; font-weight: 700; line-height: 1; }
     .player-badge.player-hud .pb-lvl { all: unset; } /* l'ancien chip rond absolu ne s'applique plus (le n° vit dans NIV x) */
     body.theme-dusk .player-badge.player-hud { border-color: rgba(255,209,92,.5); } /* le liseré reste OR la nuit */
 
@@ -4405,18 +4415,15 @@
         <div id="homeTravelMap">
 
         <!-- ===== Carte « tout-en-un » : lieux, Mates, activités, check-ins ===== -->
-        <div class="section-head" style="justify-content:center"><h3 style="margin-top:.4rem;text-align:center">Explore autour de toi 🗺️</h3></div>
-        <p class="muted" style="margin:-.2rem 0 .6rem;font-size:.84rem;text-align:center">Touche une pastille pour voir un lieu, un Mate ou une activité autour de toi ✨</p>
-        <!-- 🌅 Ma journée de voyage (#28) : top départ → WRAPPED du soir -->
-        <div id="daySessionCard" style="margin:.2rem 0 .6rem"></div>
-        <!-- #37 : météo du moment + conseils (UV, pluie, chaleur) — rempli si géoloc déjà accordée -->
-        <button id="weatherChip" class="weather-chip" style="display:none"></button>
+        <!-- P9 : la CARTE est LA star de l'accueil — zone du dessus dégraissée (sous-titre retiré,
+             « Ma journée » + météo déplacées SOUS la carte), carte rehaussée. -->
+        <div class="section-head" style="justify-content:center"><h3 style="margin:.3rem 0 .4rem;text-align:center">Explore autour de toi 🗺️</h3></div>
         <div class="card homemap-card">
           <!-- Sélecteur de ville (menu déroulant) : concentre la carte sur une ville de jeu -->
           <!-- UNE seule rangée au-dessus de la carte : ville + À faire + Filtres (avant : 2 rangées éparpillées) -->
           <!-- Retour Maxime : plus d'option « toutes les villes » sélectionnable (le bouton 🌍 Tout voir fait déjà ça) -->
-          <!-- P8 : 📓 carnet d'adresses en ACCÈS DIRECT (avant : enfoui en bas du panneau Filtres) -->
-          <div class="city-pick"><select id="questCitySelect" aria-label="Choisir une ville"></select><button class="todo-toggle" id="questTodoToggle" type="button" title="N'afficher que les quêtes pas encore faites"><span class="tt-ic">🎯</span><span class="tt-lbl">À faire</span><span class="tt-state" id="todoState">OFF</span></button><button type="button" class="hm-layers-btn" id="hmLayersBtn">🗂️ Filtres <span class="hlb-cnt" id="hmLayersCnt">5</span></button><button type="button" class="hm-layers-btn" id="hmPinsQuick" title="Mon carnet d'adresses" aria-label="Ouvrir mon carnet d'adresses">📓 Carnet</button></div>
+          <!-- (P9 : le carnet 📓 vit EN TÊTE du panneau Filtres — un bouton de plus ici surchargeait l'accueil) -->
+          <div class="city-pick"><select id="questCitySelect" aria-label="Choisir une ville"></select><button class="todo-toggle" id="questTodoToggle" type="button" title="N'afficher que les quêtes pas encore faites"><span class="tt-ic">🎯</span><span class="tt-lbl">À faire</span><span class="tt-state" id="todoState">OFF</span></button><button type="button" class="hm-layers-btn" id="hmLayersBtn">🗂️ Filtres <span class="hlb-cnt" id="hmLayersCnt">5</span></button></div>
           <!-- Chips gardés en DOM (pilotés par le panneau Filtres) mais plus affichés ici -->
           <div class="chips wrap homemap-filters as-btn" id="homeMapFilters" style="display:none">
             <button class="chip active cl-places" data-layer="places">📍 Lieux <b data-cnt></b></button>
@@ -4459,6 +4466,9 @@
             </div>
           </div>
         </div>
+        <!-- 🌅 Ma journée de voyage (#28) + #37 météo : passées SOUS la carte (P9) -->
+        <div id="daySessionCard" style="margin:.6rem 0 .2rem"></div>
+        <button id="weatherChip" class="weather-chip" style="display:none"></button>
         </div><!-- /#homeTravelMap -->
 
         <!-- Rail de progression badges (rempli par renderBadgeRail) -->
@@ -13902,12 +13912,12 @@
       }
       const list = $("hmLayersList");
       const render = () => {
-        list.innerHTML = HM_LAYERS.map(([k, ic, name]) => {
+        // P9 : le CARNET d'adresses passe EN TÊTE du panneau (avant : enfoui en bas → fallait scroller)
+        list.innerHTML = `<button type="button" class="btn-ghost btn-block" id="hmPinsBook" style="margin-bottom:.5rem">📓 ${i18nT("Ouvrir mon carnet d'adresses")} (${_myPinsGet().length})</button>`
+          + HM_LAYERS.map(([k, ic, name]) => {
           const on = homeLayerOn[k]; const cnt = (homeMarkersByType[k] || []).length;
           return `<button type="button" class="hm-layer-row${on ? " on" : ""}" data-l="${k}"><span class="hlr-ic">${ic}</span><span class="hlr-name">${name}</span><span class="hlr-cnt">${cnt}</span><span class="hlr-sw"></span></button>`;
-        }).join("")
-          // #6 : accès direct au CARNET d'adresses perso depuis les filtres
-          + `<button type="button" class="btn-ghost btn-block" id="hmPinsBook" style="margin-top:.5rem">📓 ${i18nT("Ouvrir mon carnet d'adresses")} (${_myPinsGet().length})</button>`;
+        }).join("");
         list.querySelectorAll(".hm-layer-row").forEach((b) => b.addEventListener("click", () => {
           const k = b.dataset.l; const chip = document.querySelector(`#homeMapFilters .chip[data-layer="${k}"]`);
           if (chip) chip.click(); else { homeLayerOn[k] = !homeLayerOn[k]; applyHomeLayers(); }
@@ -13921,8 +13931,6 @@
     // #6 : LE CARNET D'ADRESSES PERSO — liste complète des 📌, avec CATÉGORIES (tap sur
     // l'emoji = on fait défiler café/resto/bar/dodo/spot/divers), note, voir-sur-carte, retirer.
     const PIN_CATS = [["📌", "Divers"], ["☕", "Café"], ["🍽️", "Resto"], ["🍹", "Bar"], ["🛏️", "Dodo"], ["🌅", "Spot"]];
-    // P8 : accès direct au carnet depuis la barre d'outils de la carte (fini le scroll dans Filtres)
-    { const b = $("hmPinsQuick"); if (b) b.addEventListener("click", () => openMyPinsBook()); }
     function openMyPinsBook() {
       const pins = _myPinsGet();
       const rows = pins.length ? pins.map((p, i) => {
