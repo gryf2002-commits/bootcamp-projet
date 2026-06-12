@@ -3,8 +3,11 @@
   "items": [
     "🎨 Panneau de contrôle DA (Admin → DA) : couleurs des 6 modes lues en direct, dégradés, typos, familles de badges, pastilles — tap = copier, bouton « kit DA » = export JSON complet",
     "🧩 Inventaire des visuels : tout ce qui fait un visuel dans l'app (emojis, logos, médaillons, scènes, photos, carte) expliqué dans le panneau DA et inclus dans le kit",
+    "😀 Grille des emojis en service : visualisables zone par zone dans le panneau DA, tap = copier",
+    "🖐️ Mini-carte « tap pour explorer » : un tap la réveille (liseré corail, 100% réactive), toucher en dehors la rendort — le scroll reste naturel",
+    "📐 Plus aucune tuile-détail ne déborde de l'écran (prévisu, Données…) : hauteur bornée + défilement interne",
     "🌅 Header transparent raffiné : le fondu revient, opaque en haut (status bar nickel), sans la « barre » de fin",
-    "🗺️ Plein écran carte ENFIN fluide : fond raster ultra rapide en plein écran (sombre la nuit), fond vectoriel DA en vue réduite",
+    "🗺️ Plein écran carte ENFIN fluide ET lisible : fond raster rapide avec les rues bien visibles (même la nuit), fond vectoriel DA en vue réduite",
     "◀️ Retour téléphone natif : ferme la fenêtre ouverte, sinon revient à l'Accueil, sinon quitte",
     "🖐️ Mini-carte coopérative : 1 doigt = la page défile, pincement = zoom, exploration en plein écran",
     "✍️ Pseudo dès l'inscription (fini l'email affiché au premier Bonjour)",

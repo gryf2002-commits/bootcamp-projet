@@ -942,7 +942,10 @@
     .popinfo-ov { position: fixed; inset: 0; z-index: var(--z-popinfo); display: grid; place-items: center; padding: 1.2rem; background: rgba(20,8,30,.55); backdrop-filter: blur(3px); animation: popinfoFade .18s ease; }
     .fc-gear { position: absolute; top: calc(1rem + env(safe-area-inset-top)); right: 1rem; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,.16); color: #fff; font-size: 1.1rem; cursor: pointer; display: grid; place-items: center; }
     .popinfo-ov.hidden { display: none; }
-    .popinfo-card { position: relative; width: 100%; max-width: 340px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 1.5rem 1.3rem 1.3rem; box-shadow: 0 18px 50px rgba(0,0,0,.32); text-align: center; animation: popinfoPop .22s cubic-bezier(.2,1.2,.4,1); }
+    .popinfo-card { position: relative; width: 100%; max-width: 340px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 1.5rem 1.3rem 1.3rem; box-shadow: 0 18px 50px rgba(0,0,0,.32); text-align: center; animation: popinfoPop .22s cubic-bezier(.2,1.2,.4,1);
+      /* P4 : AUCUNE tuile-détail ne déborde plus de l'écran (prévisu, Données…) —
+         hauteur bornée à l'écran réel + défilement INTERNE. */
+      max-height: calc(100dvh - 2.4rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; }
     .popinfo-x { position: absolute; top: .6rem; right: .6rem; width: 30px; height: 30px; border: 0; border-radius: 50%; background: var(--cream); color: var(--muted); font-size: .9rem; cursor: pointer; display: grid; place-items: center; line-height: 1; padding: 0; }
     /* Cibles tactiles 44px SANS grossir le visuel : on étend la zone cliquable des petites croix
        via un pseudo-élément invisible (le doigt tape large, le rond reste discret). */
@@ -1060,6 +1063,8 @@
       background: rgba(20,14,28,.78); color: #fff; font: 700 .74rem/1 Manrope, system-ui, sans-serif; padding: .5rem .75rem;
       border-radius: 999px; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; white-space: nowrap; }
     .hm-coop-hint.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    /* P4 : carte RÉVEILLÉE (tap) = liseré corail discret, pour voir qu'elle est « en main » */
+    .homemap.hm-live::after { content: ""; position: absolute; inset: 0; border: 2px solid var(--accent); border-radius: 14px; pointer-events: none; opacity: .5; z-index: 899; }
     /* P2.10 : ruban préversion / version archivée */
     #smPreviewRibbon { position: fixed; top: calc(.4rem + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 9999;
       background: #6638D6; color: #fff; font: 800 .66rem/1 Manrope, system-ui, sans-serif; letter-spacing: .06em;
@@ -1122,7 +1127,8 @@
       background: var(--ink); color: #fff; padding: .42rem .85rem; border-radius: 999px; font-size: .76rem; box-shadow: var(--shadow-sm); white-space: nowrap; }
     .homemap-hint a { color: #ffd15c; cursor: pointer; font-weight: 800; }
     .act-overlay { position: fixed; inset: 0; z-index: var(--z-modal); display: grid; place-items: center; background: rgba(12,7,32,.55); padding: 1.2rem; }
-    .act-card { width: 100%; max-width: 380px; background: var(--card); color: var(--ink); border-radius: 20px; padding: 1.2rem; box-shadow: 0 24px 60px rgba(0,0,0,.45); }
+    .act-card { width: 100%; max-width: 380px; background: var(--card); color: var(--ink); border-radius: 20px; padding: 1.2rem; box-shadow: 0 24px 60px rgba(0,0,0,.45);
+      max-height: calc(100dvh - 2.4rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; } /* P4 : jamais plus long que l'écran */
     /* Contrôles Leaflet raccord avec le design (zoom, attribution, popups) */
     .leaflet-control-attribution { font-size: 9px !important; line-height: 1.4 !important; background: rgba(255,255,255,.6) !important; color: var(--muted) !important; padding: 1px 6px !important; border-radius: 0 8px 0 0 !important; }
     .leaflet-control-attribution a { color: var(--muted) !important; }
@@ -3329,6 +3335,11 @@
     .da-sw-band { display: block; width: 100%; margin-bottom: .45rem; }
     .da-band { display: block; height: 34px; border-radius: 10px; margin-bottom: .3rem; border: 1px solid rgba(0,0,0,.06); }
     body.theme-dusk .da-sw { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.1); }
+    .da-emo-zone { font-size: .68rem; font-weight: 800; letter-spacing: .04em; color: var(--muted); margin: .55rem 0 .25rem; text-transform: uppercase; }
+    .da-emo-grid { display: flex; flex-wrap: wrap; gap: .3rem; }
+    .da-emo { width: 38px; height: 38px; display: grid; place-items: center; font-size: 1.15rem; background: var(--cream, #faf3ec); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; padding: 0; }
+    .da-emo:active { transform: scale(.92); }
+    body.theme-dusk .da-emo { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.1); }
     .adm-live { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .65rem .7rem; margin-bottom: .7rem; box-shadow: var(--shadow-sm); }
     body.theme-dusk .adm-live { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.09); }
     .adm-live .al-head { display: flex; align-items: center; gap: .4rem; font-size: .72rem; font-weight: 800; letter-spacing: .06em; color: var(--muted); }
@@ -8038,6 +8049,15 @@
       ["📱", "QR & cartes à partager", "QR en écrin DA (cadre sunset, papier ivoire, encre aubergine) ; récap story et cartes souvenirs dessinés au canvas avec la typo Fraunces."],
       ["🗺️", "Carte", "Fond vectoriel recoloré DA (4 palettes : jour/nuit/hiver/tropiques) + épingles par type (lieux corail · mates violet · activités ambre · check-ins teal) ; fond raster fluide en plein écran."],
     ];
+    // P4 : les principaux emojis EN SERVICE, par zone — visualisables (et copiables d'un tap).
+    const DA_EMOJIS = [
+      ["Accès rapides & tuiles", ["🤝", "🛟", "📍", "🎮", "🏆", "🎟️", "👤", "☕", "🌿", "🔍", "🌍", "✈️", "🏠", "👀", "📌"]],
+      ["Sécurité", ["🆘", "🚨", "🛡️", "⏱️", "📞", "🔦", "🧊", "📢", "☎️", "🧭"]],
+      ["Jeux & quêtes", ["🎯", "⚡", "🗺️", "🎒", "🎲", "❓", "🏅", "⭐", "🪙", "👑", "🛍️", "🔥", "🗼", "🇫🇷", "🏙️"]],
+      ["Mates & messages", ["💬", "📨", "❤️", "🤍", "👍", "🎤", "👥", "✨", "🚫", "😀"]],
+      ["Profil & statuts", ["🪪", "📷", "⚙️", "🌙", "☀️", "🔔", "👋", "📤", "🧪", "💼"]],
+      ["Météo & célébrations", ["🌦️", "🌡️", "☔", "❄️", "🌴", "🌅", "🎉", "🎈", "🐋", "🚢", "🦁", "🎂"]],
+    ];
     function renderDaPanel() {
       const seg = $("daModeSeg");
       if (seg && !seg.dataset.wired) {
@@ -8067,7 +8087,10 @@
       const dv = $("daVisuels");
       if (dv && !dv.dataset.done) {
         dv.dataset.done = "1";
-        dv.innerHTML = DA_VISUELS.map(([ic, name, desc]) => `<div class="feat-item"><div class="feat-ic">${ic}</div><div><div class="feat-name">${escapeHtml(name)}</div><div class="feat-desc">${escapeHtml(desc)}</div></div></div>`).join("");
+        dv.innerHTML = DA_VISUELS.map(([ic, name, desc]) => `<div class="feat-item"><div class="feat-ic">${ic}</div><div><div class="feat-name">${escapeHtml(name)}</div><div class="feat-desc">${escapeHtml(desc)}</div></div></div>`).join("")
+          // P4 : la GRILLE des emojis en service, zone par zone (tap = copier)
+          + '<p class="muted" style="font-size:.78rem;margin:.7rem 0 .2rem"><b>Les emojis en service</b> (tap = copier) :</p>'
+          + DA_EMOJIS.map(([zone, list]) => `<div class="da-emo-zone">${escapeHtml(zone)}</div><div class="da-emo-grid">${list.map((e) => `<button type="button" class="da-emo" data-dacopy="${e}">${e}</button>`).join("")}</div>`).join("");
         const lg = $("daLogos");
         if (lg) {
           const LOGOS = [["logo-day", "Jour"], ["logo-night", "Nuit"], ["logo-winter", "Hiver"], ["logo-winter-n", "Hiver·nuit"], ["logo-tropic", "Tropiques"], ["logo-tropic-n", "Trop.·nuit"]];
@@ -8094,6 +8117,7 @@
           // P3 : le kit embarque AUSSI l'inventaire des visuels (emojis, logos, scènes…) —
           // un brief externe (Stitch, Figma, cowork) a TOUT, pas seulement les couleurs.
           DA_VISUELS.forEach(([ic, name, desc]) => kit.visuels[name] = desc);
+          kit.emojis = {}; DA_EMOJIS.forEach(([zone, list]) => kit.emojis[zone] = list.join(" "));
           DA_MODES.forEach(([m]) => {
             kit.modes[m] = { tokens: {}, pastilles: {}, degrades: {} };
             _daReadTokens(m).forEach((t) => kit.modes[m].tokens[t.v] = t.val);
@@ -13154,21 +13178,36 @@
           // #12 : UN seul monde (fini les cartes côte à côte au dézoom) + bords élastiques doux
           minZoom: 2.4, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 0.8, worldCopyJump: false,
           preferCanvas: true, tap: false, zoomAnimation: true, fadeAnimation: true, inertiaDeceleration: 2600 }).setView([46.6, 2.3], 4);
-        // P2.7 : GESTE COOPÉRATIF sur la MINI-carte (téléphone) — glisser 1 doigt fait défiler la
-        // PAGE (Leaflet retire la classe « leaflet-touch-drag » → le navigateur reprend le scroll),
-        // le pincement zoome toujours, et l'exploration libre se fait en PLEIN ÉCRAN (drag réactivé là).
+        // P4 (retour Maxime, remplace le geste P2.7) : TAP-POUR-EXPLORER — la mini-carte dort
+        // (1 doigt = la page défile) ; un TAP dessus la RÉVEILLE (drag direct, 100 % réactive,
+        // liseré corail discret) ; toucher la page EN DEHORS la rendort → le scroll de
+        // l'accueil reste naturel, sans passer par le plein écran.
         window._smCoarse = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
         if (window._smCoarse) {
           try { homeLeaf.dragging.disable(); } catch (e) {}
           const hint = document.createElement("div"); hint.className = "hm-coop-hint";
-          hint.textContent = "⛶ " + i18nT("Plein écran pour explorer la carte");
+          hint.textContent = "🖐️ " + i18nT("Touche la carte pour l'explorer");
           el.appendChild(hint);
-          let ht = 0, shown = 0;
+          let ht = 0, shown = 0, t0 = null;
+          const wake = () => { try { homeLeaf.dragging.enable(); } catch (e) {} el.classList.add("hm-live"); hint.classList.remove("show"); };
+          const sleep = () => {
+            if (document.querySelector(".homemap-card.fs")) return; // en plein écran, drag toujours actif
+            try { homeLeaf.dragging.disable(); } catch (e) {} el.classList.remove("hm-live");
+          };
+          window._smMapSleep = sleep; // la sortie du plein écran rendort la mini-carte
+          el.addEventListener("touchstart", (ev) => { const t = ev.touches && ev.touches[0]; t0 = t ? { x: t.clientX, y: t.clientY } : null; }, { passive: true });
+          el.addEventListener("touchend", (ev) => {
+            // Un TAP (pas un scroll) : le doigt n'a presque pas bougé → on réveille la carte.
+            const t = ev.changedTouches && ev.changedTouches[0];
+            if (t0 && t && Math.abs(t.clientX - t0.x) < 10 && Math.abs(t.clientY - t0.y) < 10) wake();
+          }, { passive: true });
+          document.addEventListener("touchstart", (ev) => { if (el.classList.contains("hm-live") && !el.contains(ev.target)) sleep(); }, { passive: true });
           el.addEventListener("touchmove", (ev) => {
-            if (document.querySelector(".homemap-card.fs") || (ev.touches && ev.touches.length > 1)) return;
+            // On tente de glisser la carte ENDORMIE → petit rappel « touche-la pour l'explorer »
+            if (el.classList.contains("hm-live") || document.querySelector(".homemap-card.fs") || (ev.touches && ev.touches.length > 1)) return;
             if (Date.now() - shown < 2600) return;
             shown = Date.now(); hint.classList.add("show");
-            clearTimeout(ht); ht = setTimeout(() => hint.classList.remove("show"), 1600);
+            clearTimeout(ht); ht = setTimeout(() => hint.classList.remove("show"), 1500);
           }, { passive: true });
         }
         // Fond vectoriel SunMates : rendu GPU continu (fini le chargement tuile par tuile),
@@ -13605,8 +13644,8 @@
       try { _smGlMaps.forEach((m) => { if (m && typeof m.setPixelRatio === "function") m.setPixelRatio(on ? 1 : Math.min(window.devicePixelRatio || 1, 2)); }); } catch (e) {}
       if (homeLeaf) {
         if (homeLeaf.scrollWheelZoom) { on ? homeLeaf.scrollWheelZoom.enable() : homeLeaf.scrollWheelZoom.disable(); }
-        // P2.7 : sur téléphone le drag 1 doigt ne vit qu'en plein écran (sinon il avalait le scroll de l'accueil)
-        try { if (window._smCoarse && homeLeaf.dragging) { on ? homeLeaf.dragging.enable() : homeLeaf.dragging.disable(); } } catch (e) {}
+        // P4 : plein écran = drag toujours actif ; en sortir rendort la mini-carte (tap pour réveiller)
+        try { if (window._smCoarse && homeLeaf.dragging) { if (on) homeLeaf.dragging.enable(); else if (window._smMapSleep) window._smMapSleep(); else homeLeaf.dragging.disable(); } } catch (e) {}
         // P3 (retour Maxime : plein écran « ultra méga lent ») : le fond VECTORIEL GPU re-rend
         // toute la scène sur un canvas ~4× plus grand → saccadé. En plein écran on bascule sur
         // le fond RASTER (tuiles cachées par le SW = très fluide, variante sombre la nuit) ;
@@ -13615,10 +13654,10 @@
           if (window._homeBaseLyr) {
             if (on && !window._homeFsRaster) {
               homeLeaf.removeLayer(window._homeBaseLyr);
-              const dark = document.body.classList.contains("theme-dusk");
+              // P4 (retour Maxime) : TOUJOURS voyager — la variante sombre était illisible
+              // (rues invisibles). Lisibilité d'abord, même en mode nuit.
               window._homeFsRaster = L.tileLayer(
-                dark ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                     : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+                "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
                 { attribution: "© OpenStreetMap · © CARTO", maxZoom: 19, keepBuffer: 4, updateWhenIdle: false, updateWhenZooming: false }
               ).addTo(homeLeaf);
             } else if (!on && window._homeFsRaster) {
@@ -17071,6 +17110,7 @@
       "Encore un retour pour quitter": "Press back once more to exit",
       "Plein écran pour explorer la carte": "Full screen to explore the map",
       "Quoi de neuf dans cette préversion": "What's new in this preview",
+      "Touche la carte pour l'explorer": "Tap the map to explore it",
       // · Batch 5 : gaps onglet Sécurité —
       "Partage de position, alerte d'urgence, cercle de confiance et plus.": "Location sharing, emergency alert, trust circle and more.",
       "En cas d'urgence": "In an emergency", "Un geste, et tu n'es plus seul·e.": "One tap, and you're not alone.", "📍 Partager ma position (sans urgence)": "📍 Share my location (no emergency)",
