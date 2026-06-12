@@ -55,7 +55,7 @@
       b.id = "consentBanner";
       b.setAttribute("role", "dialog");
       b.setAttribute("aria-label", txt.aria);
-      b.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:calc(.8rem + env(safe-area-inset-bottom,0px));z-index:var(--z-consent,5500);width:calc(100% - 1.6rem);max-width:430px;background:var(--card,#fff);color:var(--ink,#1d2230);border:1px solid var(--line,#f0e2da);border-radius:18px;box-shadow:0 18px 50px rgba(95,55,40,.22);padding:.9rem 1rem;font:600 .85rem/1.45 Manrope,system-ui,sans-serif";
+      b.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:calc(.8rem + env(safe-area-inset-bottom,0px));z-index:var(--z-consent,5500);width:calc(100% - 1.6rem);max-width:430px;background:var(--card,#fff);color:var(--ink,#1d2230);border:1px solid var(--line,#f0e2da);border-radius:18px;box-shadow:0 18px 50px rgba(45,38,52,.22);padding:.9rem 1rem;font:600 .85rem/1.45 Manrope,system-ui,sans-serif";
       b.innerHTML = '🍪 <b>' + txt.title + '</b><br>' + txt.body
         + '<div style="display:flex;gap:.5rem;margin-top:.6rem">'
         + '<button id="consentYes" style="flex:1;border:0;border-radius:999px;padding:.55rem;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#FFC93C,#FF8A3D,#FF5A4D);color:#fff">' + txt.yes + '</button>'
@@ -194,9 +194,9 @@
       --radius:    22px;
       --radius-sm: 14px;
       --radius-lg: 28px;
-      --shadow:    0 14px 40px rgba(95,55,40,.10), 0 4px 12px rgba(20,20,40,.05); /* P12 : dé-rougi */
+      --shadow:    0 14px 40px rgba(45,38,52,.10), 0 4px 12px rgba(20,20,40,.05); /* P12 : dé-rougi */
       --shadow-sm: 0 6px 18px rgba(20,20,40,.06);
-      --shadow-pop: 0 18px 50px rgba(70,40,35,.20);
+      --shadow-pop: 0 18px 50px rgba(40,34,46,.20);
       --ring:      0 0 0 4px rgba(255,90,77,.16);
 
       /* Échelle de z-index nommée (valeurs identiques à l'existant ; ordre du plus bas
@@ -332,7 +332,7 @@
     .btn-primary:hover { filter: brightness(1.04); }
     .btn-accent  { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
     .btn-ghost   { background: #fff; color: var(--text); border: 1.5px solid var(--line); }
-    .btn-danger  { background: var(--accent-grad); color: #fff; width: 100%; font-size: 1.05rem; padding: 1rem; box-shadow: 0 6px 18px rgba(95,55,40,.16); }
+    .btn-danger  { background: var(--accent-grad); color: #fff; width: 100%; font-size: 1.05rem; padding: 1rem; box-shadow: 0 6px 18px rgba(45,38,52,.16); }
     .btn-block   { width: 100%; }
     .row { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .4rem; }
     .row > button { flex: 1; }
@@ -347,7 +347,7 @@
     .act-tile .arr { opacity: .45; font-size: 1.2rem; font-weight: 800; }
     .act-challenge { background: #efeaff; color: #6a4bff; border-color: #ddd3ff; }
     .act-challenge .ic { background: #ddd3ff; }
-    .act-challenge:hover { box-shadow: 0 8px 18px rgba(95,55,40,.22); }
+    .act-challenge:hover { box-shadow: 0 8px 18px rgba(45,38,52,.22); }
     .act-bff { background: #fff6e8; color: #b9740a; border-color: #ffe6c2; }
     .act-bff .ic { background: #ffe6c2; }
     .act-bff:hover { box-shadow: 0 8px 18px rgba(255,178,116,.3); }
@@ -365,7 +365,7 @@
     .act-map:hover { box-shadow: 0 8px 18px rgba(255,159,28,.25); }
     .act-teal { background: #fdeceb; color: #d6483a; border-color: #f8d2cd; }
     .act-teal .ic { background: #f8d2cd; }
-    .act-teal:hover { box-shadow: 0 8px 18px rgba(95,55,40,.22); }
+    .act-teal:hover { box-shadow: 0 8px 18px rgba(45,38,52,.22); }
     body.theme-dusk .act-map { background: rgba(255,159,28,.16); color: #ffce93; border-color: rgba(255,159,28,.32); }
     body.theme-dusk .act-map .ic { background: rgba(255,159,28,.32); }
     body.theme-dusk .act-teal { background: rgba(255,90,77,.16); color: #ffb0a6; border-color: rgba(255,90,77,.32); }
@@ -385,7 +385,7 @@
     .cat-tile .cic::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(157deg, rgba(255,255,255,.34) 0%, rgba(255,255,255,.08) 26%, rgba(255,255,255,0) 54%); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); pointer-events: none; }
     /* P8 : le libellé peut REVENIR à la ligne au lieu de déborder (textes EN plus longs, petits écrans) */
     .cat-tile .clbl { font-size: .74rem; font-weight: 700; color: var(--ink); white-space: normal; overflow-wrap: anywhere; line-height: 1.15; }
-    .cat-tile.active { border-color: var(--accent); box-shadow: 0 6px 16px rgba(95,55,40,.2); }
+    .cat-tile.active { border-color: var(--accent); box-shadow: 0 6px 16px rgba(45,38,52,.2); }
     .cic.c-sun { background: var(--accent-grad); }
     /* DA : pas de vert vif ni de bleu ciel « hors-DA » → turquoise bijou + indigo nuit (palette émaillée).
        #16 : les couleurs passent par --c1/--c2 → la couche « palette malléable » (fin de feuille)
@@ -465,11 +465,11 @@
     .fc-chips::-webkit-scrollbar { display: none; }
     .fc-chip { flex: 0 0 auto; font-size: .78rem; font-weight: 600; padding: .35rem .65rem; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); color: var(--ink); cursor: pointer; white-space: nowrap; }
     .fc-chip:active { transform: scale(.96); }
-    .fc-chip.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 7px rgba(95,55,40,.16); }
+    .fc-chip.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 7px rgba(45,38,52,.16); }
     body.theme-dusk .fc-chip { background: var(--dcard,#2a2140); color: #eee; border-color: rgba(255,255,255,.1); }
     .fc-hint { font-size: .72rem; color: var(--muted); font-weight: 600; margin-top: .35rem; }
     .fc-kind { font-size: .76rem; font-weight: 700; padding: .35rem .75rem; border-radius: 999px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
-    .fc-kind.active { background: var(--accent-grad); color: #fff; box-shadow: 0 2px 8px rgba(95,55,40,.16); }
+    .fc-kind.active { background: var(--accent-grad); color: #fff; box-shadow: 0 2px 8px rgba(45,38,52,.16); }
     /* P8 : halo du bouton Publier ADOUCI et remonté (l'ombre descendait sur la note
        « Visible par toute la communauté » juste en dessous et la voilait). */
     .fc-send { padding: .45rem 1rem; font-size: .85rem; box-shadow: 0 2px 6px color-mix(in oklab, var(--accent, #FF5A4D) 22%, transparent) !important; }
@@ -491,7 +491,7 @@
     /* Pastille « Dispo maintenant » affichée sur la fiche d'un voyageur */
     .avail-badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .72rem; font-weight: 800; color: #6b3d00; background: linear-gradient(135deg, #FFD15C, #FF9F1C); border-radius: 999px; padding: .15rem .5rem; }
     /* Barre minuteur « Rentrée en sécurité » : sunset, fixée au-dessus de la nav, visible partout */
-    #safeTimerBar { position: fixed; left: 0; right: 0; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); z-index: 1200; margin: 0 auto; max-width: 460px; width: calc(100% - 1.4rem); display: flex; align-items: center; gap: .55rem; padding: .55rem .7rem; border-radius: 14px; background: linear-gradient(135deg, #FF8A3D, #FF5A4D); color: #fff; box-shadow: 0 8px 22px rgba(95,55,40,.16); font-size: .85rem; font-weight: 700; }
+    #safeTimerBar { position: fixed; left: 0; right: 0; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); z-index: 1200; margin: 0 auto; max-width: 460px; width: calc(100% - 1.4rem); display: flex; align-items: center; gap: .55rem; padding: .55rem .7rem; border-radius: 14px; background: linear-gradient(135deg, #FF8A3D, #FF5A4D); color: #fff; box-shadow: 0 8px 22px rgba(45,38,52,.16); font-size: .85rem; font-weight: 700; }
     #safeTimerBar .stb-ic { font-size: 1.1rem; }
     #safeTimerBar .stb-txt { flex: 1; }
     #safeTimerBar #safeArrivedBtn { background: rgba(255,255,255,.95); color: #c2410c; border: 0; border-radius: 999px; padding: .4rem .7rem; font-weight: 800; font-size: .8rem; cursor: pointer; flex-shrink: 0; }
@@ -507,7 +507,7 @@
     .poll-pct { position: relative; z-index: 1; font-weight: 800; color: var(--accent); font-size: .8rem; flex-shrink: 0; }
     .poll-total { font-size: .74rem; color: var(--muted); margin-top: .1rem; }
     /* ⭐ Mate du jour (suggestion quotidienne, sunset) */
-    .mod-card { background: var(--accent-grad); color: #fff; border-radius: 16px; padding: .7rem .85rem; margin-bottom: .7rem; box-shadow: 0 8px 20px rgba(95,55,40,.28); cursor: pointer; }
+    .mod-card { background: var(--accent-grad); color: #fff; border-radius: 16px; padding: .7rem .85rem; margin-bottom: .7rem; box-shadow: 0 8px 20px rgba(45,38,52,.28); cursor: pointer; }
     .mod-card:active { transform: scale(.99); }
     .mod-lbl { font-size: .72rem; font-weight: 800; opacity: .95; margin-bottom: .4rem; letter-spacing: .03em; }
     .mod-row { display: flex; align-items: center; gap: .6rem; }
@@ -531,7 +531,7 @@
     .trip-mate .tmn .meta { font-size: .72rem; color: var(--muted); font-weight: 500; }
     .trip-mate .tm-compat { flex-shrink: 0; font-size: .74rem; font-weight: 800; color: var(--accent); }
     .trip-empty { text-align: center; padding: 1.2rem 1rem; background: var(--card); border: 1px dashed var(--line); border-radius: 16px; color: var(--muted); font-size: .86rem; }
-    #tripMatchBanner .tmb { display: flex; align-items: center; gap: .5rem; background: var(--accent-grad); color: #fff; border-radius: 14px; padding: .7rem .85rem; margin-bottom: .6rem; box-shadow: 0 8px 20px rgba(95,55,40,.28); font-weight: 700; font-size: .88rem; cursor: pointer; }
+    #tripMatchBanner .tmb { display: flex; align-items: center; gap: .5rem; background: var(--accent-grad); color: #fff; border-radius: 14px; padding: .7rem .85rem; margin-bottom: .6rem; box-shadow: 0 8px 20px rgba(45,38,52,.28); font-weight: 700; font-size: .88rem; cursor: pointer; }
     .fpost { cursor: default; position: relative; } /* le corps blanc n'est PAS cliquable (anti mis-clic) */
     /* Burst de cœur au double-tap d'un post (façon Insta) */
     .fp-heartburst { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) scale(0); font-size: 3.4rem; pointer-events: none; z-index: 5; filter: drop-shadow(0 4px 10px rgba(0,0,0,.3)); animation: fpHeart .75s ease-out forwards; }
@@ -542,7 +542,7 @@
     .fpost-who b { font-size: .9rem; color: var(--ink); }
     .fpost-who span { font-size: .76rem; color: var(--muted); }
     .fpost-time { font-size: .72rem; color: var(--muted); white-space: nowrap; }
-    .fpost-badge { display: flex; align-items: center; gap: .7rem; margin-top: .6rem; padding: .65rem .8rem; border-radius: 14px; color: #fff; box-shadow: 0 5px 14px rgba(70,40,35,.18); } /* P12 : dé-rougi */
+    .fpost-badge { display: flex; align-items: center; gap: .7rem; margin-top: .6rem; padding: .65rem .8rem; border-radius: 14px; color: #fff; box-shadow: 0 5px 14px rgba(40,34,46,.18); } /* P12 : dé-rougi */
     .fpost-emoji { font-size: 1.9rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,.25)); }
     .fpost-txt { flex: 1; display: flex; flex-direction: column; line-height: 1.25; }
     .fpost-txt b { font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; opacity: .92; }
@@ -592,7 +592,7 @@
     .pwa-txt { flex: 1; display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
     .pwa-txt b { font-size: .95rem; }
     .pwa-txt span { font-size: .76rem; color: var(--muted); }
-    .pwa-cta { background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .55rem .95rem; font-weight: 800; font-size: .85rem; cursor: pointer; flex-shrink: 0; box-shadow: 0 6px 14px rgba(95,55,40,.16); }
+    .pwa-cta { background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .55rem .95rem; font-weight: 800; font-size: .85rem; cursor: pointer; flex-shrink: 0; box-shadow: 0 6px 14px rgba(45,38,52,.16); }
     .pwa-x { background: transparent; border: 0; color: var(--muted); font-size: 1rem; cursor: pointer; flex-shrink: 0; min-width: 44px; min-height: 44px; display: grid; place-items: center; }
     /* Étapes d'installation (carte explicative) */
     .install-steps { margin: 0 0 .4rem; padding-left: 1.2rem; }
@@ -749,7 +749,7 @@
     .spot-emoji-pick { display: grid; grid-template-columns: repeat(6, 1fr); gap: .4rem; margin: .4rem 0 .2rem; }
     .spot-emoji-pick button { background: var(--accent-soft); border: 1.5px solid transparent; border-radius: 12px; padding: .5rem 0; font-size: 1.3rem; line-height: 1; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
     .spot-emoji-pick button:active { transform: scale(.94); }
-    .spot-emoji-pick button.active { border-color: var(--accent); background: #fff; box-shadow: 0 5px 14px rgba(95,55,40,.22); transform: translateY(-1px); }
+    .spot-emoji-pick button.active { border-color: var(--accent); background: #fff; box-shadow: 0 5px 14px rgba(45,38,52,.22); transform: translateY(-1px); }
     .spot-step { font-size: .72rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin: .55rem 0 .1rem; }
     /* Spot du jour : suggestions rapides */
     .spot-quick { display: flex; flex-wrap: wrap; gap: .4rem; margin: .1rem 0 .7rem; }
@@ -878,11 +878,11 @@
     .chips::-webkit-scrollbar { display: none; }
     .chip { white-space: nowrap; padding: .5rem .9rem; border-radius: 999px; background: #fff; color: var(--text);
       font-size: .82rem; font-weight: 600; cursor: pointer; box-shadow: var(--shadow-sm); border: 0; }
-    .chip.active { background: var(--accent-grad); color: #fff; box-shadow: 0 6px 14px rgba(95,55,40,.16); }
+    .chip.active { background: var(--accent-grad); color: #fff; box-shadow: 0 6px 14px rgba(45,38,52,.16); }
     .chip.chip-locked { opacity: .4; } /* plafond atteint : chips non sélectionnés grisés (un tap explique le max) */
     .lbl-hint { color: var(--muted); font-weight: 400; font-size: .76rem; } /* règle de sélection affichée dans le label */
     /* Bannière de fin d'onboarding (in-page, refermable) */
-    .onb-done { display: flex; align-items: center; gap: .7rem; background: var(--accent-grad); color: #fff; border-radius: 16px; padding: .8rem 1rem; margin-bottom: 1rem; box-shadow: 0 10px 24px rgba(95,55,40,.16); }
+    .onb-done { display: flex; align-items: center; gap: .7rem; background: var(--accent-grad); color: #fff; border-radius: 16px; padding: .8rem 1rem; margin-bottom: 1rem; box-shadow: 0 10px 24px rgba(45,38,52,.16); }
     .onb-done button { background: rgba(255,255,255,.22); border: 0; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; flex-shrink: 0; font-weight: 700; display: grid; place-items: center; line-height: 1; padding: 0; font-size: 1rem; }
 
     /* ------------------------- Liste de lieux ----------------------- */
@@ -1067,7 +1067,7 @@
       border: 0; border-radius: 16px; cursor: pointer; color: #fff; text-decoration: none; padding: .8rem .5rem; text-align: center; }
     .su-btn .su-e { font-size: 1.7rem; line-height: 1; }
     .su-btn .su-l { font-size: .86rem; font-weight: 700; line-height: 1.2; }
-    .su-call { background: linear-gradient(135deg,#FF8A3D,#FF5A4D); box-shadow: 0 8px 20px rgba(95,55,40,.16); }
+    .su-call { background: linear-gradient(135deg,#FF8A3D,#FF5A4D); box-shadow: 0 8px 20px rgba(45,38,52,.16); }
     .su-sos { background: linear-gradient(135deg,#FF6A6A,#E11D2E); box-shadow: 0 8px 22px rgba(225,29,46,.4), 0 0 0 0 rgba(225,29,46,.5); animation: sosPulse 2.2s ease-out infinite; }
     .su-btn:active { transform: scale(.97); }
     .secu-explain { margin-top: .8rem; background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .85rem; font-size: .78rem; line-height: 1.5; color: var(--muted); }
@@ -1124,7 +1124,7 @@
     .crop-zoom { display: flex; align-items: center; gap: .6rem; margin-top: .7rem; }
     .crop-zoom input[type=range] { flex: 1; accent-color: var(--accent); }
     /* Bouton « Plein écran » bien visible (pill accent) */
-    .fs-btn { flex-shrink: 0; background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .4rem .8rem; font-weight: 800; font-size: .8rem; cursor: pointer; box-shadow: 0 4px 12px rgba(95,55,40,.16); white-space: nowrap; }
+    .fs-btn { flex-shrink: 0; background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .4rem .8rem; font-weight: 800; font-size: .8rem; cursor: pointer; box-shadow: 0 4px 12px rgba(45,38,52,.16); white-space: nowrap; }
     .fs-btn:active { transform: scale(.96); }
     /* Aussi un bouton flottant ⛶ dans le coin de la carte (toujours visible) */
     /* Bouton plein écran : net (liseré blanc + ombre resserrée) plutôt qu'un halo rouge flou/transparent (P1.26). */
@@ -1156,7 +1156,7 @@
     .homemap-tools { position: absolute; right: .55rem; bottom: .55rem; z-index: 1100; display: flex; flex-direction: column; gap: .4rem; align-items: flex-end; pointer-events: auto; }
     .homemap-tools button { background: var(--card); color: var(--ink); border: 1px solid rgba(0,0,0,.08); border-radius: 999px; padding: .4rem .7rem; font-size: .76rem; font-weight: 700; box-shadow: var(--shadow-sm); cursor: pointer; }
     .homemap-tools button:hover { background: var(--accent-grad); color: #fff; }
-    .homemap-tools #hmAdd { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 16px rgba(95,55,40,.16); }
+    .homemap-tools #hmAdd { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 16px rgba(45,38,52,.16); }
     .homemap-capture { position: absolute; inset: 0; z-index: 1050; cursor: crosshair; background: rgba(122,92,255,.06); }
     .homemap-hint { position: absolute; top: .55rem; left: 50%; transform: translateX(-50%); z-index: 1100;
       background: var(--ink); color: #fff; padding: .42rem .85rem; border-radius: 999px; font-size: .76rem; box-shadow: var(--shadow-sm); white-space: nowrap; }
@@ -1221,7 +1221,7 @@
     .onb-dots i.on { width: 26px; border-radius: 999px; background: linear-gradient(90deg,#ffd15c,#ff7e5f); }
     .onb-actions { display: flex; gap: .7rem; }
     .onb-actions button { flex: 1; padding: .9rem; border-radius: 999px; font-weight: 800; cursor: pointer; border: 0; font-size: .95rem; }
-    .onb-next { background: linear-gradient(135deg,#FFC93C,#ff7e5f 60%,#FF5A4D); color: #fff; box-shadow: 0 10px 24px rgba(95,55,40,.16); }
+    .onb-next { background: linear-gradient(135deg,#FFC93C,#ff7e5f 60%,#FF5A4D); color: #fff; box-shadow: 0 10px 24px rgba(45,38,52,.16); }
     .onb-next:hover { transform: translateY(-2px); }
     .onb-prev { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.18); flex: 0 0 32%; }
 
@@ -1248,7 +1248,7 @@
     .tour-pass { position: absolute; top: .5rem; right: .6rem; background: none; border: 0; color: var(--muted); font-size: .8rem; font-weight: 600; cursor: pointer; padding: .55rem .7rem; min-height: 44px; }
     .tour-next { background: var(--accent-grad); color: #fff; border: 0; border-radius: 999px; padding: .55rem 1.1rem; font-weight: 800; cursor: pointer; }
     /* Chips colorés = couleur des marqueurs (l'âme SunMates), actifs = pleine couleur */
-    .homemap-filters .chip.cl-places.active   { background: #FF5A4D; color: #fff; box-shadow: 0 4px 12px rgba(95,55,40,.16); }
+    .homemap-filters .chip.cl-places.active   { background: #FF5A4D; color: #fff; box-shadow: 0 4px 12px rgba(45,38,52,.16); }
     .homemap-filters .chip.cl-mates.active     { background: #7a5cff; color: #fff; box-shadow: 0 4px 12px rgba(122,92,255,.32); }
     .homemap-filters .chip.cl-acts.active      { background: #ff9f1c; color: #fff; box-shadow: 0 4px 12px rgba(255,159,28,.32); }
     .homemap-filters .chip.cl-checkins.active  { background: #17a99b; color: #fff; box-shadow: 0 4px 12px rgba(23,169,155,.32); } /* DA : teal, pas de vert vif */
@@ -1283,7 +1283,7 @@
     .tile .thumb {
       height: 84px; border-radius: 12px; margin-bottom: .55rem;
       background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), var(--accent-grad);
-      display: grid; place-items: center; font-size: 30px; box-shadow: 0 6px 16px rgba(95,55,40,.22);
+      display: grid; place-items: center; font-size: 30px; box-shadow: 0 6px 16px rgba(45,38,52,.22);
       transition: transform .15s ease;
     }
     .tile:hover .thumb { transform: translateY(-2px) scale(1.02); }
@@ -1350,7 +1350,7 @@
     .auth-wrap { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
     .auth-hero {
       background: var(--accent-grad); border-radius: 0 0 36px 36px; padding: 3rem 1.5rem 2.5rem;
-      text-align: center; color: #fff; box-shadow: 0 14px 30px rgba(95,55,40,.16);
+      text-align: center; color: #fff; box-shadow: 0 14px 30px rgba(45,38,52,.16);
     }
     .auth-hero .logo-badge {
       width: 96px; height: 96px; margin: 0 auto 1rem; border-radius: 28px; background: rgba(255,255,255,.18);
@@ -1365,7 +1365,7 @@
     .seg button { flex: 1; background: transparent; color: var(--muted); border-radius: 999px; padding: .6rem; margin: 0; }
     .seg button.active { background: var(--accent-grad); color: #fff; }
     .auth-play { display: grid; place-items: center; margin-top: 1.6rem; }
-    .auth-play button { width: 64px; height: 64px; border-radius: 50%; background: var(--accent-grad); color: #fff; font-size: 24px; box-shadow: 0 8px 20px rgba(95,55,40,.16); padding: 0; }
+    .auth-play button { width: 64px; height: 64px; border-radius: 50%; background: var(--accent-grad); color: #fff; font-size: 24px; box-shadow: 0 8px 20px rgba(45,38,52,.16); padding: 0; }
 
     /* ----------------------- Barre de nav (bas) --------------------- */
     .bottom-nav {
@@ -1468,14 +1468,14 @@
     .gcard .gtag-quest { background: var(--accent-soft); color: var(--accent); }
     .gcard .gtag-done { background: rgba(255,177,60,.24); color: #6b4a00; }
     .gcard .gbody .gname { margin-top: .35rem; }
-    .gcard .gplay { display: inline-flex; align-items: center; gap: .25rem; margin-top: .5rem; font-size: .76rem; font-weight: 800; color: #fff; background: var(--accent-grad); padding: .32rem .8rem; border-radius: 999px; box-shadow: 0 3px 9px rgba(95,55,40,.28); }
+    .gcard .gplay { display: inline-flex; align-items: center; gap: .25rem; margin-top: .5rem; font-size: .76rem; font-weight: 800; color: #fff; background: var(--accent-grad); padding: .32rem .8rem; border-radius: 999px; box-shadow: 0 3px 9px rgba(45,38,52,.28); }
     .gcard .gplay-xp { background: linear-gradient(135deg,#FFD15C,#F4A11E); color: #6b4a00; box-shadow: 0 3px 9px rgba(240,169,58,.3); }
     body.theme-dusk .gcard .gtag-mini { background: rgba(255,255,255,.12); color: #d8cfe8; }
 
     /* Lignes de quêtes */
     .qrow { display: flex; align-items: center; gap: .8rem; padding: .85rem 0; border-bottom: 1px solid var(--line); cursor: pointer; }
     /* Défis reçus : carte qui ressort (accent corail + halo) pour ne plus être noyée */
-    .sugg-card { border: 1.5px solid rgba(95,55,40,.16); box-shadow: 0 8px 22px rgba(95,55,40,.16); }
+    .sugg-card { border: 1.5px solid rgba(45,38,52,.16); box-shadow: 0 8px 22px rgba(45,38,52,.16); }
     .sugg-count { background: var(--accent); color: #fff; font-size: .7rem; font-weight: 800; min-width: 18px; height: 18px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; padding: 0 .3rem; }
     .q-inprog { margin-left: .4rem; font-size: .68rem; font-weight: 700; color: #B5740E; background: rgba(255,177,60,.18); padding: .08rem .45rem; border-radius: 999px; }
     .quest-counter { font-size: .76rem; color: var(--muted); font-weight: 600; }
@@ -1515,7 +1515,7 @@
     .lb-segs { display: flex; flex-wrap: wrap; gap: .4rem; padding-bottom: .2rem; margin-bottom: .6rem; }
     .lb-segs::-webkit-scrollbar { display: none; }
     .lb-segs button { flex: 1 1 auto; background: var(--cream); border: 1.5px solid var(--line); color: var(--text); border-radius: 999px; padding: .45rem .7rem; font-weight: 700; font-size: .8rem; cursor: pointer; white-space: nowrap; }
-    .lb-segs button.active { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 14px rgba(95,55,40,.16); }
+    .lb-segs button.active { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 14px rgba(45,38,52,.16); }
     .lb-row { display: flex; align-items: center; gap: .7rem; padding: .6rem .7rem; border-radius: 14px; margin-bottom: .4rem; background: var(--card); border: 1px solid var(--line); }
     .lb-row .avatar { width: 38px; height: 38px; }
     .lb-rank { width: 26px; text-align: center; font-weight: 800; font-size: 1rem; color: var(--muted); flex-shrink: 0; }
@@ -1640,7 +1640,7 @@
       background: var(--accent-soft, rgba(255,170,90,.16)); }
     /* P2.16 : titres = cercle dégradé sunset vibrant (fini le 🏷️ gris répété) + petit reflet glossy. */
     .shop-ic-title { background: radial-gradient(circle at 50% 28%, rgba(255,255,255,.45), rgba(255,255,255,0) 55%), var(--accent-grad);
-      box-shadow: 0 4px 12px rgba(95,55,40,.28); }
+      box-shadow: 0 4px 12px rgba(45,38,52,.28); }
     .shop-ic-none { background: var(--cream); box-shadow: none; filter: grayscale(.4); }
     body.theme-dusk .shop-ic-none { background: var(--dcard,#2a2140); }
     .shop-name { font-size: .82rem; font-weight: 700; line-height: 1.2; }
@@ -1663,7 +1663,7 @@
     .boost-card.buyable { border-color: rgba(255,126,95,.4); }
     .boost-card.on { border-color: var(--accent); background: linear-gradient(135deg, rgba(255,201,60,.16), rgba(255,126,95,.12)); cursor: default; }
     .boost-card .boost-ic { width: 46px; height: 46px; min-width: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 24px;
-      background: radial-gradient(circle at 50% 28%, rgba(255,255,255,.45), rgba(255,255,255,0) 55%), var(--accent-grad); box-shadow: 0 4px 12px rgba(95,55,40,.28); }
+      background: radial-gradient(circle at 50% 28%, rgba(255,255,255,.45), rgba(255,255,255,0) 55%), var(--accent-grad); box-shadow: 0 4px 12px rgba(45,38,52,.28); }
     .boost-card .boost-txt { flex: 1; min-width: 0; }
     .boost-card .boost-name { font-weight: 800; color: var(--ink); font-size: .92rem; }
     .boost-card .boost-desc { color: var(--muted); font-size: .76rem; line-height: 1.3; margin-top: .1rem; }
@@ -1677,7 +1677,7 @@
     /* Cadres d'avatar (s'appliquent à l'avatar ET à l'aperçu boutique), distincts + glow */
     .avatar.frame-gold, .shop-frame-prev.frame-gold { box-shadow: 0 0 0 3px #f5c451, 0 0 12px rgba(245,196,81,.55); }
     .avatar.frame-coral, .shop-frame-prev.frame-coral { box-shadow: 0 0 0 3px #ff7e5f, 0 0 12px rgba(255,126,95,.5); }
-    .avatar.frame-sunset, .shop-frame-prev.frame-sunset { box-shadow: 0 0 0 3px #ffce6b, 0 0 0 6px #ff5a4d, 0 0 14px rgba(95,55,40,.16); }
+    .avatar.frame-sunset, .shop-frame-prev.frame-sunset { box-shadow: 0 0 0 3px #ffce6b, 0 0 0 6px #ff5a4d, 0 0 14px rgba(45,38,52,.16); }
     .avatar.frame-aurora, .shop-frame-prev.frame-aurora { animation: auroraGlow 3s ease-in-out infinite; }
     .avatar.frame-emerald, .shop-frame-prev.frame-emerald { box-shadow: 0 0 0 3px #2fd6a6, 0 0 0 6px #0e9e8c, 0 0 14px rgba(47,214,166,.5); }
     .avatar.frame-royal, .shop-frame-prev.frame-royal { box-shadow: 0 0 0 3px #ffd15c, 0 0 0 6px #7c5cff, 0 0 16px rgba(124,92,255,.55); }
@@ -1728,14 +1728,14 @@
        on SUPPRIME le voile ::before générique de .cat-tile (l'empilement rendait le glyphe flou). */
     .cat-tile .cic[data-smicon]::before, .jo-ic[data-smicon]::before { display:none; }
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg { display:block; position:relative; z-index:1; }
-    .cat-tile.active .cic[data-smicon] { box-shadow: 0 8px 18px -4px rgba(95,55,40,.16), 0 2px 4px rgba(180,60,40,.32), inset 0 1px 1px rgba(255,246,236,.9), inset 0 -2px 3px rgba(150,45,30,.32); }
+    .cat-tile.active .cic[data-smicon] { box-shadow: 0 8px 18px -4px rgba(45,38,52,.16), 0 2px 4px rgba(180,60,40,.32), inset 0 1px 1px rgba(255,246,236,.9), inset 0 -2px 3px rgba(150,45,30,.32); }
     /* Palette par tuile : un spectre DA distinct par catégorie (anti-uniformité) */
     [data-smicon="quest"]{--c1:#FF7A4D;--c2:#FF5238} [data-smicon="games"]{--c1:#8a5cff;--c2:#6638d6} [data-smicon="medal"]{--c1:#E8A33A;--c2:#D07F10} [data-smicon="coupon"]{--c1:#FF6FA5;--c2:#E84D86} [data-smicon="rank"]{--c1:#5E74E8;--c2:#3641B8} [data-smicon="shop"]{--c1:#FF5A8A;--c2:#C43A8A}
     [data-smicon="coffee"]{--c1:#E89A4E;--c2:#C26A1E} [data-smicon="eco"]{--c1:#34C98F;--c2:#0E9E6B} [data-smicon="near"]{--c1:#FF9A3D;--c2:#FF6A1F} [data-smicon="rating"]{--c1:#FFB23D;--c2:#E07E12} [data-smicon="popular"]{--c1:#FF5A4D;--c2:#E83247} [data-smicon="trip"]{--c1:#FF8A4D;--c2:#FF5A4D}
     [data-smicon="users"]{--c1:#9b7bff;--c2:#6a4fe0} [data-smicon="shieldsafe"]{--c1:#1FB38C;--c2:#0C7E6E} [data-smicon="usersolo"]{--c1:#FF9A5C;--c2:#E8631F} [data-smicon="crown"]{--c1:#8a5cff;--c2:#5028b0} [data-smicon="phone"]{--c1:#2BC48A;--c2:#15897A} [data-smicon="signal"]{--c1:#FFC04E;--c2:#E8901F}
     [data-smicon="alert"]{--c1:#FF4D4D;--c2:#D81E2A} [data-smicon="aid"]{--c1:#FF7A4D;--c2:#FF9A3D} [data-smicon="chat"]{--c1:#7a8cff;--c2:#5560f0}
     /* Pastille-joyau réutilisable (icône ivoire sur dégradé) pour harmoniser les emojis hors tuiles */
-    .smgem { background: linear-gradient(135deg, var(--ic1, var(--c1,#FF8A3D)), var(--ic2, var(--c2,#FF5A4D))) !important; box-shadow: 0 4px 10px rgba(95,55,40,.28), inset 0 1px 1px rgba(255,246,236,.6) !important; color: #fff !important; }
+    .smgem { background: linear-gradient(135deg, var(--ic1, var(--c1,#FF8A3D)), var(--ic2, var(--c2,#FF5A4D))) !important; box-shadow: 0 4px 10px rgba(45,38,52,.28), inset 0 1px 1px rgba(255,246,236,.6) !important; color: #fff !important; }
     .smgem svg { filter: drop-shadow(0 1px 1px rgba(122,36,21,.25)); }
     .sv-stat .sv-ico { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; vertical-align: -5px; margin-right: 4px; }
 
@@ -1749,7 +1749,7 @@
     .jh-head{ display:flex; align-items:center; justify-content:space-between; gap:.6rem; }
     /* Badge niveau plus imposant + anneau crème DA (retour « tout petit et bizarre ») */
     .player-badge{ position:relative; flex-shrink:0; width:66px; height:66px; border-radius:50%; cursor:pointer; overflow:visible;
-      background:var(--accent-grad); display:grid; place-items:center; box-shadow:0 8px 20px rgba(95,55,40,.16); transition:transform .12s ease;
+      background:var(--accent-grad); display:grid; place-items:center; box-shadow:0 8px 20px rgba(45,38,52,.16); transition:transform .12s ease;
       border:3px solid rgba(255,247,238,.9); }
     body.theme-dusk .player-badge{ border-color:rgba(255,255,255,.25); }
     .player-badge:active{ transform:scale(.94); }
@@ -1879,12 +1879,12 @@
     body.theme-dusk .quest-spotlight{ background:var(--dcard2,#241b35); border-color:rgba(255,255,255,.09); }
     .qs-head{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-bottom:.7rem; padding-left:.4rem; }
     .qs-pill{ display:inline-flex; align-items:center; gap:.2rem; font-weight:800; font-size:.74rem; letter-spacing:.3px; color:#fff; padding:.3rem .65rem;
-      border-radius:999px; background:var(--accent-grad); box-shadow:0 4px 12px rgba(95,55,40,.16); }
+      border-radius:999px; background:var(--accent-grad); box-shadow:0 4px 12px rgba(45,38,52,.16); }
     .qs-timer{ font-size:.76rem; font-weight:700; color:var(--muted); white-space:nowrap; }
     .qs-body{ display:flex; align-items:flex-start; gap:.8rem; padding-left:.4rem; }
     .qs-emblem{ flex-shrink:0; width:48px; height:48px; display:grid; place-items:center; font-size:25px; border-radius:15px;
       background: radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), var(--accent-grad);
-      box-shadow:0 8px 18px rgba(95,55,40,.16), inset 0 -8px 14px rgba(0,0,0,.12), inset 0 2px 3px rgba(255,255,255,.5); }
+      box-shadow:0 8px 18px rgba(45,38,52,.16), inset 0 -8px 14px rgba(0,0,0,.12), inset 0 2px 3px rgba(255,255,255,.5); }
     .qs-txt{ min-width:0; }
     .qs-title{ margin:.1rem 0 .25rem !important; font-family:"Fraunces",serif; font-weight:900; font-size:1.05rem; line-height:1.15; color:var(--ink);
       display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
@@ -1899,10 +1899,10 @@
     .qs-mode-btn{ flex:1; min-height:40px; border:0; background:none; cursor:pointer; font-weight:800; font-size:.82rem; color:var(--accent);
       border-radius:999px; padding:.5rem; transition:background .18s, color .18s, transform .12s; }
     .qs-mode-btn i{ font-style:normal; font-size:.7rem; opacity:.85; font-weight:700; }
-    .qs-mode-btn.active{ background:var(--accent-grad); color:#fff; box-shadow:0 6px 14px rgba(95,55,40,.16); } .qs-mode-btn:active{ transform:scale(.96); }
+    .qs-mode-btn.active{ background:var(--accent-grad); color:#fff; box-shadow:0 6px 14px rgba(45,38,52,.16); } .qs-mode-btn:active{ transform:scale(.96); }
     body.theme-dusk .qs-mode{ background:rgba(255,255,255,.06); } body.theme-dusk .qs-mode-btn{ color:var(--accent-2); }
     .qs-play{ width:calc(100% - .8rem); margin:0 .4rem; min-height:48px; font-weight:800; font-size:1rem; color:#fff; cursor:pointer; border:0;
-      border-radius:var(--radius-sm); background:var(--accent-grad); box-shadow:0 8px 20px rgba(95,55,40,.16); transition:transform .14s ease, box-shadow .2s; }
+      border-radius:var(--radius-sm); background:var(--accent-grad); box-shadow:0 8px 20px rgba(45,38,52,.16); transition:transform .14s ease, box-shadow .2s; }
     .qs-play:hover{ box-shadow:var(--shadow-pop); } .qs-play:active{ transform:scale(.98); }
 
     /* --- 3. Missions rapides + rail badges --- */
@@ -1951,7 +1951,7 @@
     .sp-next-name{ font-weight:800; font-size:.92rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .sp-bar{ height:9px; margin-top:.4rem; border-radius:999px; background:rgba(120,40,10,.18); overflow:hidden; }
     .sp-bar span{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#FFF2C2,#FFD15C 60%,#FFE9A8); box-shadow:0 0 8px rgba(255,209,92,.6); transition:width .6s cubic-bezier(.22,1,.36,1); }
-    body.theme-dusk .solo-prog{ background:linear-gradient(135deg, rgba(255,138,61,.16), rgba(95,55,40,.10)); border-color:rgba(255,255,255,.08); box-shadow:0 16px 40px rgba(0,0,0,.45); }
+    body.theme-dusk .solo-prog{ background:linear-gradient(135deg, rgba(255,138,61,.16), rgba(45,38,52,.10)); border-color:rgba(255,255,255,.08); box-shadow:0 16px 40px rgba(0,0,0,.45); }
     /* Sombre : tuiles de stats lisibles (plus de blanc translucide délavé) */
     body.theme-dusk .sp-stat{ background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.1); }
     body.theme-dusk .sp-stat span{ color:#e7dff2; }
@@ -1965,7 +1965,7 @@
     .sc-card{ position:relative; display:flex; align-items:center; gap:.7rem; text-align:left; width:100%; min-height:64px; padding:.7rem .85rem; cursor:pointer;
       border-radius:var(--radius); background:var(--card); border:1px solid rgba(201,138,30,.14); box-shadow:var(--shadow-sm); transition:transform .16s ease, box-shadow .16s ease; }
     .sc-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); } .sc-card:active{ transform:scale(.97); }
-    .sc-ic{ flex-shrink:0; width:46px; height:46px; display:grid; place-items:center; font-size:1.5rem; border-radius:14px; background:var(--accent-grad); box-shadow:0 6px 14px rgba(95,55,40,.28), inset 0 1px 0 rgba(255,255,255,.5); }
+    .sc-ic{ flex-shrink:0; width:46px; height:46px; display:grid; place-items:center; font-size:1.5rem; border-radius:14px; background:var(--accent-grad); box-shadow:0 6px 14px rgba(45,38,52,.28), inset 0 1px 0 rgba(255,255,255,.5); }
     .sc-card.sc-teal{ --c1:#34c98f; --c2:#1f9e8c; } .sc-card.sc-gold{ --c1:#FFD15C; --c2:#E8961F; } .sc-card.sc-violet{ --c1:#9b7bff; --c2:#7a5cff; }
     .sc-card.sc-teal .sc-ic{ background:linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); box-shadow:0 6px 14px rgba(31,158,140,.30), inset 0 1px 0 rgba(255,255,255,.4); }
     .sc-card.sc-gold .sc-ic{ background:linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); box-shadow:0 6px 14px rgba(232,150,31,.32), inset 0 1px 0 rgba(255,255,255,.5); }
@@ -2069,11 +2069,11 @@
     .search-scopes.live { display: flex; }
     .search-scopes::-webkit-scrollbar { display: none; }
     .sscope { flex: 0 0 auto; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .35rem .75rem; font-size: .78rem; font-weight: 700; cursor: pointer; transition: .12s; white-space: nowrap; }
-    .sscope.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 7px rgba(95,55,40,.18); }
+    .sscope.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 7px rgba(45,38,52,.18); }
     .fb-chip { flex: 1; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: .45rem .3rem; font-size: .8rem; font-weight: 700; cursor: pointer; transition: .12s; }
-    .fb-chip.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 8px rgba(95,55,40,.18); }
+    .fb-chip.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 8px rgba(45,38,52,.18); }
     /* Bouton poc rafraîchi : pastille chaude vivante (avant : simple 🔥 plat « vieux »). */
-    .chat-poc { font-size: 1.1rem; flex-shrink: 0; background: linear-gradient(135deg, #ffb347, #ff6f3c); color: #fff; border: 0; box-shadow: 0 2px 8px rgba(95,55,40,.18); transition: transform .12s; }
+    .chat-poc { font-size: 1.1rem; flex-shrink: 0; background: linear-gradient(135deg, #ffb347, #ff6f3c); color: #fff; border: 0; box-shadow: 0 2px 8px rgba(45,38,52,.18); transition: transform .12s; }
     .chat-poc:active { transform: scale(.88); }
     .chat-poc[disabled] { filter: grayscale(.4); opacity: .55; }
     .voice-rec { display: flex; align-items: center; gap: .5rem; background: var(--accent-soft); border-radius: 12px; padding: .5rem .7rem; margin-bottom: .4rem; font-size: .82rem; font-weight: 600; color: var(--ink); }
@@ -2356,11 +2356,11 @@
 
     /* Boutons : rebond doux + ombre colorée */
     button { transition: transform .14s cubic-bezier(.2,.8,.3,1), box-shadow .2s, filter .2s; }
-    .btn-primary { box-shadow: 0 6px 16px rgba(95,55,40,.20); } /* P12 : dé-rougi */
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(95,55,40,.16); filter: none; }
+    .btn-primary { box-shadow: 0 6px 16px rgba(45,38,52,.20); } /* P12 : dé-rougi */
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(45,38,52,.16); filter: none; }
     .btn-accent:hover { background: #fde2dd; }
     .btn-ghost:hover { background: #fff7f5; border-color: var(--accent-2); }
-    .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(95,55,40,.16); }
+    .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(45,38,52,.16); }
 
     /* Champs : anneau de focus doux */
     input:focus, textarea:focus, select:focus { box-shadow: var(--ring); }
@@ -2368,7 +2368,7 @@
     /* Chips : survol + état actif plus marqué */
     .chip { transition: transform .18s, box-shadow .18s, background .18s; }
     .chip:hover { transform: translateY(-1px); }
-    .chip.active { box-shadow: 0 8px 18px rgba(95,55,40,.16); }
+    .chip.active { box-shadow: 0 8px 18px rgba(45,38,52,.16); }
 
     /* Tuiles / cartes cliquables : élévation au survol */
     .tile, .gcard, .reco { transition: transform .2s cubic-bezier(.2,.8,.3,1), box-shadow .2s; }
@@ -2381,17 +2381,17 @@
     .qrow:hover { background: #fff6f3; }
 
     /* Avatars : petite ombre corail + anneau blanc */
-    .avatar { box-shadow: 0 5px 14px rgba(95,55,40,.20); }
-    .avatar.lg { box-shadow: 0 8px 22px rgba(95,55,40,.28); border: 3px solid #fff; }
+    .avatar { box-shadow: 0 5px 14px rgba(45,38,52,.20); }
+    .avatar.lg { box-shadow: 0 8px 22px rgba(45,38,52,.28); border: 3px solid #fff; }
 
     /* Héros & bandeaux : ombre généreuse */
     .feature, .detail-hero { box-shadow: var(--shadow-pop); }
 
     /* Barre de complétion : petite lueur */
-    .completion-bar span { box-shadow: 0 0 6px rgba(95,55,40,.25); } /* P11 audit : halo .55 trop criard pour la DA */
+    .completion-bar span { box-shadow: 0 0 6px rgba(45,38,52,.25); } /* P11 audit : halo .55 trop criard pour la DA */
 
     /* Écran de connexion : soleil flou dans le héros */
-    .auth-hero { position: relative; overflow: hidden; box-shadow: 0 18px 40px rgba(95,55,40,.16); }
+    .auth-hero { position: relative; overflow: hidden; box-shadow: 0 18px 40px rgba(45,38,52,.16); }
     .auth-hero::after { content: ""; position: absolute; width: 220px; height: 220px; border-radius: 50%;
       background: radial-gradient(circle, rgba(255,255,255,.45), rgba(255,255,255,0) 70%); top: -70px; right: -50px; }
     .auth-hero .logo-badge, .auth-hero .logo-text, .auth-hero .logo-tag { position: relative; z-index: 1; }
@@ -2408,12 +2408,12 @@
     .logo-badge { animation: floaty 5s ease-in-out infinite; box-shadow: 0 16px 30px rgba(0,0,0,.12), inset 0 0 0 2px rgba(255,255,255,.3); }
     @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
     .logo-text { text-shadow: 0 2px 14px rgba(0,0,0,.14); }
-    .seg button.active { box-shadow: 0 8px 18px rgba(95,55,40,.16); }
+    .seg button.active { box-shadow: 0 8px 18px rgba(45,38,52,.16); }
     .auth-play button { animation: pulseRing 2.6s ease-out infinite; }
     @keyframes pulseRing {
-      0%   { box-shadow: 0 8px 20px rgba(95,55,40,.16), 0 0 0 0 rgba(255,90,77,.35); }
-      70%  { box-shadow: 0 8px 20px rgba(95,55,40,.16), 0 0 0 18px rgba(255,90,77,0); }
-      100% { box-shadow: 0 8px 20px rgba(95,55,40,.16), 0 0 0 0 rgba(255,90,77,0); }
+      0%   { box-shadow: 0 8px 20px rgba(45,38,52,.16), 0 0 0 0 rgba(255,90,77,.35); }
+      70%  { box-shadow: 0 8px 20px rgba(45,38,52,.16), 0 0 0 18px rgba(255,90,77,0); }
+      100% { box-shadow: 0 8px 20px rgba(45,38,52,.16), 0 0 0 0 rgba(255,90,77,0); }
     }
 
     /* --- Accueil : titre dégradé, vignettes en relief --- */
@@ -2468,7 +2468,7 @@
     .wish-add { display: flex; gap: .4rem; }
     .wish-add input { flex: 1; }
     /* Préparatifs de voyage (checklist) */
-    .prep-item { display: flex; align-items: center; gap: .6rem; padding: .55rem .6rem; cursor: pointer; border-radius: 12px; border: 1px solid var(--line); background: var(--card); margin: .3rem 0; transition: background .12s, transform .12s; }
+    .prep-item { display: flex; align-items: center; gap: .6rem; padding: .68rem .7rem; cursor: pointer; border-radius: 12px; border: 1px solid var(--line); background: var(--card); margin: .5rem 0; transition: background .12s, transform .12s; } /* P14 : tuiles mieux espacées */
     .prep-item:active { transform: scale(.99); }
     .prep-item.done { background: var(--cream); border-color: transparent; }
     body.theme-dusk .prep-item { background: var(--dcard2,#241b35); } body.theme-dusk .prep-item.done { background: var(--dcard,#2a2140); }
@@ -2506,7 +2506,7 @@
     .gcard { overflow: hidden; }
     .gcard .ghead { position: relative; }
     .gcard .ghead::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(0,0,0,.12)); }
-    .hex { box-shadow: 0 8px 18px rgba(95,55,40,.16); transition: transform .2s ease; }
+    .hex { box-shadow: 0 8px 18px rgba(45,38,52,.16); transition: transform .2s ease; }
     .bitem.locked .hex { box-shadow: none; }
     .bitem:hover .hex { transform: translateY(-3px) rotate(-3deg); }
     .coupon { position: relative; }
@@ -2518,7 +2518,7 @@
 
     /* --- Chat : bulles en relief --- */
     .bubble.them { box-shadow: 0 2px 8px rgba(20,20,40,.05); }
-    .bubble.me { box-shadow: 0 6px 16px rgba(95,55,40,.16); }
+    .bubble.me { box-shadow: 0 6px 16px rgba(45,38,52,.16); }
     .chat-input input { border: 1px solid rgba(255,90,77,.10); }
 
     /* --- Badges --- */
@@ -2657,10 +2657,10 @@
        SESSION 3, Notifications, toasts, feed d'accueil, accordéon profil
        =================================================================== */
     .topbar-actions { display: flex; align-items: center; gap: .5rem; }
-    .iconbtn { background: rgba(255,255,255,.75); border: 1px solid rgba(95,55,40,.15); border-radius: 12px; padding: .45rem .6rem; font-size: 1.15rem; line-height: 1; box-shadow: var(--shadow-sm); cursor: pointer; position: relative; }
-    .nbadge { position: absolute; top: -6px; right: -6px; background: var(--accent); color: #fff; font-size: .62rem; font-weight: 800; min-width: 17px; height: 17px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 4px; box-shadow: 0 2px 6px rgba(95,55,40,.16); }
+    .iconbtn { background: rgba(255,255,255,.75); border: 1px solid rgba(45,38,52,.15); border-radius: 12px; padding: .45rem .6rem; font-size: 1.15rem; line-height: 1; box-shadow: var(--shadow-sm); cursor: pointer; position: relative; }
+    .nbadge { position: absolute; top: -6px; right: -6px; background: var(--accent); color: #fff; font-size: .62rem; font-weight: 800; min-width: 17px; height: 17px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 4px; box-shadow: 0 2px 6px rgba(45,38,52,.16); }
     .bottom-nav button { position: relative; }
-    .navbadge { position: absolute; top: 3px; right: calc(50% - 22px); background: var(--accent); color: #fff; font-size: .6rem; font-weight: 800; min-width: 16px; height: 16px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 3px; box-shadow: 0 2px 6px rgba(95,55,40,.16); }
+    .navbadge { position: absolute; top: 3px; right: calc(50% - 22px); background: var(--accent); color: #fff; font-size: .6rem; font-weight: 800; min-width: 16px; height: 16px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 3px; box-shadow: 0 2px 6px rgba(45,38,52,.16); }
 
     /* Toasts (notifications éphémères) */
     #toastWrap { position: fixed; top: calc(.7rem + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: var(--z-toast); display: flex; flex-direction: column; gap: .5rem; width: calc(100% - 1.5rem); max-width: 430px; pointer-events: none; }
@@ -2685,7 +2685,7 @@
     .notif-item .nemoji { font-size: 1.35rem; flex-shrink: 0; }
 
     /* Fil d'actualité de l'accueil */
-    .feed-card { background: linear-gradient(180deg, #fff, var(--paper)); border: 1px solid rgba(95,55,40,.1); border-radius: 18px; padding: .85rem 1rem; margin-bottom: .7rem; display: flex; gap: .75rem; align-items: center; box-shadow: var(--shadow-sm); cursor: pointer; transition: transform .18s, box-shadow .18s; }
+    .feed-card { background: linear-gradient(180deg, #fff, var(--paper)); border: 1px solid rgba(45,38,52,.1); border-radius: 18px; padding: .85rem 1rem; margin-bottom: .7rem; display: flex; gap: .75rem; align-items: center; box-shadow: var(--shadow-sm); cursor: pointer; transition: transform .18s, box-shadow .18s; }
     .feed-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
     .feed-card .fic { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; font-size: 1.35rem; background: var(--accent-soft); flex-shrink: 0; }
     .feed-card .fbody { flex: 1; min-width: 0; }
@@ -2720,9 +2720,14 @@
        du Premium or ET du corail global de l'app. */
     #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#FFDD8A,#F0AD3A); border-color: rgba(200,130,20,.6); color: #5f3e00; }
     #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#FFC2CC,#F4798F); border-color: rgba(220,60,100,.55); color: #7a1230; }
+    /* P14 : bouton Espace Pro = lagon professionnel */
+    #profSegNav button[data-pseg="pro"] { background: linear-gradient(135deg,#BFEFE2,#6BD0B8); border-color: rgba(20,158,140,.5); color: #0b5e50; }
+    #profSegNav button[data-pseg="pro"].active { background: linear-gradient(135deg,#4ED8B8,#149E8C) !important; color: #fff !important; box-shadow: 0 6px 16px rgba(20,158,140,.3); }
+    body.theme-dusk #profSegNav button[data-pseg="pro"] { background: linear-gradient(135deg,#143C33,#1B5246); border-color: rgba(78,216,184,.4); color: #8FE8D2; }
+    body.theme-dusk #profSegNav button[data-pseg="pro"].active { background: linear-gradient(135deg,#1FA68A,#147A66) !important; color: #EAFBF5 !important; }
     /* État ACTIF : chaque tuile garde SA couleur (avant : tout passait corail → le Premium
        n'était plus jaune). Premium actif = OR franc, Admin actif = framboise profond. */
-    #profSegNav button.active { background: var(--accent-grad) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 6px 16px rgba(95,55,40,.28); }
+    #profSegNav button.active { background: var(--accent-grad) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 6px 16px rgba(45,38,52,.28); }
     #profSegNav button[data-pseg="premium"].active { background: linear-gradient(135deg,#FFC93C,#E89A12) !important; color: #4a3200 !important; box-shadow: 0 6px 16px rgba(232,154,18,.35); }
     #profSegNav button[data-pseg="admin"].active { background: linear-gradient(135deg,#F2607E,#C92D55) !important; color: #fff !important; box-shadow: 0 6px 16px rgba(201,45,85,.32); }
     body.theme-dusk #profSegNav button { background: var(--dcard,#2a2140); border-color: rgba(255,255,255,.1); color: #f3e7d8; }
@@ -2763,7 +2768,7 @@
     .mates-stat span { color: var(--muted); font-size: .85rem; }
 
     /* Feed "posts" de l'accueil */
-    .post { background: #fff; border: 1px solid rgba(95,55,40,.1); border-radius: 18px; padding: .9rem 1rem; margin-bottom: .7rem; box-shadow: var(--shadow-sm); }
+    .post { background: #fff; border: 1px solid rgba(45,38,52,.1); border-radius: 18px; padding: .9rem 1rem; margin-bottom: .7rem; box-shadow: var(--shadow-sm); }
     .post-head { display: flex; align-items: center; gap: .6rem; }
     .post-head .ph-name { font-weight: 700; color: var(--ink-warm); font-size: .9rem; }
     .post-head .ph-time { color: var(--muted); font-size: .74rem; margin-left: auto; }
@@ -2981,9 +2986,9 @@
       --radius:    22px; --radius-sm: 14px; --radius-lg: 28px;
       /* P12 (DA officielle, demande Maxime) : ombres DÉ-ROUGIES — le corail sous chaque carte
          donnait un « halo rouge partout » ; brun chaud neutre = la chaleur sans le rouge. */
-      --shadow:    0 16px 38px rgba(95,55,40,.10), 0 3px 10px rgba(40,25,35,.05);
-      --shadow-sm: 0 8px 18px rgba(95,55,40,.08);
-      --shadow-pop:0 22px 50px rgba(70,40,35,.22);
+      --shadow:    0 16px 38px rgba(45,38,52,.10), 0 3px 10px rgba(40,25,35,.05);
+      --shadow-sm: 0 8px 18px rgba(45,38,52,.08);
+      --shadow-pop:0 22px 50px rgba(40,34,46,.22);
       --sunset-grad: linear-gradient(150deg, #FFC93C 0%, #FF7A3D 38%, #FF4F6D 72%, #B25CC9 100%);
       --ring:      0 0 0 4px rgba(255,90,77,.18);
     }
@@ -2998,11 +3003,13 @@
        et la richesse (nuit) sans uniformiser ni laguer (calque composité fixe). */
     .app-shell { background: transparent !important; }
     #bgFx { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(125% 48% at 50% -8%, rgba(255,201,60,.42) 0%, rgba(255,138,61,.10) 38%, rgba(255,255,255,0) 64%), var(--bg); }
-    body.theme-dusk #bgFx { background: radial-gradient(125% 50% at 50% -8%, rgba(255,138,61,.34) 0%, rgba(255,79,109,.10) 40%, rgba(0,0,0,0) 66%), var(--bg); }
+    /* P14 (DA officielle, annoncée) : le halo rosé-orangé du haut du mode nuit est remplacé par
+       une lueur VIOLETTE discrète → mode nuit homogène de haut en bas (plus de « fond rosé »). */
+    body.theme-dusk #bgFx { background: radial-gradient(125% 50% at 50% -8%, rgba(122,92,255,.18) 0%, rgba(122,92,255,.05) 40%, rgba(0,0,0,0) 66%), var(--bg); }
 
     h1, h2, h3 { color: var(--ink); }
     .topbar { background: linear-gradient(var(--bg) 62%, rgba(251,238,233,0)); border-bottom: 0; }
-    .brand .mark { background: var(--accent-grad); box-shadow: 0 6px 16px rgba(95,55,40,.16); }
+    .brand .mark { background: var(--accent-grad); box-shadow: 0 6px 16px rgba(45,38,52,.16); }
     .section-head a { color: var(--retro-teal); }
 
     /* Cartes chaleureuses */
@@ -3014,7 +3021,7 @@
     .post-head .ph-name { color: var(--ink); }
 
     /* Boutons vifs + lueur colorée */
-    .btn-primary { background: var(--accent-grad) !important; color: #fff; box-shadow: 0 8px 18px rgba(70,40,35,.20) !important; } /* P12 : LE halo rouge des boutons (couche !important) dé-rougi */
+    .btn-primary { background: var(--accent-grad) !important; color: #fff; box-shadow: 0 8px 18px rgba(40,34,46,.20) !important; } /* P12 : LE halo rouge des boutons (couche !important) dé-rougi */
     .btn-primary::before, .btn-danger::before { display: none !important; }
     .btn-primary:hover { transform: translateY(-2px); filter: saturate(1.05); }
     .btn-accent { background: var(--accent-soft); color: var(--accent); }
@@ -3054,7 +3061,7 @@
       box-shadow: 0 7px 16px color-mix(in oklab, var(--ic2, var(--c2, #C0392B)) 30%, transparent), 0 3px 8px rgba(0,0,0,.35) !important; }
 
     /* Navigation : icônes vives */
-    .bottom-nav { background: #fff7f2; box-shadow: 0 -8px 28px rgba(95,55,40,.10); }
+    .bottom-nav { background: #fff7f2; box-shadow: 0 -8px 28px rgba(45,38,52,.10); }
     .bottom-nav button { color: var(--muted); }
     .bottom-nav button.active { color: var(--accent); }
     .bottom-nav button.active::before { background: var(--accent); }
@@ -3080,7 +3087,7 @@
     .auth-hero .logo-badge { background: rgba(255,255,255,.94) !important; box-shadow: 0 12px 30px rgba(0,0,0,.18), 0 0 0 6px rgba(255,255,255,.25) !important; display: grid; place-items: center; }
 
     /* Peps sur la navigation : icône active dans une pastille dégradée vive */
-    .bottom-nav button.active svg { background: var(--accent-grad); stroke: #fff; padding: 6px; border-radius: 13px; width: 26px; height: 26px; box-shadow: 0 6px 14px rgba(95,55,40,.16); }
+    .bottom-nav button.active svg { background: var(--accent-grad); stroke: #fff; padding: 6px; border-radius: 13px; width: 26px; height: 26px; box-shadow: 0 6px 14px rgba(45,38,52,.16); }
     .bottom-nav button.active { font-weight: 700; }
     .bottom-nav button.active::before { display: none; } /* on garde uniquement la pastille */
 
@@ -3258,7 +3265,9 @@
     .sm-selsheet-ov { position: fixed; inset: 0; z-index: var(--z-sheet); background: rgba(20,8,30,.5); backdrop-filter: blur(2px);
       display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .18s; }
     .sm-selsheet-ov.show { opacity: 1; pointer-events: auto; }
-    .sm-selsheet { width: 100%; max-width: 480px; background: var(--paper); border-radius: 22px 22px 0 0; max-height: 46vh;
+    /* P14 : feuille plus GRANDE (46→78dvh) — fini le mini-scroll désagréable du panneau Filtres
+       (carnet + 6 filtres tiennent désormais) ; si ça déborde quand même, scrollbar VISIBLE. */
+    .sm-selsheet { width: 100%; max-width: 480px; background: var(--paper); border-radius: 22px 22px 0 0; max-height: 78dvh;
       display: flex; flex-direction: column; transform: translateY(26px); transition: transform .3s cubic-bezier(.22,1.22,.3,1); box-shadow: 0 -14px 44px rgba(0,0,0,.28);
       padding-bottom: env(safe-area-inset-bottom, 0px); }
     .sm-selsheet-ov.show .sm-selsheet { transform: translateY(0); }
@@ -3266,7 +3275,9 @@
     .sm-selsheet-head { display: flex; align-items: center; justify-content: space-between; padding: .3rem 1.1rem .5rem; }
     .sm-selsheet-head h4 { margin: 0; font-size: 1rem; color: var(--ink); }
     .sm-selsheet-head button { background: none; border: 0; font-size: 1.05rem; color: var(--muted); padding: .2rem .5rem; cursor: pointer; line-height: 1; }
-    .sm-selsheet-list { overflow-y: auto; padding: .1rem .7rem 1.1rem; }
+    .sm-selsheet-list { overflow-y: auto; padding: .1rem .7rem 1.1rem; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
+    .sm-selsheet-list::-webkit-scrollbar { width: 5px; }
+    .sm-selsheet-list::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--accent) 55%, transparent); border-radius: 999px; }
     .sm-selopt { display: flex; align-items: center; justify-content: space-between; gap: .6rem; width: 100%; text-align: left;
       padding: .72rem .8rem; border-radius: 12px; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: .92rem; cursor: pointer; }
     .sm-selopt:active { background: var(--cream); }
@@ -3412,7 +3423,9 @@
     .player-badge.player-hud .hud-lvl { color: #B5740E; }
     .player-badge.player-hud .hud-xp { color: rgba(140,90,20,.85); }
     .player-badge.player-hud .hud-bar { background: rgba(181,116,14,.18); }
-    body.theme-dusk .player-badge.player-hud { background: linear-gradient(135deg, #2A1E0E, #44310F); border-color: rgba(255,209,92,.55); box-shadow: 0 4px 12px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,233,176,.14); }
+    /* P14 (« la tuile à droite de Jeux, hors DA en sombre ») : la plaque niveau quittait la DA
+       la nuit (brun-or terre) → écrin VIOLET nuit + liseré or, raccord avec le reste du mode. */
+    body.theme-dusk .player-badge.player-hud { background: linear-gradient(135deg, #2E2150, #221739); border-color: rgba(255,209,92,.45); box-shadow: 0 4px 12px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,233,176,.10); }
     body.theme-dusk .player-badge.player-hud .hud-lvl { color: #FFD98A; }
     body.theme-dusk .player-badge.player-hud .hud-xp { color: rgba(255,233,176,.82); }
     body.theme-dusk .player-badge.player-hud .hud-bar { background: rgba(255,233,176,.18); }
@@ -3770,6 +3783,11 @@
     body.theme-dusk .cic, body.theme-dusk .qm-ic, body.theme-dusk .sc-ic, body.theme-dusk .hex, body.theme-dusk .jo-ic, body.theme-dusk .smgem, body.theme-dusk .thumb {
       --ic1: color-mix(in oklab, var(--c1, #FF8A3D) 90%, #43326B);
       --ic2: color-mix(in oklab, var(--c2, #FF5A4D) 92%, #2B2052); }
+    /* P14 : le vert/lagon DÉNOTE en nuit (retour Maxime) → ces deux familles sont assagies
+       (plus d'encre dans leur mix), le reste garde son peps. */
+    body.theme-dusk .thumb.green, body.theme-dusk .thumb.teal, body.theme-dusk .cic.c-green {
+      --ic1: color-mix(in oklab, var(--c1, #2BC4A8) 62%, #43326B);
+      --ic2: color-mix(in oklab, var(--c2, #128F7C) 64%, #2B2052); }
     body.theme-winter .cic, body.theme-winter .qm-ic, body.theme-winter .sc-ic, body.theme-winter .hex, body.theme-winter .jo-ic, body.theme-winter .smgem, body.theme-winter .thumb {
       --ic1: color-mix(in oklab, var(--c1, #FF8A3D) 78%, #DCEBF7);
       --ic2: color-mix(in oklab, var(--c2, #FF5A4D) 82%, #4A6F96); }
@@ -4340,7 +4358,7 @@
             .hm-inspo-nav { display: flex; gap: .3rem; flex-shrink: 0; }
             .hm-inspo-nav button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--accent); font-size: 1.05rem; font-weight: 800; cursor: pointer; display: grid; place-items: center; line-height: 1; padding: 0; }
             .tile { position: relative; }
-            .tile .tile-dot { position: absolute; top: .55rem; right: .55rem; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--accent); color: #fff; font-size: .64rem; font-weight: 900; display: grid; place-items: center; box-shadow: 0 2px 6px rgba(95,55,40,.16); }
+            .tile .tile-dot { position: absolute; top: .55rem; right: .55rem; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--accent); color: #fff; font-size: .64rem; font-weight: 900; display: grid; place-items: center; box-shadow: 0 2px 6px rgba(45,38,52,.16); }
             .hm-mateday { display: flex; align-items: center; gap: .6rem; background: var(--cream); border: 1px solid var(--line); border-radius: 14px; padding: .55rem .7rem; margin: .15rem 0 .55rem; }
             .hm-mateday .hmd-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .05rem; }
             .hm-mateday .hmd-tx b { font-size: .88rem; }
@@ -4535,7 +4553,7 @@
           <div class="tile" data-goto="jeux" data-jeuxview="jeuxRank"><div class="thumb blue">🏆</div><div class="t-name">Classement</div><div class="t-meta">Vise le sommet</div></div>
           <div class="tile" data-goto="jeux" data-jeuxview="jeuxCoupons"><div class="thumb teal">🎟️</div><div class="t-name">Coupons</div><div class="t-meta" id="qaCoupons">Des cadeaux à débloquer</div></div>
           <div class="tile tile-soon" id="goldTile" aria-disabled="true" title="SunMates Gold · bientôt"><div class="thumb gold-soon">👑</div><div class="t-name">Gold</div><div class="t-meta">Le meilleur, bientôt</div></div>
-          <div class="tile" data-goto="profil"><div class="thumb gold">👤</div><div class="t-name">Mon profil</div><div class="t-meta" id="qaProfil">Ton aura voyageuse</div></div>
+          <div class="tile" data-goto="profil"><div class="thumb indigo">👤</div><div class="t-name">Mon profil</div><div class="t-meta" id="qaProfil">Ton aura voyageuse</div></div>
         </div>
       </div>
 
@@ -4960,6 +4978,8 @@
           <!-- P2.28 : accès Premium/Admin gardés ICI, en haut → toujours visibles sans scroller. -->
           <div class="mseg" id="profSegNav" style="flex-wrap:wrap;margin-top:.7rem">
             <button data-pseg="premium">Premium ✨</button>
+            <!-- P14 : ESPACE PRO — visible pour les comptes partenaires (partner_place_id) et l'admin (démo bar/auberge) -->
+            <button data-pseg="pro" id="proSegBtn" style="display:none">Espace Pro 💼</button>
             <button data-pseg="admin" id="adminSegBtn" style="display:none">Admin 🛡️</button>
           </div>
           <div class="prof-badges" id="profileBadges" style="display:none"></div>
@@ -5154,29 +5174,35 @@
             <div class="gh-shine"></div>
             <div class="gh-crown">👑</div>
             <h2 class="gh-title">SunMates <span>Gold</span></h2>
-            <p class="gh-tag">Voyage sans limites, brille sur la carte.</p>
+            <p class="gh-tag">Brille sur la carte, voyage avec style.</p>
             <div class="gh-price">9,99 € <small>/ mois</small> <span class="gh-soon">Bientôt disponible</span></div>
             <button class="btn-primary btn-block gh-cta" id="premiumBtn">🔔 Me prévenir au lancement</button>
-            <button class="btn-ghost btn-block gh-test" id="goldToggleBtn">Activer Gold (aperçu)</button>
+            <button class="btn-ghost btn-block gh-test" id="goldToggleBtn" style="display:none">Activer Gold (aperçu admin)</button>
             <div class="msg" id="premiumMsg"></div>
             <p id="goldTestNote" style="font-size:.72rem;margin:.4rem 0 0;display:none">Mode test : active/désactive Gold pour voir ce qui se débloque dans l'app.</p>
           </div>
 
           <div class="gold-perks">
-            <div class="gp-tile"><span class="gp-ic">♾️</span><b>Mates illimités</b><span>Connexions et check-ins sans aucune limite</span></div>
-            <div class="gp-tile"><span class="gp-ic">🔎</span><b>Filtres avancés</b><span>Trouve exactement les voyageurs qui te ressemblent</span></div>
+            <!-- P14 : « Mates illimités » retiré — le gratuit n'est PAS limité (incohérence) -->
+            <div class="gp-tile"><span class="gp-ic">🚀</span><b>Profil mis en avant</b><span>Brille en tête des suggestions Découvrir</span></div>
+            <div class="gp-tile"><span class="gp-ic">🎨</span><b>Collection Gold</b><span>Cadres d'avatar et titres réservés aux membres</span></div>
             <div class="gp-tile"><span class="gp-ic">⭐</span><b>BFF du moment</b><span>Mets ton meilleur Mate à l'honneur</span></div>
             <div class="gp-tile"><span class="gp-ic">🗝️</span><b>Quêtes &amp; lieux exclusifs</b><span>Des expériences réservées aux membres Gold</span></div>
             <div class="gp-tile"><span class="gp-ic">🕶️</span><b>Mode incognito</b><span>Explore sans apparaître en ligne</span></div>
-            <div class="gp-tile"><span class="gp-ic">🚀</span><b>Profil mis en avant</b><span>Brille en tête des suggestions</span></div>
+            <div class="gp-tile"><span class="gp-ic">📊</span><b>Stats avancées</b><span>Vois qui s'intéresse à ton profil</span></div>
           </div>
 
           <div class="card">
             <h3 style="margin-top:0">Gratuit vs Gold : l'avant / après</h3>
             <div id="goldCompare"></div>
           </div>
-          <p class="muted" style="font-size:.74rem;text-align:center;margin:.6rem 0 0">🛡️ La sécurité reste gratuite pour tout le monde, toujours.</p>
+          <p class="muted" style="font-size:.78rem;text-align:center;margin:.6rem 0 0">🛡️ <b>Notre promesse :</b> tout ce qui te protège (SOS, cercle de confiance, partage de position, minuteur, faux appel) est gratuit, pour toujours, pour tout le monde.</p>
         </div><!-- /prof-seg premium -->
+
+        <!-- P14 : ESPACE PRO partenaires (bar, auberge, café…) — rempli par renderProPanel -->
+        <div class="prof-seg hidden" data-psegpanel="pro">
+          <div id="proPanel"><p class="muted">Chargement…</p></div>
+        </div>
 
         <div class="prof-seg hidden" data-psegpanel="admin">
           <div class="mseg aseg-nav" style="flex-wrap:wrap">
@@ -5371,6 +5397,18 @@
               <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Les grosses nouveautés sont d'abord déployées sur <b>preview.html</b> : tu y testes la PROCHAINE version en conditions réelles (même base, même compte), <b>sans toucher</b> à l'app de tout le monde ni à son cache. Quand tu valides, elle est promue en version officielle (1 commit). <b>Touche le ruban violet 🧪</b> dans la préversion : il affiche le récap de tout ce qui a changé.</p>
               <button class="btn-primary btn-block" id="sysOpenPreview">🧪 Ouvrir la préversion</button>
             </div>
+            <!-- P14 : état des MIGRATIONS sondé EN DIRECT sur la base -->
+            <div class="card">
+              <h3 style="margin-top:0">🧱 Migrations Supabase</h3>
+              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Sondées en direct avec ta session admin. ❌ = le fichier .sql du repo est à exécuter dans le SQL Editor.</p>
+              <div id="sysMigrations"><p class="muted">Sonde en cours…</p></div>
+            </div>
+            <!-- P14 : conformité — l'état des lieux honnête avant un vrai lancement -->
+            <div class="card">
+              <h3 style="margin-top:0">📋 Conformité — l'état des lieux honnête</h3>
+              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Ce que l'app possède déjà ✅ et ce qui manque encore 🔲 avant un lancement public sérieux.</p>
+              <div id="sysCompliance"></div>
+            </div>
             <!-- P2.11 : versions abouties gardées en l'état -->
             <div class="card">
               <h3 style="margin-top:0">🗃️ Versions archivées</h3>
@@ -5420,7 +5458,8 @@
             <button class="btn-accent" id="showQrBtn" data-i18n="set.myQr">🪪 Mon QR</button>
             <button class="btn-ghost" id="scanQrBtn" data-i18n="set.scanQr">📷 Scanner</button>
           </div>
-          <button class="btn-ghost btn-block" id="shareRecapBtn" style="margin-top:.5rem">📸 Mon récap à partager (story)</button>
+          <!-- P14 : « Mon récap story » SUPPRIMÉ (rendu jugé moche) → Conditions à la place -->
+          <button class="btn-ghost btn-block" id="cgvBtn" style="margin-top:.5rem">📜 Conditions &amp; confidentialité</button>
 
           <!-- Aide & support : FAQ supprimée (infos pas à jour) → seule la visite guidée
                reste ici. Ton chaleureux SunMates : titre + petite phrase qui conseille. -->
@@ -6652,62 +6691,25 @@
     }
     { const a = $("tripAddLink"); if (a) a.addEventListener("click", openAddTrip); }
 
-    // ===== 📸 Mon récap partageable (image story, façon « Wrapped ») =====
-    function _roundRect(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
-    // #15 : le récap story raconte LA MÊME CHOSE que « Mon parcours » (mêmes stats, même nom,
-    // même identité) — typo Fraunces, pilules dorées, série en signature.
-    function _recapStats() {
-      const s = (typeof parcoursStats === "function") ? parcoursStats() : { ck: 0, q: 0, b: 0, xp: 0 };
-      return [["📍", s.ck, "check-ins"], ["🎯", s.q, "quêtes accomplies"], ["🏅", s.b, "badges"], ["⭐", s.xp, "XP"]];
+    // ===== 📜 P14 : CONDITIONS & CONFIDENTIALITÉ (remplace le récap story, supprimé) =====
+    // Le strict nécessaire pour une app sociale de voyage : CGU, données (RGPD), limites
+    // sécurité, pré-CGV Gold. Rédaction grand public, à faire relire avant tout lancement payant.
+    function openCgv() {
+      const h = "<div style='text-align:left;font-size:.82rem;line-height:1.55' class='selectable'>"
+        + "<p style='margin:.2rem 0'><b>SunMates — Conditions d'utilisation &amp; confidentialité</b><br><span class='muted'>Version bêta · mise à jour : juin 2026</span></p>"
+        + "<p style='margin:.5rem 0'><b>1 · L'app.</b> SunMates met en relation des voyageurs solo et propose des outils d'entraide et de sécurité. ⚠️ Ces outils (SOS, cercle, position, minuteur, faux appel) sont des <b>aides</b> : ils ne remplacent jamais les services de secours (112) ni ta vigilance.</p>"
+        + "<p style='margin:.5rem 0'><b>2 · Ton compte.</b> Réservé aux <b>16 ans et plus</b>. Un seul compte par personne, des infos exactes, et tu es responsable de ce qui s'y passe.</p>"
+        + "<p style='margin:.5rem 0'><b>3 · Les règles.</b> Respect d'abord : pas de harcèlement, de haine, de contenus illicites, d'usurpation ni de spam. Les signalements sont traités par la modération ; un compte peut être suspendu ou banni en cas d'abus.</p>"
+        + "<p style='margin:.5rem 0'><b>4 · Tes contenus.</b> Ils restent à toi. Tu nous autorises seulement à les afficher dans l'app pour faire fonctionner le service. Un contenu signalé peut être retiré.</p>"
+        + "<p style='margin:.5rem 0'><b>5 · Tes données (RGPD).</b> Collectées : email, profil (pseudo, ville, photo…), messages, check-ins, et ta position <b>uniquement si tu la partages</b> (effacée sous 24 h). Mesure d'audience anonymisée <b>avec ton consentement</b>. Hébergement : Supabase (Union européenne). Conservation : tant que ton compte existe. Tes droits : <b>exporter tes données</b> et <b>supprimer ton compte</b> directement dans Réglages, ou nous écrire via « Écris-nous » (accès, rectification, opposition).</p>"
+        + "<p style='margin:.5rem 0'><b>6 · Le badge « vérifié »</b> est attribué manuellement par l'équipe : ce n'est pas une garantie d'identité. Pour toute rencontre, applique les conseils de l'onglet Sécurité (lieu public, proche prévenu·e).</p>"
+        + "<p style='margin:.5rem 0'><b>7 · Responsabilité.</b> Les rencontres et activités organisées via l'app se font sous ta responsabilité. L'app est fournie « en l'état » (bêta) : on corrige vite, mais sans garantie d'absence d'erreur.</p>"
+        + "<p style='margin:.5rem 0'><b>8 · Gold (pré-CGV).</b> L'abonnement n'est pas encore en vente. Au lancement : prix TTC affichés avant tout paiement, résiliation à tout moment depuis l'app, droit de rétractation de 14 jours, et la sécurité restera gratuite pour tous.</p>"
+        + "<p style='margin:.5rem 0'><b>9 · Vie du contrat.</b> Ces conditions peuvent évoluer (on te prévient dans l'app). Droit français.</p>"
+        + "</div>";
+      popInfo("📜", i18nT("Conditions & confidentialité"), h);
     }
-    async function generateRecapCanvas(withPhoto) {
-      try { await document.fonts.ready; } catch (e) {} // Fraunces dispo pour le canvas
-      const W = 1080, Hc = 1350, cv = document.createElement("canvas"); cv.width = W; cv.height = Hc; const c = cv.getContext("2d");
-      const g = c.createLinearGradient(0, 0, 0, Hc); g.addColorStop(0, "#FFB347"); g.addColorStop(.45, "#FF6F3C"); g.addColorStop(1, "#B23A2E"); c.fillStyle = g; c.fillRect(0, 0, W, Hc);
-      c.fillStyle = "rgba(255,255,255,.08)"; c.beginPath(); c.arc(W / 2, 250, 520, 0, 7); c.fill();
-      // Soleil SunMates dessiné (rayons) derrière le titre — la signature de l'app
-      c.save(); c.translate(W / 2, 128); c.strokeStyle = "rgba(255,243,196,.9)"; c.lineWidth = 8; c.lineCap = "round";
-      for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; c.beginPath(); c.moveTo(Math.cos(a) * 58, Math.sin(a) * 58); c.lineTo(Math.cos(a) * 80, Math.sin(a) * 80); c.stroke(); }
-      c.fillStyle = "#FFE9A8"; c.beginPath(); c.arc(0, 0, 44, 0, 7); c.fill(); c.restore();
-      c.textAlign = "center"; c.fillStyle = "#fff"; c.font = "800 66px Fraunces, Georgia, serif"; c.fillText("SunMates", W / 2, 248);
-      const name = (myProfile && myProfile.username) || "Voyageur"; const cx = W / 2, cy = 440, rad = 150;
-      c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.fillStyle = "rgba(255,255,255,.2)"; c.fill();
-      const url = (myProfile && myProfile.avatar_url) || ""; let drewPhoto = false;
-      if (withPhoto && url) {
-        // FIX photo « ovale » : on recadre la photo en CARRÉ centré à la source (sx/sy/s) avant de la
-        // dessiner dans le cercle · sinon une photo portrait/paysage est écrasée (visage déformé).
-        await new Promise((res) => { const img = new Image(); img.crossOrigin = "anonymous"; img.onload = () => { try { const s = Math.min(img.width, img.height), sx = (img.width - s) / 2, sy = (img.height - s) / 2; c.save(); c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.clip(); c.drawImage(img, sx, sy, s, s, cx - rad, cy - rad, rad * 2, rad * 2); c.restore(); drewPhoto = true; } catch (e) {} res(); }; img.onerror = () => res(); img.src = url; });
-      }
-      if (!drewPhoto) { c.fillStyle = "#fff"; c.font = "800 140px system-ui,Arial"; c.textBaseline = "middle"; c.fillText((name[0] || "?").toUpperCase(), cx, cy); c.textBaseline = "alphabetic"; }
-      c.lineWidth = 10; c.strokeStyle = "rgba(255,255,255,.85)"; c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.stroke();
-      c.fillStyle = "#fff"; c.font = "800 76px Fraunces, Georgia, serif"; c.fillText(name, W / 2, 690);
-      c.font = "600 38px system-ui,Arial"; c.fillStyle = "rgba(255,255,255,.95)"; c.fillText("🧭 Mon parcours SunMates", W / 2, 744);
-      const items = _recapStats(); const gx = 90, gy = 820, gap = 40, gw = (W - gx * 2 - gap) / 2, gh = 200;
-      items.forEach((it, i) => { const col = i % 2, row = (i / 2) | 0, x = gx + col * (gw + gap), y = gy + row * (gh + gap);
-        c.fillStyle = "rgba(255,243,196,.22)"; _roundRect(c, x, y, gw, gh, 28); c.fill();
-        c.strokeStyle = "rgba(255,233,168,.5)"; c.lineWidth = 3; _roundRect(c, x, y, gw, gh, 28); c.stroke();
-        c.fillStyle = "#fff"; c.font = "800 78px Fraunces, Georgia, serif"; c.fillText(it[0] + " " + it[1], x + gw / 2, y + 108);
-        c.font = "600 34px system-ui,Arial"; c.fillStyle = "rgba(255,255,255,.92)"; c.fillText(it[2], x + gw / 2, y + 158); });
-      let streak = 0; try { streak = (JSON.parse(localStorage.getItem("sm_streak_" + (myUserId || "x")) || "{}") || {}).count || 0; } catch (e) {}
-      if (streak > 1) { c.fillStyle = "#FFE9A8"; c.font = "800 44px system-ui,Arial"; c.fillText("🔥 " + streak + " jours d'affilée", W / 2, Hc - 160); }
-      c.fillStyle = "rgba(255,255,255,.95)"; c.font = "600 42px Fraunces, Georgia, serif"; c.fillText("pars solo, trouve ta bande ☀️", W / 2, Hc - 90);
-      return cv;
-    }
-    function _canvasToBlob(cv) { return new Promise((res) => { try { cv.toBlob((b) => res(b), "image/png"); } catch (e) { res(null); } }); }
-    async function shareRecap() {
-      if (typeof toast === "function") toast("📸", "Génération de ton récap…");
-      let blob = null;
-      try { blob = await _canvasToBlob(await generateRecapCanvas(true)); } catch (e) {}
-      if (!blob) { try { blob = await _canvasToBlob(await generateRecapCanvas(false)); } catch (e) {} } // repli sans photo (anti-CORS)
-      if (!blob) { if (typeof toast === "function") toast("⚠️", "Impossible de générer l'image."); return; }
-      const file = new File([blob], "sunmates-recap.png", { type: "image/png" });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try { await navigator.share({ files: [file], title: "Mon récap SunMates", text: "Mon aventure SunMates ☀️" }); return; } catch (e) { if (e && e.name === "AbortError") return; }
-      }
-      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "sunmates-recap.png"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-      if (typeof toast === "function") toast("📸", "Récap téléchargé ! Partage-le en story ☀️");
-    }
-    { const b = $("shareRecapBtn"); if (b) b.addEventListener("click", shareRecap); }
+    { const b = $("cgvBtn"); if (b) b.addEventListener("click", openCgv); }
 
     // Récap hebdo (le DIMANCHE, une seule fois) : ramène l'utilisateur avec un bilan motivant.
     function maybeWeeklyRecap() {
@@ -6930,6 +6932,23 @@
       { name: "Croatie", flag: "🇭🇷", m: ["croatie", "croatia", "dubrovnik", "split", "zagreb", "🇭🇷"], visa: "Schengen : carte d'identité suffit.", money: "Euro (€) depuis 2023.", lang: "Croate ; bon anglais côté côte.", transport: "Bus confortables, ferries entre îles (Jadrolinija). Loue une voiture pour l'arrière-pays.", water: "Eau du robinet potable.", plug: "Prise type C/F (comme France), 230V.", tip: "Pourboire ~10 %.", health: "CEAM valable.", custom: "Côte adriatique détendue ; haute saison très fréquentée (juillet-août).", safe: "Très sûr." },
       { name: "Brésil", flag: "🇧🇷", m: ["brésil", "bresil", "brazil", "rio", "sao paulo", "são paulo", "🇧🇷"], visa: "Pas de visa pour les Français (≤ 90 j).", money: "Real (BRL). Cash + Pix (paiement instantané local) ; CB courante.", lang: "Portugais ; peu d'anglais.", transport: "Vols internes pour les distances, Uber/99 en ville (plus sûr que taxi).", water: "Eau en bouteille conseillée.", plug: "Prise type N (parfois C), 127/220V selon région.", tip: "Service 10 % souvent inclus.", health: "Vaccin fièvre jaune (Amazonie/zones) ; anti-moustiques (dengue).", custom: "Chaleureux et festif ; 'no dar bobeira' = discrétion avec tes affaires.", safe: "Varie fortement : discrétion (pas de bijoux/téléphone exposé), commande tes taxis, évite favelas non encadrées et la nuit isolée." },
       { name: "Canada", flag: "🇨🇦", m: ["canada", "montréal", "montreal", "toronto", "vancouver", "québec", "quebec", "🇨🇦"], visa: "AVE obligatoire (en ligne, avant départ) pour ≤ 6 mois.", money: "Dollar canadien (CAD). Sans contact partout.", lang: "Anglais + français (Québec).", transport: "Grandes distances → vols/voiture ; bons transports urbains.", water: "Eau du robinet potable.", plug: "Prise type A/B (US), 120V · adaptateur.", tip: "Pourboire ATTENDU 15-20 % ; taxes ajoutées en caisse.", health: "Soins chers → assurance voyage.", custom: "Très poli ; hivers rudes (équipe-toi).", safe: "Très sûr." },
+      // P14 : BASE BOOSTÉE — 16 destinations de plus (mêmes rubriques complètes)
+      { name: "Pays-Bas", flag: "🇳🇱", m: ["pays-bas", "hollande", "amsterdam", "rotterdam", "utrecht", "🇳🇱"], visa: "UE : carte d'identité suffit.", money: "Euro (€). ⚠️ Beaucoup de commerces n'acceptent QUE la carte (parfois pas Visa/Mastercard crédit → prévois une carte de débit).", lang: "Néerlandais ; anglais excellent partout.", transport: "Vélo roi (loue le tien, attention aux pistes !), trains NS ponctuels, OVpay sans contact.", water: "Eau du robinet potable.", plug: "Type C/F, 230V.", tip: "Service inclus ; on arrondit.", health: "CEAM valable.", custom: "Direct et franc, ce n'est pas de l'impolitesse. Réserve les musées (Anne Frank !) des semaines à l'avance.", safe: "Très sûr ; gare aux vélos plus qu'aux gens." },
+      { name: "Belgique", flag: "🇧🇪", m: ["belgique", "bruxelles", "bruges", "gand", "anvers", "liège", "🇧🇪"], visa: "UE : carte d'identité suffit.", money: "Euro (€). CB partout.", lang: "Français (Wallonie/Bruxelles), néerlandais (Flandre), anglais courant.", transport: "Trains SNCB denses (billet week-end -50 %), trams et métro à Bruxelles.", water: "Eau du robinet potable.", plug: "Type C/E, 230V.", tip: "Service inclus ; on arrondit.", health: "CEAM valable.", custom: "Frites en cornet, bières à respecter (chaque bière a SON verre). L'humour belge est un sport national.", safe: "Sûr ; vigilance pickpockets gare de Bruxelles-Midi." },
+      { name: "Suisse", flag: "🇨🇭", m: ["suisse", "genève", "zurich", "lausanne", "berne", "interlaken", "🇨🇭"], visa: "Carte d'identité suffit (Schengen).", money: "Franc suisse (CHF). CB partout. ⚠️ Budget ×2 : tout est cher.", lang: "Français, allemand, italien selon la région ; anglais OK.", transport: "Trains CFF impeccables · Swiss Travel Pass rentable si tu bouges beaucoup.", water: "Eau du robinet excellente (fontaines publiques partout !).", plug: "Type J (3 broches) · adaptateur NÉCESSAIRE.", tip: "Service inclus.", health: "CEAM valable mais franchise élevée → assurance conseillée.", custom: "Ponctualité sacrée. Pique-nique au bord du lac = le bon plan budget.", safe: "Parmi les pays les plus sûrs du monde." },
+      { name: "Autriche", flag: "🇦🇹", m: ["autriche", "vienne", "salzbourg", "innsbruck", "hallstatt", "🇦🇹"], visa: "UE : carte d'identité suffit.", money: "Euro (€). Cash encore apprécié dans les cafés.", lang: "Allemand ; anglais courant.", transport: "Trains ÖBB confortables, nightjets pour voyager de nuit.", water: "Eau du robinet excellente (eau des Alpes).", plug: "Type C/F, 230V.", tip: "Arrondir ou ~5-10 %.", health: "CEAM valable.", custom: "Cafés viennois : on s'installe pour DURER, le serveur ne presse jamais. Sissi et Mozart partout.", safe: "Très sûr, même la nuit." },
+      { name: "Irlande", flag: "🇮🇪", m: ["irlande", "dublin", "galway", "cork", "🇮🇪"], visa: "UE : carte d'identité suffit (hors Schengen mais UE).", money: "Euro (€). Sans contact partout.", lang: "Anglais (irlandais sur les panneaux).", transport: "Bus Éireann + trains ; voiture conseillée pour la côte ouest (conduite À GAUCHE).", water: "Eau du robinet potable.", plug: "Type G (UK !) · adaptateur NÉCESSAIRE.", tip: "~10 % au resto si service non inclus.", health: "CEAM valable.", custom: "Le pub est un lieu de VIE : musique live, conversations faciles — parfait en solo. Météo : 4 saisons par jour.", safe: "Très sûr et très accueillant." },
+      { name: "Pologne", flag: "🇵🇱", m: ["pologne", "varsovie", "cracovie", "gdansk", "wroclaw", "🇵🇱"], visa: "UE : carte d'identité suffit.", money: "Złoty (PLN). CB partout · budget doux.", lang: "Polonais ; anglais courant chez les jeunes.", transport: "Trains PKP + FlixBus pas chers ; trams efficaces.", water: "Eau du robinet potable.", plug: "Type C/E, 230V.", tip: "~10 % apprécié. ⚠️ Dire « merci » quand on te rend la monnaie = « garde tout ».", health: "CEAM valable.", custom: "Pierogis et lait-bars (bar mleczny) = cantines locales géniales et pas chères. Cracovie ≫ en charme.", safe: "Très sûr ; villes vivantes et propres." },
+      { name: "Tchéquie", flag: "🇨🇿", m: ["tchéquie", "république tchèque", "prague", "brno", "🇨🇿"], visa: "UE : carte d'identité suffit.", money: "Couronne tchèque (CZK). ⚠️ Évite les bureaux de change du centre de Prague (arnaques) → retire en distributeur de banque.", lang: "Tchèque ; anglais courant dans le tourisme.", transport: "Métro/tram excellents à Prague, billets à valider.", water: "Eau du robinet potable.", plug: "Type C/E, 230V.", tip: "~10 %.", health: "CEAM valable.", custom: "La bière coûte moins cher que l'eau au resto (vraiment). Lève les yeux : les façades de Prague sont le spectacle.", safe: "Très sûr ; pickpockets sur le pont Charles." },
+      { name: "Hongrie", flag: "🇭🇺", m: ["hongrie", "budapest", "🇭🇺"], visa: "UE : carte d'identité suffit.", money: "Forint (HUF). CB répandue, petites coupures utiles.", lang: "Hongrois (unique au monde) ; anglais OK dans le tourisme.", transport: "Métro historique + trams ; tout Budapest se marche.", water: "Eau du robinet potable.", plug: "Type C/F, 230V.", tip: "~10 % (souvent ajouté d'office, vérifie l'addition).", health: "CEAM valable.", custom: "Les bains thermaux (Széchenyi, Gellért) = l'expérience à ne pas rater ; les ruin bars du quartier juif pour le soir.", safe: "Sûr ; taxis officiels uniquement (Bolt/Főtaxi)." },
+      { name: "Suède", flag: "🇸🇪", m: ["suède", "stockholm", "göteborg", "malmö", "🇸🇪"], visa: "UE : carte d'identité suffit.", money: "Couronne suédoise (SEK). Société quasi SANS CASH : tout en carte/Swish.", lang: "Suédois ; anglais quasi natif.", transport: "Trains SJ + métro stockholmois (T-bana = galerie d'art).", water: "Eau du robinet excellente.", plug: "Type C/F, 230V.", tip: "Service inclus.", health: "CEAM valable.", custom: "Fika (pause café-cannelle) = institution sacrée. Allemansrätten : tu peux camper presque partout dans la nature.", safe: "Très sûr." },
+      { name: "Danemark", flag: "🇩🇰", m: ["danemark", "copenhague", "aarhus", "🇩🇰"], visa: "UE : carte d'identité suffit.", money: "Couronne danoise (DKK). Carte partout.", lang: "Danois ; anglais excellent.", transport: "Vélo partout (pistes larges), métro automatique 24/7 à Copenhague.", water: "Eau du robinet potable.", plug: "Type C/K, 230V.", tip: "Service inclus.", health: "CEAM valable.", custom: "Hygge = l'art du cosy : cafés à bougies même en été. Nyhavn au lever du soleil, sans la foule.", safe: "Très sûr ; respecte les pistes cyclables (sérieux)." },
+      { name: "Finlande", flag: "🇫🇮", m: ["finlande", "helsinki", "laponie", "rovaniemi", "🇫🇮"], visa: "UE : carte d'identité suffit.", money: "Euro (€). Sans contact partout.", lang: "Finnois ; anglais excellent.", transport: "Trains VR confortables ; vols intérieurs pour la Laponie.", water: "Eau du robinet parmi les plus pures du monde.", plug: "Type C/F, 230V.", tip: "Service inclus.", health: "CEAM valable.", custom: "Le sauna est SACRÉ (3 millions de saunas !) : ose le sauna public puis le plongeon. Aurores boréales de sept. à mars en Laponie.", safe: "Pays réputé le plus sûr (et le plus heureux) du monde." },
+      { name: "Corée du Sud", flag: "🇰🇷", m: ["corée", "coree", "séoul", "seoul", "busan", "🇰🇷"], visa: "K-ETA en ligne avant le départ (exemptions fréquentes, vérifie).", money: "Won (KRW). Carte T-money pour TOUT (métro, bus, supérettes).", lang: "Coréen ; anglais limité hors Séoul → Papago (traduction) indispensable.", transport: "Métro de Séoul = le meilleur du monde (propre, wifi, annonces EN) ; KTX rapide entre villes.", water: "Eau du robinet potable (les locaux préfèrent filtrée).", plug: "Type C/F, 220V.", tip: "PAS de pourboire (peut gêner).", health: "Cliniques excellentes ; assurance conseillée.", custom: "On reçoit/donne avec les deux mains. Karaoké (noraebang) solo = totalement normal et génial.", safe: "Extrêmement sûr, même seul·e à 2h du matin." },
+      { name: "Philippines", flag: "🇵🇭", m: ["philippines", "manille", "cebu", "palawan", "el nido", "siargao", "🇵🇭"], visa: "Exemption 30 jours (passeport 6 mois de validité).", money: "Peso (PHP). CASH roi hors villes ; retire en ville avant les îles.", lang: "Filipino + anglais OFFICIEL (très pratique).", transport: "Vols intérieurs (Cebu Pacific), ferrys 2GO, jeepneys et tricycles pour le local.", water: "Eau en bouteille uniquement.", plug: "Type A/B/C, 220V.", tip: "~10 % apprécié.", health: "Vaccins de base à jour ; anti-moustiques sérieux.", custom: "« Filipino time » = détends-toi sur les horaires. Le sourire ouvre TOUTES les portes ici.", safe: "Touristique sûr (Palawan, Siargao) ; évite Mindanao ouest. Typhons juil.-oct." },
+      { name: "Malaisie", flag: "🇲🇾", m: ["malaisie", "kuala lumpur", "penang", "bornéo", "langkawi", "🇲🇾"], visa: "Exemption 90 jours (MDAC en ligne avant l'arrivée).", money: "Ringgit (MYR). Carte en ville, cash aux stands.", lang: "Malais ; anglais très répandu.", transport: "Grab (le Uber local) ultra pas cher ; trains ETS confortables.", water: "Eau en bouteille conseillée.", plug: "Type G (UK), 240V · adaptateur.", tip: "Non attendu.", health: "Bon réseau médical urbain.", custom: "Mélange unique malais-chinois-indien = la MEILLEURE street food d'Asie (hawker centers de Penang). Épaules couvertes dans les mosquées.", safe: "Sûr ; petite vigilance sacs à KL." },
+      { name: "Costa Rica", flag: "🇨🇷", m: ["costa rica", "san josé", "san jose", "tamarindo", "monteverde", "🇨🇷"], visa: "Exemption 90 jours (billet de sortie demandé).", money: "Colón (CRC) ; l'USD accepté partout. Carte OK en zone touristique.", lang: "Espagnol ; anglais dans le tourisme.", transport: "Bus locaux pas chers mais lents ; navettes touristiques efficaces ; 4×4 utile en saison verte.", water: "Potable dans la vallée centrale ; bouteille ailleurs.", plug: "Type A/B (US), 120V · adaptateur.", tip: "10 % service souvent inclus.", health: "Très bon système ; anti-moustiques.", custom: "« Pura vida » = bonjour, merci, tout-va-bien : adopte-le. 25 % du pays est protégé : paradis rando/faune.", safe: "Le plus sûr d'Amérique centrale ; ne laisse rien dans la voiture." },
+      { name: "Émirats arabes unis", flag: "🇦🇪", m: ["émirats", "emirats", "dubaï", "dubai", "abu dhabi", "🇦🇪"], visa: "Exemption 90 jours (passeport 6 mois).", money: "Dirham (AED). Carte partout.", lang: "Arabe ; anglais OMNIPRÉSENT.", transport: "Métro de Dubaï propre et climatisé (wagon femmes dispo) ; taxis/Careem fiables.", water: "Robinet techniquement potable, bouteille préférée.", plug: "Type G (UK), 230V · adaptateur.", tip: "~10 % apprécié.", health: "Hôpitaux excellents ; assurance obligatoire de fait (soins chers).", custom: "Tenue correcte dans les malls/lieux publics (épaules/genoux) ; alcool uniquement dans les hôtels-bars licenciés ; PDA discrets.", safe: "Extrêmement sûr ; respecte strictement les lois locales (photos de personnes = demande)." },
     ];
     function _countryFor(dest) {
       const d = (dest || "").toLowerCase();
@@ -7313,6 +7332,8 @@
       const goldToggle = $("goldToggleBtn");
       if (goldToggle) { goldToggle.style.display = data.is_admin ? "" : "none"; goldToggle.textContent = iAmGold ? "👁️ Aperçu : mode Gratuit" : "👑 Revenir en vue Gold"; }
       const adminBtn = $("adminSegBtn"); if (adminBtn) adminBtn.style.display = data.is_admin ? "" : "none";
+      // P14 : Espace Pro visible pour les partenaires (et l'admin, qui y voit les démos bar/auberge)
+      const proBtn = $("proSegBtn"); if (proBtn) proBtn.style.display = (data.partner_place_id || data.is_admin) ? "" : "none";
       // #6 : la note « Mode test » (backend admin) ne doit PAS être vue par les utilisateurs normaux.
       const goldTestNote = $("goldTestNote"); if (goldTestNote) goldTestNote.style.display = data.is_admin ? "" : "none";
       // #6 : tuile Gold cliquable UNIQUEMENT pour l'admin (aperçu) ; grisée/non-cliquable pour les gratuits.
@@ -7585,6 +7606,8 @@
         "<div style='height:150px;border-radius:14px;background:var(--cream);background-size:cover;background-position:center;background-repeat:no-repeat;background-image:url(\"" + cafeImage(c) + "\");margin-bottom:.6rem'></div>" +
         "<div style='font-size:.84rem;color:var(--muted);margin-bottom:.5rem'>" + escapeHtml(c.category || "Lieu sûr") + " · " + escapeHtml(c.city || "") + (km != null ? " · 📍 à " + _fmtDist(km) : "") + "</div>" +
         "<div style='font-size:.88rem;line-height:1.7'>" +
+          // P14 (Espace Pro) : l'OFFRE DU MOMENT du partenaire, mise en avant sur sa fiche
+          (c.offer ? "<div style='background:var(--accent-soft);border-radius:10px;padding:.4rem .6rem;margin-bottom:.4rem;font-weight:700'>🎁 " + escapeHtml(c.offer) + "</div>" : "") +
           (c.is_eco ? "🌱 Éco-responsable<br>" : "") +
           (c.hours ? "🕐 " + escapeHtml(c.hours) + "<br>" : "") +
           (c.price_range ? "💶 " + escapeHtml(c.price_range) + "<br>" : "") +
@@ -8090,7 +8113,7 @@
       ["🖼️", "Photos d'ambiance", "Banque thématique (cafés, plats, nature, eau, nuit, culture, route, ville) choisie par mots-clés du contenu + shimmer crème pendant le chargement."],
       ["🎬", "Scènes & célébrations", "100 % CSS/SVG maison : hakuna matata (silhouettes de savane), ballons « Là-haut », petit globe, avion en papier, baleine, confettis-soleils, pluie de saison (flocons/feuilles/étoiles)."],
       ["💬", "Bulles de chat", "Arrondies asymétriques : « moi » = dégradé accent, « l'autre » = carte du thème ; état « en attente » grisé, bulle rouge touchable en cas d'échec d'envoi ; nom d'auteur dans les groupes."],
-      ["📱", "QR & cartes à partager", "QR en écrin DA (cadre sunset, papier ivoire, encre aubergine) ; récap story et cartes souvenirs dessinés au canvas avec la typo Fraunces."],
+      ["📱", "QR & cartes à partager", "QR en écrin DA (cadre sunset, papier ivoire, encre aubergine) ; cartes souvenirs dessinées au canvas avec la typo Fraunces. (Le « récap story » a été retiré.)"],
       ["🗺️", "Carte", "Fond vectoriel recoloré DA (4 palettes : jour/nuit/hiver/tropiques) + épingles par type (lieux corail · mates violet · activités ambre · check-ins teal), fluide en plein écran."],
       ["✓", "Sceau vérifié", "Pastille ronde dégradé sunset→teal avec ✓ blanc — LA marque de confiance de l'app (profils, lieux). Jamais de vert criard."],
       ["✅", "Coche « accompli » DA", "Validations, objectifs et quêtes cochés en DORÉ-ambre — la coche verte générique est bannie de SunMates."],
@@ -8243,6 +8266,42 @@
             : '<p class="muted">Aucune version archivée pour l\'instant.</p>';
           rl.querySelectorAll("[data-relopen]").forEach((b) => b.addEventListener("click", () => { try { window.open(b.dataset.relopen, "_blank"); } catch (e) {} }));
         } catch (e) { rl.innerHTML = '<p class="muted">Liste indisponible (hors ligne ?).</p>'; }
+      }
+      // P14 : MIGRATIONS sondées en direct (l'onglet Système est enfin « au courant » de la base)
+      const mig = $("sysMigrations");
+      if (mig) {
+        const checks = [
+          ["solo_tasks_sync", "Rituels & défis synchronisés (fix « Tâche inconnue »)", async () => { const r = await db.from("solo_tasks").select("key", { count: "exact", head: true }); return !r.error && (r.count || 0) >= 26; }],
+          ["groupes", "Conversations de groupe", async () => { const r = await db.from("group_chats").select("id").limit(1); return !r.error; }],
+          ["admin_live", "Stats live du tableau de bord", async () => { const r = await db.rpc("admin_live_stats"); return !r.error; }],
+          ["eggs2", "Badges 🌍 globe + ✈️ avion en papier", async () => { const r = await db.from("badges_catalog").select("key").eq("key", "badge_globe"); return !r.error && r.data && r.data.length > 0; }],
+          ["pro", "Espace Pro partenaires (offre + droits)", async () => { const r = await db.from("partner_cafes").select("offer").limit(1); return !r.error; }],
+          ["feedback_delete", "Corbeille des retours bêta (policy DELETE)", async () => null],
+        ];
+        Promise.all(checks.map(async ([k, label, fn]) => { let ok = null; try { ok = await fn(); } catch (e) { ok = false; } return { k, label, ok }; })).then((rows) => {
+          mig.innerHTML = rows.map((r) => `<div class="qrow" style="align-items:center"><div class="qico">${r.ok === true ? "✅" : (r.ok === false ? "❌" : "❔")}</div><div class="qname" style="flex:1">${escapeHtml(r.label)}<div class="meta muted" style="font-size:.72rem">supabase_migration_${escapeHtml(r.k)}.sql${r.ok === false ? " · <b>À LANCER</b>" : (r.ok === null ? " · vérifiable via la corbeille de l'onglet Bêta" : " · en place")}</div></div></div>`).join("");
+        });
+      }
+      // P14 : CONFORMITÉ — checklist honnête (mise à jour à la main quand un point avance)
+      const comp = $("sysCompliance");
+      if (comp) {
+        const items = [
+          [true, "Consentement mesure d'audience (bannière, anonymisé)"],
+          [true, "Export de mes données en self-service (Réglages)"],
+          [true, "Suppression de compte en self-service"],
+          [true, "CGU + confidentialité dans l'app (Réglages → Conditions)"],
+          [true, "Données hébergées en UE (Supabase) · positions purgées sous 24 h"],
+          [true, "Modération : signalements, auto-blocage, bannissements"],
+          [false, "Vérification d'identité RÉELLE — le badge actuel est manuel/déclaratif (prévoir Stripe Identity ou équivalent)"],
+          [false, "Vérification de l'âge (16+ purement déclaratif aujourd'hui)"],
+          [false, "Mentions légales complètes (entité juridique, SIRET, directeur de publication) — dès que la structure existe"],
+          [false, "Emails : domaine dédié + SPF/DKIM/DMARC à valider sur le SMTP"],
+          [false, "Registre des traitements RGPD (document interne) ± DPO"],
+          [false, "Sauvegardes testées + plan de restauration (vérifier les backups Supabase)"],
+          [false, "CGV complètes + moyen de paiement + médiateur conso (au lancement de Gold)"],
+          [false, "Délais de modération garantis et documentés"],
+        ];
+        comp.innerHTML = items.map(([ok, t]) => `<div class="qrow" style="align-items:flex-start"><div class="qico">${ok ? "✅" : "🔲"}</div><div class="qname" style="flex:1;font-weight:500">${escapeHtml(t)}</div></div>`).join("");
       }
       // P2.10 : ouvrir la préversion
       const op = $("sysOpenPreview");
@@ -8405,7 +8464,8 @@
       ["👤 Profil & réglages", [
         ["🪪", "Profil complet", "Photo, bio, identité, voyage, style de vie, prompts."],
         ["📊", "Complétion %", "Globale + par catégorie, cliquable."],
-        ["🧭", "Mon parcours", "Récap journée/quêtes + carte souvenir partageable (story)."],
+        ["🧭", "Mon parcours", "Stats cliquables (check-ins, quêtes, badges, XP) + partage simple."],
+        ["📜", "Conditions & confidentialité", "CGU, données (RGPD), limites sécurité et pré-CGV Gold — dans Réglages."],
         ["✅", "Vérification (MVP)", "Badge vérifié simulé + points de confiance."],
         ["🪪", "QR de profil", "Génère/scanne un QR pour se connecter en vrai."],
         ["⚙️", "Réglages", "Langue, thème, vibrations, présence, profil public/privé, QR, install."],
@@ -8417,7 +8477,7 @@
         ["◀️", "Retour téléphone natif", "Le bouton retour Android (ou geste iOS) ferme la fenêtre ouverte, sinon ramène à l'Accueil, sinon quitte — comme une vraie app."],
         ["🖐️", "Carte au geste coopératif", "Sur la mini-carte de l'Accueil : 1 doigt fait défiler la PAGE, pincement = zoom, exploration libre en plein écran."],
         ["✍️", "Pseudo dès l'inscription", "Le pseudo se choisit à la création du compte — fini l'email affiché au premier Bonjour."],
-        ["💼", "Espace Pro / B2B", "Pitch partenaires, demande de partenariat."],
+        ["💼", "Espace Pro / B2B", "Pitch partenaires + demande de partenariat ; les comptes partenaires (bar, auberge, café) ont leur TABLEAU DE BORD : stats réelles (check-ins, visiteurs uniques, avis), offre du moment affichée sur leur fiche, horaires/prix éditables, code de check-in."],
       ]],
       ["🛡️ Admin (back-office)", [
         ["🎬", "Démo guidée UNIQUE (A→Z)", "Un seul parcours commenté de 80+ chapitres : auto OU pas-à-pas (Précédent/Suivant/Pause). Chaque « Voir » du catalogue l'ouvre au bon chapitre. (Fusion tuto + démo)"],
@@ -8432,6 +8492,8 @@
         ["🎨", "Panneau de contrôle DA", "Tokens couleurs lus EN DIRECT dans le CSS calculé, déclinés dans les 6 modes (jour/nuit/hiver±nuit/tropiques±nuit), dégradés, typos, familles de badges, pastilles. Tap = copier · bouton « kit DA » = export JSON complet (brief Stitch/Figma)."],
         ["🧪", "Préversion (bac à essai)", "preview.html = la PROCHAINE version testable en réel (même compte/base) sans toucher l'app de tout le monde ; ruban violet, aucun service worker. Valider = promotion en 1 commit."],
         ["🗃️", "Versions archivées", "releases/ garde les versions abouties + jalons de l'évolution (genèse, v1 toute moche, premier coup de pinceau, étapes 75/150, v225/300/375…) telles quelles, listées dans Système avec bouton Ouvrir + bannière « revenir à l'app » dans chaque archive. Pour en épingler une : demande à Claude."],
+        ["🧱", "Migrations sondées en direct", "L'onglet Système interroge la base : chaque migration clé affiche ✅ en place ou ❌ à lancer (avec le nom du fichier .sql)."],
+        ["📋", "Conformité — état des lieux", "Checklist honnête de ce que l'app possède (RGPD self-service, modération, CGU…) et de ce qui manque (vérif d'identité réelle, mentions légales, DKIM…)."],
         ["👁️", "Aperçu mode gratuit", "Voir l'app comme un compte non-Gold."],
       ]],
       // 🥚 Easter eggs : zone marquée « admin » → JAMAIS dans le livre blanc ni le catalogue
@@ -14256,9 +14318,12 @@
       // #11 : le segment ADMIN n'est ouvrable QUE par un admin (defense en profondeur : avant, un
       // non-admin pouvait appeler showProfileSegment("admin") depuis la console et afficher le back-office).
       if (seg === "admin" && !(myProfile && myProfile.is_admin)) return;
+      // P14 : l'Espace Pro n'est ouvrable que par un partenaire (ou l'admin, en démo)
+      if (seg === "pro" && !(myProfile && (myProfile.partner_place_id || myProfile.is_admin))) return;
       document.querySelectorAll("[data-pseg]").forEach((b) => b.classList.toggle("active", b.dataset.pseg === seg));
       document.querySelectorAll("[data-psegpanel]").forEach((p) => show(p, p.dataset.psegpanel === seg));
       if (seg === "admin" && typeof showAdminSegment === "function") showAdminSegment("demo");
+      if (seg === "pro" && typeof loadProSpace === "function") loadProSpace();
       // P2.28 : on amène le panneau à l'écran (sinon il s'ouvre plus bas, hors vue, après la carte profil).
       // Retour Maxime : « je descends trop bas » — on s'aligne sur la rangée d'onglets
       // Premium/Admin (le panneau s'ouvre juste en dessous), pas sur le panneau lui-même.
@@ -14266,6 +14331,100 @@
       if (anchor) setTimeout(() => { try { anchor.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) {} }, 40);
     }
     document.querySelectorAll("[data-pseg]").forEach((b) => b.addEventListener("click", () => showProfileSegment(b.dataset.pseg)));
+
+    // ====== P14 : ESPACE PRO — le tableau de bord du partenaire (bar, auberge, café…) ======
+    // RÉPOND AUX 4 PROMESSES de l'offre Pro : Visibilité (fiche + offre mise en avant),
+    // Badge « Lieu sûr », Plus de trafic (offre du moment + coupons), Statistiques (réelles).
+    // CÂBLAGE : profiles.partner_place_id → partner_cafes.id (migration supabase_migration_pro.sql).
+    // Sans compte associé, l'ADMIN voit deux DÉMOS complètes : le cas BAR et le cas AUBERGE.
+    const PRO_PRESETS = {
+      bar: { demo: true, name: "Le Comptoir Solaire", cat: "Bar partenaire", emoji: "🍹", city: "Lisbonne", code: "SOLEIL", hours: "Mar–Dim · 17h–01h", price: "€€", offer: "1 mocktail offert au 1ᵉʳ check-in SunMates", ck7: 23, ckAll: 412, uniq: 187, revN: 34, revAvg: 4.6 },
+      hostel: { demo: true, name: "Sunset Hostel", cat: "Auberge partenaire", emoji: "🛏️", city: "Porto", code: "DODO", hours: "Réception 24/7 · check-in dès 14h", price: "€", offer: "−10 % sur le dortoir en montrant l'app", ck7: 11, ckAll: 268, uniq: 154, revN: 51, revAvg: 4.8 },
+    };
+    function renderProPanel(d) {
+      const box = $("proPanel"); if (!box) return;
+      const stars = d.revAvg ? "★ " + Number(d.revAvg).toFixed(1) : "—";
+      box.innerHTML = `
+        ${d.demo ? `<div class="card" style="padding:.6rem .8rem;border-style:dashed"><b>🧪 Démo admin</b><span class="muted" style="font-size:.78rem"> · voici EXACTEMENT ce qu'un partenaire verra. Bascule :</span>
+          <div class="row" style="margin-top:.45rem"><button class="btn-ghost" id="proDemoBar" style="flex:1">🍹 Cas bar</button><button class="btn-ghost" id="proDemoHostel" style="flex:1">🛏️ Cas auberge</button></div></div>` : ""}
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:.7rem">
+            <div class="thumb teal" style="width:52px;height:52px;font-size:26px;display:grid;place-items:center;border-radius:15px">${d.emoji || "🏪"}</div>
+            <div style="min-width:0;flex:1"><b style="font-size:1.05rem">${escapeHtml(d.name)}</b>
+              <div class="muted" style="font-size:.8rem">${escapeHtml(d.cat || "Partenaire")} · ${escapeHtml(d.city || "")}</div></div>
+          </div>
+          <div style="margin-top:.6rem;display:flex;gap:.4rem;flex-wrap:wrap">
+            <span class="vchip" style="width:auto;height:auto;border-radius:999px;padding:.25rem .6rem;font-size:.72rem">🛟 Lieu sûr vérifié</span>
+            <span class="presence-pill">Fiche en ligne</span>
+          </div>
+        </div>
+        <div class="card"><h3 style="margin-top:0">📊 Tes statistiques</h3>
+          <div class="pgrid">
+            <div class="pcell"><div class="k">Check-ins · 7 jours</div><div class="v">${d.ck7 ?? "—"}</div></div>
+            <div class="pcell"><div class="k">Check-ins · total</div><div class="v">${d.ckAll ?? "—"}</div></div>
+            <div class="pcell"><div class="k">Voyageurs uniques</div><div class="v">${d.uniq ?? "—"}</div></div>
+            <div class="pcell"><div class="k">Avis</div><div class="v">${stars}${d.revN ? " · " + d.revN : ""}</div></div>
+          </div>
+          <p class="muted" style="font-size:.74rem;margin:.5rem 0 0">Chaque check-in = un·e voyageur·se SunMates passé·e chez toi, vérifié·e par ton code.</p>
+        </div>
+        <div class="card"><h3 style="margin-top:0">🎁 Ton offre du moment</h3>
+          <p class="muted" style="font-size:.78rem;margin:.2rem 0 .5rem">Affichée sur ta fiche dans l'app — c'est elle qui fait venir les voyageurs.</p>
+          <input id="proOffer" maxlength="90" value="${escapeHtml(d.offer || "")}" placeholder="Ex : 1 café offert au 1ᵉʳ check-in" />
+          <div class="row" style="margin-top:.5rem">
+            <div style="flex:1"><label>Horaires</label><input id="proHours" maxlength="80" value="${escapeHtml(d.hours || "")}" /></div>
+            <div style="width:90px"><label>Prix</label><input id="proPrice" maxlength="10" value="${escapeHtml(d.price || "")}" /></div>
+          </div>
+          <button class="btn-primary btn-block" id="proSave" style="margin-top:.6rem">Enregistrer</button>
+          <div class="msg" id="proMsg" style="text-align:center"></div>
+        </div>
+        <div class="card"><h3 style="margin-top:0">🔑 Ton code de check-in</h3>
+          <div style="text-align:center;font:800 1.8rem Fraunces,serif;letter-spacing:.2em;color:var(--accent);padding:.4rem 0">${escapeHtml(d.code || "—")}</div>
+          <p class="muted" style="font-size:.78rem;margin:0">Affiche-le au comptoir : les voyageurs le saisissent dans l'app pour valider leur passage (anti-triche). Demande un nouveau code à l'équipe si besoin.</p>
+        </div>
+        <div class="card"><h3 style="margin-top:0">🚀 Booster ta visibilité</h3>
+          <div class="qrow"><div class="qico">🎁</div><div class="qname" style="flex:1">Mets une <b>offre claire</b> (offert > réduction) : c'est le 1ᵉʳ critère de visite.</div></div>
+          <div class="qrow"><div class="qico">⭐</div><div class="qname" style="flex:1">Invite tes clients voyageurs à <b>laisser un avis</b> après leur check-in.</div></div>
+          <div class="qrow"><div class="qico">📸</div><div class="qname" style="flex:1">Une <b>photo chaleureuse</b> sur ta fiche = plus de taps (envoie-la à l'équipe).</div></div>
+        </div>`;
+      const wireDemo = (id, key) => { const b = $(id); if (b) b.addEventListener("click", () => renderProPanel(PRO_PRESETS[key])); };
+      wireDemo("proDemoBar", "bar"); wireDemo("proDemoHostel", "hostel");
+      const sv = $("proSave");
+      if (sv) sv.addEventListener("click", async () => {
+        const msg = $("proMsg");
+        if (d.demo) { if (msg) { msg.style.color = "var(--muted)"; msg.textContent = "Démo : rien n'est écrit. Avec un compte partenaire associé, c'est enregistré pour de vrai."; } return; }
+        const upd = { offer: ($("proOffer").value || "").trim() || null, hours: ($("proHours").value || "").trim() || null, price_range: ($("proPrice").value || "").trim() || null };
+        const { error } = await db.from("partner_cafes").update(upd).eq("id", d.id);
+        if (msg) { msg.style.color = error ? "var(--danger)" : "var(--ok)"; msg.textContent = error ? "La base a refusé — migration supabase_migration_pro.sql à lancer (droits partenaire)." : "Enregistré ✓ visible sur ta fiche."; }
+      });
+    }
+    async function loadProSpace() {
+      const box = $("proPanel"); if (!box) return;
+      const placeId = myProfile && myProfile.partner_place_id;
+      if (!placeId) { renderProPanel(PRO_PRESETS.bar); return; } // admin sans lieu associé → démos
+      box.innerHTML = '<p class="muted">Chargement de ton établissement…</p>';
+      try {
+        const { data: place } = await db.from("partner_cafes").select("*").eq("id", placeId).maybeSingle();
+        if (!place) { renderProPanel(PRO_PRESETS.bar); return; }
+        const since = new Date(Date.now() - 7 * 864e5).toISOString();
+        const [ckAll, ck7, cks, revs, code] = await Promise.all([
+          db.from("checkpoints").select("id", { count: "exact", head: true }).eq("cafe_id", placeId),
+          db.from("checkpoints").select("id", { count: "exact", head: true }).eq("cafe_id", placeId).gte("created_at", since),
+          db.from("checkpoints").select("user_id").eq("cafe_id", placeId).limit(1000),
+          db.from("place_reviews").select("rating").eq("cafe_id", placeId),
+          db.from("cafe_codes").select("code").eq("cafe_id", placeId).maybeSingle(),
+        ]);
+        const ratings = (revs.data || []).map((r) => r.rating);
+        renderProPanel({
+          demo: false, id: place.id, name: place.name, cat: place.category || "Partenaire", city: place.city,
+          emoji: /auberge|hostel|coliving|dodo/i.test(place.category || "") ? "🛏️" : (/bar/i.test(place.category || "") ? "🍹" : "☕"),
+          hours: place.hours, price: place.price_range, offer: place.offer,
+          code: (code.data && code.data.code) || place.checkin_code || "—",
+          ck7: ck7.count || 0, ckAll: ckAll.count || 0,
+          uniq: new Set((cks.data || []).map((c) => c.user_id)).size,
+          revN: ratings.length, revAvg: ratings.length ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0,
+        });
+      } catch (e) { renderProPanel(PRO_PRESETS.bar); }
+    }
     // Chiffres du profil cliquables
     function openTrustModal() { if (typeof renderTrustExplain === "function") renderTrustExplain(); const m = $("trustModal"); if (m) m.classList.remove("hidden"); }
     document.querySelectorAll("[data-stat]").forEach((b) => b.addEventListener("click", () => {
@@ -14374,20 +14533,21 @@
     // Comparatif Gratuit vs Gold (avant / après)
     (function buildGoldCompare() {
       const el = $("goldCompare"); if (!el) return;
+      // P14 : comparatif RÉÉCRIT de A à Z — l'ancien annonçait des limites gratuites qui
+      // n'existent pas dans l'app (1 Mate/jour, 3 max…) = incohérent. Vérité produit :
+      // le GRATUIT est complet, Gold = confort, style et visibilité.
       const rows = [
-        ["🛡️ Sécurité (SOS, position, alerte)", "✓ Incluse", "✓ Incluse"],
-        ["Mates ajoutés / jour", "1", "Illimité"],
-        ["Nombre de Mates max", "3", "Illimité"],
-        ["Check-ins / jour", "1", "Illimités"],
-        ["Quêtes & activités / jour", "1 + 1", "Illimité"],
-        ["Filtres de recherche avancés", "—", "✓ complets"],
-        ["BFF du moment", "—", "✓"],
-        ["Coupons partenaires", "Standard", "Exclusifs ++"],
-        ["Quêtes & lieux exclusifs", "—", "✓"],
-        ["Profil mis en avant", "—", "✓"],
-        ["Mode incognito", "—", "✓"],
-        ["Badge Gold 👑", "—", "✓"],
-        ["Support", "Standard", "Prioritaire"],
+        ["🛡️ Toute la sécurité (SOS, cercle, position, minuteur, faux appel)", "✓ Tout", "✓ Tout"],
+        ["🤝 Rencontres, Mates & messages", "✓ Illimité", "✓ Illimité"],
+        ["🗺️ Carte, lieux sûrs & check-ins", "✓", "✓"],
+        ["🎯 Quêtes, badges & mini-jeux", "✓", "✓ + exclusives 🗝️"],
+        ["🚀 Profil mis en avant dans Découvrir", "—", "✓"],
+        ["🕶️ Mode incognito", "—", "✓"],
+        ["⭐ BFF du moment à l'honneur", "—", "✓"],
+        ["🎨 Cadres d'avatar & titres exclusifs", "Boutique XP", "✓ Collection Gold"],
+        ["🎟️ Coupons partenaires", "Standard", "Exclusifs ++"],
+        ["👑 Badge Gold sur ton profil", "—", "✓"],
+        ["💬 Support", "Standard", "Prioritaire"],
       ];
       el.innerHTML = '<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:.45rem .4rem;font-size:.82rem;align-items:center">'
         + '<div></div><div style="text-align:center;font-weight:700;color:var(--muted)">Gratuit</div><div style="text-align:center;font-weight:800;color:#C98A1E">Gold 👑</div>'
@@ -15731,7 +15891,7 @@
       // « Tes Mates d'aventure » est REPLIABLE (état gardé), l'album est plus présent.
       let galFolded = false; try { galFolded = localStorage.getItem("sm_coll_galmates") === "1"; } catch (e) {}
       const matesHtml = mates.length
-        ? '<button type="button" class="set-grouptitle gal-fold" id="galMatesFold" style="margin-top:.2rem;width:100%;text-align:left;background:none;border:0;cursor:pointer">🤝 ' + i18nT("Tes Mates d'aventure") + ' <span class="coll-chev">' + (galFolded ? "▸" : "▾") + '</span></button><div class="hmg-grid" id="galMatesGrid" style="' + (galFolded ? "display:none" : "") + '">' + mates.slice(0, 24).map((p) => { const bg = _safeImgUrl(p.avatar_url); return '<button type="button" class="hmg-cell" data-galmate="' + escapeHtml(p.id) + '"><span class="hmg-av big"' + (bg ? ' data-lazybg="' + escapeHtml(bg) + '"' : "") + ">" + (bg ? "" : escapeHtml((p.username || "?")[0].toUpperCase())) + '</span><span class="hmg-name">' + escapeHtml(p.username || "Mate") + "</span></button>"; }).join("") + "</div>"
+        ? '<button type="button" class="set-grouptitle gal-fold" id="galMatesFold" style="margin-top:.2rem;width:100%;text-align:left;background:none;border:0;cursor:pointer">🤝 ' + i18nT("Tes Mates d'aventure") + ' <span class="coll-chev">' + (galFolded ? "▸" : "▾") + '</span></button><div class="hmg-grid" id="galMatesGrid" style="' + (galFolded ? "display:none" : "") + '">' + mates.slice(0, 24).map((p, i) => { const bg = _safeImgUrl(p.avatar_url); /* P14 « mille ans » : les 12 premiers avatars chargent DIRECT (déjà en cache SW), lazy seulement après */ const attr = bg ? (i < 12 ? ' style="background-image:url(\'' + escapeHtml(bg) + '\')"' : ' data-lazybg="' + escapeHtml(bg) + '"') : ""; return '<button type="button" class="hmg-cell" data-galmate="' + escapeHtml(p.id) + '"><span class="hmg-av big"' + attr + ">" + (bg ? "" : escapeHtml((p.username || "?")[0].toUpperCase())) + '</span><span class="hmg-name">' + escapeHtml(p.username || "Mate") + "</span></button>"; }).join("") + "</div>"
         : "";
       const albumHtml = cities.length
         ? '<div class="set-grouptitle" style="margin-top:.8rem">📖 ' + i18nT("Album souvenir par ville") + "</div>" + cities.slice(0, 12).map((c) => {
@@ -17241,6 +17401,7 @@
       "Plein écran pour explorer la carte": "Full screen to explore the map",
       "Quoi de neuf dans cette préversion": "What's new in this preview",
       "Touche la carte pour l'explorer": "Tap the map to explore it",
+      "Conditions & confidentialité": "Terms & privacy",
       // · P8 : mini-jeux en sessions + divers —
       "Question {i} sur {n}": "Question {i} of {n}", "Carte {i} sur {n}": "Card {i} of {n}",
       "Session terminée !": "Session complete!", "Nouvelle session": "New session",

@@ -1,19 +1,16 @@
 {
   "candidate": "v444",
   "items": [
-    "🗺️ CARTE DE VOYAGE digne du nom : labels en FRANÇAIS (fini l'anglais qui dénature), rues éclaircies et bien lisibles en mode nuit et hiver, halo des noms de rues/bars/commerces épaissi dans tous les modes — la carte reste thémée ET se lit",
-    "🛣️ Les « carrés blancs » étaient les écussons routiers vidés par la recoloration : ils affichent de nouveau leur numéro (A86, N13…) — panneau blanc, chiffre sombre, lisible partout",
-    "🟤 Le marron « terre » dompté : toutes les ombres brunes fortes plafonnées à une opacité douce (ex. derrière les boutons solo/groupe de la quête du jour)",
-    "🎨 L'arrière des tuiles repris dans tous les modes : les tuiles d'accès rapides gardent leur VRAIE couleur la nuit et en saisons (mix 90 % au lieu de 82 %) — fini les pavés sombres qui se fondent dans le fond",
-    "🎨 CHANGEMENT DE DA ANNONCÉ : les ombres de TOUTE l'app sont dé-rougies (le halo corail sous chaque carte/bouton/badge devient un brun chaud neutre, dans tous les modes) — la chaleur reste, le rouge part ; seuls les signaux d'attention volontaires restent corail (pulse des épingles, SOS)",
-    "🧪 Le ruban affiche maintenant le NUMÉRO de la préversion (tu sais toujours laquelle tu testes) et le bouton admin l'ouvre toujours FRAÎCHE (anti-cache — c'est pour ça que « rien n'avait changé » !)",
-    "🗺️ Plein écran : pane composité GPU en continu (drag encore plus soyeux)",
-    "🩹 FIX du « fond rose » en mode sombre : c'était un bug (le fond de la page restait sur la couleur jour), PAS un changement de DA — le fond suit de nouveau ton mode partout, overscroll compris",
-    "🌅 La coupure nette en haut venait du calque ajouté au round précédent : supprimé — le fondu transparent du header reprend ses droits jusqu'à la status bar",
-    "⚡ Gestes rapides : resync ponctuelle pendant les longues glissades (les bords ne « hésitent » plus), inertie plus réactive (120 ms), zoom/dézoom rapide recalé net dès la fin du pincement",
-    "🕵️ Passe d'audit par agents : traductions EN des 6 mini-jeux ajoutées, halo criard de la barre de complétion adouci, bulles de chat ajoutées à l'inventaire DA, texte du panneau Système précisé (ruban-récap)",
-    "🗺️ Plein écran carte « Google Maps » : pendant le geste, PLUS AUCUNE resynchronisation — fond et épingles glissent parfaitement solidaires en pur CSS (fini le tremblement qui donnait mal au crâne) ; resync nette au relâcher, espacée pendant l'inertie",
-    "🔍 Netteté du plein écran restaurée (rendu ×1) : le GPU ne travaille plus pendant le geste, il rend net aux moments calmes",
-    "🛡️ Marge de pré-rendu élargie pour couvrir les bords pendant les longues glissades"
+    "💼 ESPACE PRO complet : les partenaires (bar, auberge, café) ont leur tableau de bord — stats réelles (check-ins 7j/total, visiteurs uniques, avis), offre du moment affichée sur leur fiche, horaires/prix éditables, code de check-in. Démos « cas bar » et « cas auberge » visibles par l'admin (Profil → Espace Pro 💼). Migration supabase_migration_pro.sql à lancer pour le câblage réel",
+    "📜 Le récap story (jugé moche) est REMPLACÉ par les Conditions & confidentialité : CGU, données RGPD, limites sécurité, pré-CGV Gold — dans Réglages",
+    "📋 Nouvelle carte admin « Conformité » : l'état des lieux honnête (ce qu'on a ✅ / ce qui manque 🔲 : vérif d'identité, mentions légales, DKIM…)",
+    "🧱 L'onglet Système sonde maintenant les MIGRATIONS en direct sur la base : ✅ en place / ❌ à lancer, fichier .sql indiqué",
+    "👑 Premium refait de A à Z : le comparatif n'annonce plus de fausses limites gratuites — gratuit = app complète, Gold = confort/style/visibilité ; promesse sécurité réécrite grand public ; « mode test » réservé à l'admin",
+    "🌍 Base pays BOOSTÉE : 26 → 42 destinations documentées (Pays-Bas, Suisse, Corée du Sud, Costa Rica, Émirats, Philippines…) avec toutes les rubriques",
+    "🗂️ Panneau Filtres SANS mini-scroll (feuille agrandie) + scrollbar visible sur toutes les feuilles quand ça dépasse",
+    "🩹 Le marron « terre » est MORT : toutes les ombres passent en gris chaud neutre (solo/à deux compris) — annoncé officiellement",
+    "🌙 Mode nuit homogénéisé : le halo rosé-orangé du haut devient une lueur violette discrète (annoncé) ; plaque Niveau de Jeux en écrin violet nuit (fini le brun)",
+    "🎨 Tuiles : vraies couleurs dans tous les modes (mix nuit 90 %), verts assagis en sombre, plus deux tuiles dorées côte à côte, tuiles « préparer mon voyage » mieux espacées",
+    "🖼️ Galerie : ouverture instantanée (les 12 premiers avatars chargent direct)"
   ]
 }
