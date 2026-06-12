@@ -1,17 +1,8 @@
 {
-  "candidate": "v443",
+  "candidate": "v444",
   "items": [
-    "🎮 Mini-jeux en VRAIES SESSIONS : paquet mélangé sans répétition, compteur (ex. « Question 3 sur 10 »), écran de fin avec score et record, bouton Nouvelle session — fini la boucle infinie des mêmes questions",
-    "📚 Banques enrichies : Quiz 8→20 questions, Brise-glace 10→24, Roue des défis 10→20",
-    "🎒 « La valise folle » retirée (mal née, on fera mieux)",
-    "🌙 Fix « Tâche inconnue » sur les rituels : la coche passe toujours, et une migration SQL (solo_tasks_sync) synchronise la base pour re-créditer l'XP",
-    "🗺️ La CARTE est la star de l'accueil : sous-titre retiré, « Ma journée » et météo passées dessous, carte rehaussée à 300px — visible au premier coup d'œil",
-    "📓 Carnet d'adresses remonté EN TÊTE du panneau Filtres (plus de doublon sur l'accueil, plus de scroll)",
-    "🏅 Plaque Niveau enfin lisible en mode jour (le « 0/100 XP » était crème sur crème !) + halos dorés adoucis dans tous les modes",
-    "📲 L'app épouse le téléphone : la zone de la status bar est toujours peinte aux couleurs du thème (calque dédié), fond de page raccord jusqu'aux bords",
-    "✍️ « Écris quelque chose… » enfin centré dans le fil + halo du bouton Publier adouci (il voilait la note en dessous)",
-    "🏅 La plaque Niveau de l'onglet Jeux ne déborde plus sur les petits écrans",
-    "📱 Status bar du téléphone alignée dès le 1er rendu (fini la barre crème qui jurait au lancement en mode nuit) + bannière d'alerte sous la Dynamic Island corrigée",
-    "📏 Textes des tuiles : retour à la ligne propre au lieu de couper (plus de « s » mangé)"
+    "🗺️ Plein écran carte « Google Maps » : pendant le geste, PLUS AUCUNE resynchronisation — fond et épingles glissent parfaitement solidaires en pur CSS (fini le tremblement qui donnait mal au crâne) ; resync nette au relâcher, espacée pendant l'inertie",
+    "🔍 Netteté du plein écran restaurée (rendu ×1) : le GPU ne travaille plus pendant le geste, il rend net aux moments calmes",
+    "🛡️ Marge de pré-rendu élargie pour couvrir les bords pendant les longues glissades"
   ]
 }

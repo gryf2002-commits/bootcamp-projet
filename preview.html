@@ -125,8 +125,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=443"></script>
-  <script src="sunmates-icons.js?v=443"></script>
+  <script src="sunmates-badges.js?v=444"></script>
+  <script src="sunmates-icons.js?v=444"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
     // la préversion (preview.html) ni une version archivée (releases/…) : elles se testent
@@ -12964,8 +12964,8 @@
           style: "https://tiles.openfreemap.org/styles/bright",
           attribution: "© OpenStreetMap · OpenFreeMap",
           attributionControl: false,
-          padding: 0.15,            // P6 : marge réduite (0.3→0.15) = ~34 % de pixels GPU en moins ;
-                                    // le resync par frame du plein écran couvre désormais les bords
+          padding: 0.3,             // P10 : marge LARGE re-nécessaire — en plein écran on ne resynchronise
+                                    // PLUS pendant le geste (anti-tremblement), c'est elle qui couvre les bords
           fadeDuration: 0,          // étiquettes immédiates (pas de fondu coûteux)
           pixelRatio: Math.min(window.devicePixelRatio || 1, 2), // cap rétina : ÉNORME gain GPU sur mobile
         });
@@ -13303,18 +13303,21 @@
         try {
           if (typeof _homeBase._update === "function") {
             homeLeaf.off("move", _homeBase._update, _homeBase);
-            let _glLast = 0, _glTrail = null, _glRaf = 0;
-            // P5 (fluidité « à la Plans ») : en PLEIN ÉCRAN le throttle 180 ms donnait des
-            // À-COUPS (le fond « sautait » à chaque resync) → resync à CHAQUE frame via rAF,
-            // possible car le canvas plein écran est rendu à pixelRatio 1 (≈ même surface GPU
-            // que la mini-carte en rétina). La MINI-carte garde l'économie 90 ms (batterie).
+            let _glLast = 0, _glTrail = null;
+            // P10 (fluidité « Google Maps », anti mal de crâne) : pendant le DRAG, Leaflet déplace
+            // déjà tout l'écran en pur CSS (fond + épingles solidaires, 60 fps natif). Re-rendre le
+            // GL en même temps (P5) faisait OSCILLER le fond contre les épingles → mal de mer.
+            // Nouvelle règle en plein écran : DOIGT POSÉ = ZÉRO resynchro (la marge pré-rendue 0.3
+            // couvre les bords) · inertie = resync espacé 250 ms · relâché/fin = UNE resynchro nette.
+            window._smFsTouching = false;
+            el.addEventListener("touchstart", () => { window._smFsTouching = true; }, { passive: true });
+            const _fsTouchUp = (ev) => { if (!ev.touches || ev.touches.length === 0) { window._smFsTouching = false; try { _homeBase._update(); } catch (e) {} } };
+            el.addEventListener("touchend", _fsTouchUp, { passive: true });
+            el.addEventListener("touchcancel", _fsTouchUp, { passive: true });
             homeLeaf.on("move", () => {
-              if (document.querySelector(".homemap-card.fs")) {
-                if (_glRaf) return; // déjà programmé pour la frame en cours
-                _glRaf = requestAnimationFrame(() => { _glRaf = 0; try { _homeBase._update(); } catch (e) {} });
-                return;
-              }
-              const now = Date.now(), gap = 90;
+              const fs = document.querySelector(".homemap-card.fs");
+              if (fs && window._smFsTouching) return; // le geste glisse en pur CSS, rien à faire
+              const now = Date.now(), gap = fs ? 250 : 90; // inertie fs : resync rare (vélocité décroissante)
               if (now - _glLast > gap) { _glLast = now; try { _homeBase._update(); } catch (e) {} }
               else { clearTimeout(_glTrail); _glTrail = setTimeout(() => { _glLast = Date.now(); try { _homeBase._update(); } catch (e) {} }, gap); }
             });
@@ -13728,9 +13731,9 @@
       // PERF plein écran : le canvas GPU devient ~4× plus grand → résolution de rendu ×1.0
       // le temps du plein écran (légèrement moins net, BEAUCOUP plus fluide), netteté ×2
       // restaurée en revenant en vue carte réduite.
-      // P6 : 0.8 en plein écran (au lieu de 1) — encore ~36 % de pixels GPU en moins, le
-      // léger flou est invisible en mouvement et la carte « colle au doigt ».
-      try { _smGlMaps.forEach((m) => { if (m && typeof m.setPixelRatio === "function") m.setPixelRatio(on ? 0.8 : Math.min(window.devicePixelRatio || 1, 2)); }); } catch (e) {}
+      // P10 : netteté ×1 restaurée en plein écran — on ne re-rend plus PENDANT le geste
+      // (anti-tremblement), donc le GPU a le temps de rendre net aux moments calmes.
+      try { _smGlMaps.forEach((m) => { if (m && typeof m.setPixelRatio === "function") m.setPixelRatio(on ? 1 : Math.min(window.devicePixelRatio || 1, 2)); }); } catch (e) {}
       if (homeLeaf) {
         if (homeLeaf.scrollWheelZoom) { on ? homeLeaf.scrollWheelZoom.enable() : homeLeaf.scrollWheelZoom.disable(); }
         // P4 : plein écran = drag toujours actif ; en sortir rendort la mini-carte (tap pour réveiller)
