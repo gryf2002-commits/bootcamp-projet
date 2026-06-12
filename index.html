@@ -114,8 +114,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=438"></script>
-  <script src="sunmates-icons.js?v=438"></script>
+  <script src="sunmates-badges.js?v=439"></script>
+  <script src="sunmates-icons.js?v=439"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -3415,6 +3415,25 @@
     .bottom-nav button.egp-land { animation: egpLand .8s cubic-bezier(.3,1.6,.4,1); }
     @keyframes egpLand { 0% { transform: translateY(0); } 30% { transform: translateY(-7px) scale(1.1); } 100% { transform: translateY(0); } }
 
+    /* #40 : La valise folle — scène crème, valise géante réactive, GO doré pulsant, chips scores */
+    .vf-stage { position: relative; display: flex; flex-direction: column; align-items: center; gap: .3rem;
+      background: linear-gradient(160deg, var(--cream), var(--card)); border: 1px solid var(--line); border-radius: 16px; padding: .9rem .6rem .7rem; }
+    .vf-case { font-size: 56px; line-height: 1; background: none; border: 0; cursor: pointer; padding: .2rem .9rem; border-radius: 20px;
+      transition: transform .1s ease; filter: grayscale(.45) opacity(.8); touch-action: manipulation; }
+    .vf-case:active { transform: scale(.92); }
+    .vf-case.wait { filter: grayscale(.7) opacity(.65); animation: vfWob 1.1s ease-in-out infinite alternate; }
+    @keyframes vfWob { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+    .vf-case.lit { filter: none; background: radial-gradient(circle, rgba(255,209,92,.5), rgba(255,201,60,0) 70%); animation: vfLit .4s cubic-bezier(.3,1.6,.4,1); }
+    @keyframes vfLit { from { transform: scale(.85); } to { transform: scale(1.08); } }
+    .vf-msg { font-size: .82rem; font-weight: 700; color: var(--ink); min-height: 1.2em; }
+    .vf-board { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+    .vf-chip { font-size: .74rem; font-weight: 800; padding: .25rem .6rem; border-radius: 999px; background: var(--cream); border: 1px solid var(--line); color: var(--text); }
+    .vf-chip.vf-best { background: linear-gradient(135deg, rgba(255,209,92,.3), rgba(255,154,61,.14)); border-color: rgba(232,150,31,.4); color: #B5740E; }
+    body.theme-dusk .vf-stage { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.08); }
+    body.theme-dusk .vf-msg { color: #f3e9f3; }
+    body.theme-dusk .vf-chip { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.1); color: #ded3e6; }
+    body.theme-dusk .vf-chip.vf-best { background: rgba(255,209,92,.14); color: #FFD79A; }
+
     /* #38 : album souvenir PLUS PRÉSENT (lignes plus grandes, accents chauds) */
     .gal-city { padding: .65rem .55rem !important; font-size: .95rem; border: 1px solid var(--line); border-radius: 12px; margin-top: .4rem; background: var(--card); }
     .gal-city .hc-name { font-weight: 700; }
@@ -5322,6 +5341,15 @@
               <div class="cat-tile" data-jeuxnav="shop"><div class="cic c-pink" data-smicon="shop" data-smicon-size="36">🛍️</div><div class="clbl">Boutique</div></div>
             </div>
           </div>
+          <!-- #40 : mini-jeu OUVERT, jouable direct sous Quêtes/Jeux — « La valise folle »
+               (réflexe pur) avec mini-classement local (record + 3 derniers). -->
+          <section class="card vf-card" id="valiseCard" aria-label="La valise folle">
+            <div class="section-head" style="margin-bottom:.15rem"><h3 style="margin:0">🎒 La valise folle</h3><span class="muted" style="font-size:.72rem">réflexe pur</span></div>
+            <p class="muted" style="font-size:.78rem;margin:.1rem 0 .5rem">Touche la valise <b>dès qu'elle s'allume</b> · 5 manches, moyenne en millisecondes.</p>
+            <div class="vf-stage"><button type="button" id="vfCase" class="vf-case">🎒</button><div class="vf-msg" id="vfMsg">Touche la valise pour lancer</div></div>
+            <div class="vf-board" id="vfBoard"></div>
+          </section>
+
           <!-- ⚡ QUÊTE DU JOUR (spotlight) · moteur renderQuestSpotlight ressuscité (le DOM avait sauté
                lors d'un dédoublonnage : le renderer tournait dans le vide). Contenu vivant au cœur du hub. -->
           <section class="card quest-spotlight" id="questSpotlight" aria-label="Quête du jour">
@@ -6451,18 +6479,22 @@
 
     // ===== 📸 Mon récap partageable (image story, façon « Wrapped ») =====
     function _roundRect(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+    // #15 : le récap story raconte LA MÊME CHOSE que « Mon parcours » (mêmes stats, même nom,
+    // même identité) — typo Fraunces, pilules dorées, série en signature.
     function _recapStats() {
-      let streak = 0; try { streak = (JSON.parse(localStorage.getItem("sm_streak_" + (myUserId || "x")) || "{}") || {}).count || 0; } catch (e) {}
-      const mates = (typeof connectedIds !== "undefined" && connectedIds) ? connectedIds.size : 0;
-      const badges = (typeof myBadgeKeys !== "undefined" && myBadgeKeys) ? myBadgeKeys.size : 0;
-      const xp = (myProfile && myProfile.xp) || 0;
-      return [["🔥", streak, "jours de série"], ["🤝", mates, "Mates"], ["🏅", badges, "badges"], ["⭐", xp, "XP"]];
+      const s = (typeof parcoursStats === "function") ? parcoursStats() : { ck: 0, q: 0, b: 0, xp: 0 };
+      return [["📍", s.ck, "check-ins"], ["🎯", s.q, "quêtes accomplies"], ["🏅", s.b, "badges"], ["⭐", s.xp, "XP"]];
     }
     async function generateRecapCanvas(withPhoto) {
+      try { await document.fonts.ready; } catch (e) {} // Fraunces dispo pour le canvas
       const W = 1080, Hc = 1350, cv = document.createElement("canvas"); cv.width = W; cv.height = Hc; const c = cv.getContext("2d");
       const g = c.createLinearGradient(0, 0, 0, Hc); g.addColorStop(0, "#FFB347"); g.addColorStop(.45, "#FF6F3C"); g.addColorStop(1, "#B23A2E"); c.fillStyle = g; c.fillRect(0, 0, W, Hc);
       c.fillStyle = "rgba(255,255,255,.08)"; c.beginPath(); c.arc(W / 2, 250, 520, 0, 7); c.fill();
-      c.textAlign = "center"; c.fillStyle = "#fff"; c.font = "800 66px system-ui,Arial"; c.fillText("☀️ SunMates", W / 2, 150);
+      // Soleil SunMates dessiné (rayons) derrière le titre — la signature de l'app
+      c.save(); c.translate(W / 2, 128); c.strokeStyle = "rgba(255,243,196,.9)"; c.lineWidth = 8; c.lineCap = "round";
+      for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; c.beginPath(); c.moveTo(Math.cos(a) * 58, Math.sin(a) * 58); c.lineTo(Math.cos(a) * 80, Math.sin(a) * 80); c.stroke(); }
+      c.fillStyle = "#FFE9A8"; c.beginPath(); c.arc(0, 0, 44, 0, 7); c.fill(); c.restore();
+      c.textAlign = "center"; c.fillStyle = "#fff"; c.font = "800 66px Fraunces, Georgia, serif"; c.fillText("SunMates", W / 2, 248);
       const name = (myProfile && myProfile.username) || "Voyageur"; const cx = W / 2, cy = 440, rad = 150;
       c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.fillStyle = "rgba(255,255,255,.2)"; c.fill();
       const url = (myProfile && myProfile.avatar_url) || ""; let drewPhoto = false;
@@ -6473,11 +6505,17 @@
       }
       if (!drewPhoto) { c.fillStyle = "#fff"; c.font = "800 140px system-ui,Arial"; c.textBaseline = "middle"; c.fillText((name[0] || "?").toUpperCase(), cx, cy); c.textBaseline = "alphabetic"; }
       c.lineWidth = 10; c.strokeStyle = "rgba(255,255,255,.85)"; c.beginPath(); c.arc(cx, cy, rad, 0, 7); c.stroke();
-      c.fillStyle = "#fff"; c.font = "800 72px system-ui,Arial"; c.fillText(name, W / 2, 690);
-      c.font = "500 36px system-ui,Arial"; c.fillStyle = "rgba(255,255,255,.92)"; c.fillText("Mon aventure SunMates", W / 2, 740);
-      const items = _recapStats(); const gx = 90, gy = 830, gap = 40, gw = (W - gx * 2 - gap) / 2, gh = 200;
-      items.forEach((it, i) => { const col = i % 2, row = (i / 2) | 0, x = gx + col * (gw + gap), y = gy + row * (gh + gap); c.fillStyle = "rgba(255,255,255,.16)"; _roundRect(c, x, y, gw, gh, 28); c.fill(); c.fillStyle = "#fff"; c.font = "800 78px system-ui,Arial"; c.fillText(it[0] + " " + it[1], x + gw / 2, y + 108); c.font = "500 34px system-ui,Arial"; c.fillStyle = "rgba(255,255,255,.92)"; c.fillText(it[2], x + gw / 2, y + 158); });
-      c.fillStyle = "rgba(255,255,255,.95)"; c.font = "600 42px system-ui,Arial"; c.fillText("pars solo, trouve ta bande ☀️", W / 2, Hc - 90);
+      c.fillStyle = "#fff"; c.font = "800 76px Fraunces, Georgia, serif"; c.fillText(name, W / 2, 690);
+      c.font = "600 38px system-ui,Arial"; c.fillStyle = "rgba(255,255,255,.95)"; c.fillText("🧭 Mon parcours SunMates", W / 2, 744);
+      const items = _recapStats(); const gx = 90, gy = 820, gap = 40, gw = (W - gx * 2 - gap) / 2, gh = 200;
+      items.forEach((it, i) => { const col = i % 2, row = (i / 2) | 0, x = gx + col * (gw + gap), y = gy + row * (gh + gap);
+        c.fillStyle = "rgba(255,243,196,.22)"; _roundRect(c, x, y, gw, gh, 28); c.fill();
+        c.strokeStyle = "rgba(255,233,168,.5)"; c.lineWidth = 3; _roundRect(c, x, y, gw, gh, 28); c.stroke();
+        c.fillStyle = "#fff"; c.font = "800 78px Fraunces, Georgia, serif"; c.fillText(it[0] + " " + it[1], x + gw / 2, y + 108);
+        c.font = "600 34px system-ui,Arial"; c.fillStyle = "rgba(255,255,255,.92)"; c.fillText(it[2], x + gw / 2, y + 158); });
+      let streak = 0; try { streak = (JSON.parse(localStorage.getItem("sm_streak_" + (myUserId || "x")) || "{}") || {}).count || 0; } catch (e) {}
+      if (streak > 1) { c.fillStyle = "#FFE9A8"; c.font = "800 44px system-ui,Arial"; c.fillText("🔥 " + streak + " jours d'affilée", W / 2, Hc - 160); }
+      c.fillStyle = "rgba(255,255,255,.95)"; c.font = "600 42px Fraunces, Georgia, serif"; c.fillText("pars solo, trouve ta bande ☀️", W / 2, Hc - 90);
       return cv;
     }
     function _canvasToBlob(cv) { return new Promise((res) => { try { cv.toBlob((b) => res(b), "image/png"); } catch (e) { res(null); } }); }
@@ -7931,6 +7969,7 @@
         ["🎯", "Quêtes du jour", "Ouvertes en feuille avec BARRE DE RECHERCHE + tri « près de moi » (anti-listing géant), 3/jour + cooldown."],
         ["🗺️", "Ma collection", "Listing des quêtes accomplies / à faire par ville + villes explorées (plus de redirect)."],
         ["🎮", "Jeux populaires (6 mini-jeux)", "Jouables tout de suite : Roue des défis, Brise-glace, Quiz voyageur, 2 vérités 1 mensonge, Décide pour moi, Bingo de voyage."],
+        ["🎒", "La valise folle", "Mini-jeu de réflexe intégré à l'onglet Jeux : touche la valise dès qu'elle s'allume, 5 manches, record + 3 derniers scores gardés en local."],
         ["👥", "Quêtes de groupe", "Confirmées par un Mate → bonus XP partagé."],
         ["🎲", "Défis entre Mates", "Propose une quête à un Mate."],
         ["⭐", "XP (monnaie de jeu)", "Gagnée via les quêtes, séparée du score de confiance. Anti-triche serveur."],
@@ -11847,6 +11886,46 @@
         if (mateProfileBack) { const f = mateProfileBack; mateProfileBack = null; f(); }
         else showMatesView("matesHome");
       }));
+
+    // ====================== #40 LA VALISE FOLLE (mini-jeu réflexe intégré) ======================
+    // 5 manches : la valise s'allume après un délai aléatoire → tape vite. Moyenne en ms,
+    // record + 3 derniers gardés en local. Trop tôt = faute (la manche recommence).
+    (function valiseFolle() {
+      const cs = $("vfCase"), msg = $("vfMsg"), board = $("vfBoard"); if (!cs || !msg || !board) return;
+      const K = () => "sm_vf_" + (myUserId || "anon");
+      const load = () => { try { return JSON.parse(localStorage.getItem(K()) || "{}") || {}; } catch (e) { return {}; } };
+      const save = (d) => { try { localStorage.setItem(K(), JSON.stringify(d)); } catch (e) {} };
+      let state = "idle", litAt = 0, round = 0, times = [], timer = null;
+      function renderBoard() {
+        const d = load();
+        board.innerHTML = (d.best ? `<span class="vf-chip vf-best">🥇 ${d.best} ms</span>` : `<span class="vf-chip muted">🥇 — joue ta première partie !</span>`)
+          + (d.last || []).map((t) => `<span class="vf-chip">${t} ms</span>`).join("");
+      }
+      function reset(txt) { state = "idle"; round = 0; times = []; clearTimeout(timer); cs.classList.remove("lit", "wait"); msg.textContent = txt || "Touche la valise pour lancer"; }
+      function arm() {
+        state = "wait"; cs.classList.add("wait"); cs.classList.remove("lit");
+        msg.textContent = `Manche ${round + 1}/5 · attends qu'elle s'allume…`;
+        timer = setTimeout(() => { state = "lit"; litAt = performance.now(); cs.classList.add("lit"); cs.classList.remove("wait"); msg.textContent = "GO ! 🎒✨"; if (window.SMSound) { try { SMSound.play("pop"); } catch (e) {} } }, 800 + Math.random() * 1700);
+      }
+      cs.addEventListener("click", () => {
+        if (state === "idle") { round = 0; times = []; arm(); return; }
+        if (state === "wait") { clearTimeout(timer); cs.classList.remove("wait"); msg.textContent = "Trop tôt 😅 · on rejoue la manche"; state = "idle2"; setTimeout(arm, 800); return; }
+        if (state !== "lit") return;
+        const t = Math.round(performance.now() - litAt); times.push(t); round++;
+        cs.classList.remove("lit");
+        if (window.SMSound) { try { SMSound.play("coin"); } catch (e) {} }
+        if (round < 5) { msg.textContent = `${t} ms ⚡`; setTimeout(arm, 650); return; }
+        const avg = Math.round(times.reduce((a, x) => a + x, 0) / times.length);
+        const d = load(); const isRecord = !d.best || avg < d.best;
+        d.last = [avg].concat(d.last || []).slice(0, 3);
+        if (isRecord) d.best = avg;
+        save(d); renderBoard();
+        msg.textContent = isRecord ? `🏆 NOUVEAU RECORD : ${avg} ms !` : `Moyenne : ${avg} ms · record ${d.best} ms`;
+        if (isRecord && typeof celebrate === "function") celebrate();
+        state = "idle";
+      });
+      renderBoard();
+    })();
 
     // ====================== #6 CONVERSATIONS DE GROUPE (events à plusieurs) ======================
     // Tables group_chats / group_members / group_messages (migration supabase_migration_groupes.sql).
