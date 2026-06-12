@@ -114,15 +114,10 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=441"></script>
-  <script src="sunmates-icons.js?v=441"></script>
+  <script src="sunmates-badges.js?v=439"></script>
+  <script src="sunmates-icons.js?v=439"></script>
   <script>
-    // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
-    // la préversion (preview.html) ni une version archivée (releases/…) : elles se testent
-    // « à nu », sans toucher au cache de l'app installée.
-    var SM_IS_MAIN_PAGE = /(\/|\/index\.html)$/.test(location.pathname);
-    if (!SM_IS_MAIN_PAGE) { try { window.SM_PREVIEW = true; } catch (e) {} }
-    if ("serviceWorker" in navigator && SM_IS_MAIN_PAGE) {
+    if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
       // Dès qu'un nouveau service worker prend le contrôle, on recharge UNE fois →
       // tout le monde bascule sur la dernière version sans rien faire.
@@ -239,9 +234,6 @@
     /* Conteneur façon téléphone, centré */
     .app-shell {
       max-width: 460px; margin: 0 auto; min-height: 100vh;
-      /* P2.6 : 100dvh = la VRAIE hauteur visible du moment (barres du navigateur comprises) —
-         100vh laissait une bande vide en bas sur Android/iPhone quand la barre se rétracte. */
-      min-height: 100dvh;
       background: var(--bg); position: relative;
       display: flex; flex-direction: column;
     }
@@ -251,9 +243,7 @@
       display: flex; align-items: center; justify-content: space-between; gap: .75rem;
       /* safe-area-inset-top : laisse la place de l'encoche / status bar (iPhone) sans chevauchement */
       padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem .75rem; position: sticky; top: 0; z-index: var(--z-header);
-      /* P2.2 : header OPAQUE à bord net — fini la bande dégradée translucide sous « SunMates »
-         où le contenu scrollé apparaissait à moitié (effet sale). */
-      background: var(--bg); border-bottom: 1px solid var(--line);
+      background: linear-gradient(var(--bg) 70%, rgba(253,243,241,0));
     }
     /* min-width:0 : le wordmark peut rétrécir au lieu de pousser les actions ; padding-right : espace constant avec le bouton thème */
     .brand { display: flex; align-items: center; gap: .5rem; min-width: 0; padding-right: .25rem; font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: .5px; }
@@ -612,22 +602,14 @@
 
     /* ---- Confettis (déblocage de badge) — refonte « grand soir » : chute + FLOTTEMENT
        (2 animations imbriquées : l'extérieur tombe, l'intérieur se balance) + starburst. ---- */
-    /* P2.9 PERF : contain:strict isole la pluie du reste de la page, et le drop-shadow PAR
-       confetti (70 filtres animés à chaque frame !) est retiré → célébration fluide sur mobile. */
-    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: var(--z-confetti); overflow: hidden; contain: strict; }
-    .confetti-wrap i { position: absolute; top: -24px; opacity: .95; animation: confettiFall linear forwards; will-change: transform; }
-    .confetti-wrap i b { display: block; width: 100%; height: 100%; animation: confettiSway ease-in-out infinite alternate; will-change: transform; }
+    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: var(--z-confetti); overflow: hidden; }
+    .confetti-wrap i { position: absolute; top: -24px; opacity: .95; animation: confettiFall linear forwards; filter: drop-shadow(0 2px 2px rgba(214,96,74,.25)); }
+    .confetti-wrap i b { display: block; width: 100%; height: 100%; animation: confettiSway ease-in-out infinite alternate; }
     .confetti-wrap i svg { width: 100%; height: 100%; display: block; }
     @keyframes confettiFall { to { transform: translateY(108vh); opacity: .85; } }
     @keyframes confettiSway { from { transform: translateX(-13px) rotate(-50deg); } to { transform: translateX(13px) rotate(50deg); } }
     /* Starburst central : flash doré + anneau qui s'étend (l'instant de gloire) */
     .cfx-burst { position: fixed; left: 50%; top: 42%; width: 16px; height: 16px; margin: -8px; pointer-events: none; z-index: var(--z-confetti); }
-    /* P2.9 PERF mobile : le flou d'arrière-plan des overlays les plus fréquents repeint tout
-       l'écran à l'ouverture (très cher sur téléphone, surtout au-dessus de la carte) → retiré
-       sur écrans tactiles, le voile sombre suffit ; gardé sur desktop. */
-    @media (pointer: coarse) {
-      .popinfo-ov, .sm-selsheet-ov { backdrop-filter: none; }
-    }
     .cfx-burst::before { content: ""; position: absolute; inset: 0; border-radius: 50%;
       background: radial-gradient(circle, #FFF3C4 0%, #FFC93C 45%, rgba(255,154,61,0) 72%); animation: cfxFlash .75s ease-out forwards; }
     .cfx-burst::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 3px solid rgba(255,201,60,.85); animation: cfxRing .8s cubic-bezier(.2,.8,.3,1) forwards; }
@@ -1050,17 +1032,7 @@
     .homemap-filters .chip.active { opacity: 1; }
     .homemap-filters .chip b { font-weight: 800; opacity: .85; }
     .homemap-wrap { position: relative; isolation: isolate; } /* contient les outils carte (z-index) -> ne débordent plus sur la nav du bas */
-    /* P2.7 : un chouia plus GRANDE (240→266px) — possible maintenant que le scroll de la page
-       ne se fait plus avaler par la carte (geste coopératif : 1 doigt = page, plein écran = drag). */
-    .homemap { height: 266px; border-radius: 14px; overflow: hidden; background: var(--cream); position: relative; z-index: 0; isolation: isolate; }
-    .hm-coop-hint { position: absolute; left: 50%; bottom: .6rem; transform: translateX(-50%) translateY(6px); z-index: 900;
-      background: rgba(20,14,28,.78); color: #fff; font: 700 .74rem/1 Manrope, system-ui, sans-serif; padding: .5rem .75rem;
-      border-radius: 999px; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; white-space: nowrap; }
-    .hm-coop-hint.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    /* P2.10 : ruban préversion / version archivée */
-    #smPreviewRibbon { position: fixed; top: calc(.4rem + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 9999;
-      background: #6638D6; color: #fff; font: 800 .66rem/1 Manrope, system-ui, sans-serif; letter-spacing: .06em;
-      padding: .38rem .75rem; border-radius: 999px; box-shadow: 0 6px 18px rgba(0,0,0,.3); pointer-events: none; white-space: nowrap; }
+    .homemap { height: 240px; border-radius: 14px; overflow: hidden; background: var(--cream); position: relative; z-index: 0; isolation: isolate; }
     /* Mode paysage (téléphone tourné, peu de hauteur) : on raccourcit les gros visuels pour rester lisible */
     @media (orientation: landscape) and (max-height: 560px) {
       .auth-hero { padding: .8rem 1rem !important; min-height: 0; }
@@ -1301,7 +1273,7 @@
     hr { border: 0; border-top: 1px solid var(--line); margin: 1.2rem 0; }
 
     /* ------------------------- Écran connexion ---------------------- */
-    .auth-wrap { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+    .auth-wrap { min-height: 100vh; display: flex; flex-direction: column; }
     .auth-hero {
       background: var(--accent-grad); border-radius: 0 0 36px 36px; padding: 3rem 1.5rem 2.5rem;
       text-align: center; color: #fff; box-shadow: 0 14px 30px rgba(255,90,77,.3);
@@ -2792,7 +2764,7 @@
     body.theme-dusk .mseg, body.theme-dusk .chip { background: var(--dcard,#2a2140) !important; border-color: rgba(255,255,255,.08) !important; }
     body.theme-dusk .chip.active, body.theme-dusk .mseg button.active { background: var(--accent-grad) !important; color: #fff !important; }
     body.theme-dusk .notif-card, body.theme-dusk .picker-card { background: #221a34; }
-    body.theme-dusk .topbar { background: #171026; border-bottom-color: rgba(255,255,255,.08); }
+    body.theme-dusk .topbar { background: linear-gradient(rgba(23,16,38,.86), rgba(23,16,38,0)); }
     body.theme-dusk .bottom-nav { background: #1c1428 !important; }
     body.theme-dusk .iconbtn { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.13); }
     body.theme-dusk .bubble.them { background: #2c2342; color: #ede6f2; }
@@ -2859,7 +2831,7 @@
     /* --- Marque / en-tête --- */
     .brand b { font-weight: 600; letter-spacing: .015em; font-size: 1.2rem; }
     .brand .mark { background: var(--accent-grad); border-radius: 11px; box-shadow: var(--shadow-sm); }
-    .topbar { background: var(--bg); border-bottom: 1px solid var(--line); }
+    .topbar { background: linear-gradient(var(--bg) 72%, rgba(244,237,224,0)); }
 
     /* --- Cartes : épurées, bord fin, ombre douce --- */
     .card { background: var(--card) !important; border: 1px solid var(--line) !important; border-radius: var(--radius);
@@ -2952,7 +2924,7 @@
     body.theme-dusk #bgFx { background: radial-gradient(125% 50% at 50% -8%, rgba(255,138,61,.34) 0%, rgba(255,79,109,.10) 40%, rgba(0,0,0,0) 66%), var(--bg); }
 
     h1, h2, h3 { color: var(--ink); }
-    .topbar { background: var(--bg); border-bottom: 1px solid var(--line); }
+    .topbar { background: linear-gradient(var(--bg) 70%, rgba(255,244,230,0)); }
     .brand .mark { background: var(--accent-grad); box-shadow: 0 6px 16px rgba(255,90,77,.4); }
     .section-head a { color: var(--retro-teal); }
 
@@ -3053,13 +3025,8 @@
     body.theme-dusk .feed-card, body.theme-dusk .pcell, body.theme-dusk .pprompt, body.theme-dusk .stat-box,
     body.theme-dusk .dstat, body.theme-dusk .tile, body.theme-dusk .gcard, body.theme-dusk .chip,
     body.theme-dusk .mseg, body.theme-dusk .coupon, body.theme-dusk .reco { background: #2E1B4C !important; }
-    /* P2.8 : FIL homogène en nuit — les posts rejoignent la MÊME famille violette que les cartes
-       (avant : brun délavé #241b35 posé à côté de cartes #2A1846 = patchwork), un cran plus
-       clair que la tuile principale (le composer, dégradé sombre) pour bien les distinguer. */
-    body.theme-dusk:not(.theme-winter):not(.theme-tropic) .fpost { background: #2E1B4C; border-color: rgba(255,255,255,.10); }
-    body.theme-dusk:not(.theme-winter):not(.theme-tropic) .fpost-empty { background: #271642; border-color: rgba(255,255,255,.14); }
     body.theme-dusk .bottom-nav { background: #190e2e; }
-    body.theme-dusk .topbar { background: #190e2e; border-bottom-color: rgba(255,255,255,.08); }
+    body.theme-dusk .topbar { background: linear-gradient(rgba(25,14,46,.88), rgba(25,14,46,0)); }
     body.theme-dusk .bubble.them { background: #2E1B4C; color: #f3e9f3; }
     body.theme-dusk .iconbtn { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.14); }
     body.theme-dusk .notif-card, body.theme-dusk .picker-card { background: #22123A; }
@@ -3314,16 +3281,6 @@
     #adminDash .pcell.pcell-jump { border: 1px solid rgba(232,150,31,.3); }
 
     /* #26 : bandeau EN DIRECT du board admin (pastille verte qui pulse + mini-grille) */
-    /* P2.1 : panneau de contrôle DA (admin) */
-    .da-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .45rem; }
-    .da-sw { display: flex; align-items: center; gap: .5rem; border: 1px solid var(--line); border-radius: 12px; padding: .45rem .55rem; cursor: pointer; background: var(--card); text-align: left; font: inherit; }
-    .da-sw:active { transform: scale(.97); }
-    .da-sw .sq { width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0; border: 1px solid rgba(0,0,0,.08); }
-    .da-sw .nm { font-size: .72rem; font-weight: 800; color: var(--ink); line-height: 1.2; min-width: 0; }
-    .da-sw .vl { display: block; font-size: .64rem; color: var(--muted); font-weight: 600; word-break: break-all; }
-    .da-sw-band { display: block; width: 100%; margin-bottom: .45rem; }
-    .da-band { display: block; height: 34px; border-radius: 10px; margin-bottom: .3rem; border: 1px solid rgba(0,0,0,.06); }
-    body.theme-dusk .da-sw { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.1); }
     .adm-live { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .65rem .7rem; margin-bottom: .7rem; box-shadow: var(--shadow-sm); }
     body.theme-dusk .adm-live { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.09); }
     .adm-live .al-head { display: flex; align-items: center; gap: .4rem; font-size: .72rem; font-weight: 800; letter-spacing: .06em; color: var(--muted); }
@@ -4154,11 +4111,6 @@
       <div id="authForm">
         <label>Email</label>
         <input id="authEmail" type="email" placeholder="chloe@exemple.com" />
-        <!-- P2.5 : pseudo choisi DÈS l'inscription (sinon c'était le début de l'email qui s'affichait partout) -->
-        <div id="authPseudoWrap" class="hidden">
-          <label>Pseudo</label>
-          <input id="authPseudo" type="text" maxlength="20" placeholder="Chloé l'exploratrice" autocomplete="nickname" />
-        </div>
         <label>Mot de passe</label>
         <div style="position:relative">
           <input id="authPassword" type="password" placeholder="••••••••" style="padding-right:2.8rem" autocomplete="current-password" />
@@ -5128,7 +5080,6 @@
             <button data-aseg="quotes">💼 Devis</button>
             <button data-aseg="feedback">🧪 Bêta</button>
             <button data-aseg="sounds">🔊 Sons</button>
-            <button data-aseg="da">🎨 DA</button>
             <button data-aseg="data">🗄️ Données</button>
             <button data-aseg="system">🧰 Système</button>
           </div>
@@ -5234,42 +5185,6 @@
             </div>
           </div>
 
-          <!-- P2.1 : PANNEAU DE CONTRÔLE DA — la source de vérité visuelle de SunMates,
-               lue EN DIRECT dans le CSS calculé (jamais désynchronisée du code). -->
-          <div class="aseg hidden" data-asegpanel="da">
-            <div class="card">
-              <h3 style="margin-top:0">🎨 Panneau de contrôle DA</h3>
-              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Couleurs, dégradés, typos et familles de SunMates, <b>tels qu'ils sont vraiment calculés</b> dans l'app. Touche une pastille pour <b>copier son code</b>. Choisis un mode :</p>
-              <div class="mseg" id="daModeSeg" style="flex-wrap:wrap">
-                <button data-damode="day" class="active">🌞 Jour</button>
-                <button data-damode="dusk">🌙 Nuit</button>
-                <button data-damode="winter">❄️ Hiver</button>
-                <button data-damode="tropic">🌴 Tropiques</button>
-              </div>
-              <div id="daTokens" style="margin-top:.6rem"></div>
-            </div>
-            <div class="card"><h3 style="margin-top:0">🌅 Dégradés signature</h3><div id="daGrads"></div></div>
-            <div class="card">
-              <h3 style="margin-top:0">🔤 Typographies</h3>
-              <div class="da-type" style="font-family:Fraunces,serif;font-weight:700;font-size:1.3rem">Fraunces — titres éditoriaux</div>
-              <div class="da-type" style="font-family:Manrope,system-ui,sans-serif;font-weight:600;margin-top:.3rem">Manrope — interface &amp; textes</div>
-              <p class="muted" style="font-size:.78rem;margin:.5rem 0 0">Graisse : Fraunces 400→900 (italique 500) · Manrope 400→800.</p>
-            </div>
-            <div class="card"><h3 style="margin-top:0">🏅 Familles de badges</h3>
-              <p class="muted" style="font-size:.78rem;margin:.2rem 0 .6rem">Chaque famille a SA couleur — un badge n'est jamais doré « par hasard ».</p>
-              <div id="daFams"></div>
-            </div>
-            <div class="card"><h3 style="margin-top:0">🟣 Pastilles (accès rapides &amp; sécurité)</h3>
-              <p class="muted" style="font-size:.78rem;margin:.2rem 0 .6rem">La palette « émaillée » des tuiles ; elles suivent le mode choisi ci-dessus.</p>
-              <div id="daThumbs"></div>
-            </div>
-            <div class="card">
-              <h3 style="margin-top:0">📤 Exporter le kit DA</h3>
-              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Copie TOUT (les 4 modes + dégradés + typos) en JSON — parfait pour briefer un outil de design (Stitch, Figma…) ou un autre assistant sans rien oublier.</p>
-              <button class="btn-primary btn-block" id="daExport">📋 Copier le kit DA complet</button>
-            </div>
-          </div>
-
           <div class="aseg hidden" data-asegpanel="data">
             <div class="card"><h3 style="margin-top:0">🗄️ Données derrière l'app</h3>
               <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Vue d'ensemble de la base Supabase + du contenu de jeu chargé (lecture seule).</p>
@@ -5291,18 +5206,6 @@
               <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Vide le cache du service worker et recharge la dernière version en ligne. Pratique après un déploiement si tu vois encore l'ancienne version.</p>
               <button class="btn-primary btn-block" id="sysForceUpdate">🧹 Vider le cache & recharger</button>
               <div class="msg" id="sysMsg" style="text-align:center"></div>
-            </div>
-            <!-- P2.10 : bac à essai AVANT déploiement -->
-            <div class="card">
-              <h3 style="margin-top:0">🧪 Préversion (bac à essai)</h3>
-              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Les grosses nouveautés sont d'abord déployées sur <b>preview.html</b> : tu y testes la PROCHAINE version en conditions réelles (même base, même compte), <b>sans toucher</b> à l'app de tout le monde ni à son cache. Quand tu valides, elle est promue en version officielle (1 commit). Un ruban violet 🧪 rappelle qu'on est dans le bac à essai.</p>
-              <button class="btn-primary btn-block" id="sysOpenPreview">🧪 Ouvrir la préversion</button>
-            </div>
-            <!-- P2.11 : versions abouties gardées en l'état -->
-            <div class="card">
-              <h3 style="margin-top:0">🗃️ Versions archivées</h3>
-              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Chaque version aboutie est gardée TELLE QUELLE dans <b>releases/</b> : ouvre-la pour comparer un comportement ou retrouver un état qui marchait. ⚠️ Remettre une version <b>pour tout le monde</b> demande un commit (une page statique ne peut pas se redéployer seule) : demande à Claude « repasse en v43X », c'est fait en ~1 min.</p>
-              <div id="sysReleases"><p class="muted">Chargement…</p></div>
             </div>
           </div>
 
@@ -5958,7 +5861,6 @@
       authMode = mode;
       $("tabLogin").classList.toggle("active", mode === "login");
       $("tabSignup").classList.toggle("active", mode === "signup");
-      show($("authPseudoWrap"), mode === "signup"); // P2.5 : le pseudo ne sert qu'à l'inscription
       const proBtn = $("tabPro"); if (proBtn) proBtn.classList.toggle("active", mode === "pro");
       $("authMsg").textContent = "";
       // Onglet Pro : la page de connexion change DU TOUT AU TOUT (pas d'identifiants, juste « Démarrer »).
@@ -5989,16 +5891,11 @@
       if (!email || !password) { msg.style.color = "var(--danger)"; msg.textContent = "Remplis l'email et le mot de passe."; return; }
       // Sécurité : minimum 8 caractères à l'inscription (aligner aussi le réglage Supabase Auth).
       if (authMode === "signup" && password.length < 8) { msg.style.color = "var(--danger)"; msg.textContent = "Mot de passe trop court : 8 caractères minimum."; return; }
-      // P2.5 : pseudo obligatoire à l'inscription (2 à 20 caractères) → fini l'email affiché à l'onboarding.
-      const pseudo = authMode === "signup" ? ($("authPseudo") ? $("authPseudo").value.trim() : "") : "";
-      if (authMode === "signup" && (pseudo.length < 2 || pseudo.length > 20)) { msg.style.color = "var(--danger)"; msg.textContent = "Choisis un pseudo (2 à 20 caractères) — c'est lui que les autres verront."; return; }
       await once("auth:" + authMode, async () => {
         msg.style.color = "var(--muted)"; msg.textContent = "Un instant…";
         const { data, error } = authMode === "login"
           ? await db.auth.signInWithPassword({ email, password })
-          // Le pseudo voyage dans les métadonnées du compte : ensureProfile le lit au 1er login
-          // (même si l'utilisateur confirme son email sur un autre appareil).
-          : await db.auth.signUp({ email, password, options: { data: { username: pseudo } } });
+          : await db.auth.signUp({ email, password });
         if (error) {
           const notConfirmed = error.code === "email_not_confirmed" || /email not confirmed/i.test(error.message || "");
           if (authMode === "login" && notConfirmed) {
@@ -6186,11 +6083,8 @@
     async function ensureProfile(user) {
       const { data } = await db.from("profiles").select("id").eq("id", user.id).maybeSingle();
       if (!data) {
-        // P2.5 : le pseudo choisi à l'inscription (métadonnées du compte) d'abord ; le début de
-        // l'email n'est plus qu'un repli (anciens comptes / inscriptions hors formulaire).
-        const meta = (user.user_metadata && user.user_metadata.username) ? String(user.user_metadata.username).trim().slice(0, 20) : "";
         // Nouveau compte = profil PRIVÉ par défaut (n'apparaît pas dans le classement tant qu'il n'opte pas).
-        await db.from("profiles").insert({ id: user.id, username: meta || user.email.split("@")[0], is_public: false });
+        await db.from("profiles").insert({ id: user.id, username: user.email.split("@")[0], is_public: false });
       }
     }
 
@@ -6258,7 +6152,6 @@
       if (target === "profil") { const sc = $("settingsCard"), pm = $("profMain"); if (sc) sc.classList.add("hidden"); if (pm) pm.classList.remove("hidden"); }
       window.scrollTo(0, 0); // PERF : retour haut INSTANTANÉ (le scroll animé donnait une impression de lenteur au switch)
       if (target === "accueil" && typeof renderHomeMap === "function" && (typeof getHomeMode !== "function" || getHomeMode() !== "home")) setTimeout(renderHomeMap, 60);
-      if (target !== "accueil" && window._smArmBack) window._smArmBack(); // P2.3 : le retour téléphone ramènera à l'Accueil
       __lastTab = target;
     }
 
@@ -6427,9 +6320,7 @@
         st._celebrated = n;
         try { localStorage.setItem("sm_streak_" + (myUserId || "x"), JSON.stringify(st)); } catch (e) {}
         if (typeof toast === "function") toast("🔥", i18nT("{n} jours de série, tu es en feu ! Continue 🌟", { n: n }));
-        // P2.9 : la fête attend la FIN du boot (1,2 s) — avant, les confettis partaient pile
-        // pendant le chargement (carte + données) et tout l'écran ramait.
-        if (typeof celebrate === "function") setTimeout(celebrate, 1200);
+        if (typeof celebrate === "function") celebrate();
       }
     }
     { const sc = $("homeStreak"); if (sc) sc.addEventListener("click", () => {
@@ -7900,7 +7791,6 @@
       else if (seg === "reports") loadReports();
       else if (seg === "quotes") loadAdminQuotes();
       else if (seg === "sounds") loadAdminSounds();
-      else if (seg === "da") renderDaPanel();
       else if (seg === "data") loadAdminData();
       else if (seg === "feedback") loadAdminFeedback();
       else if (seg === "system") loadAdminSystem();
@@ -7962,105 +7852,6 @@
         });
       });
     }
-    // ---- P2.1 : PANNEAU DE CONTRÔLE DA (admin) ----
-    // La source de vérité visuelle, lue EN DIRECT dans le CSS calculé (getComputedStyle) :
-    // jamais désynchronisée du code. Pour lire un AUTRE mode que l'actuel, on bascule les
-    // classes du <body> de façon SYNCHRONE (aucun rendu entre les deux) puis on les restaure.
-    const DA_TOKENS = [
-      ["--bg", "Fond"], ["--card", "Carte"], ["--accent", "Corail principal"], ["--accent-2", "Corail clair"],
-      ["--accent-3", "Ambre"], ["--accent-soft", "Corail pâle (chips)"], ["--ink", "Titres"], ["--text", "Texte"],
-      ["--muted", "Texte secondaire"], ["--line", "Séparateurs"], ["--ok", "Validé (vert sobre)"], ["--danger", "Danger"],
-      ["--dcard", "Carte sombre"], ["--dcard2", "Carte sombre 2"], ["--dcard3", "Carte sombre 3"], ["--dcard4", "Carte sombre 4"], ["--dcard5", "Carte sombre 5"],
-    ];
-    const DA_MODES = [["day", "🌞 Jour"], ["dusk", "🌙 Nuit"], ["winter", "❄️ Hiver"], ["winter-dusk", "❄️🌙 Hiver·nuit"], ["tropic", "🌴 Tropiques"], ["tropic-dusk", "🌴🌙 Trop.·nuit"]];
-    let _daMode = "day";
-    function _daWithMode(mode, fn) {
-      const b = document.body;
-      const saved = ["theme-dusk", "theme-winter", "theme-tropic"].map((c) => b.classList.contains(c));
-      b.classList.toggle("theme-dusk", mode.includes("dusk"));
-      b.classList.toggle("theme-winter", mode.startsWith("winter"));
-      b.classList.toggle("theme-tropic", mode.startsWith("tropic"));
-      let out; try { out = fn(); } catch (e) { out = null; }
-      ["theme-dusk", "theme-winter", "theme-tropic"].forEach((c, i) => b.classList.toggle(c, saved[i]));
-      return out;
-    }
-    function _daReadTokens(mode) {
-      return _daWithMode(mode, () => {
-        const cs = getComputedStyle(document.body), out = [];
-        DA_TOKENS.forEach(([v, label]) => { const val = cs.getPropertyValue(v).trim(); if (val) out.push({ v, label, val }); });
-        return out;
-      }) || [];
-    }
-    const DA_THUMB_COLORS = ["green", "blue", "purp", "coral", "lime", "indigo", "rose", "gold", "teal", "red"];
-    function _daReadThumbs(mode) {
-      return _daWithMode(mode, () => {
-        const wrap = document.createElement("div"); wrap.style.cssText = "position:absolute;left:-9999px;top:0";
-        wrap.innerHTML = DA_THUMB_COLORS.map((c) => `<div class="thumb ${c}"></div>`).join("");
-        document.body.appendChild(wrap);
-        const out = DA_THUMB_COLORS.map((c, i) => { const s = getComputedStyle(wrap.children[i]); return { name: c, bg: (s.backgroundImage && s.backgroundImage !== "none") ? s.backgroundImage : s.backgroundColor }; });
-        wrap.remove();
-        return out;
-      }) || [];
-    }
-    // Les dégradés de familles vivent sur les médaillons .hex (sondés avec la VRAIE classe).
-    const DA_GRADS = [["var(--accent-grad)", "Soleil couchant (accent)"], ["hex", "Famille Exploration (corail)"], ["hex grad-violet", "Famille Social"], ["hex grad-teal", "Famille Sécurité"], ["hex grad-gold", "Famille Accomplissement"]];
-    function _daGradVal(src, mode) {
-      return _daWithMode(mode, () => {
-        const p = document.createElement("i");
-        if (!src.startsWith("var(")) p.className = src; else p.style.background = src;
-        p.style.position = "absolute"; p.style.left = "-9999px"; document.body.appendChild(p);
-        const s = getComputedStyle(p); const v = (s.backgroundImage && s.backgroundImage !== "none") ? s.backgroundImage : s.backgroundColor;
-        p.remove(); return v;
-      }) || "";
-    }
-    function _daCopy(txt) { try { navigator.clipboard.writeText(txt); toast("📋", "Copié : " + txt.slice(0, 48) + (txt.length > 48 ? "…" : "")); } catch (e) { toast("⚠️", "Copie impossible sur ce navigateur"); } }
-    function renderDaPanel() {
-      const seg = $("daModeSeg");
-      if (seg && !seg.dataset.wired) {
-        seg.dataset.wired = "1";
-        seg.innerHTML = DA_MODES.map(([m, l], i) => `<button data-damode="${m}"${i === 0 ? ' class="active"' : ""}>${l}</button>`).join("");
-        seg.querySelectorAll("[data-damode]").forEach((b) => b.addEventListener("click", () => {
-          _daMode = b.dataset.damode;
-          seg.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b));
-          renderDaPanel();
-        }));
-      }
-      // Tokens du mode choisi
-      const toks = _daReadTokens(_daMode);
-      $("daTokens").innerHTML = '<div class="da-grid">' + toks.map((t) =>
-        `<button class="da-sw" data-dacopy="${escapeHtml(t.val)}"><span class="sq" style="background:${escapeHtml(t.val)}"></span><span class="nm">${escapeHtml(t.label)}<span class="vl">${escapeHtml(t.v)} · ${escapeHtml(t.val)}</span></span></button>`).join("") + "</div>";
-      // Dégradés
-      $("daGrads").innerHTML = DA_GRADS.map(([src, label]) => {
-        const v = _daGradVal(src, _daMode);
-        return `<button class="da-sw da-sw-band" data-dacopy="${escapeHtml(v)}"><span class="da-band" style="background:${escapeHtml(v)}"></span><span class="nm">${escapeHtml(label)}</span></button>`;
-      }).join("");
-      // Familles de badges (mêmes dégradés que le moteur SMBadge : jamais doré par hasard)
-      $("daFams").innerHTML = '<div class="da-grid">' + [["exploration", "🧭 Exploration", "hex"], ["social", "🤝 Social", "hex grad-violet"], ["securite", "🛟 Sécurité", "hex grad-teal"], ["accomplissement", "🏆 Accomplissement", "hex grad-gold"]].map(([k, label, cls]) => {
-        const v = _daGradVal(cls, _daMode);
-        return `<button class="da-sw" data-dacopy="${escapeHtml(v)}"><span class="sq" style="background:${escapeHtml(v)}"></span><span class="nm">${escapeHtml(label)}<span class="vl">${escapeHtml(k)}</span></span></button>`;
-      }).join("") + "</div>";
-      // Pastilles émaillées
-      const th = _daReadThumbs(_daMode);
-      $("daThumbs").innerHTML = '<div class="da-grid">' + th.map((t) =>
-        `<button class="da-sw" data-dacopy="${escapeHtml(t.bg)}"><span class="sq" style="background:${escapeHtml(t.bg)}"></span><span class="nm">.thumb.${escapeHtml(t.name)}</span></button>`).join("") + "</div>";
-      // Copie au tap
-      document.querySelectorAll("[data-dacopy]").forEach((b) => { if (!b.dataset.wired) { b.dataset.wired = "1"; b.addEventListener("click", () => _daCopy(b.dataset.dacopy)); } });
-      // Export complet
-      const ex = $("daExport");
-      if (ex && !ex.dataset.wired) {
-        ex.dataset.wired = "1";
-        ex.addEventListener("click", () => {
-          const kit = { app: "SunMates", version: (typeof _appBuild === "function" ? _appBuild() : ""), fonts: { titres: "Fraunces 400-900 (italique 500)", interface: "Manrope 400-800" }, modes: {} };
-          DA_MODES.forEach(([m]) => {
-            kit.modes[m] = { tokens: {}, pastilles: {}, degrades: {} };
-            _daReadTokens(m).forEach((t) => kit.modes[m].tokens[t.v] = t.val);
-            _daReadThumbs(m).forEach((t) => kit.modes[m].pastilles[t.name] = t.bg);
-            DA_GRADS.forEach(([src, label]) => kit.modes[m].degrades[label] = _daGradVal(src, m));
-          });
-          _daCopy(JSON.stringify(kit, null, 2));
-        });
-      }
-    }
     document.querySelectorAll("[data-aseg]").forEach((b) => b.addEventListener("click", () => showAdminSegment(b.dataset.aseg)));
 
     // ---- Segment ADMIN « Système & déploiement » ----
@@ -8074,21 +7865,6 @@
       try { if (window.caches) { const ks = await caches.keys(); caches_ = ks.filter((k) => /sunmates/.test(k)).join(", ") || "aucun"; } } catch (e) {}
       const online = navigator.onLine ? "en ligne 🟢" : "hors-ligne 🔴";
       box.innerHTML = cell("Build", _appBuild()) + cell("Service worker", swState) + cell("Cache", caches_) + cell("Réseau", online) + cell("Langue", (localStorage.getItem("sm_lang") || "fr").toUpperCase()) + cell("Thème", localStorage.getItem("sm_theme") || "day");
-      // P2.11 : versions archivées (manifeste statique releases/releases.json, maintenu à chaque snapshot)
-      const rl = $("sysReleases");
-      if (rl) {
-        try {
-          const res = await fetch("releases/releases.json", { cache: "no-store" });
-          const list = await res.json();
-          rl.innerHTML = (Array.isArray(list) && list.length)
-            ? list.map((r) => `<div class="qrow" style="align-items:center"><div class="qico">🗃️</div><div class="qname" style="flex:1"><b>${escapeHtml(r.v)}</b> · ${escapeHtml(r.date || "")}<div class="meta muted" style="font-size:.72rem">${escapeHtml(r.note || "")}</div></div><button class="btn-ghost" data-relopen="releases/${escapeHtml(r.file)}" style="padding:.35rem .7rem;font-size:.78rem">Ouvrir</button></div>`).join("")
-            : '<p class="muted">Aucune version archivée pour l\'instant.</p>';
-          rl.querySelectorAll("[data-relopen]").forEach((b) => b.addEventListener("click", () => { try { window.open(b.dataset.relopen, "_blank"); } catch (e) {} }));
-        } catch (e) { rl.innerHTML = '<p class="muted">Liste indisponible (hors ligne ?).</p>'; }
-      }
-      // P2.10 : ouvrir la préversion
-      const op = $("sysOpenPreview");
-      if (op && !op.dataset.wired) { op.dataset.wired = "1"; op.addEventListener("click", () => { try { window.open("preview.html", "_blank"); } catch (e) {} }); }
       // Rafraîchit aussi le tableau de bord en mémoire pour le rapport copiable
       try { const { data } = await db.rpc("admin_stats"); if (data && data.ok) _lastAdminStats = data; } catch (e) {}
     }
@@ -12363,7 +12139,7 @@
         $("pickerOverlay"), $("popInfoOv"), $("qrModal"), $("trustModal"), $("matesListModal"), $("groupChat"), $("tour"), $("qrScanModal"),
         ...document.querySelectorAll(".act-overlay"), ...document.querySelectorAll(".sm-selsheet-ov"),
       ].filter(Boolean);
-      const sync = () => { try { const any = cands().some(isOpen); document.body.classList.toggle("modal-open", any); if (any && window._smArmBack) window._smArmBack(); } catch (e) {} };
+      const sync = () => { try { document.body.classList.toggle("modal-open", cands().some(isOpen)); } catch (e) {} };
       const mo = new MutationObserver(sync);
       const hook = (el) => { try { mo.observe(el, { attributes: true, attributeFilter: ["class"] }); } catch (e) {} };
       cands().forEach(hook);
@@ -12371,51 +12147,7 @@
         if (n.nodeType === 1 && n.classList && (n.classList.contains("sm-selsheet-ov") || n.classList.contains("act-overlay") || n.id === "popInfoOv")) { hook(n); sync(); }
       })); }).observe(document.body, { childList: true });
       sync();
-      // P2.3 : le registre des overlays sert aussi au bouton retour du téléphone (ci-dessous).
-      window._smOvCands = cands; window._smOvIsOpen = isOpen;
     })();
-
-    // P2.3 : BOUTON RETOUR DU TÉLÉPHONE (Android / geste iOS) — comme une vraie app native.
-    // Principe : une entrée « garde » est posée dans l'historique du navigateur. Le retour
-    // système arrive donc chez nous (popstate) au lieu de fermer la PWA :
-    //   1) une modale/feuille est ouverte  → on la FERME (la plus haute) ;
-    //   2) on n'est pas sur l'Accueil      → on REVIENT à l'Accueil ;
-    //   3) sinon                            → prochain retour = quitter (petit toast d'info, 1×).
-    (function systemBack() {
-      if (window.__smBackWired) return; window.__smBackWired = true;
-      let guarded = false, exitHint = false;
-      const guard = () => { if (guarded) return; try { history.pushState({ smGuard: 1 }, "", location.href); guarded = true; } catch (e) {} };
-      window._smArmBack = guard; // ré-arme la garde dès qu'un overlay s'ouvre ou qu'on change d'onglet
-      // Ferme l'overlay ouvert le plus pertinent : bouton de fermeture s'il existe (la voie
-      // « propre » de chaque composant), sinon bascule de classe (celle que sync() observe).
-      const closeTop = () => {
-        const open = (window._smOvCands ? window._smOvCands() : []).filter((el) => window._smOvIsOpen && window._smOvIsOpen(el));
-        if (!open.length) return false;
-        const el = open[open.length - 1];
-        const btn = el.querySelector('[data-close], [data-sclose], .po-close, .sheet-close, .gchat-close, .picker-close, button[aria-label="Fermer"], .close-x');
-        if (btn) { try { btn.click(); return true; } catch (e) {} }
-        if (el.classList.contains("sm-selsheet-ov") || el.classList.contains("act-overlay")) el.classList.remove("show");
-        else el.classList.add("hidden");
-        return true;
-      };
-      window.addEventListener("popstate", () => {
-        guarded = false;
-        if (closeTop()) { guard(); return; }
-        const cur = (typeof __lastTab !== "undefined" && __lastTab) || "accueil";
-        if (cur !== "accueil") { try { goToTab("accueil"); } catch (e) {} guard(); return; }
-        // Accueil, rien d'ouvert : on laisse la garde consommée → le prochain retour quitte l'app.
-        if (!exitHint) { exitHint = true; try { toast("👋", i18nT("Encore un retour pour quitter"), null, { low: true }); } catch (e) {} }
-      });
-      guard();
-    })();
-
-    // P2.10 : ruban PRÉVERSION — visible UNIQUEMENT sur preview.html / releases/… (jamais sur
-    // l'app officielle). Rappelle qu'on est dans le bac à essai, sans service worker.
-    if (window.SM_PREVIEW) {
-      const r = document.createElement("div"); r.id = "smPreviewRibbon";
-      r.textContent = /releases\//.test(location.pathname) ? "🗃️ VERSION ARCHIVÉE" : "🧪 PRÉVERSION · bac à essai";
-      document.body.appendChild(r);
-    }
 
     // #24 : cartes REPLIABLES dans « Besoin d'aide » — toucher le titre replie/déplie,
     // et l'état est GARDÉ (localStorage) jusqu'à réouverture manuelle.
@@ -12810,27 +12542,9 @@
             m.once("load", () => _smRecolorStyle(m));
           } catch (e) {}
         }, 0);
-        // P2.4 : CHIEN DE GARDE « carte vide » — si le style vectoriel n'est pas chargé au bout
-        // de 8 s (réseau capricieux, CDN KO), la carte restait un carré beige à l'infini. On
-        // remplace alors le fond GL par le raster CARTO (toujours une carte visible) ; le fond
-        // vectoriel reviendra naturellement au prochain lancement.
-        let _wdTries = 0;
-        const _watchdog = () => {
-          try {
-            const map = lyr._map;
-            if (!map) { if (++_wdTries < 20) setTimeout(_watchdog, 2000); return; } // pas encore ajoutée à une carte
-            const m = lyr.getMaplibreMap ? lyr.getMaplibreMap() : null;
-            if (m && m.isStyleLoaded && m.isStyleLoaded()) return; // tout va bien
-            map.removeLayer(lyr); _smRasterBase().addTo(map);
-          } catch (e) {}
-        };
-        setTimeout(_watchdog, 8000);
         return lyr;
       }
-      return _smRasterBase();
-    }
-    // Repli raster : CARTO Voyager (CDN mondial bien plus rapide que tile.openstreetmap.org).
-    function _smRasterBase() {
+      // Repli raster : CARTO Voyager (CDN mondial bien plus rapide que tile.openstreetmap.org).
       return L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
         { attribution: "© OpenStreetMap · © CARTO", maxZoom: 19, keepBuffer: 4, updateWhenIdle: false, updateWhenZooming: false });
     }
@@ -13093,23 +12807,6 @@
           // #12 : UN seul monde (fini les cartes côte à côte au dézoom) + bords élastiques doux
           minZoom: 2.4, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 0.8, worldCopyJump: false,
           preferCanvas: true, tap: false, zoomAnimation: true, fadeAnimation: true, inertiaDeceleration: 2600 }).setView([46.6, 2.3], 4);
-        // P2.7 : GESTE COOPÉRATIF sur la MINI-carte (téléphone) — glisser 1 doigt fait défiler la
-        // PAGE (Leaflet retire la classe « leaflet-touch-drag » → le navigateur reprend le scroll),
-        // le pincement zoome toujours, et l'exploration libre se fait en PLEIN ÉCRAN (drag réactivé là).
-        window._smCoarse = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
-        if (window._smCoarse) {
-          try { homeLeaf.dragging.disable(); } catch (e) {}
-          const hint = document.createElement("div"); hint.className = "hm-coop-hint";
-          hint.textContent = "⛶ " + i18nT("Plein écran pour explorer la carte");
-          el.appendChild(hint);
-          let ht = 0, shown = 0;
-          el.addEventListener("touchmove", (ev) => {
-            if (document.querySelector(".homemap-card.fs") || (ev.touches && ev.touches.length > 1)) return;
-            if (Date.now() - shown < 2600) return;
-            shown = Date.now(); hint.classList.add("show");
-            clearTimeout(ht); ht = setTimeout(() => hint.classList.remove("show"), 1600);
-          }, { passive: true });
-        }
         // Fond vectoriel SunMates : rendu GPU continu (fini le chargement tuile par tuile),
         // recoloré dans la DA. Le service worker met style/glyphes/tuiles en cache → offline OK.
         const _homeBase = smBaseLayer().addTo(homeLeaf);
@@ -13543,8 +13240,6 @@
       try { _smGlMaps.forEach((m) => { if (m && typeof m.setPixelRatio === "function") m.setPixelRatio(on ? 1 : Math.min(window.devicePixelRatio || 1, 2)); }); } catch (e) {}
       if (homeLeaf) {
         if (homeLeaf.scrollWheelZoom) { on ? homeLeaf.scrollWheelZoom.enable() : homeLeaf.scrollWheelZoom.disable(); }
-        // P2.7 : sur téléphone le drag 1 doigt ne vit qu'en plein écran (sinon il avalait le scroll de l'accueil)
-        try { if (window._smCoarse && homeLeaf.dragging) { on ? homeLeaf.dragging.enable() : homeLeaf.dragging.disable(); } } catch (e) {}
         // iOS : le conteneur change de taille via CSS sans event resize natif fiable.
         // On force Leaflet à recalculer SES dimensions, puis à redessiner les pastilles :
         // un setView "sur place" relance le rendu des marqueurs, et refreshClusters()
@@ -14511,10 +14206,7 @@
       document.body.appendChild(burst); setTimeout(() => burst.remove(), 900);
       const wrap = document.createElement("div");
       wrap.className = "confetti-wrap";
-      // P2.9 : moins de confettis sur téléphone (44 suffisent largement à l'œil, et le GPU mobile
-      // soufflait avec 70 couches animées → c'est ça qui faisait ramer les félicitations).
-      const N = (window.matchMedia && matchMedia("(pointer: coarse)").matches) ? 44 : 70;
-      for (let i = 0; i < N; i++) {
+      for (let i = 0; i < 70; i++) {
         const c = document.createElement("i");
         const size = 12 + Math.random() * 12;
         c.style.cssText = "left:" + (Math.random() * 100) + "%;width:" + size + "px;height:" + size +
@@ -16983,11 +16675,6 @@
       "Explore autour de toi": "Explore around you", "Découvrir": "Discover", "Demandes": "Requests", "Messages": "Messages",
       "Pars solo, trouve ta bande 🌍": "Travel solo, find your crew 🌍", "Repère les voyageurs autour de toi, propose un café ou une virée, et repars avec des potes.": "Spot travellers around you, suggest a coffee or an outing, and leave with friends.",
       "Inscription": "Sign up", "Créer mon compte": "Create my account",
-      // · P2 (passe 2) : pseudo à l'inscription + retour système —
-      "Pseudo": "Username", "Chloé l'exploratrice": "Chloe the explorer",
-      "Choisis un pseudo (2 à 20 caractères) — c'est lui que les autres verront.": "Pick a username (2 to 20 characters) — that's what others will see.",
-      "Encore un retour pour quitter": "Press back once more to exit",
-      "Plein écran pour explorer la carte": "Full screen to explore the map",
       // · Batch 5 : gaps onglet Sécurité —
       "Partage de position, alerte d'urgence, cercle de confiance et plus.": "Location sharing, emergency alert, trust circle and more.",
       "En cas d'urgence": "In an emergency", "Un geste, et tu n'es plus seul·e.": "One tap, and you're not alone.", "📍 Partager ma position (sans urgence)": "📍 Share my location (no emergency)",
@@ -18355,9 +18042,7 @@
           // Je suis le demandeur (user_a) et l'autre vient d'accepter → c'est un match pour moi aussi.
           if (m && m.status === "accepted" && m.user_a === myUserId && notifyOnce("match:" + m.id)) {
             onNewMatch(m.user_b);
-            // P2.9 : le re-rendu des connexions attend que l'animation de match soit jouée
-            // (avant, confettis + overlay + re-rendu complet partaient EN MÊME TEMPS → ça ramait).
-            if (typeof loadConnections === "function") setTimeout(loadConnections, 900);
+            if (typeof loadConnections === "function") loadConnections();
           }
         }).subscribe();
     }
