@@ -229,12 +229,17 @@
       -webkit-user-select: text; user-select: text; -webkit-touch-callout: default;
     }
     html, body { height: 100%; }
-    /* P9 : l'app « collée » au téléphone — le fond de la page porte LA couleur du thème
-       (zones d'overscroll comprises), et la zone de la status bar est TOUJOURS peinte
-       par un calque fixe aux couleurs de l'app → plus de bande qui jure en haut. */
-    html { background: var(--bg); }
-    body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px);
-      background: var(--bg); z-index: 55; pointer-events: none; }
+    /* P10-fix : le fond de <html> suit le MODE via :has() — la v444 round 1 mettait var(--bg)
+       sur html, or les thèmes redéfinissent les variables sur BODY → en mode sombre, le fond
+       crème-rosé du :root transparaissait (le fameux « arrière-plan rose », un BUG, pas une DA).
+       Et le calque body::before (bande unie sur la zone status bar) est SUPPRIMÉ : c'est LUI qui
+       créait la coupure nette au-dessus du fondu du header — le header peint déjà cette zone. */
+    html { background: #fbeee9; }
+    html:has(body.theme-dusk) { background: #171026; }
+    html:has(body.theme-winter) { background: #EAF3FB; }
+    html:has(body.theme-tropic) { background: #F7F9EC; }
+    html:has(body.theme-winter.theme-dusk) { background: #0F1B2B; }
+    html:has(body.theme-tropic.theme-dusk) { background: #0C1D17; }
     /* Barre de défilement thémée DA (fini le blanc système). Firefox + WebKit/Blink.
        Les conteneurs en scrollbar-width:none (chips, etc.) restent masqués (specificité de classe). */
     /* #7 : JOUR = barre neutre chaude discrète (le corail vif était trop agressif en clair) ;
@@ -13303,25 +13308,37 @@
         try {
           if (typeof _homeBase._update === "function") {
             homeLeaf.off("move", _homeBase._update, _homeBase);
-            let _glLast = 0, _glTrail = null;
+            let _glLast = 0, _glTrail = null, _syncPane = { x: 0, y: 0 };
             // P10 (fluidité « Google Maps », anti mal de crâne) : pendant le DRAG, Leaflet déplace
             // déjà tout l'écran en pur CSS (fond + épingles solidaires, 60 fps natif). Re-rendre le
             // GL en même temps (P5) faisait OSCILLER le fond contre les épingles → mal de mer.
-            // Nouvelle règle en plein écran : DOIGT POSÉ = ZÉRO resynchro (la marge pré-rendue 0.3
-            // couvre les bords) · inertie = resync espacé 250 ms · relâché/fin = UNE resynchro nette.
+            // Règle plein écran : DOIGT POSÉ = zéro resynchro · inertie = resync 120 ms ·
+            // relâché / fin de zoom = resynchro nette IMMÉDIATE. P10b (gestes RAPIDES) : si une
+            // longue glissade dépasse ~70 % de la marge pré-rendue, UNE resync ponctuelle remplit
+            // les bords (mieux qu'une zone vide qui « hésite »).
+            const _doUpdate = () => { try { _homeBase._update(); const p = homeLeaf._getMapPanePos(); _syncPane = { x: p.x, y: p.y }; } catch (e) { try { _homeBase._update(); } catch (e2) {} } };
             window._smFsTouching = false;
             el.addEventListener("touchstart", () => { window._smFsTouching = true; }, { passive: true });
-            const _fsTouchUp = (ev) => { if (!ev.touches || ev.touches.length === 0) { window._smFsTouching = false; try { _homeBase._update(); } catch (e) {} } };
+            const _fsTouchUp = (ev) => { if (!ev.touches || ev.touches.length === 0) { window._smFsTouching = false; _doUpdate(); } };
             el.addEventListener("touchend", _fsTouchUp, { passive: true });
             el.addEventListener("touchcancel", _fsTouchUp, { passive: true });
             homeLeaf.on("move", () => {
               const fs = document.querySelector(".homemap-card.fs");
-              if (fs && window._smFsTouching) return; // le geste glisse en pur CSS, rien à faire
-              const now = Date.now(), gap = fs ? 250 : 90; // inertie fs : resync rare (vélocité décroissante)
-              if (now - _glLast > gap) { _glLast = now; try { _homeBase._update(); } catch (e) {} }
-              else { clearTimeout(_glTrail); _glTrail = setTimeout(() => { _glLast = Date.now(); try { _homeBase._update(); } catch (e) {} }, gap); }
+              if (fs && window._smFsTouching) {
+                // Longue glissade : on ne resynchronise QUE si on approche du bord de la marge.
+                try {
+                  const p = homeLeaf._getMapPanePos();
+                  const lim = 0.21 * Math.min(el.clientWidth || 400, el.clientHeight || 700);
+                  if (Math.abs(p.x - _syncPane.x) > lim || Math.abs(p.y - _syncPane.y) > lim) _doUpdate();
+                } catch (e) {}
+                return;
+              }
+              const now = Date.now(), gap = fs ? 120 : 90; // inertie fs : réactif sans trembler
+              if (now - _glLast > gap) { _glLast = now; _doUpdate(); }
+              else { clearTimeout(_glTrail); _glTrail = setTimeout(() => { _glLast = Date.now(); _doUpdate(); }, gap); }
             });
-            homeLeaf.on("moveend", () => { try { _homeBase._update(); } catch (e) {} });
+            homeLeaf.on("moveend", _doUpdate);
+            homeLeaf.on("zoomend", _doUpdate); // pinch zoom/dézoom rapide : le fond se cale net aussitôt
           }
         } catch (e) {}
         homeLeaf.on("moveend", () => { try { if (typeof _eggWhaleCheck === "function") _eggWhaleCheck(); if (typeof _eggTitanicCheck === "function") _eggTitanicCheck(); } catch (e) {} });
