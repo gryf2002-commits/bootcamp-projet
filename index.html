@@ -114,8 +114,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=435"></script>
-  <script src="sunmates-icons.js?v=435"></script>
+  <script src="sunmates-badges.js?v=436"></script>
+  <script src="sunmates-icons.js?v=436"></script>
   <script>
     if ("serviceWorker" in navigator) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
@@ -3415,6 +3415,38 @@
     .bottom-nav button.egp-land { animation: egpLand .8s cubic-bezier(.3,1.6,.4,1); }
     @keyframes egpLand { 0% { transform: translateY(0); } 30% { transform: translateY(-7px) scale(1.1); } 100% { transform: translateY(0); } }
 
+    /* #18 : QR en écrin DA — cadre dégradé sunset, papier ivoire, soleil en sceau */
+    .qr-frame { position: relative; display: inline-block; padding: 12px; border-radius: 20px; margin: .4rem auto .5rem;
+      background: linear-gradient(135deg, #FFC93C, #FF8A3D 55%, #FF5A4D); box-shadow: 0 10px 26px rgba(232,120,60,.35); }
+    .qr-frame .qr-box { background: #FFFBF2; border-radius: 12px; padding: 10px; display: grid; place-items: center; }
+    .qr-frame .qr-box img, .qr-frame .qr-box canvas { border-radius: 6px; }
+    .qrf-sun { position: absolute; top: -12px; right: -10px; font-size: 26px; filter: drop-shadow(0 3px 6px rgba(150,70,20,.35)); }
+    .qr-sig b { font-family: 'Fraunces', serif; font-size: 1.02rem; color: var(--ink); }
+
+    /* #28 : objectifs de la semaine réchauffés (cartes DA, accompli = doré, plus de ✅ vert) */
+    .wg-goal { border: 1px solid var(--line); border-radius: 12px; padding: .5rem .6rem; margin-top: .45rem; background: var(--card); }
+    .wg-goal.done { background: linear-gradient(135deg, rgba(255,209,92,.16), rgba(255,154,61,.06)); border-color: rgba(232,150,31,.32); }
+    .wg-bar { background: rgba(181,116,14,.14); border-radius: 999px; } .wg-bar span { background: var(--accent-grad); border-radius: 999px; }
+    body.theme-dusk .wg-goal { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.08); }
+    body.theme-dusk .wg-goal.done { background: rgba(255,209,92,.10); border-color: rgba(255,209,92,.22); }
+
+    /* #39 : « Créer MON rituel » enfin VISIBLE (carte chaude liseré accent, sous-ligne explicative) */
+    .rit-row.rit-add { background: linear-gradient(135deg, var(--accent-soft), rgba(255,255,255,0)); border: 1.5px dashed var(--accent) !important; }
+    .rit-row.rit-add .rit-name { display: flex; flex-direction: column; line-height: 1.25; }
+    .rit-row.rit-add .rit-name b { color: var(--accent); }
+    .rit-row.rit-add .rit-sub { font-size: .7rem; color: var(--muted); font-weight: 600; }
+    body.theme-dusk .rit-row.rit-add { background: rgba(255,126,114,.10); }
+
+    /* 🥚 #42 : « 67 » dans le chat → les chiffres font le show (rebond + balancier, 1×/jour) */
+    .egg-67 { position: fixed; left: 50%; top: 38%; z-index: 99998; pointer-events: none; font-size: 64px;
+      transform: translateX(-50%); animation: egg67 2.5s cubic-bezier(.3,1.5,.4,1) forwards; filter: drop-shadow(0 10px 20px rgba(120,50,20,.35)); }
+    @keyframes egg67 { 0% { transform: translateX(-50%) translateY(60px) scale(.3) rotate(-14deg); opacity: 0; }
+      18% { transform: translateX(-50%) translateY(-12px) scale(1.15) rotate(8deg); opacity: 1; }
+      32% { transform: translateX(-50%) translateY(4px) scale(1) rotate(-6deg); }
+      48% { transform: translateX(-50%) translateY(-6px) scale(1.06) rotate(5deg); }
+      64% { transform: translateX(-50%) translateY(0) scale(1) rotate(-3deg); opacity: 1; }
+      100% { transform: translateX(-50%) translateY(-46px) scale(.8) rotate(0deg); opacity: 0; } }
+
     /* Konami : allumage/extinction CRT — la ligne blanche s'étire puis balaie tout l'écran */
     .crt-boot { position: fixed; inset: 0; z-index: 99999; pointer-events: none; animation: crtBg .95s steps(1) forwards; }
     .crt-boot::before { content: ""; position: absolute; left: 6%; right: 6%; top: 50%; height: 2px; border-radius: 2px;
@@ -3983,8 +4015,9 @@
     <div class="act-card" style="text-align:center;max-width:340px">
       <div class="picker-head"><h3 style="margin:0" data-i18n="qr.title">🪪 Mon QR SunMates</h3><button id="qrClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
       <p class="muted" style="font-size:.84rem;margin:.4rem 0" data-i18n="qr.sub">Fais-le scanner à un voyageur rencontré en vrai pour vous connecter en un instant.</p>
-      <div class="qr-box" id="qrBox"></div>
-      <div class="muted" style="font-size:.78rem" id="qrName">—</div>
+      <!-- #18 : écrin DA — cadre sunset, coins soleil, pseudo en signature -->
+      <div class="qr-frame"><span class="qrf-sun">☀️</span><div class="qr-box" id="qrBox"></div></div>
+      <div class="qr-sig"><b id="qrName">—</b><span class="muted" style="font-size:.72rem;display:block">voyage avec SunMates</span></div>
     </div>
   </div>
 
@@ -6483,6 +6516,17 @@
       { f: "🇪🇸", c: "Barcelone", d: "Gaudí, tapas et plages urbaines", when: "Mai–juin & sept", budget: "Moyen", safe: "Sûre, gare aux pickpockets", why: "Le mariage parfait entre mer, architecture folle et fête jusqu'au bout de la nuit.", must: ["Sagrada Família", "Parc Güell", "Tapas au marché de la Boqueria", "Coucher de soleil aux Bunkers del Carmel"] },
       { f: "🇳🇴", c: "Tromsø", d: "fjords, aurores et nuits polaires", when: "Sept–mars (aurores)", budget: "Cher", safe: "Très sûre", why: "La porte de l'Arctique, sous l'un des meilleurs ciels d'aurores au monde.", must: ["Safari aurores boréales", "Téléphérique Fjellheisen", "Rencontre avec des huskies", "Cathédrale arctique"] },
       { f: "🇨🇴", c: "Carthagène", d: "façades colorées, salsa et Caraïbes", when: "Déc–avril", budget: "Abordable", safe: "Reste dans la vieille ville", why: "Une cité coloniale flamboyante au bord d'une mer turquoise.", must: ["Ville fortifiée au crépuscule", "Îles du Rosaire", "Cours de salsa", "Coucher de soleil au Café del Mar"] },
+      // #23 : inspirations BOOSTÉES — pépites hors des sentiers battus (et hors controverse)
+      { f: "🇦🇱", c: "Tirana & la Riviera albanaise", d: "criques turquoise, prix doux et accueil légendaire", when: "Mai–sept", budget: "Très éco", safe: "Sûre et chaleureuse", why: "La Méditerranée d'il y a 30 ans : plages sauvages, montagnes et cafés à 1 €.", must: ["Plages de Ksamil", "Vieille ville de Gjirokastër", "Col de Llogara", "Byrek tout chaud du matin"] },
+      { f: "🇬🇪", c: "Tbilissi", d: "bains de soufre, vignes millénaires et Caucase", when: "Mai–juin & sept–oct", budget: "Éco", safe: "Très sûre", why: "Entre Europe et Asie : 8 000 ans de vin, des balcons sculptés et des montagnes à 2 h.", must: ["Bains d'Abanotubani", "Vieille ville et forteresse Narikala", "Excursion à Kazbegi", "Khinkali et pain chaud"] },
+      { f: "🇸🇮", c: "Ljubljana & Bled", d: "rivière émeraude, château perché et lac de conte", when: "Mai–sept", budget: "Moyen", safe: "Ultra sûre", why: "La capitale verte d'Europe : à taille humaine, entre lac alpin et grottes géantes.", must: ["Lac de Bled en barque pletna", "Grottes de Postojna", "Marché central le samedi", "Gâteau kremšnita au bord du lac"] },
+      { f: "🇺🇿", c: "Samarcande", d: "coupoles bleues, route de la soie et thé vert", when: "Avril–mai & sept–oct", budget: "Éco", safe: "Sûre et accueillante", why: "La route de la soie en vrai : mosaïques turquoise et hospitalité d'un autre temps.", must: ["Place du Régistan au lever du jour", "Nécropole Chah-i-Zinda", "Plov partagé chez l'habitant", "Train rapide vers Boukhara"] },
+      { f: "🇹🇼", c: "Taipei", d: "marchés de nuit, sources chaudes et montagnes de thé", when: "Oct–avril", budget: "Moyen", safe: "Ultra sûre", why: "L'Asie la plus facile à voyager seul·e : sûre, gourmande, et la nature à 30 min de métro.", must: ["Marché de nuit de Raohe", "Sources chaudes de Beitou", "Maisons de thé de Jiufen", "Sentier de l'Éléphant au couchant"] },
+      { f: "🇵🇹", c: "Les Açores", d: "lacs volcaniques, baleines et hortensias", when: "Mai–sept", budget: "Moyen", safe: "Très sûre", why: "Neuf îles vertes posées au milieu de l'Atlantique : volcans, vaches heureuses et thermes naturels.", must: ["Lac de Sete Cidades", "Observation des baleines", "Bain chaud à Furnas", "Cozido cuit dans le volcan"] },
+      { f: "🇲🇪", c: "Kotor", d: "bouches spectaculaires, remparts et eau cristalline", when: "Mai–sept", budget: "Abordable", safe: "Sûre", why: "Un fjord méditerranéen ourlé de villages de pierre — grandiose et encore confidentiel.", must: ["Montée aux remparts au lever du jour", "Perast et l'îlot Notre-Dame-du-Rocher", "Baignade dans les bouches", "Vieille ville à la lanterne"] },
+      { f: "🇯🇴", c: "Petra & Wadi Rum", d: "cité rose, canyons et nuits sous les étoiles", when: "Mars–mai & oct–nov", budget: "Moyen", safe: "Sûre et hospitalière", why: "Marcher dans le Siq jusqu'au Trésor puis dormir dans le désert : inoubliable.", must: ["Le Trésor à l'aube", "Monastère par le sentier des 800 marches", "Nuit en camp bédouin au Wadi Rum", "Thé à la sauge sous les étoiles"] },
+      { f: "🏴", c: "Île de Skye", d: "falaises noires, moutons et lumières changeantes", when: "Mai–sept", budget: "Moyen+", safe: "Très sûre", why: "L'Écosse mythique : brumes, fées et paysages qui changent toutes les dix minutes.", must: ["Old Man of Storr au lever", "Fairy Pools", "Quiraing en boucle", "Fish & chips à Portree"] },
+      { f: "🇱🇦", c: "Luang Prabang", d: "moines au lever du jour, Mékong et cascades laiteuses", when: "Nov–févr", budget: "Très éco", safe: "Paisible", why: "La ville la plus douce d'Asie du Sud-Est, posée entre deux rivières et mille temples.", must: ["Aumône des moines à l'aube", "Cascades de Kuang Si", "Coucher de soleil au mont Phousi", "Marché de nuit artisanal"] },
       { f: "🇦🇺", c: "Sydney", d: "opéra, surf et road trips côtiers", when: "Oct–avril", budget: "Cher", safe: "Très sûre", why: "La plus solaire des grandes villes : plages mythiques et nature à un saut.", must: ["Opéra et Harbour Bridge", "Marche côtière Bondi–Coogee", "Blue Mountains", "Ferry pour Manly"] },
       { f: "🇹🇷", c: "Istanbul", d: "entre deux continents, bazars et bosphore", when: "Avril–juin & sept–oct", budget: "Abordable", safe: "Sûre, marchande", why: "À cheval sur l'Europe et l'Asie, un carrefour de civilisations enivrant.", must: ["Sainte-Sophie et Mosquée Bleue", "Grand Bazar", "Croisière sur le Bosphore", "Hammam ottoman"] },
     ];
@@ -7687,9 +7731,17 @@
             ? `<div class="fb-replied">✅ Répondu : ${escapeHtml(r.admin_reply || "")}</div>`
             : `<div class="fb-reply" data-fbid="${r.id}"><input type="text" class="fb-reply-in" placeholder="Réponse à l'auteur… (notifie « corrigé ✅ »)" maxlength="280"><button class="btn-primary fb-reply-go" style="padding:.4rem .7rem;font-size:.78rem;white-space:nowrap">Répondre</button></div>`;
           return `<div class="qrow" style="padding:.5rem .2rem;align-items:flex-start;flex-direction:column;gap:.35rem">
-            <div style="display:flex;gap:.5rem;align-items:flex-start;width:100%"><div class="qico">${ic[r.type] || "📝"}</div><div class="qname" style="flex:1;font-weight:500">${escapeHtml((r.message || "").slice(0, 280))}<div class="meta muted" style="font-size:.72rem;margin-top:.15rem">${escapeHtml(r.username || "anonyme")} · v${escapeHtml(r.app_version || "?")} · ${r.created_at ? new Date(r.created_at).toLocaleDateString("fr-FR") : ""}${resolved ? " · ✅ résolu" : ""}</div></div></div>
+            <div style="display:flex;gap:.5rem;align-items:flex-start;width:100%"><div class="qico">${ic[r.type] || "📝"}</div><div class="qname" style="flex:1;font-weight:500">${escapeHtml((r.message || "").slice(0, 280))}<div class="meta muted" style="font-size:.72rem;margin-top:.15rem">${escapeHtml(r.username || "anonyme")} · v${escapeHtml(r.app_version || "?")} · ${r.created_at ? new Date(r.created_at).toLocaleDateString("fr-FR") : ""}${resolved ? " · ✅ résolu" : ""}</div></div><button class="btn-ghost fb-del" data-fbdel="${r.id}" title="Supprimer ce retour" style="padding:.25rem .55rem;font-size:.75rem;flex-shrink:0">🗑️</button></div>
             ${replyBlock}</div>`;
         }).join("");
+      // #32 : SUPPRIMER un retour (corbeille, avec confirmation)
+      box.querySelectorAll("[data-fbdel]").forEach((b) => b.addEventListener("click", async () => {
+        if (!(await smConfirmP("🗑️", "Supprimer ce retour ?", "Il disparaîtra définitivement de la liste.", "Supprimer", true))) return;
+        const { error } = await db.from("app_feedback").delete().eq("id", b.dataset.fbdel);
+        if (error) { toast("⚠️", "La base a refusé · ajoute une policy DELETE admin sur app_feedback (voir supabase_migration_feedback_delete.sql)"); return; }
+        toast("🗑️", "Retour supprimé");
+        loadAdminFeedback();
+      }));
       // Câblage : répondre à un feedback (admin) → RPC → notif auteur au prochain passage.
       box.querySelectorAll(".fb-reply").forEach((row) => {
         const go = row.querySelector(".fb-reply-go"), inp = row.querySelector(".fb-reply-in");
@@ -7991,7 +8043,9 @@
         }, 460);
       });
     }, ms || 350);
-    const adDemoProfile = () => (typeof travelersCache !== "undefined" && travelersCache && travelersCache[0]) || Object.values(travelerMap).find((p) => p.is_demo && !String(p.id).startsWith("ia-") && p.id !== myUserId) || travelerMap["ia-lina"];
+    // #20 : JAMAIS un vrai utilisateur dans la démo (avant : travelersCache[0] = un VRAI profil !)
+    // → uniquement des comptes de démonstration (is_demo) ou les personas IA.
+    const adDemoProfile = () => Object.values(travelerMap).find((p) => p.is_demo && p.id !== myUserId) || travelerMap["ia-lina"];
     const adFirstCafe = () => (allCafes || []).find((c) => c.lat != null && c.lng != null);
     // Ferme tout ce qui pourrait rester ouvert entre deux scènes
     function adCleanup() {
@@ -9611,7 +9665,7 @@
         ${goals.map((g) => {
           const done = g.cur >= g.max, pct = Math.round((g.cur / g.max) * 100);
           return `<div class="wg-goal${done ? " done" : ""}"${done ? "" : ` data-wggo="${g.go}" style="cursor:pointer"`}>
-            <div class="wg-ic">${done ? "✅" : g.ic}</div>
+            <div class="wg-ic">${done ? '<span class="vchip" style="width:22px;height:22px;font-size:12px">✓</span>' : g.ic}</div>
             <div class="wg-body"><div class="wg-label">${escapeHtml(g.label)}</div>
               <div class="wg-bar"><span style="width:${pct}%"></span></div></div>
             <div class="wg-val">${g.cur}${g.unit || ""}/${g.max}${g.unit || ""}${done ? "" : " ›"}</div>
@@ -10083,7 +10137,8 @@
         </div>` : "";
       $("questsList").innerHTML = goldQuestRow + (quests.length ? quests.map((q) => {
         const st = myQuestStatus[q.key];
-        const tag = st === "completed" ? '<span class="badge ok" style="margin-left:.4rem">✅ Fait</span>'
+        // #9 : coche DA SunMates (fini le ✅ vert hors charte)
+        const tag = st === "completed" ? '<span class="badge ok" style="margin-left:.4rem"><span class="vchip" style="width:13px;height:13px;font-size:8px;vertical-align:-2px">✓</span> Fait</span>'
                   : (st === "joined" ? '<span class="q-inprog">⏳ En cours</span>' : "");
         // Bonus de groupe AFFICHÉ (+50% à deux) → donne envie de coopérer sans ouvrir le détail
         const sub = [q.city, (q.points ? i18nT("+{x} XP · 👥 +{g} à deux ✨", { x: q.points, g: Math.round(q.points * 1.5) }) : "")].filter(Boolean).join(" · ");
@@ -10143,7 +10198,7 @@
         return `<div class="bitem ${done ? "" : "locked"}" data-badge="${escapeHtml(b.key)}" style="cursor:pointer">
           ${bvis}
           <div class="bname">${escapeHtml(b.name || "")}${b.is_secret && isAdmin ? ' <span style="font-size:.55rem;color:var(--accent)">🔒</span>' : ""}</div>
-          <div class="bprog">${done ? "✅ débloqué" : "🔒 à débloquer"}</div>
+          <div class="bprog">${done ? '<span class="vchip" style="width:12px;height:12px;font-size:8px;vertical-align:-1px">✓</span> débloqué' : "🔒 à débloquer"}</div>
         </div>`;
       }).join("");
       // Badges secrets : VRAIS easter eggs → aucune mention pour les non-admins (plus de
@@ -11343,7 +11398,7 @@
 
     async function sendChatMessage() {
       const input = $("chatInput");
-      const text = input.value.trim();
+      const text = moderateText(input.value.trim()); // #13 : insultes voilées avant envoi
       if (!text || !currentChatUserId) return;
       input.value = "";
       // Compte IA (démo) : on simule l'échange côté navigateur (mon message + une réponse)
@@ -11411,6 +11466,19 @@
       } else if (bubble) {
         // Succès → on remplace "⏳ envoi…" par l'heure réelle (le temps réel finira le travail).
         track("message_sent");
+        // 🥚 #42 : envoyer « 67 » → six-seven ! (1×/jour) — chiffres qui rebondissent à l'écran
+        if (text.trim() === "67") {
+          const day = new Date().toISOString().slice(0, 10);
+          if (_eggAdmin() || localStorage.getItem("sm_egg_67_day") !== day) {
+            try {
+              localStorage.setItem("sm_egg_67_day", day);
+              const d = document.createElement("div"); d.className = "egg-67"; d.textContent = "6️⃣7️⃣";
+              document.body.appendChild(d); setTimeout(() => d.remove(), 2600);
+              if (window.SMSound) { try { SMSound.play("pop"); } catch (e) {} }
+              if (typeof toast === "function") toast("🤙", i18nT("six seveeen !"), null, { low: true });
+            } catch (e) {}
+          }
+        }
         const t = bubble.querySelector(".bubble-time"); if (t) t.textContent = msgTime(new Date().toISOString());
       }
       // La vraie bulle (avec son id serveur) arrive ensuite via le temps réel ci-dessous,
@@ -11791,7 +11859,7 @@
     }
     function closeGroupChat() { _gchatId = null; try { if (_gchatChannel) db.removeChannel(_gchatChannel); } catch (e) {} _gchatChannel = null; $("groupChat").classList.add("hidden"); }
     async function sendGroupMessage() {
-      const i = $("gchatInput"); const text = (i && i.value || "").trim();
+      const i = $("gchatInput"); const text = moderateText((i && i.value || "").trim()); // #13
       if (!text || !_gchatId) return;
       i.value = "";
       const body = $("gchatBody"); const ph = body.querySelector("p.muted"); if (ph) body.innerHTML = "";
@@ -14201,7 +14269,7 @@
           if (body.length < 1) return;
           if (!myUserId) { if (typeof toast === "function") toast("🔑", "Connecte-toi pour commenter."); return; }
           sb.disabled = true;
-          const { error } = await db.from("feed_comments").insert({ post_id: postId, user_id: myUserId, body: body.slice(0, 500) });
+          const { error } = await db.from("feed_comments").insert({ post_id: postId, user_id: myUserId, body: moderateText(body).slice(0, 500) }); // #13
           sb.disabled = false;
           if (error) { if (typeof toast === "function") toast("⚠️", i18nT("Réessaie dans un instant.")); return; }
           ta.value = ""; if (window.SMSound) SMSound.play("tap"); load(); _syncCmtCount(postId);
@@ -14240,7 +14308,7 @@
     }
     // Composer : publier sur le fil
     { const pb = $("feedPostBtn"); if (pb) pb.addEventListener("click", async () => {
-        const ta = $("feedInput"); const body = ((ta && ta.value) || "").trim(); const msg = $("feedComposerMsg");
+        const ta = $("feedInput"); const body = moderateText(((ta && ta.value) || "").trim()); const msg = $("feedComposerMsg");
         if (!body) { if (msg) { msg.style.color = "var(--danger)"; msg.textContent = _feedKind === "poll" ? "Écris ta question ✏️" : "Écris quelque chose ✏️"; } return; }
         if (!myUserId) return;
         const city = (myProfile && myProfile.city) ? String(myProfile.city).split(",")[0].trim() : null;
@@ -14691,11 +14759,25 @@
       { key: "culture_dose", emoji: "🖼️", tone: "gold", xp: 50, title: "Dose de culture", desc: "Visite un musée, une galerie ou un monument de {ville}." },
       { key: "walk_5k", emoji: "🚶", tone: "teal", xp: 40, title: "Balade de 5 000 pas", desc: "Choisis une direction au hasard et marche jusqu'à 5 000 pas." },
       { key: "market_morning", emoji: "🧺", tone: "coral", xp: 45, title: "Matinée au marché", desc: "Flâne sur un marché local et ramène un produit du coin." },
+      // #39 : la fournée 2 (plus de variété au quotidien)
+      { key: "sunrise_walk", emoji: "🌅", tone: "coral", xp: 55, title: "Lever de soleil mérité", desc: "Réveille-toi tôt et regarde le jour se lever depuis un joli coin de {ville}." },
+      { key: "bench_stories", emoji: "🪑", tone: "teal", xp: 30, title: "Le banc à histoires", desc: "Assieds-toi 15 min sur un banc et invente la vie de trois passants." },
+      { key: "secret_street", emoji: "🚪", tone: "violet", xp: 45, title: "La plus belle porte", desc: "Trouve et photographie la plus belle porte ou façade de {ville}." },
+      { key: "local_coffee", emoji: "🥐", tone: "gold", xp: 35, title: "Le petit-déj du coin", desc: "Petit-déjeune dans une boulangerie/café indépendant jamais testé." },
+      { key: "no_gps", emoji: "🧭", tone: "coral", xp: 60, title: "Perds-toi exprès", desc: "30 min de balade SANS GPS : seulement ton instinct (et le soleil)." },
+      { key: "book_corner", emoji: "📚", tone: "violet", xp: 35, title: "Pause librairie", desc: "Entre dans une librairie et feuillette un livre sur un pays à découvrir." },
+      { key: "kind_act", emoji: "💛", tone: "gold", xp: 40, title: "Un geste doré", desc: "Rends un petit service à un inconnu (porte, photo, direction…)." },
+      { key: "street_art", emoji: "🎨", tone: "teal", xp: 40, title: "Chasse au street art", desc: "Trouve trois œuvres de street art et choisis ta préférée." },
     ];
     const SOLO_RITUALS = [
       { key: "rit_outside", emoji: "🌤️", xp: 10, title: "Mettre le nez dehors aujourd'hui" },
       { key: "rit_photo", emoji: "📷", xp: 10, title: "Capturer un joli moment du jour" },
       { key: "rit_wishlist", emoji: "🌠", xp: 10, title: "Ajouter / rêver une destination" },
+      // #39 : rituels supplémentaires
+      { key: "rit_water", emoji: "💧", xp: 10, title: "Boire un grand verre d'eau au réveil" },
+      { key: "rit_steps", emoji: "🚶", xp: 10, title: "Marcher 20 minutes dans la journée" },
+      { key: "rit_message", emoji: "💬", xp: 10, title: "Prendre des nouvelles de quelqu'un" },
+      { key: "rit_gratitude", emoji: "🌻", xp: 10, title: "Noter une chose qui t'a fait sourire" },
     ];
     function _soloKey() { return "sm_solo_" + (myUserId || "x") + "_" + new Date().toISOString().slice(0, 10); }
     function _soloState() { try { return JSON.parse(localStorage.getItem(_soloKey()) || "{}") || {}; } catch (e) { return {}; } }
@@ -14811,7 +14893,7 @@
         + (todo.length >= 2 ? '<button class="rit-row rit-all" id="ritAllBtn"><span class="rit-ic">✨</span><span class="rit-name">' + i18nT("Tout cocher d'un coup") + '</span><span class="rit-box">✓✓</span></button>' : "")
         // Tout est coché → petit mot chaleureux (pas une liste éteinte)
         + (!todo.length ? '<div class="solo-alldone">' + i18nT("🎉 Rituels bouclés pour aujourd'hui · prends soin de toi ✨") + "</div>" : "")
-        + '<button class="rit-row rit-add" id="ritAddBtn"><span class="rit-ic">➕</span><span class="rit-name">' + (hasCustom ? "Modifier mon rituel" : "Créer mon rituel") + '</span></button>';
+        + '<button class="rit-row rit-add" id="ritAddBtn"><span class="rit-ic">✍️</span><span class="rit-name"><b>' + (hasCustom ? "Modifier mon rituel" : "Créer MON rituel") + '</b><span class="rit-sub">ta routine à toi, +10 XP par jour</span></span></button>';
       const cnt = $("ritCnt"); if (cnt) cnt.textContent = Object.keys(done).length + "/" + rits.length;
       list.querySelectorAll("[data-rit]").forEach((b) => b.addEventListener("click", (e) => {
         if (b.classList.contains("rit-custom") && e.target.closest(".rit-name")) { editCustomRitual(); return; }
@@ -15116,6 +15198,13 @@
         const { error: e2 } = await db.from("user_badges").upsert({ user_id: myUserId, badge_key: key, name: def.name || null, emoji: def.emoji || null }, { onConflict: "user_id,badge_key" });
         return !e2;
       } catch (e) { return false; }
+    }
+    // #13 : MODÉRATION AUTO des textes publiés (messages, fil, groupes, commentaires) — les
+    // insultes et slurs FR/EN sont VOILÉS (✿✿✿) avant l'envoi. Filtre volontairement strict
+    // sur les slurs, mesuré sur le reste. (Photos : nécessite un service serveur, noté.)
+    const _BADWORDS = /\b(connard|connasse|encul[ée]s?|salopes?|salauds?|putes?|fdp|ntm|nique (?:ta|sa|leur)|niqu[ée]|ta gueule|tg|batards?|bâtards?|bougnoules?|youpins?|negro|nègres?|negres?|tapettes?|fiottes?|gouines?|pd|mongol(?:iens?)?|attard[ée]s?|asshole|bitch|bastard|cunt|fag(?:got)?s?|nigg(?:er|a)s?|whores?|sluts?|motherfuckers?|retards?)\b/gi;
+    function moderateText(t) {
+      try { return String(t || "").replace(_BADWORDS, (m) => "✿".repeat(Math.max(3, Math.min(m.length, 8)))); } catch (e) { return t; }
     }
     const _eggAwarded = {}; // anti-spam mémoire : 1 tentative réussie par badge et par session
     async function awardSecretBadge(key) {
@@ -17775,7 +17864,8 @@
     function openQr() {
       if (!myUserId) return;
       const box = $("qrBox"); if (!box) return; box.innerHTML = "";
-      if (window.QRCode) { try { new QRCode(box, { text: mateUrl(myUserId), width: 208, height: 208, colorDark: "#1d2230", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); } catch (e) { box.textContent = "QR indisponible"; } }
+      // #18 : encre AUBERGINE CHAUDE SunMates sur ivoire (contraste scanner OK, plus de noir froid)
+      if (window.QRCode) { try { new QRCode(box, { text: mateUrl(myUserId), width: 208, height: 208, colorDark: "#4A1F12", colorLight: "#FFFBF2", correctLevel: QRCode.CorrectLevel.M }); } catch (e) { box.textContent = "QR indisponible"; } }
       else { box.textContent = "QR indisponible"; }
       $("qrName").textContent = (myProfile && myProfile.username) || "";
       $("qrModal").classList.remove("hidden");
