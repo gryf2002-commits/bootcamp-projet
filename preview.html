@@ -251,9 +251,12 @@
       display: flex; align-items: center; justify-content: space-between; gap: .75rem;
       /* safe-area-inset-top : laisse la place de l'encoche / status bar (iPhone) sans chevauchement */
       padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem .75rem; position: sticky; top: 0; z-index: var(--z-header);
-      /* P2.2 : header OPAQUE à bord net — fini la bande dégradée translucide sous « SunMates »
-         où le contenu scrollé apparaissait à moitié (effet sale). */
-      background: var(--bg); border-bottom: 1px solid var(--line);
+      /* P3 (retour Maxime) : la TRANSPARENCE revient, mais propre — opaque sur 62 % (la status
+         bar et le titre restent couverts → icônes natives du téléphone toujours lisibles), puis
+         fondu DOUX vers transparent. Ce qui gênait avant : le dégradé partait de 86 % d'opacité
+         (jamais plein) + une bordure de fin visible (« la barre noire ») → 100 % opaque en haut,
+         AUCUNE bordure. */
+      background: linear-gradient(var(--bg) 62%, rgba(251,238,233,0));
     }
     /* min-width:0 : le wordmark peut rétrécir au lieu de pousser les actions ; padding-right : espace constant avec le bouton thème */
     .brand { display: flex; align-items: center; gap: .5rem; min-width: 0; padding-right: .25rem; font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: .5px; }
@@ -1060,7 +1063,9 @@
     /* P2.10 : ruban préversion / version archivée */
     #smPreviewRibbon { position: fixed; top: calc(.4rem + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 9999;
       background: #6638D6; color: #fff; font: 800 .66rem/1 Manrope, system-ui, sans-serif; letter-spacing: .06em;
-      padding: .38rem .75rem; border-radius: 999px; box-shadow: 0 6px 18px rgba(0,0,0,.3); pointer-events: none; white-space: nowrap; }
+      padding: .38rem .75rem; border-radius: 999px; box-shadow: 0 6px 18px rgba(0,0,0,.3); white-space: nowrap;
+      border: 0; cursor: pointer; }
+    #smPreviewRibbon:active { transform: translateX(-50%) scale(.96); }
     /* Mode paysage (téléphone tourné, peu de hauteur) : on raccourcit les gros visuels pour rester lisible */
     @media (orientation: landscape) and (max-height: 560px) {
       .auth-hero { padding: .8rem 1rem !important; min-height: 0; }
@@ -2298,7 +2303,7 @@
     /* Header & nav en verre dépoli */
     /* Pas de backdrop-filter sur les barres fixes (topbar/nav) : il repeint à CHAQUE frame de
        scroll = jank mobile. Fonds plus opaques à la place → bien plus fluide. */
-    .topbar { background: #fbeee9; border-bottom: 1px solid rgba(255,90,77,.07); }
+    .topbar { background: linear-gradient(#fbeee9 62%, rgba(251,238,233,0)); border-bottom: 0; }
     .bottom-nav { background: rgba(255,255,255,.97); box-shadow: 0 -10px 34px rgba(20,20,40,.10); }
     .bottom-nav button { transition: color .2s; }
     .bottom-nav button .ni { transition: transform .22s cubic-bezier(.2,.8,.3,1), filter .2s; }
@@ -2792,7 +2797,7 @@
     body.theme-dusk .mseg, body.theme-dusk .chip { background: var(--dcard,#2a2140) !important; border-color: rgba(255,255,255,.08) !important; }
     body.theme-dusk .chip.active, body.theme-dusk .mseg button.active { background: var(--accent-grad) !important; color: #fff !important; }
     body.theme-dusk .notif-card, body.theme-dusk .picker-card { background: #221a34; }
-    body.theme-dusk .topbar { background: #171026; border-bottom-color: rgba(255,255,255,.08); }
+    body.theme-dusk .topbar { background: linear-gradient(#171026 62%, rgba(23,16,38,0)); border-bottom: 0; }
     body.theme-dusk .bottom-nav { background: #1c1428 !important; }
     body.theme-dusk .iconbtn { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.13); }
     body.theme-dusk .bubble.them { background: #2c2342; color: #ede6f2; }
@@ -2859,7 +2864,7 @@
     /* --- Marque / en-tête --- */
     .brand b { font-weight: 600; letter-spacing: .015em; font-size: 1.2rem; }
     .brand .mark { background: var(--accent-grad); border-radius: 11px; box-shadow: var(--shadow-sm); }
-    .topbar { background: var(--bg); border-bottom: 1px solid var(--line); }
+    .topbar { background: linear-gradient(var(--bg) 62%, rgba(251,238,233,0)); border-bottom: 0; }
 
     /* --- Cartes : épurées, bord fin, ombre douce --- */
     .card { background: var(--card) !important; border: 1px solid var(--line) !important; border-radius: var(--radius);
@@ -2952,7 +2957,7 @@
     body.theme-dusk #bgFx { background: radial-gradient(125% 50% at 50% -8%, rgba(255,138,61,.34) 0%, rgba(255,79,109,.10) 40%, rgba(0,0,0,0) 66%), var(--bg); }
 
     h1, h2, h3 { color: var(--ink); }
-    .topbar { background: var(--bg); border-bottom: 1px solid var(--line); }
+    .topbar { background: linear-gradient(var(--bg) 62%, rgba(251,238,233,0)); border-bottom: 0; }
     .brand .mark { background: var(--accent-grad); box-shadow: 0 6px 16px rgba(255,90,77,.4); }
     .section-head a { color: var(--retro-teal); }
 
@@ -3059,7 +3064,7 @@
     body.theme-dusk:not(.theme-winter):not(.theme-tropic) .fpost { background: #2E1B4C; border-color: rgba(255,255,255,.10); }
     body.theme-dusk:not(.theme-winter):not(.theme-tropic) .fpost-empty { background: #271642; border-color: rgba(255,255,255,.14); }
     body.theme-dusk .bottom-nav { background: #190e2e; }
-    body.theme-dusk .topbar { background: #190e2e; border-bottom-color: rgba(255,255,255,.08); }
+    body.theme-dusk .topbar { background: linear-gradient(#190e2e 62%, rgba(25,14,46,0)); border-bottom: 0; }
     body.theme-dusk .bubble.them { background: #2E1B4C; color: #f3e9f3; }
     body.theme-dusk .iconbtn { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.14); }
     body.theme-dusk .notif-card, body.theme-dusk .picker-card { background: #22123A; }
@@ -3679,14 +3684,14 @@
       --card:#FFFFFF; --cream:#F2F8FD; --ink:#1E3A52; --text:#2C4862; --muted:#67839B; --line:#DDE9F3;
       --accent:#3A8FD9; --accent-2:#6FB4E8; --accent-3:#A8D8F5; --accent-soft:#E3F1FB;
       --accent-grad:linear-gradient(135deg, #A8D8F5 0%, #6FB4E8 45%, #3A8FD9 100%); }
-    body.theme-winter .topbar { background: #EAF3FB; border-bottom-color: rgba(58,143,217,.12); }
+    body.theme-winter .topbar { background: linear-gradient(#EAF3FB 62%, rgba(234,243,251,0)); border-bottom: 0; }
     body.theme-winter #bgFx { background: radial-gradient(125% 48% at 50% -8%, rgba(168,216,245,.55) 0%, rgba(111,180,232,.12) 38%, rgba(255,255,255,0) 64%), var(--bg); }
     body.theme-winter .app-shell { background: transparent; }
     body.theme-tropic { --bg:#F7F9EC; --bg-grad:radial-gradient(125% 85% at 50% -12%, #FDFBE8 0%, #F3F7DE 40%, #ECF4DC 100%);
       --card:#FFFFFF; --cream:#F8FBEE; --ink:#1C3D2E; --text:#2A4A3A; --muted:#6E8A77; --line:#E2EDD9;
       --accent:#0FA37C; --accent-2:#36C495; --accent-3:#FFC23D; --accent-soft:#E2F4EC;
       --accent-grad:linear-gradient(135deg, #FFC23D 0%, #36C495 50%, #0FA37C 100%); }
-    body.theme-tropic .topbar { background: #F7F9EC; border-bottom-color: rgba(15,163,124,.12); }
+    body.theme-tropic .topbar { background: linear-gradient(#F7F9EC 62%, rgba(247,249,236,0)); border-bottom: 0; }
     body.theme-tropic #bgFx { background: radial-gradient(125% 48% at 50% -8%, rgba(255,194,61,.40) 0%, rgba(54,196,149,.12) 38%, rgba(255,255,255,0) 64%), var(--bg); }
     body.theme-tropic .app-shell { background: transparent; }
     /* Rappel discret du mode actif sur le bouton thème */
@@ -3730,7 +3735,7 @@
       color: var(--text);
       background: radial-gradient(130% 80% at 50% -8%, #1C3149 0%, #14253A 40%, #0F1B2B 100%);
     }
-    body.theme-winter.theme-dusk .topbar { background:#0F1B2B; border-bottom-color:rgba(140,196,242,.14); }
+    body.theme-winter.theme-dusk .topbar { background: linear-gradient(#0F1B2B 62%, rgba(15,27,43,0)); border-bottom: 0; }
     body.theme-winter.theme-dusk #bgFx { background:radial-gradient(120% 50% at 50% -8%, rgba(95,168,232,.22) 0%, rgba(15,27,43,0) 58%), var(--bg); }
     body.theme-winter.theme-dusk .app-shell { background: transparent !important; }
     body.theme-winter.theme-dusk .help-cta { background: var(--dcard2); border-color: rgba(140,196,242,.16); color:#EAF3FB; }
@@ -3747,7 +3752,7 @@
       color: var(--text);
       background: radial-gradient(130% 80% at 50% -8%, #16352A 0%, #102A20 40%, #0C1D17 100%);
     }
-    body.theme-tropic.theme-dusk .topbar { background:#0C1D17; border-bottom-color:rgba(92,216,168,.14); }
+    body.theme-tropic.theme-dusk .topbar { background: linear-gradient(#0C1D17 62%, rgba(12,29,23,0)); border-bottom: 0; }
     body.theme-tropic.theme-dusk #bgFx { background:radial-gradient(120% 50% at 50% -8%, rgba(255,194,61,.16) 0%, rgba(12,29,23,0) 58%), var(--bg); }
     body.theme-tropic.theme-dusk .app-shell { background: transparent !important; }
     body.theme-tropic.theme-dusk .help-cta { background: var(--dcard2); border-color: rgba(92,216,168,.16); color:#E9F7EF; }
@@ -5258,6 +5263,13 @@
             <div class="card"><h3 style="margin-top:0">🏅 Familles de badges</h3>
               <p class="muted" style="font-size:.78rem;margin:.2rem 0 .6rem">Chaque famille a SA couleur — un badge n'est jamais doré « par hasard ».</p>
               <div id="daFams"></div>
+            </div>
+            <!-- P3 : l'INVENTAIRE des visuels — tout ce qui a un visuel dans l'app, expliqué -->
+            <div class="card"><h3 style="margin-top:0">🧩 Visuels &amp; emojis — qui fait quoi</h3>
+              <p class="muted" style="font-size:.78rem;margin:.2rem 0 .6rem">L'inventaire de TOUT ce qui fait un visuel dans SunMates, et la règle de chacun.</p>
+              <div id="daVisuels"></div>
+              <p class="muted" style="font-size:.78rem;margin:.6rem 0 .3rem"><b>Les 6 logos</b> (un par monde) :</p>
+              <div id="daLogos" style="display:flex;gap:.5rem;flex-wrap:wrap"></div>
             </div>
             <div class="card"><h3 style="margin-top:0">🟣 Pastilles (accès rapides &amp; sécurité)</h3>
               <p class="muted" style="font-size:.78rem;margin:.2rem 0 .6rem">La palette « émaillée » des tuiles ; elles suivent le mode choisi ci-dessus.</p>
@@ -8014,6 +8026,18 @@
       }) || "";
     }
     function _daCopy(txt) { try { navigator.clipboard.writeText(txt); toast("📋", "Copié : " + txt.slice(0, 48) + (txt.length > 48 ? "…" : "")); } catch (e) { toast("⚠️", "Copie impossible sur ce navigateur"); } }
+    // P3 : l'INVENTAIRE des visuels de l'app — chaque type, où il vit, et sa règle.
+    const DA_VISUELS = [
+      ["😀", "Emojis natifs", "Le cœur de la chaleur SunMates (choix « DA v2.2 ») : pastilles d'accès rapides & Sécurité, tuiles de jeux, toasts, boutons, listes. Rendus par le téléphone, relief ajouté en CSS. La banque SVG v1 (désactivée) a été supprimée → base saine pour une future banque v2."],
+      ["🏅", "Médaillons de badges", "Cercles dégradés + emoji, couleur par FAMILLE (exploration corail · social violet · sécurité teal · accomplissement or) — un badge n'est jamais doré par hasard ; verrouillé = grisé façon jeu vidéo, secret = « ? »."],
+      ["☀️", "Logos SunMates", "6 logos SVG dessinés main, un par monde (affichés ci-dessous) ; le logo du header change tout seul avec le mode."],
+      ["🧭", "Icônes de navigation", "Les 5 icônes de la barre du bas : SVG au trait, monochromes, teintées par l'état actif (jamais d'emoji ici, lisibilité d'abord)."],
+      ["🟣", "Pastilles émaillées", "Dégradés --c1/--c2 recolorés par mode via la couche color-mix (palette complète ci-dessous)."],
+      ["🖼️", "Photos d'ambiance", "Banque thématique (cafés, plats, nature, eau, nuit, culture, route, ville) choisie par mots-clés du contenu + shimmer crème pendant le chargement."],
+      ["🎬", "Scènes & célébrations", "100 % CSS/SVG maison : hakuna matata (silhouettes de savane), ballons « Là-haut », petit globe, avion en papier, baleine, confettis-soleils, pluie de saison (flocons/feuilles/étoiles)."],
+      ["📱", "QR & cartes à partager", "QR en écrin DA (cadre sunset, papier ivoire, encre aubergine) ; récap story et cartes souvenirs dessinés au canvas avec la typo Fraunces."],
+      ["🗺️", "Carte", "Fond vectoriel recoloré DA (4 palettes : jour/nuit/hiver/tropiques) + épingles par type (lieux corail · mates violet · activités ambre · check-ins teal) ; fond raster fluide en plein écran."],
+    ];
     function renderDaPanel() {
       const seg = $("daModeSeg");
       if (seg && !seg.dataset.wired) {
@@ -8039,6 +8063,22 @@
         const v = _daGradVal(cls, _daMode);
         return `<button class="da-sw" data-dacopy="${escapeHtml(v)}"><span class="sq" style="background:${escapeHtml(v)}"></span><span class="nm">${escapeHtml(label)}<span class="vl">${escapeHtml(k)}</span></span></button>`;
       }).join("") + "</div>";
+      // P3 : inventaire des visuels + les 6 logos (clonés depuis le header, fond marque derrière)
+      const dv = $("daVisuels");
+      if (dv && !dv.dataset.done) {
+        dv.dataset.done = "1";
+        dv.innerHTML = DA_VISUELS.map(([ic, name, desc]) => `<div class="feat-item"><div class="feat-ic">${ic}</div><div><div class="feat-name">${escapeHtml(name)}</div><div class="feat-desc">${escapeHtml(desc)}</div></div></div>`).join("");
+        const lg = $("daLogos");
+        if (lg) {
+          const LOGOS = [["logo-day", "Jour"], ["logo-night", "Nuit"], ["logo-winter", "Hiver"], ["logo-winter-n", "Hiver·nuit"], ["logo-tropic", "Tropiques"], ["logo-tropic-n", "Trop.·nuit"]];
+          const BGS = { "logo-day": "var(--accent-grad)", "logo-night": "#2A1846", "logo-winter": "#3A8FD9", "logo-winter-n": "#1B3A5E", "logo-tropic": "#0FA37C", "logo-tropic-n": "#0E4D3C" };
+          lg.innerHTML = LOGOS.map(([cls, label]) => {
+            const src = document.querySelector(".brand .mark ." + cls);
+            const svg = src ? src.outerHTML.replace(/width="22" height="22"/, 'width="30" height="30"').replace(/class="[^"]*"/, "") : "";
+            return `<div style="text-align:center"><span style="display:grid;place-items:center;width:46px;height:46px;border-radius:12px;background:${BGS[cls]}">${svg}</span><div class="muted" style="font-size:.62rem;font-weight:700;margin-top:.2rem">${label}</div></div>`;
+          }).join("");
+        }
+      }
       // Pastilles émaillées
       const th = _daReadThumbs(_daMode);
       $("daThumbs").innerHTML = '<div class="da-grid">' + th.map((t) =>
@@ -8050,7 +8090,10 @@
       if (ex && !ex.dataset.wired) {
         ex.dataset.wired = "1";
         ex.addEventListener("click", () => {
-          const kit = { app: "SunMates", version: (typeof _appBuild === "function" ? _appBuild() : ""), fonts: { titres: "Fraunces 400-900 (italique 500)", interface: "Manrope 400-800" }, modes: {} };
+          const kit = { app: "SunMates", version: (typeof _appBuild === "function" ? _appBuild() : ""), fonts: { titres: "Fraunces 400-900 (italique 500)", interface: "Manrope 400-800" }, modes: {}, visuels: {} };
+          // P3 : le kit embarque AUSSI l'inventaire des visuels (emojis, logos, scènes…) —
+          // un brief externe (Stitch, Figma, cowork) a TOUT, pas seulement les couleurs.
+          DA_VISUELS.forEach(([ic, name, desc]) => kit.visuels[name] = desc);
           DA_MODES.forEach(([m]) => {
             kit.modes[m] = { tokens: {}, pastilles: {}, degrades: {} };
             _daReadTokens(m).forEach((t) => kit.modes[m].tokens[t.v] = t.val);
@@ -8272,7 +8315,7 @@
         ["🧰", "Système & déploiement", "Build/SW/cache/réseau, copier le rapport de stats, forcer la mise à jour (vider cache)."],
         ["🎨", "Panneau de contrôle DA", "Tokens couleurs lus EN DIRECT dans le CSS calculé, déclinés dans les 6 modes (jour/nuit/hiver±nuit/tropiques±nuit), dégradés, typos, familles de badges, pastilles. Tap = copier · bouton « kit DA » = export JSON complet (brief Stitch/Figma)."],
         ["🧪", "Préversion (bac à essai)", "preview.html = la PROCHAINE version testable en réel (même compte/base) sans toucher l'app de tout le monde ; ruban violet, aucun service worker. Valider = promotion en 1 commit."],
-        ["🗃️", "Versions archivées", "releases/ garde les versions abouties + jalons (genèse, étape 75/150, v225/300/375…) telles quelles, listées dans Système avec bouton Ouvrir. Pour en épingler une : demande à Claude, elle entre dans la liste."],
+        ["🗃️", "Versions archivées", "releases/ garde les versions abouties + jalons de l'évolution (genèse, v1 toute moche, premier coup de pinceau, étapes 75/150, v225/300/375…) telles quelles, listées dans Système avec bouton Ouvrir + bannière « revenir à l'app » dans chaque archive. Pour en épingler une : demande à Claude."],
         ["👁️", "Aperçu mode gratuit", "Voir l'app comme un compte non-Gold."],
       ]],
       // 🥚 Easter eggs : zone marquée « admin » → JAMAIS dans le livre blanc ni le catalogue
@@ -12418,9 +12461,20 @@
 
     // P2.10 : ruban PRÉVERSION — visible UNIQUEMENT sur preview.html / releases/… (jamais sur
     // l'app officielle). Rappelle qu'on est dans le bac à essai, sans service worker.
+    // P3 : le ruban est CLIQUABLE → récap « quoi de neuf » (whatsnew.json, maintenu à chaque préversion).
     if (window.SM_PREVIEW) {
-      const r = document.createElement("div"); r.id = "smPreviewRibbon";
-      r.textContent = /releases\//.test(location.pathname) ? "🗃️ VERSION ARCHIVÉE" : "🧪 PRÉVERSION · bac à essai";
+      const r = document.createElement("button"); r.id = "smPreviewRibbon"; r.type = "button";
+      const isArchive = /releases\//.test(location.pathname);
+      r.textContent = isArchive ? "🗃️ VERSION ARCHIVÉE" : "🧪 PRÉVERSION · quoi de neuf ?";
+      r.addEventListener("click", async () => {
+        if (isArchive) { try { location.href = "../index.html"; } catch (e) {} return; }
+        let items = [];
+        try { const res = await fetch("whatsnew.json", { cache: "no-store" }); const j = await res.json(); items = (j && j.items) || []; } catch (e) {}
+        const html = items.length
+          ? '<div style="text-align:left;line-height:1.55;font-size:.88rem">' + items.map((it) => "• " + escapeHtml(it)).join("<br>") + "</div>"
+          : '<p class="muted">Le récap arrive avec la prochaine préversion.</p>';
+        if (typeof popInfo === "function") popInfo("🧪", i18nT("Quoi de neuf dans cette préversion"), html);
+      });
       document.body.appendChild(r);
     }
 
@@ -13120,6 +13174,7 @@
         // Fond vectoriel SunMates : rendu GPU continu (fini le chargement tuile par tuile),
         // recoloré dans la DA. Le service worker met style/glyphes/tuiles en cache → offline OK.
         const _homeBase = smBaseLayer().addTo(homeLeaf);
+        window._homeBaseLyr = _homeBase; // P3 : référence pour l'échange GL↔raster du plein écran
         // Accès au moteur GL (sert à l'egg 🐋 : savoir si le centre de la carte est sur l'eau).
         window._homeGlMap = () => { try { return _homeBase.getMaplibreMap ? _homeBase.getMaplibreMap() : null; } catch (e) { return null; } };
         // ★ PERF GLISSEMENT (surtout plein écran) : par défaut le plugin RE-REND tout le fond
@@ -13552,6 +13607,26 @@
         if (homeLeaf.scrollWheelZoom) { on ? homeLeaf.scrollWheelZoom.enable() : homeLeaf.scrollWheelZoom.disable(); }
         // P2.7 : sur téléphone le drag 1 doigt ne vit qu'en plein écran (sinon il avalait le scroll de l'accueil)
         try { if (window._smCoarse && homeLeaf.dragging) { on ? homeLeaf.dragging.enable() : homeLeaf.dragging.disable(); } } catch (e) {}
+        // P3 (retour Maxime : plein écran « ultra méga lent ») : le fond VECTORIEL GPU re-rend
+        // toute la scène sur un canvas ~4× plus grand → saccadé. En plein écran on bascule sur
+        // le fond RASTER (tuiles cachées par le SW = très fluide, variante sombre la nuit) ;
+        // le fond vectoriel DA revient dès qu'on referme.
+        try {
+          if (window._homeBaseLyr) {
+            if (on && !window._homeFsRaster) {
+              homeLeaf.removeLayer(window._homeBaseLyr);
+              const dark = document.body.classList.contains("theme-dusk");
+              window._homeFsRaster = L.tileLayer(
+                dark ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                     : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+                { attribution: "© OpenStreetMap · © CARTO", maxZoom: 19, keepBuffer: 4, updateWhenIdle: false, updateWhenZooming: false }
+              ).addTo(homeLeaf);
+            } else if (!on && window._homeFsRaster) {
+              homeLeaf.removeLayer(window._homeFsRaster); window._homeFsRaster = null;
+              window._homeBaseLyr.addTo(homeLeaf);
+            }
+          }
+        } catch (e) {}
         // iOS : le conteneur change de taille via CSS sans event resize natif fiable.
         // On force Leaflet à recalculer SES dimensions, puis à redessiner les pastilles :
         // un setView "sur place" relance le rendu des marqueurs, et refreshClusters()
@@ -16995,6 +17070,7 @@
       "Choisis un pseudo (2 à 20 caractères) — c'est lui que les autres verront.": "Pick a username (2 to 20 characters) — that's what others will see.",
       "Encore un retour pour quitter": "Press back once more to exit",
       "Plein écran pour explorer la carte": "Full screen to explore the map",
+      "Quoi de neuf dans cette préversion": "What's new in this preview",
       // · Batch 5 : gaps onglet Sécurité —
       "Partage de position, alerte d'urgence, cercle de confiance et plus.": "Location sharing, emergency alert, trust circle and more.",
       "En cas d'urgence": "In an emergency", "Un geste, et tu n'es plus seul·e.": "One tap, and you're not alone.", "📍 Partager ma position (sans urgence)": "📍 Share my location (no emergency)",

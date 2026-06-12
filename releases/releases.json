@@ -6,5 +6,7 @@
   { "v": "v225", "date": "2026-06-07", "note": "Jalon · HomeMates, récap souvenirs du mode Maison", "file": "v225.html" },
   { "v": "Étape 150", "date": "2026-06-06", "note": "Jalon · boutique XP & cosmétiques (150ᵉ évolution)", "file": "etape-150.html" },
   { "v": "Étape 75", "date": "2026-06-05", "note": "Jalon · peaufinage carte plein écran & login (75ᵉ évolution)", "file": "etape-75.html" },
+  { "v": "Coup de pinceau 🎨", "date": "2026-06-03", "note": "12ᵉ évolution · le premier polish DA (dégradés sunset, verre dépoli) — avant : brut", "file": "polish-12.html" },
+  { "v": "v1 🐣", "date": "2026-06-02", "note": "La première interface FONCTIONNELLE (auth, profil, lieux, check-ins) — moche assumé, à comparer !", "file": "v1.html" },
   { "v": "Genèse 🌱", "date": "2026-06-02", "note": "LA toute première page du projet — pour mesurer le chemin parcouru", "file": "genese.html" }
 ]

@@ -1,0 +1,16 @@
+{
+  "candidate": "v442",
+  "items": [
+    "🎨 Panneau de contrôle DA (Admin → DA) : couleurs des 6 modes lues en direct, dégradés, typos, familles de badges, pastilles — tap = copier, bouton « kit DA » = export JSON complet",
+    "🧩 Inventaire des visuels : tout ce qui fait un visuel dans l'app (emojis, logos, médaillons, scènes, photos, carte) expliqué dans le panneau DA et inclus dans le kit",
+    "🌅 Header transparent raffiné : le fondu revient, opaque en haut (status bar nickel), sans la « barre » de fin",
+    "🗺️ Plein écran carte ENFIN fluide : fond raster ultra rapide en plein écran (sombre la nuit), fond vectoriel DA en vue réduite",
+    "◀️ Retour téléphone natif : ferme la fenêtre ouverte, sinon revient à l'Accueil, sinon quitte",
+    "🖐️ Mini-carte coopérative : 1 doigt = la page défile, pincement = zoom, exploration en plein écran",
+    "✍️ Pseudo dès l'inscription (fini l'email affiché au premier Bonjour)",
+    "🌦️ Météo & conseils ajoutée au catalogue, catalogue admin complété (préversion, versions archivées…)",
+    "🗃️ Galerie de l'évolution : genèse, v1 toute moche, premier coup de pinceau, étapes 75/150, v225/300/375 — ouvrables depuis Admin → Système",
+    "🧹 Banque SVG v1 (désactivée depuis « emojis natifs partout ») supprimée : base saine pour la future banque v2",
+    "⚡ Célébrations fluides : confettis allégés, fête de streak après le boot, overlays sans flou coûteux sur mobile"
+  ]
+}
