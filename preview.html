@@ -126,7 +126,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
   <script src="sunmates-badges.js?v=463"></script>
-  <script src="sunmates-icons.js?v=471"></script>
+  <script src="sunmates-icons.js?v=472"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale · jamais depuis
     // la préversion (preview.html) ni une version archivée (releases/…) : elles se testent
@@ -482,7 +482,7 @@
     .fc-chip.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 7px rgba(45,38,52,.16); }
     body.theme-dusk .fc-chip { background: var(--dcard,#2a2140); color: #eee; border-color: rgba(255,255,255,.1); }
     .fc-hint { font-size: .72rem; color: var(--muted); font-weight: 600; margin-top: .35rem; }
-    .fc-kind { font-size: .76rem; font-weight: 700; padding: .35rem .75rem; border-radius: 999px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
+    .fc-kind { font-size: .76rem; font-weight: 700; padding: .35rem .75rem; border-radius: 999px; border: 0; background: transparent; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .3rem; }
     .fc-kind.active { background: var(--accent-grad); color: #fff; box-shadow: 0 2px 8px rgba(45,38,52,.16); }
     /* P8 : halo du bouton Publier ADOUCI et remonté (l'ombre descendait sur la note
        « Visible par toute la communauté » juste en dessous et la voilait). */
@@ -499,7 +499,7 @@
     .fpost { background: var(--card); border: 1.5px solid var(--line); border-radius: 18px; padding: .8rem .9rem; margin-bottom: .9rem; box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .15s ease; }
     body.theme-dusk .fpost { background: var(--dcard2,#241b35); border-color: rgba(255,255,255,.12); box-shadow: 0 10px 26px rgba(0,0,0,.4); }
     /* Chip « Dispo ? » : intention de rencontre. État actif = ambre/sunset (jamais vert vif, DA). */
-    .avail-chip { flex-shrink: 0; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .3rem .6rem; font-size: .74rem; font-weight: 800; cursor: pointer; transition: .12s; }
+    .avail-chip { flex-shrink: 0; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .3rem .6rem; font-size: .74rem; font-weight: 800; cursor: pointer; transition: .12s; display: inline-flex; align-items: center; gap: .25rem; }
     .avail-chip:active { transform: scale(.95); }
     .avail-chip.on { background: linear-gradient(135deg, #FFC93C, #FF8A3D); color: #6b3d00; border-color: transparent; box-shadow: 0 2px 8px rgba(255,138,61,.35); }
     /* Pastille « Dispo maintenant » affichée sur la fiche d'un voyageur */
@@ -1205,7 +1205,7 @@
       left: auto; top: auto; align-items: flex-end; z-index: 1500; max-width: calc(60% - 1rem); }
     .homemap-card.fs .homemap-fsclose { z-index: 1600; }
     .homemap-tools { position: absolute; right: .55rem; bottom: .55rem; z-index: 1100; display: flex; flex-direction: column; gap: .4rem; align-items: flex-end; pointer-events: auto; }
-    .homemap-tools button { background: var(--card); color: var(--ink); border: 1px solid rgba(0,0,0,.08); border-radius: 999px; padding: .4rem .7rem; font-size: .76rem; font-weight: 700; box-shadow: var(--shadow-sm); cursor: pointer; }
+    .homemap-tools button { background: var(--card); color: var(--ink); border: 1px solid rgba(0,0,0,.08); border-radius: 999px; padding: .4rem .7rem; font-size: .76rem; font-weight: 700; box-shadow: var(--shadow-sm); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .3rem; }
     .homemap-tools button:hover { background: var(--accent-grad); color: #fff; }
     .homemap-tools #hmAdd { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 16px rgba(45,38,52,.16); }
     .homemap-capture { position: absolute; inset: 0; z-index: 1050; cursor: crosshair; background: rgba(122,92,255,.06); }
@@ -1798,7 +1798,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg { display:block; position:relative; z-index:1; }
     /* Icônes maison (moteur SMIcon) : taille relative au conteneur + ombre douce pour la lisibilité sur toute couleur. */
     svg.smi { width: 60%; height: 60%; display: block; filter: drop-shadow(0 1.5px 2.5px rgba(60,25,10,.3)); }
-    .cic svg.smi, .qico svg.smi, .smgem svg.smi, .sc-ic svg.smi { width: 64%; height: 64%; }
+    .cic svg.smi, .qico svg.smi, .smgem svg.smi, .sc-ic svg.smi { width: 54%; height: 54%; }
     /* Emoji-icône CONVERTI dans le TEXTE (descriptions/labels/titres) : à la taille du texte, sur la ligne. */
     .smji { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; flex-shrink: 0; }
     .smji svg.smi { width: 100%; height: 100%; filter: drop-shadow(0 1px 1.5px rgba(60,25,10,.22)); }

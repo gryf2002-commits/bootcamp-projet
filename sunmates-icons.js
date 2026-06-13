@@ -107,7 +107,7 @@
     mic: G('mic', 'coral', '<path d="M12 22a12 12 0 0 0 24 0" fill="none" stroke="' + K + '" stroke-width="2.6" stroke-linecap="round"/><line x1="24" y1="34" x2="24" y2="42" stroke="' + C.coral[0] + '" stroke-width="3.4" stroke-linecap="round"/>'),
     flame: G('flame', 'coral'),
     star: G('star', 'gold'),
-    handshake: '<path d="M4 18l8-3 9 6 6-2 4 3 9-4v12l-7 3-8-6-3 1-5 6-7-4z" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7" stroke-linejoin="round"/>',
+    handshake: '<circle cx="18" cy="24" r="8.5" fill="none" stroke="' + C.gold[0] + '" stroke-width="4.6"/><circle cx="30" cy="24" r="8.5" fill="none" stroke="' + C.coral[0] + '" stroke-width="4.6"/>',
     // --- inline (boutons/chips) ---
     door: '<rect x="11" y="6" width="22" height="37" rx="3" fill="' + C.teal[0] + '" stroke="' + C.teal[1] + '" stroke-width="1.7"/><path d="M30 9l8 4v22l-8 4z" fill="' + C.teal[0] + '" stroke="' + C.teal[1] + '" stroke-width="1.7" stroke-linejoin="round"/>' + dot(33, 24, 1.8),
     check: G('target', 'green', '<path d="M16.5 24l5 5 9.5-10.5" fill="none" stroke="' + K + '" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>'),
@@ -155,7 +155,7 @@
     book: G('card', 'blue', '<path d="M24 13c-3-2-7-2.5-11-2v20c4-.5 8 0 11 2 3-2 7-2.5 11-2V11c-4-.5-8 0-11 2z" fill="' + K + '"/><line x1="24" y1="13" x2="24" y2="33" stroke="' + C.blue[1] + '" stroke-width="1.6"/>'),
     key: '<circle cx="15" cy="15" r="9" fill="none" stroke="' + C.gold[0] + '" stroke-width="4"/><path d="M20 20 38 38M33 33l4 4M30 36l4 4" stroke="' + C.gold[0] + '" stroke-width="4" stroke-linecap="round" fill="none"/>',
     bolt: '<path d="M26 4 10 27h11l-3 17 18-25H24z" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7" stroke-linejoin="round"/>',
-    wave: '<path d="M18 26V9a3 3 0 0 1 6 0v13M24 22V7a3 3 0 0 1 6 0v15M30 23v-9a3 3 0 0 1 6 0v14a11 11 0 0 1-11 11h-3a11 11 0 0 1-9-5l-5-8a3 3 0 0 1 5-3l3 3V14a3 3 0 0 1 6 0v8" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.6" stroke-linejoin="round"/>',
+    wave: '<path d="M14 23V10a2.6 2.6 0 0 1 5.2 0v9M19.2 19V7.5a2.6 2.6 0 0 1 5.2 0V19M24.4 19.5V9a2.6 2.6 0 0 1 5.2 0v13M29.6 22v-7.5a2.6 2.6 0 0 1 5.2 0V27a12 12 0 0 1-12 12 12 12 0 0 1-10.4-6l-3.4-6a2.7 2.7 0 0 1 4.5-2.9l3.1 3.9z" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.5" stroke-linejoin="round"/>',
     save: G('card', 'blue', '<path d="M14 8h16l6 6v22H12V8z" fill="none"/><rect x="16" y="8" width="14" height="9" fill="' + K + '"/><rect x="16" y="24" width="16" height="11" rx="1" fill="' + K + '"/>')
   };
   GLYPHS.challenge = GLYPHS.quest;
