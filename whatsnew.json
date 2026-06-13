@@ -1,10 +1,10 @@
 {
-  "candidate": "v450",
+  "candidate": "v451",
   "items": [
-    "🔍 Suite de l'audit design Impeccable — LOT E (zones tactiles). On agrandit la surface où le doigt peut appuyer, SANS changer l'apparence des boutons.",
-    "👆 Plusieurs petits boutons ronds (la croix de fermeture des bulles d'info, le « ✕ » des champs de recherche, les flèches d'inspiration carte, la croix de l'onboarding, le bouton « ✓ » des préparatifs) avaient une cible de 24 à 40px — dur à toucher au pouce. Leur zone cliquable passe à 44×44px (recommandation d'accessibilité), mais le rond reste visuellement identique.",
-    "🎯 Méthode : une zone tactile invisible centrée sur le bouton — aucun changement visuel, juste plus facile à viser.",
-    "⏭️ Laissés volontairement pour éviter les clics qui se chevauchent : les boutons « en grappe » (actions d'une bulle de chat, croix d'une étiquette d'envie), les commandes de zoom de carte (standard + on a le pincer-zoomer) et le sélecteur de langue (écran de connexion seulement).",
-    "ℹ️ Restent les lots F (écrans vides) et G (tirets) — toujours en préversion d'abord."
+    "🐛 3 corrections de tes retours (pas l'audit cette fois).",
+    "📍 Choix de ville : on peut À NOUVEAU revenir à « Toutes les villes » (l'option avait disparu → on restait coincé sur une ville). Et la pastille de ville est allégée (moins épaisse, sans ombre).",
+    "📱 Retour Android sur la carte : quand la carte est en plein écran, le bouton « retour » du téléphone QUITTE le plein écran (avant il ne faisait rien d'utile / changeait d'onglet par-dessous).",
+    "🔝 Haut de l'écran : la barre d'état du téléphone prend exactement la couleur du fond de l'app (avant un crème/violet légèrement différent créait une séparation nette / un grain de couleur en haut). Corrigé dans les 6 modes, y compris après avoir basculé jour/nuit en hiver ou tropiques.",
+    "ℹ️ Le lot F de l'audit (écrans vides plus accueillants) arrive juste après."
   ]
 }
