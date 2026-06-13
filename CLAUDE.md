@@ -87,5 +87,10 @@ URL : `https://gryf2002-commits.github.io/bootcamp-projet/`
 - **Indications** : éviter les messages collés en bas de page (invisibles) → préférer un
   retour visible (toast en haut / inline près de l'action).
 
+## Design — source de vérité
+Toute modification visuelle doit respecter `DESIGN.md`, `DESIGN_SYSTEM.md` et
+`sunmates-kit-da-v445.json`. Aucune nouvelle couleur, typo ou composant hors de
+ces fichiers. En cas de doute : demander, ne pas improviser.
+
 ## Roadmap en cours
 Voir `ROADMAP_PEAUFINAGE.md` (punch-list peaufinage).
