@@ -14322,7 +14322,13 @@
       }));
       const loc = $("hmLocate"); if (loc) loc.addEventListener("click", homeLocateMe);
       const fit = $("hmFit"); if (fit) fit.addEventListener("click", homeFitAll);
-      const add = $("hmAdd"); if (add) add.addEventListener("click", () => setHomeAddMode(!homeAddMode));
+      const add = $("hmAdd"); if (add) add.addEventListener("click", () => {
+        // Recherche-AVANT-pin (retour Maxime) : « ➕ Partager » ouvre directement la fiche, centrée sur la
+        // carte, avec le champ de recherche de lieu en tête → on cherche le lieu d'abord (plus besoin de
+        // toucher un point précis). La position est ensuite calée par la recherche (ou reste le centre).
+        try { if (homeLeaf && typeof openActCreate === "function") { setHomeAddMode(false); openActCreate(homeLeaf.getCenter()); return; } } catch (e) {}
+        setHomeAddMode(!homeAddMode);
+      });
       const hc = $("homeMapHintCancel"); if (hc) hc.addEventListener("click", () => setHomeAddMode(false));
       // La couche de capture transforme le tap (même sur un marqueur) en position
       const cap = $("homeMapCapture");
