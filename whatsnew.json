@@ -1,9 +1,9 @@
 {
-  "candidate": "v453",
+  "candidate": "v454",
   "items": [
-    "🔝 Séparation/bande de couleur en haut (mode jour) : le fondu de la barre du haut se terminait sur une teinte rosée (#fbeee9) différente du fond crème (#FFF4E6) → léger liseré. Le fondu se fait maintenant vers la VRAIE couleur du fond → plus de bande. (Nuit/hiver/tropiques étaient déjà corrects.)",
-    "🗺️ Plein écran carte : le badge « 🖐️ Touche la carte pour l'explorer » passait SOUS le bouton « Fermer » — il est maintenant masqué en plein écran (inutile puisque la carte est déjà explorable), et revient en mini-carte à la sortie.",
-    "🎚️ Bascule « En voyage ↔ Maison » plus douce : le panneau qui apparaît fait un petit fondu montant au lieu de surgir d'un coup.",
-    "ℹ️ Le lot F de l'audit (écrans vides) reste en attente, juste après."
+    "🛠️ CORRECTIF IMPORTANT : la carte ne passait plus en plein écran + une barre/séparation apparaissait en haut (tous modes). Cause : l'animation du switch Voyage/Maison ajoutée juste avant appliquait un léger déplacement sur le conteneur de la carte, ce qui « piégeait » le plein écran et décalait le haut. L'animation est repassée en simple fondu → plein écran rétabli, plus de barre.",
+    "🔍 LOT F de l'audit Impeccable : écrans vides plus accueillants (illustration + titre + encouragement) sur Notifications vides, Classement vide, Quêtes vides et Recherche sans résultat. FR + EN.",
+    "🙂 Laissés tels quels exprès : la note d'un lieu sans avis (résumé d'une ligne) et la liste de lieux filtrée vide (déjà bien expliquée).",
+    "ℹ️ En cours pour la suite : derniers halos rouges en nuit d'hiver (tuiles/badges/jeux) + couleurs de tuiles hors thème, puis lot G (tirets)."
   ]
 }

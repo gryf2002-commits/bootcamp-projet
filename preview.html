@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=453"></script>
+  <script src="sunmates-badges.js?v=454"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
@@ -1124,11 +1124,13 @@
     body.theme-dusk .hm-coop-hint { background: var(--dcard, #2a2140); color: #f3e9f3; border-color: rgba(255,255,255,.16); }
     /* P4 : carte RÉVEILLÉE (tap) = liseré corail discret, pour voir qu'elle est « en main » */
     .homemap.hm-live::after { content: ""; position: absolute; inset: 0; border: 2px solid var(--accent); border-radius: 14px; pointer-events: none; opacity: .5; z-index: 899; }
-    /* Bug Maxime « switch Voyage ↔ Maison trop brutal » : le panneau qui APPARAÎT fait un fondu doux
-       (montée + opacité) au lieu de surgir d'un coup. Le mouvement réduit est déjà neutralisé par la
-       ceinture prefers-reduced-motion globale. */
-    @keyframes hmModeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-    #homeHomeMode, #homeTravelMap { animation: hmModeIn .28s ease both; }
+    /* Bug Maxime « switch Voyage ↔ Maison trop brutal » : le panneau qui APPARAÎT fait un fondu doux.
+       ⚠️ OPACITÉ SEULE, JAMAIS de transform ici : #homeTravelMap CONTIENT la carte, et un transform sur
+       un ancêtre fait que le position:fixed du plein écran se cale sur ce conteneur au lieu de l'écran
+       (→ « la carte ne passe plus en grand écran ») et décale le haut (→ « barre/séparation en haut,
+       tous modes »). Le mouvement réduit est neutralisé par la ceinture prefers-reduced-motion. */
+    @keyframes hmModeIn { from { opacity: 0; } to { opacity: 1; } }
+    #homeHomeMode, #homeTravelMap { animation: hmModeIn .26s ease both; }
     /* P2.10 : ruban préversion / version archivée */
     #smPreviewRibbon { position: fixed; top: calc(.4rem + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: var(--z-ribbon);
       background: #6638D6; color: #fff; font: 800 .66rem/1 Manrope, system-ui, sans-serif; letter-spacing: .06em;
@@ -9382,7 +9384,7 @@
           <div class="lb-info"><div class="lb-name">${escapeHtml(r.username || "Voyageur")}${r.is_verified ? ' <span class="vchip" title="Vérifié">✓</span>' : ""}${me ? ' <span class="lb-you">toi</span>' : ""}</div><div class="lb-city muted" style="font-size:.76rem">${escapeHtml(r.city || "")}</div></div>
           <div class="lb-val">${r.value}<span> ${unit}</span></div>
         </div>`;
-      }).join("") : '<p class="muted">Personne au classement pour l\'instant, sois le premier 🌟</p>');
+      }).join("") : emptyState("🏆", i18nT("Classement vide"), i18nT("Personne ici pour l'instant. Sois la première étoile à grimper 🌟")));
       // Mini-aperçu de la personne au clic sur sa ligne (infos liées au classement)
       box.querySelectorAll(".lb-row[data-lbrow]").forEach((el) => el.addEventListener("click", () => {
         const r = rows.find((x) => x.id === el.dataset.lbrow); if (!r) return;
@@ -13016,7 +13018,7 @@
         people.map((p) => `<div class="sresult" data-sp="${p.id}">${avatarMarkup(p.username, p.avatar_url)}<div class="info"><div class="sname">${escapeHtml(p.username || "Voyageur")} ${p.is_verified ? '<span class="vchip" title="Vérifié">✓</span>' : ""}</div><div class="smeta">${escapeHtml(p.city || "")}</div></div></div>`).join("") + "</div>";
       if (places.length) html += '<div class="card"><h3 style="margin-top:0">Lieux sûrs</h3>' +
         places.map((c) => { const rt = cafeRatings[c.id]; const star = (rt && rt.cnt) ? ` · ⭐ ${rt.avg.toFixed(1)}` : ""; return `<div class="sresult" data-splace="${c.id}"><div class="sicon">🛟</div><div class="info"><div class="sname">${escapeHtml(c.name)}</div><div class="smeta">${escapeHtml(c.city || "")}${c.is_eco ? " · 🌱" : ""}${star}</div></div></div>`; }).join("") + "</div>";
-      box.innerHTML = html || '<div class="card"><p class="muted">Aucun résultat pour « ' + escapeHtml(q) + ' ».</p></div>';
+      box.innerHTML = html || ('<div class="card">' + emptyState("🔍", i18nT("Aucun résultat"), i18nT("Rien trouvé pour « {q} ». Essaie un autre mot.", { q: q })) + '</div>');
       box.querySelectorAll("[data-sp]").forEach((el) => el.addEventListener("click", () => { goToTab("connexions"); openTravelerProfile(travelerMap[el.dataset.sp]); }));
       box.querySelectorAll("[data-splace]").forEach((el) => el.addEventListener("click", () => { box.innerHTML = ""; $("homeSearch").value = ""; if (typeof focusCafeInList === "function") focusCafeInList(Number(el.dataset.splace)); }));
     }
@@ -15137,7 +15139,7 @@
       (mySuggestions || []).forEach((s) => items.push({ e: "🎯", h: `<b>${escapeHtml(nameById(s.from_user))}</b> te propose : ${escapeHtml(s.quest_title || "une quête")}`, go: () => { closeNotif(); acceptSuggestion(s.id, s.quest_key); } }));
       $("notifList").innerHTML = items.length
         ? items.map((it, i) => `<div class="notif-item" data-n="${i}"><div class="nemoji">${it.e}</div><div class="info"><div class="name">${it.h}</div></div><div class="qarrow">›</div></div>`).join("")
-        : '<p class="muted" style="text-align:center;padding:1rem">Aucune notification pour l\'instant 🎉</p>';
+        : emptyState("🔔", i18nT("Tout est calme"), i18nT("Tes alertes (demandes, messages, quêtes) s'afficheront ici. Profite du calme 🎉"));
       $("notifList").querySelectorAll("[data-n]").forEach((el) => el.addEventListener("click", () => items[Number(el.dataset.n)].go()));
       show($("notifPanel"), true);
     }
@@ -16103,7 +16105,7 @@
           <div class="coll-bar"><span style="width:${pct}%"></span></div>
           <div class="coll-list">${rows}</div></details>`;
       }).join("");
-      if (!total) html = "<p class='muted' style='text-align:center'>Aucune quête pour l'instant · reviens vite ✨</p>";
+      if (!total) html = emptyState("🎯", i18nT("Pas de quête ici"), i18nT("Rien dans le coin pour le moment. Reviens vite, ça bouge souvent ✨"));
       showInfo("🗺️ Ma collection", html);
     }
     { const qc = $("questCollection"); if (qc) { qc.style.cursor = "pointer"; qc.addEventListener("click", () => { showCollectionSheet(); if (window.SMSound) SMSound.play("tap"); }); } }
@@ -17466,6 +17468,15 @@
       "Voir le profil ›": "See profile ›", "Supprimer la conversation": "Delete conversation", "Traduire": "Translate", "🌐 Traduire": "🌐 Translate",
       // Notifications
       "Notifications": "Notifications", "Tout marquer comme lu": "Mark all as read", "Aucune notification pour l'instant 🎉": "No notifications yet 🎉",
+      // Lot F : états vides accueillants (titre + sous-titre)
+      "Tout est calme": "All quiet",
+      "Tes alertes (demandes, messages, quêtes) s'afficheront ici. Profite du calme 🎉": "Your alerts (requests, messages, quests) will show up here. Enjoy the calm 🎉",
+      "Classement vide": "Empty leaderboard",
+      "Personne ici pour l'instant. Sois la première étoile à grimper 🌟": "Nobody here yet. Be the first star to climb 🌟",
+      "Pas de quête ici": "No quest here",
+      "Rien dans le coin pour le moment. Reviens vite, ça bouge souvent ✨": "Nothing around for now. Check back soon, it changes often ✨",
+      "Aucun résultat": "No results",
+      "Rien trouvé pour « {q} ». Essaie un autre mot.": "Nothing found for “{q}”. Try another word.",
       // Boutons & actions communs
       "Enregistrer le profil": "Save profile", "Modifier": "Edit", "Supprimer": "Delete", "Confirmer": "Confirm", "Continuer": "Continue", "Valider": "Confirm", "Fermer": "Close", "OK": "OK", "Oui": "Yes", "Non": "No", "Voir tout": "See all", "Voir plus": "See more", "Rejoindre": "Join", "Partager": "Share", "Copier": "Copy", "Envoyer": "Send", "Précédent": "Back", "Terminer": "Finish",
       // B2B / Pro
