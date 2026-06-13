@@ -119,7 +119,25 @@
     heart: '<path d="M24 41C9 31 6 22 6 16.5 6 11 10 7 15 7c3.5 0 6.5 2 9 5 2.5-3 5.5-5 9-5 5 0 9 4 9 9.5C42 22 39 31 24 41z" fill="' + C.coral[0] + '" stroke="' + C.coral[1] + '" stroke-width="1.7" stroke-linejoin="round"/>',
     dots: '<g fill="' + C.violet[0] + '" stroke="' + C.violet[1] + '" stroke-width="1.4"><circle cx="10" cy="24" r="4"/><circle cx="24" cy="24" r="4"/><circle cx="38" cy="24" r="4"/></g>',
     block: '<circle cx="24" cy="24" r="17" fill="' + C.red[0] + '" stroke="' + C.red[1] + '" stroke-width="1.7"/><line x1="13" y1="13" x2="35" y2="35" stroke="' + K + '" stroke-width="3.4" stroke-linecap="round"/>',
-    minus: G('target', 'teal', '<path d="M16 24h16" stroke="' + K + '" stroke-width="3.6" stroke-linecap="round"/>')
+    minus: G('target', 'teal', '<path d="M16 24h16" stroke="' + K + '" stroke-width="3.6" stroke-linecap="round"/>'),
+    // --- contenu (top emojis fréquents) ---
+    plane: '<path d="M22 4c1.6-1.6 4-1.6 4 2v12l16 9v4l-16-5v9l5 4v3l-9-3-9 3v-3l5-4v-9l-16 5v-4l16-9V6c0-1 .8-1.4 1.4-2z" fill="' + C.coral[0] + '" stroke="' + C.coral[1] + '" stroke-width="1.6" stroke-linejoin="round"/>',
+    sun: '<circle cx="24" cy="24" r="9" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7"/><g stroke="#FF8A3D" stroke-width="3" stroke-linecap="round"><path d="M24 4v5M24 39v5M4 24h5M39 24h5M9.9 9.9l3.5 3.5M34.6 34.6l3.5 3.5M38.1 9.9l-3.5 3.5M13.4 34.6l-3.5 3.5"/></g>',
+    sunset: '<g stroke="#FF8A3D" stroke-width="2.6" stroke-linecap="round"><path d="M24 6v5M8 16l3 3M40 16l-3 3M3 27h5M40 27h5"/></g><path d="M14 27a10 10 0 0 1 20 0z" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7"/><path d="M4 33h40M9 39h30" stroke="' + C.coral[0] + '" stroke-width="3" stroke-linecap="round"/>',
+    moon: '<path d="M30 6a15 15 0 1 0 12 24A12.5 12.5 0 0 1 30 6z" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7" stroke-linejoin="round"/>',
+    palm: '<path d="M22 42c1-12 0-18-3-24" stroke="' + C.amber[1] + '" stroke-width="3" stroke-linecap="round" fill="none"/><g fill="' + C.green[0] + '" stroke="' + C.green[1] + '" stroke-width="1.4"><path d="M19 16C13 11 6 11 2 15c5-1 10 0 17 3z"/><path d="M19 16c-2-7 1-13 7-16-3 4-4 9-2 15z"/><path d="M19 16c6-5 14-5 19 0-6-2-12-1-19 2z"/></g>',
+    snow: '<g stroke="' + C.blue[0] + '" stroke-width="2.6" stroke-linecap="round"><path d="M24 4v40M6.6 14l34.8 20M41.4 14L6.6 34"/><path d="M18 8l6 5 6-5M18 40l6-5 6 5M8 19l2 7-6 3M38 19l-2 7 6 3M8 29l-2-7-6-3M38 29l2-7 6-3"/></g>',
+    coin: '<circle cx="24" cy="24" r="17" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7"/><circle cx="24" cy="24" r="11.5" fill="none" stroke="' + C.gold[1] + '" stroke-opacity=".5" stroke-width="1.6"/><path d="M24 17v14M20.5 20.5h6a3 3 0 0 1 0 6h-5a3 3 0 0 0 0 6h6" fill="none" stroke="' + K + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>',
+    idcard: '<rect x="5" y="11" width="38" height="26" rx="5" fill="' + C.teal[0] + '" stroke="' + C.teal[1] + '" stroke-width="1.7"/><circle cx="16" cy="22" r="4.5" fill="' + K + '"/><path d="M9.5 33c0-4 3-6 6.5-6s6.5 2 6.5 6z" fill="' + K + '"/><g stroke="' + K + '" stroke-width="2.4" stroke-linecap="round"><line x1="28" y1="20" x2="38" y2="20"/><line x1="28" y1="27" x2="35" y2="27"/></g>',
+    trash: '<path d="M11 14h26l-2 25a3 3 0 0 1-3 3H16a3 3 0 0 1-3-3z" fill="' + C.coral[0] + '" stroke="' + C.coral[1] + '" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 14h32M19 9h10" stroke="' + C.coral[1] + '" stroke-width="3" stroke-linecap="round"/><g stroke="' + K + '" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="21" x2="20" y2="35"/><line x1="29" y1="21" x2="28" y2="35"/></g>',
+    camera: '<rect x="4" y="14" width="40" height="26" rx="5" fill="' + C.violet[0] + '" stroke="' + C.violet[1] + '" stroke-width="1.7"/><path d="M16 14l3-5h10l3 5" fill="' + C.violet[0] + '" stroke="' + C.violet[1] + '" stroke-width="1.7" stroke-linejoin="round"/><circle cx="24" cy="27" r="7" fill="' + K + '"/>',
+    lock: '<rect x="9" y="21" width="30" height="22" rx="5" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7"/><path d="M15 21v-5a9 9 0 0 1 18 0v5" fill="none" stroke="' + C.gold[1] + '" stroke-width="3"/><circle cx="24" cy="31" r="3.2" fill="' + K + '"/>',
+    write: '<path d="M8 40l3-9L31 11l7 7-20 20z" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7" stroke-linejoin="round"/><path d="M28 14l7 7" stroke="' + K + '" stroke-width="2"/>',
+    smile: '<circle cx="24" cy="24" r="18" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7"/><g fill="' + C.gold[1] + '"><circle cx="17" cy="20" r="2.4"/><circle cx="31" cy="20" r="2.4"/></g><path d="M15 28a10 9 0 0 0 18 0" fill="none" stroke="' + C.gold[1] + '" stroke-width="2.6" stroke-linecap="round"/>',
+    rocket: '<path d="M24 4c7 4 11 11 11 20l-4 6H17l-4-6C13 15 17 8 24 4z" fill="' + C.coral[0] + '" stroke="' + C.coral[1] + '" stroke-width="1.7" stroke-linejoin="round"/><circle cx="24" cy="19" r="4" fill="' + K + '"/><path d="M17 30l-5 4 3-9M31 30l5 4-3-9" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.5" stroke-linejoin="round"/><path d="M21 38l3 6 3-6" fill="#FF8A3D"/>',
+    gift: '<rect x="7" y="18" width="34" height="24" rx="3" fill="' + C.coral[0] + '" stroke="' + C.coral[1] + '" stroke-width="1.7"/><rect x="5" y="12" width="38" height="8" rx="2" fill="' + C.red[0] + '" stroke="' + C.red[1] + '" stroke-width="1.7"/><path d="M24 12V42" stroke="' + K + '" stroke-width="3"/><path d="M24 12c-3-9-12-6-9 0M24 12c3-9 12-6 9 0" fill="none" stroke="' + C.gold[0] + '" stroke-width="3"/>',
+    bulb: '<path d="M24 5c8 0 13 6 13 13 0 5-3 8-5 11-1 1.5-1 3-1 4H17c0-1 0-2.5-1-4-2-3-5-6-5-11 0-7 5-13 13-13z" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7"/><path d="M18 41h12M20 45h8" stroke="' + C.gold[1] + '" stroke-width="2.6" stroke-linecap="round"/>',
+    heartfull: '<path d="M24 41C9 31 6 22 6 16.5 6 11 10 7 15 7c3.5 0 6.5 2 9 5 2.5-3 5.5-5 9-5 5 0 9 4 9 9.5C42 22 39 31 24 41z" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7" stroke-linejoin="round"/>'
   };
   GLYPHS.challenge = GLYPHS.quest;
   GLYPHS.mood = GLYPHS.popular;
@@ -127,6 +145,58 @@
 
   function wrap(inner) { return '<svg viewBox="0 0 48 48" class="smi">' + inner + '</svg>'; }
   window.SMIcon = function (name) { return GLYPHS[name] ? wrap(GLYPHS[name]) : ''; };
+
+  // ===== Conversion des emojis-icônes DANS LE TEXTE de l'app → SVG maison (descriptions/labels/titres/toasts) =====
+  // (Top emojis fréquents. Le contenu UTILISATEUR — feed, chat, saisie — est exclu, voir SKIP.)
+  var EMOJI = {
+    '✅': 'check', '📍': 'near', '✨': 'mood', '⭐': 'star', '🎯': 'quest', '🎉': 'party', '🛟': 'shieldsafe',
+    '🌍': 'globe', '🔥': 'flame', '👑': 'crown', '🛡': 'shieldsafe', '🤝': 'handshake', '☕': 'coffee', '💬': 'chat',
+    '🏅': 'medal', '🧭': 'safetravel', '🏆': 'rank', '📌': 'pin', '🎮': 'games', '📞': 'phone', '🎟': 'coupon',
+    '🚫': 'block', '📊': 'stats', '📈': 'chart', '📨': 'mail', '🔎': 'search', '🚨': 'alert', '🏙': 'cityscape',
+    '🌱': 'eco', '🗺': 'map', '👥': 'users', '🧑': 'usersolo', '❤': 'heart', '💛': 'heartfull', '➕': 'plus',
+    '➖': 'minus', '🗓': 'calendar', '✈': 'plane', '🌅': 'sunset', '🌞': 'sun', '🌙': 'moon', '🌴': 'palm',
+    '❄': 'snow', '🪙': 'coin', '🪪': 'idcard', '🗑': 'trash', '📷': 'camera', '📸': 'camera', '🔒': 'lock',
+    '✍': 'write', '🙂': 'smile', '🚀': 'rocket', '🎁': 'gift', '💡': 'bulb', '⏱': 'clock', '🔔': 'bell',
+    '🛍': 'shop', '💼': 'trip', '🗂': 'layers', '🚪': 'door', '⚙': 'settings', '🎤': 'mic'
+  };
+  var RX = null;
+  function buildRx() {
+    var keys = Object.keys(EMOJI).map(function (e) { return e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
+    RX = new RegExp('(?:' + keys.join('|') + ')\\uFE0F?', 'gu');
+  }
+  // Conteneurs à NE PAS toucher (contenu utilisateur, saisie, carte, déjà-converti)
+  var SKIP = 'input,textarea,select,script,style,svg,.smji,.smi,[data-smicon],[contenteditable],' +
+    '.fpost,.fpost-body,.fpost-text,.bubble,.bubble-text,.gchat-msg,.msg-text,.feed-composer,#homeFeed,' +
+    '#feedComments,.fcomment,.leaflet-container,.cm-text';
+  function inSkip(node) {
+    for (var el = node.parentElement; el; el = el.parentElement) {
+      if (el.matches && el.matches(SKIP)) return true;
+    }
+    return false;
+  }
+  window.SMIconText = function (root) {
+    try {
+      if (!RX) buildRx();
+      root = root || document.body; if (!root || !root.querySelectorAll) return;
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      var hits = [], n;
+      while ((n = walker.nextNode())) {
+        if (n.nodeValue && RX.test(n.nodeValue) && !inSkip(n)) hits.push(n);
+        RX.lastIndex = 0;
+      }
+      hits.forEach(function (node) {
+        var s = node.nodeValue, frag = document.createDocumentFragment(), last = 0, m, any = false;
+        RX.lastIndex = 0;
+        while ((m = RX.exec(s))) {
+          var key = EMOJI[m[0].replace('️', '')]; if (!key || !GLYPHS[key]) continue;
+          if (m.index > last) frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+          var span = document.createElement('span'); span.className = 'smji'; span.innerHTML = wrap(GLYPHS[key]);
+          frag.appendChild(span); last = m.index + m[0].length; any = true;
+        }
+        if (any) { if (last < s.length) frag.appendChild(document.createTextNode(s.slice(last))); node.parentNode.replaceChild(frag, node); }
+      });
+    } catch (e) {}
+  };
   window.SMIcon.has = function (name) { return !!GLYPHS[name]; };
   window.SMIconRender = function (root) {
     try {
@@ -141,6 +211,28 @@
       });
     } catch (e) {}
   };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { window.SMIconRender(); });
-  else window.SMIconRender();
+  function runAll() { window.SMIconRender(); window.SMIconText(document.body); }
+  // Observateur : convertit le contenu AJOUTÉ dynamiquement (descriptions, toasts, fiches…).
+  // Debounce + garde anti-boucle (on n'observe que les ajouts, nos <span class="smji"> sont exclus par SKIP).
+  function observe() {
+    if (!window.MutationObserver) return;
+    var pending = [], timer = null;
+    var mo = new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var a = muts[i].addedNodes;
+        for (var j = 0; j < a.length; j++) if (a[j].nodeType === 1) pending.push(a[j]);
+      }
+      if (pending.length && !timer) timer = setTimeout(function () {
+        var batch = pending; pending = []; timer = null;
+        batch.forEach(function (el) {
+          if (!el.isConnected) return;
+          if (el.matches && (el.matches('.smji') || el.matches('[data-smicon]'))) return;
+          window.SMIconRender(el); window.SMIconText(el);
+        });
+      }, 120);
+    });
+    try { mo.observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { runAll(); observe(); });
+  else { runAll(); observe(); }
 })();
