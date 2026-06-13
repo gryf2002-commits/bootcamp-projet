@@ -3960,6 +3960,19 @@
     body.theme-winter.theme-dusk .qm-xp, body.theme-winter.theme-dusk .sc-xp,
     body.theme-winter.theme-dusk .rit-cnt, body.theme-winter.theme-dusk .conv-bff .conv-pin {
       background: rgba(140,196,232,.16) !important; }
+    /* ORS DE NUIT — VAGUE 2 (retour Maxime « des textes ors qui se baladent en nuit d'hiver ») :
+       le 1er passage (v458) n'avait refroidi que les ors GAMEPLAY (XP/streak). Voici les accents dorés
+       restants qui FUYAIENT sur le navy d'hiver (chacun a un body.theme-dusk color:or sans contrepartie
+       hiver) → bleu glacier. GARDÉS dorés VOLONTAIREMENT (branding/convention) : .shop-coins (SunCoins =
+       monnaie), .star-input span.on (étoiles de note), onglet & carte Premium « Gold 👑 » (palier produit). */
+    body.theme-winter.theme-dusk .tip-title, body.theme-winter.theme-dusk .profile-title,
+    body.theme-winter.theme-dusk .xp-banner b, body.theme-winter.theme-dusk .xpl-lvl,
+    body.theme-winter.theme-dusk .xpl-next b, body.theme-winter.theme-dusk .wg-alldone,
+    body.theme-winter.theme-dusk .shop-item.buyable .shop-meta,
+    body.theme-winter.theme-dusk .boost-card .boost-meta,
+    body.theme-winter.theme-dusk .homemap-hint a { color: #BFE2F8 !important; }
+    body.theme-winter.theme-dusk .presence-pill, body.theme-winter.theme-dusk .tcard-vedette {
+      color: #BFE2F8 !important; background: rgba(140,196,232,.16) !important; }
 
     /* ============ CHIFFRES STAT = ACCENT DE SAISON (retour Maxime « chiffres corail ») ============
        Les gros chiffres du profil (.stat) avaient un dégradé CORAIL codé en dur (l.~2541, sans override
@@ -6829,7 +6842,7 @@
       const h = "<div style='text-align:left;font-size:.82rem;line-height:1.55' class='selectable'>"
         + "<p style='margin:.2rem 0'><b>SunMates · Conditions d'utilisation &amp; confidentialité</b><br><span class='muted'>Version bêta · mise à jour : juin 2026</span></p>"
         + "<p style='margin:.5rem 0'><b>1 · L'app.</b> SunMates met en relation des voyageurs solo et propose des outils d'entraide et de sécurité. ⚠️ Ces outils (SOS, cercle, position, minuteur, faux appel) sont des <b>aides</b> : ils ne remplacent jamais les services de secours (112) ni ta vigilance.</p>"
-        + "<p style='margin:.5rem 0'><b>2 · Ton compte.</b> Réservé aux <b>16 ans et plus</b>. Un seul compte par personne, des infos exactes, et tu es responsable de ce qui s'y passe.</p>"
+        + "<p style='margin:.5rem 0'><b>2 · Ton compte.</b> Réservé aux <b>18 ans et plus</b>. Un seul compte par personne, des infos exactes, et tu es responsable de ce qui s'y passe.</p>"
         + "<p style='margin:.5rem 0'><b>3 · Les règles.</b> Respect d'abord : pas de harcèlement, de haine, de contenus illicites, d'usurpation ni de spam. Les signalements sont traités par la modération ; un compte peut être suspendu ou banni en cas d'abus.</p>"
         + "<p style='margin:.5rem 0'><b>4 · Tes contenus.</b> Ils restent à toi. Tu nous autorises seulement à les afficher dans l'app pour faire fonctionner le service. Un contenu signalé peut être retiré.</p>"
         + "<p style='margin:.5rem 0'><b>5 · Tes données (RGPD).</b> Collectées : email, profil (pseudo, ville, photo…), messages, check-ins, et ta position <b>uniquement si tu la partages</b> (effacée sous 24 h). Mesure d'audience anonymisée <b>avec ton consentement</b>. Hébergement : Supabase (Union européenne). Conservation : tant que ton compte existe. Tes droits : <b>exporter tes données</b> et <b>supprimer ton compte</b> directement dans Réglages, ou nous écrire via « Écris-nous » (accès, rectification, opposition).</p>"
@@ -8433,7 +8446,7 @@
           [true, "Données hébergées en UE (Supabase) · positions purgées sous 24 h"],
           [true, "Modération : signalements, auto-blocage, bannissements"],
           [false, "Vérification d'identité RÉELLE · le badge actuel est manuel/déclaratif (prévoir Stripe Identity ou équivalent)"],
-          [false, "Vérification de l'âge (16+ purement déclaratif aujourd'hui)"],
+          [false, "Vérification de l'âge (18+ purement déclaratif aujourd'hui)"],
           [false, "Mentions légales complètes (entité juridique, SIRET, directeur de publication) · dès que la structure existe"],
           [false, "Emails : domaine dédié + SPF/DKIM/DMARC à valider sur le SMTP"],
           [false, "Registre des traitements RGPD (document interne) ± DPO"],
