@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=457"></script>
+  <script src="sunmates-badges.js?v=458"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale · jamais depuis
@@ -3870,6 +3870,12 @@
       background: radial-gradient(130% 80% at 50% -8%, #16352A 0%, #102A20 40%, #0C1D17 100%);
     }
     body.theme-tropic.theme-dusk .topbar { background: linear-gradient(#0C1D17 62%, rgba(12,29,23,0)); border-bottom: 0; }
+    /* Bandeau du haut « VERRE DÉPOLI » (retour Maxime : le rendu semi-transparent laissait voir le texte
+       qui glisse dessous « en fantôme », pas joli). Plus transparent + flou → le contenu dessous est FONDU
+       proprement. Mode-aware via var(--bg). !important pour gagner sur toutes les couches topbar par mode.
+       (La topbar n'est pas un ancêtre de la carte → ce backdrop-filter ne casse PAS le plein écran.) */
+    .topbar { background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 80%, transparent) 0%, color-mix(in srgb, var(--bg) 60%, transparent) 58%, transparent 100%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(1.1); backdrop-filter: blur(14px) saturate(1.1); }
     body.theme-tropic.theme-dusk #bgFx { background:radial-gradient(120% 50% at 50% -8%, rgba(255,194,61,.16) 0%, rgba(12,29,23,0) 58%), var(--bg); }
     body.theme-tropic.theme-dusk .app-shell { background: transparent !important; }
     body.theme-tropic.theme-dusk .help-cta { background: var(--dcard2); border-color: rgba(92,216,168,.16); color:#E9F7EF; }
@@ -3923,6 +3929,21 @@
       box-shadow: 0 8px 18px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.3) !important; }
     /* En-têtes de cartes de jeu (couleurs codées en dur, hors mix saison) : refroidies/assombries en nuit de saison */
     body.theme-winter.theme-dusk .gcard .ghead, body.theme-tropic.theme-dusk .gcard .ghead { filter: saturate(.72) brightness(.82); }
+
+    /* ============ ORS DE NUIT (retour Maxime) ============
+       En nuit d'HIVER (navy), les accents OR/ambre (streak, XP, stats, pins) restaient gold = hors thème.
+       On les passe en BLEU GLACIER. La nuit JUNGLE garde l'or : c'est SA couleur d'accent (--accent-3 #FFC23D). */
+    body.theme-winter.theme-dusk .streak-chip, body.theme-winter.theme-dusk .sp-streak {
+      color: #BFE2F8 !important; background: linear-gradient(135deg, rgba(95,168,232,.20), rgba(140,196,242,.12)) !important; border-color: rgba(140,196,242,.32) !important; }
+    body.theme-winter.theme-dusk .pc-stat .pc-n, body.theme-winter.theme-dusk .conv-bff .conv-pin,
+    body.theme-winter.theme-dusk .qm-xp, body.theme-winter.theme-dusk .sp-stat b, body.theme-winter.theme-dusk .sp-next-lbl,
+    body.theme-winter.theme-dusk .sc-xp, body.theme-winter.theme-dusk .rit-cnt,
+    body.theme-winter.theme-dusk .qs-xp, body.theme-winter.theme-dusk .qs-badge,
+    body.theme-winter.theme-dusk .player-badge.player-hud .hud-lvl {
+      color: #BFE2F8 !important; }
+    body.theme-winter.theme-dusk .qm-xp, body.theme-winter.theme-dusk .sc-xp,
+    body.theme-winter.theme-dusk .rit-cnt, body.theme-winter.theme-dusk .conv-bff .conv-pin {
+      background: rgba(140,196,232,.16) !important; }
 
     /* ============ #8 TRANSITION DE SAISON : voile doux + pluie de flocons/feuilles ============ */
     #seasonFx { position: fixed; inset: 0; z-index: var(--z-fx); pointer-events: none; overflow: hidden; opacity: 1; transition: opacity .55s ease; }
