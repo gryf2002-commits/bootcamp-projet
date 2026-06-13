@@ -81,7 +81,7 @@
   <link rel="preconnect" href="https://b.tile.openstreetmap.org" />
   <link rel="preconnect" href="https://c.tile.openstreetmap.org" />
   <!-- Identité SunMates : Fraunces (titres éditoriaux) + Manrope (interface) -->
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- PWA : app installable sur le téléphone -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#fbeee9" />
@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=448"></script>
+  <script src="sunmates-badges.js?v=449"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
@@ -1023,7 +1023,7 @@
     .tile-soon { opacity: .62; cursor: default; pointer-events: none; filter: grayscale(.35); }
     .qrow-soon { opacity: .6; pointer-events: none; filter: grayscale(.3); }
     .tile-soon .thumb.gold-soon { background: linear-gradient(135deg,#c9a24a,#8a7029); box-shadow: none; }
-    .soon-badge { display: inline-block; font-size: .58rem; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; background: var(--accent-grad); color: #fff; padding: .08rem .4rem; border-radius: 999px; vertical-align: middle; margin-left: .25rem; }
+    .soon-badge { display: inline-block; font-size: .68rem; font-weight: 800; /* Lot D : MAJUSCULES 9px → ~11px (plancher lisibilité) */ letter-spacing: .03em; text-transform: uppercase; background: var(--accent-grad); color: #fff; padding: .08rem .4rem; border-radius: 999px; vertical-align: middle; margin-left: .25rem; }
     /* Listing « Ma collection » (quêtes par ville) */
     .coll-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .7rem; }
     .coll-stat { background: var(--accent-soft); border-radius: 14px; padding: .6rem; text-align: center; }
@@ -1424,7 +1424,7 @@
     /* Emoji des jeux jouables : en COIN (bas-gauche) comme les autres, plus « au milieu » qui flottait. */
     .gcard.gcard-play .gemoji { font-size: 42px; }
     /* Libellé de type (Mini-jeu / Quête) pour bien distinguer (item 23). */
-    .gcard .gtype { position: absolute; top: .5rem; left: .5rem; font-size: .64rem; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; padding: .14rem .45rem; border-radius: 999px; z-index: 2; background: rgba(255,255,255,.92); color: #5a3b12; }
+    .gcard .gtype { position: absolute; top: .5rem; left: .5rem; font-size: .68rem; font-weight: 800; /* Lot D : MAJUSCULES ~10px → ~11px */ letter-spacing: .02em; text-transform: uppercase; padding: .14rem .45rem; border-radius: 999px; z-index: 2; background: rgba(255,255,255,.92); color: #5a3b12; }
     .gcard .gtype.gt-quest { background: rgba(20,16,30,.55); color: #fff; backdrop-filter: blur(2px); }
     /* Bingo */
     .bingo-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .4rem; }
@@ -1477,7 +1477,7 @@
     .gcard .gdesc { color: var(--muted); font-size: .75rem; margin-top: .2rem; line-height: 1.3; }
     /* Refonte cartes Jeux populaires : tag + pastille d'action DANS le corps (fini les chips
        qui se chevauchaient/débordaient sur le header). Tons DA (corail/doré), pas de flou. */
-    .gcard .gtag { display: inline-block; font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; padding: .15rem .5rem; border-radius: 999px; }
+    .gcard .gtag { display: inline-block; font-size: .68rem; font-weight: 800; text-transform: uppercase; /* Lot D : MAJUSCULES ~10px → ~11px */ letter-spacing: .02em; padding: .15rem .5rem; border-radius: 999px; }
     .gcard .gtag-mini { background: rgba(0,0,0,.06); color: var(--muted); }
     .gcard .gtag-quest { background: var(--accent-soft); color: var(--accent); }
     .gcard .gtag-done { background: rgba(255,177,60,.24); color: #6b4a00; }
@@ -2319,7 +2319,7 @@
       min-width: 64px; padding: .45rem .4rem; border-radius: 14px; background: var(--accent-soft, rgba(255,170,90,.16)); line-height: 1; }
     .tcard-compat span { font-size: .85rem; }
     .tcard-compat b { font-size: 1.05rem; font-weight: 800; color: var(--accent); margin-top: .15rem; }
-    .tcard-compat small { font-size: .58rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: .12rem; }
+    .tcard-compat small { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: .12rem; } /* Lot D : MAJUSCULES 9px → ~11px */
     .tcard-compat.high { background: linear-gradient(135deg, rgba(255,90,77,.2), rgba(255,138,61,.16)); }
     .tcard-compat.low { background: var(--cream); }
     .tcard-compat.low b { color: var(--muted); }

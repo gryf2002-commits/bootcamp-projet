@@ -1,10 +1,10 @@
 {
-  "candidate": "v448",
+  "candidate": "v449",
   "items": [
-    "🔍 Suite de l'audit design Impeccable — LOT C (ombres + z-index). Nettoyage interne, rien de visible ne bouge à part les 3 ombres ci-dessous.",
-    "🩹 Les 3 dernières ombres rougeâtres encore actives passent au GRIS CHAUD neutre (doctrine DA) : le halo de survol des boutons principaux, l'ombre du bouton d'urgence/danger (le bouton reste rouge par son fond, c'est juste son ombre qui ne « bave » plus en rouge), et l'ombre de survol des blocs d'action sécurité.",
-    "🎯 L'anneau de focus (contour au clic dans un champ) plafonné à l'opacité .16 de la doctrine (au lieu de .18).",
-    "🧱 Z-index : les quelques valeurs « en dur » (minuteur sécurité, chat de groupe, effets météo, eggs, ruban) sont désormais nommées dans l'échelle --z-* — MÊMES valeurs, aucun changement d'ordre d'affichage, juste plus propre et maintenable.",
-    "ℹ️ Restent les lots D→G (typo, cibles tactiles, états vides, tirets) — un par un, toujours en préversion d'abord."
+    "🔍 Suite de l'audit design Impeccable — LOT D (typographie). Choix acté : tes titres gardent leur graisse FINE éditoriale (inchangés).",
+    "🅰️ La graisse 800 de Fraunces (police des titres) n'était pas chargée : les ~7 éléments d'emphase qui la demandent (gros chiffres de stats, titres de panneaux, nom de lieu en grand) tombaient sur du faux-gras synthétique, irrégulier selon le navigateur. Le vrai 800 est maintenant chargé → ces chiffres/titres d'emphase sont nets et homogènes. Tes titres de page (h1–h3) ne bougent pas.",
+    "🔠 Petites MAJUSCULES remontées au plancher de lisibilité (~11px au lieu de ~9px) : badge « bientôt », sous-libellé de compatibilité, étiquettes de type de jeu sur les cartes.",
+    "🧰 Volontairement laissés pour plus tard (churn interne sans effet visible) : l'harmonisation de l'échelle de tailles et la mise en jetons des ~200 arrondis codés en dur.",
+    "ℹ️ Restent les lots E (zones tactiles), F (écrans vides), G (tirets) — un par un, toujours en préversion d'abord."
   ]
 }
