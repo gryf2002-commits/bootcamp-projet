@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=461"></script>
+  <script src="sunmates-badges.js?v=462"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale · jamais depuis
@@ -286,7 +286,7 @@
     .topbar {
       display: flex; align-items: center; justify-content: space-between; gap: .75rem;
       /* safe-area-inset-top : laisse la place de l'encoche / status bar (iPhone) sans chevauchement */
-      padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem .75rem; position: sticky; top: 0; z-index: var(--z-header);
+      padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem 1.05rem; position: sticky; top: 0; z-index: var(--z-header);
       /* P3 (retour Maxime) : la TRANSPARENCE revient, mais propre · opaque sur 62 % (la status
          bar et le titre restent couverts → icônes natives du téléphone toujours lisibles), puis
          fondu DOUX vers transparent. Ce qui gênait avant : le dégradé partait de 86 % d'opacité
@@ -3889,7 +3889,13 @@
        proprement. Mode-aware via var(--bg). !important pour gagner sur toutes les couches topbar par mode.
        (La topbar n'est pas un ancêtre de la carte → ce backdrop-filter ne casse PAS le plein écran.) */
     .topbar { background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 80%, transparent) 0%, color-mix(in srgb, var(--bg) 60%, transparent) 58%, transparent 100%) !important;
-      -webkit-backdrop-filter: blur(14px) saturate(1.1); backdrop-filter: blur(14px) saturate(1.1); }
+      -webkit-backdrop-filter: blur(14px) saturate(1.1); backdrop-filter: blur(14px) saturate(1.1);
+      /* Bug Maxime « le flou translucide du header est trop marqué d'une démarcation » : le backdrop-filter
+         a un BORD NET en bas (le flou s'arrête d'un coup = la ligne visible). On ESTOMPE ce bord avec un
+         masque dégradé → le flou ET le fond fondent en douceur sur les ~22px du bas (zone de padding, sous
+         les boutons → aucun rognage). Supprime aussi la « barre » qui ressautait aux switch jour/nuit. */
+      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%);
+      mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%); }
     /* Bug Maxime « coupure / barre sombre sous la status-bar en NUIT » : le verre dépoli (ci-dessus, 80% au sommet)
        laissait le halo violet TRANSPARAÎTRE sous la status-bar (elle = --bg PLEIN/sombre) → marche visible. En nuit,
        on rend le SOMMET du topbar OPAQUE (var(--bg) plein à 0%) = même couleur EXACTE que la status-bar → fondu invisible ;
@@ -19266,12 +19272,35 @@
       } catch (e) {}
     })();
 
-    // Bandeau d'état réseau : prévient quand on est hors-ligne (Supabase devient injoignable).
+    // Bandeau d'état réseau : prévient quand on est VRAIMENT hors-ligne (Supabase injoignable).
+    // ⚠️ Bug iOS (retour Maxime « le bandeau hors-ligne reste affiché non stop sur iOS ») :
+    // navigator.onLine est NOTOIREMENT faux sur Safari/PWA iOS — il renvoie souvent false à tort et
+    // l'event "online" ne re-déclenche pas → bandeau coincé. Parade : navigator.onLine=true est fiable
+    // (= en ligne), mais navigator.onLine=false est VÉRIFIÉ par un vrai ping réseau avant d'afficher.
+    // Le ping vise Supabase (origine NON mise en cache par le SW : il ne garde que /storage/) → vrai test.
     (function netStatus() {
       const b = $("netBanner"); if (!b) return;
-      const update = () => b.classList.toggle("show", !navigator.onLine);
+      let checking = false;
+      async function reallyOffline() {
+        if (navigator.onLine) return false; // fiable dans ce sens : on est en ligne
+        try {
+          const ctrl = new AbortController();
+          const t = setTimeout(() => ctrl.abort(), 3500);
+          // no-cors : on ne lit pas la réponse, on teste juste que le réseau répond (résout = en ligne).
+          await fetch("https://ihiwuharxkmkzaxixhae.supabase.co/auth/v1/health?_=" + Date.now(),
+            { mode: "no-cors", cache: "no-store", signal: ctrl.signal });
+          clearTimeout(t);
+          return false; // le réseau a répondu → faux négatif iOS, on est en ligne
+        } catch (e) { return true; } // ping échoué → vraiment hors-ligne
+      }
+      async function update() {
+        if (checking) return; checking = true;
+        try { b.classList.toggle("show", await reallyOffline()); } finally { checking = false; }
+      }
       window.addEventListener("online", update);
       window.addEventListener("offline", update);
+      // iOS ne fire pas "online" de façon fiable → on re-vérifie au retour au premier plan.
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) update(); });
       update();
     })();
 

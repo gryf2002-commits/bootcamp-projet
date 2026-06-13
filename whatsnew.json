@@ -1,7 +1,8 @@
 {
-  "candidate": "v461",
+  "candidate": "v462",
   "items": [
-    "🔢 Premium · chiffres alignés : les compteurs qui changent (stats, badges de notif, XP, série de jours, prix, niveaux) utilisent maintenant des chiffres « tabulaires » → ils ne « sautent » plus en largeur quand le nombre change. Détail discret mais qui fait pro.",
-    "ℹ️ Passe premium : les fondations (focus clavier, mouvement réduit, retours au toucher, jetons de style par mode) étaient déjà solides. Le gros « nettoyage » d'échelle typo/arrondis est du code invisible à l'écran → à voir avec toi si ça vaut le coup."
+    "🪟 Header en verre dépoli : le bas du bandeau avait un bord de flou trop net (une « démarcation »). Il est maintenant ESTOMPÉ en douceur → fondu propre, et la « barre » qui ressautait parfois aux bascules jour/nuit disparaît.",
+    "📡 Bandeau « hors-ligne » sur iOS : il restait affiché en permanence à tort (iOS ment souvent sur l'état réseau). Désormais on VÉRIFIE par un vrai test réseau avant de l'afficher, et on re-vérifie au retour dans l'app → fini le bandeau coincé.",
+    "🌦️ Météo : repérée (sous la carte d'accueil) — réorganisation à caler avec toi."
   ]
 }
