@@ -54,8 +54,8 @@
   // couleurs DA (fill / contour assorti)
   var C = {
     coral: ['#FF6E5A', '#D8402F'], red: ['#FF5A4D', '#C9281F'], pink: ['#FF8FA8', '#E84D78'],
-    rose: ['#F76FA0', '#D63A78'], violet: ['#9B7BFF', '#6638D6'], teal: ['#16C0A4', '#0E8C7A'],
-    green: ['#2BC48A', '#138A63'], gold: ['#FFC24B', '#D9881A'], amber: ['#F0A23A', '#C26A1E'],
+    rose: ['#F76FA0', '#D63A78'], violet: ['#9B7BFF', '#6638D6'], teal: ['#17B39A', '#0C8270'],
+    green: ['#1FA77F', '#0E7456'], gold: ['#FFC24B', '#D9881A'], amber: ['#F0A23A', '#C26A1E'],
     blue: ['#5E74E8', '#3641B8']
   };
   function G(shapeKey, colKey, detail) { var c = C[colKey]; return ic(SH[shapeKey], c[0], c[1], detail || ''); }
