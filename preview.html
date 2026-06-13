@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=452"></script>
+  <script src="sunmates-badges.js?v=453"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
@@ -292,7 +292,7 @@
          fondu DOUX vers transparent. Ce qui gênait avant : le dégradé partait de 86 % d'opacité
          (jamais plein) + une bordure de fin visible (« la barre noire ») → 100 % opaque en haut,
          AUCUNE bordure. */
-      background: linear-gradient(var(--bg) 62%, rgba(251,238,233,0));
+      background: linear-gradient(var(--bg) 62%, rgba(255,244,230,0));
     }
     /* min-width:0 : le wordmark peut rétrécir au lieu de pousser les actions ; padding-right : espace constant avec le bouton thème */
     .brand { display: flex; align-items: center; gap: .5rem; min-width: 0; padding-right: .25rem; font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: .5px; }
@@ -1124,6 +1124,11 @@
     body.theme-dusk .hm-coop-hint { background: var(--dcard, #2a2140); color: #f3e9f3; border-color: rgba(255,255,255,.16); }
     /* P4 : carte RÉVEILLÉE (tap) = liseré corail discret, pour voir qu'elle est « en main » */
     .homemap.hm-live::after { content: ""; position: absolute; inset: 0; border: 2px solid var(--accent); border-radius: 14px; pointer-events: none; opacity: .5; z-index: 899; }
+    /* Bug Maxime « switch Voyage ↔ Maison trop brutal » : le panneau qui APPARAÎT fait un fondu doux
+       (montée + opacité) au lieu de surgir d'un coup. Le mouvement réduit est déjà neutralisé par la
+       ceinture prefers-reduced-motion globale. */
+    @keyframes hmModeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    #homeHomeMode, #homeTravelMap { animation: hmModeIn .28s ease both; }
     /* P2.10 : ruban préversion / version archivée */
     #smPreviewRibbon { position: fixed; top: calc(.4rem + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: var(--z-ribbon);
       background: #6638D6; color: #fff; font: 800 .66rem/1 Manrope, system-ui, sans-serif; letter-spacing: .06em;
@@ -1162,6 +1167,10 @@
     #homeMapFilters .chip { padding: .34rem .62rem; font-size: .76rem; flex: 0 0 auto; }
     /* (bouton plein écran : on garde l'accent-grad PLEIN même en sombre → plus de translucide) */
     .homemap-card.fs .homemap-fsopen { display: none; }
+    /* Bug Maxime : en plein écran la carte est déjà « en main » (drag actif) → le badge « touche la
+       carte pour l'explorer » n'a plus de sens ET passait SOUS le bouton Fermer (z 1600 > 1000). On le
+       masque en plein écran ; il revient quand la mini-carte se rendort en sortant. */
+    .homemap-card.fs .hm-coop-hint { display: none !important; }
     /* Plein écran : TOUTE la carte (filtres + carte + légende) passe en plein écran */
     .homemap-fsclose { display: none; }
     .homemap-card.fs { position: fixed; inset: 0; z-index: var(--z-map-fs); margin: 0; border-radius: 0; padding: .55rem;
@@ -2937,7 +2946,7 @@
     /* --- Marque / en-tête --- */
     .brand b { font-weight: 600; letter-spacing: .015em; font-size: 1.2rem; }
     .brand .mark { background: var(--accent-grad); border-radius: 11px; box-shadow: var(--shadow-sm); }
-    .topbar { background: linear-gradient(var(--bg) 62%, rgba(251,238,233,0)); border-bottom: 0; }
+    .topbar { background: linear-gradient(var(--bg) 62%, rgba(255,244,230,0)); border-bottom: 0; }
 
     /* --- Cartes : épurées, bord fin, ombre douce --- */
     .card { background: var(--card) !important; border: 1px solid var(--line) !important; border-radius: var(--radius);
@@ -3035,7 +3044,7 @@
     body.theme-dusk #bgFx { background: radial-gradient(125% 50% at 50% -8%, rgba(122,92,255,.18) 0%, rgba(122,92,255,.05) 40%, rgba(0,0,0,0) 66%), var(--bg); }
 
     h1, h2, h3 { color: var(--ink); }
-    .topbar { background: linear-gradient(var(--bg) 62%, rgba(251,238,233,0)); border-bottom: 0; }
+    .topbar { background: linear-gradient(var(--bg) 62%, rgba(255,244,230,0)); border-bottom: 0; }
     .brand .mark { background: var(--accent-grad); box-shadow: 0 6px 16px rgba(45,38,52,.16); }
     .section-head a { color: var(--retro-teal); }
 

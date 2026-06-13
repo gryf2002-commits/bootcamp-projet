@@ -1,9 +1,9 @@
 {
-  "candidate": "v452",
+  "candidate": "v453",
   "items": [
-    "🔙 Bouton RETOUR du téléphone repensé (ton audit) : il ramène maintenant à l'ÉTAPE PRÉCÉDENTE, plus directement à l'Accueil. Avant, depuis un sous-écran (fiche d'un Mate, chat, détail d'une quête, badges, boutique, « Besoin d'aide », Réglages…), un retour sautait tout l'historique et filait à l'Accueil.",
-    "🪜 Désormais le retour DÉROULE pas à pas : fiche/chat d'un Mate → liste des Mates → Accueil ; détail quête/badges/boutique → accueil Jeux → Accueil ; « Besoin d'aide » → Sécurité → Accueil ; Réglages → Profil → Accueil. (Les fiches de lieu et fenêtres restent fermées en premier, comme avant.)",
-    "🔝 Rappel : le grain de couleur / la séparation en haut a été corrigé en v451 (la barre d'état suit le fond du mode). Si tu le revois en v452 sur ton téléphone, dis-moi exactement OÙ (barre d'état tout en haut, ou une ligne plus bas) — je cible.",
-    "ℹ️ Le lot F de l'audit (écrans vides) reste en attente, je le ferai juste après."
+    "🔝 Séparation/bande de couleur en haut (mode jour) : le fondu de la barre du haut se terminait sur une teinte rosée (#fbeee9) différente du fond crème (#FFF4E6) → léger liseré. Le fondu se fait maintenant vers la VRAIE couleur du fond → plus de bande. (Nuit/hiver/tropiques étaient déjà corrects.)",
+    "🗺️ Plein écran carte : le badge « 🖐️ Touche la carte pour l'explorer » passait SOUS le bouton « Fermer » — il est maintenant masqué en plein écran (inutile puisque la carte est déjà explorable), et revient en mini-carte à la sortie.",
+    "🎚️ Bascule « En voyage ↔ Maison » plus douce : le panneau qui apparaît fait un petit fondu montant au lieu de surgir d'un coup.",
+    "ℹ️ Le lot F de l'audit (écrans vides) reste en attente, juste après."
   ]
 }
