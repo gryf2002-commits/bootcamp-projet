@@ -125,8 +125,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=444"></script>
-  <script src="sunmates-icons.js?v=444"></script>
+  <script src="sunmates-badges.js?v=445"></script>
+  <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
     // la préversion (preview.html) ni une version archivée (releases/…) : elles se testent
@@ -5367,8 +5367,8 @@
             </div>
             <div class="card">
               <h3 style="margin-top:0">📤 Exporter le kit DA</h3>
-              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Copie TOUT (les 4 modes + dégradés + typos) en JSON — parfait pour briefer un outil de design (Stitch, Figma…) ou un autre assistant sans rien oublier.</p>
-              <button class="btn-primary btn-block" id="daExport">📋 Copier le kit DA complet</button>
+              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Télécharge TOUT (les 6 modes + dégradés + composants + typos) en un fichier JSON — parfait pour briefer un outil de design (Stitch, Figma…) ou un autre assistant sans rien oublier.</p>
+              <button class="btn-primary btn-block" id="daExport">💾 Télécharger le kit DA (JSON)</button>
             </div>
           </div>
 
@@ -8241,7 +8241,16 @@
             DA_GRADS.forEach(([src, label]) => kit.modes[m].degrades[label] = _daGradVal(src, m));
             _daReadComponents(m).forEach((c) => kit.modes[m].composants[c.label] = { classe: "." + c.cls.replace(" ", "."), fond: c.bg, texte: c.color, bordure: c.border });
           });
-          _daCopy(JSON.stringify(kit, null, 2));
+          // P15 (demande Maxime) : TÉLÉCHARGEMENT d'un fichier .json (au lieu de la copie presse-papier)
+          try {
+            const blob = new Blob([JSON.stringify(kit, null, 2)], { type: "application/json" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "sunmates-kit-da-" + (kit.version || "vX") + ".json";
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+            toast("💾", "Kit DA téléchargé : " + a.download);
+          } catch (e) { _daCopy(JSON.stringify(kit, null, 2)); } // repli : copie presse-papier
         });
       }
     }
