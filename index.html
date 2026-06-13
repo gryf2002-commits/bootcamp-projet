@@ -84,7 +84,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- PWA : app installable sur le téléphone -->
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#fbeee9" />
+  <meta name="theme-color" content="#FFF4E6" />
   <script>
     // P8 : couleur de la status bar ALIGNÉE dès le 1er rendu — avant, elle restait crème ~1 s
     // au lancement en mode nuit/saison (la « vieille barre » qui jurait sous l'heure du téléphone).
@@ -92,7 +92,7 @@
       var t = localStorage.getItem("sm_theme"), h = new Date().getHours();
       var dusk = t ? t === "dusk" : (h >= 19 || h < 7);
       var s = localStorage.getItem("sm_season") || "";
-      var c = s === "winter" ? (dusk ? "#0F1B2B" : "#EAF3FB") : (s === "tropic" ? (dusk ? "#0C1D17" : "#F7F9EC") : (dusk ? "#171026" : "#fbeee9"));
+      var c = s === "winter" ? (dusk ? "#0F1B2B" : "#EAF3FB") : (s === "tropic" ? (dusk ? "#0C1D17" : "#F7F9EC") : (dusk ? "#190E2E" : "#FFF4E6")); /* Bug haut d'écran : status-bar = VRAI fond du mode (avant #fbeee9/#171026 juraient avec le contenu #FFF4E6/#190E2E) */
       var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", c);
     } catch (e) {} })();
   </script>
@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=450"></script>
+  <script src="sunmates-badges.js?v=451"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
@@ -242,7 +242,7 @@
        Et le calque body::before (bande unie sur la zone status bar) est SUPPRIMÉ : c'est LUI qui
        créait la coupure nette au-dessus du fondu du header — le header peint déjà cette zone. */
     html { background: #fbeee9; }
-    html:has(body.theme-dusk) { background: #171026; }
+    html:has(body.theme-dusk) { background: #190E2E; } /* Bug haut/overscroll : aligné sur le VRAI --bg nuit (#190E2E), avant #171026 = liseré au rebond */
     html:has(body.theme-winter) { background: #EAF3FB; }
     html:has(body.theme-tropic) { background: #F7F9EC; }
     html:has(body.theme-winter.theme-dusk) { background: #0F1B2B; }
@@ -3279,8 +3279,8 @@
     /* Contextes flex (le select était enfant flex direct) : le wrapper reprend le flex. */
     .city-pick .sm-sel, #advFilters .sm-sel { flex: 1 1 auto; min-width: 0; }
     /* « Choisir une ville » au-dessus de la carte : pilule DA soignée (retour Maxime « bof ») */
-    .city-pick .sm-sel-trigger { border-radius: 999px; font-weight: 800; padding: .45rem .75rem;
-      background: linear-gradient(180deg, var(--cream), var(--card)); border: 1px solid rgba(232,150,31,.32); box-shadow: var(--shadow-sm); }
+    .city-pick .sm-sel-trigger { border-radius: 999px; font-weight: 700; padding: .4rem .7rem; font-size: .82rem;
+      background: linear-gradient(180deg, var(--cream), var(--card)); border: 1px solid rgba(232,150,31,.28); box-shadow: none; } /* Bug « tuile trop balèze » : allégé (700, sans ombre, plus compact) */
     .city-pick .sm-sel-trigger .sm-sel-val::before { content: "📍 "; }
     .city-pick .sm-sel-trigger .sm-sel-chev { color: var(--accent); }
     body.theme-dusk .city-pick .sm-sel-trigger { background: var(--dcard, #2a2140); border-color: rgba(255,209,92,.22); }
@@ -12688,6 +12688,11 @@
       // Ferme l'overlay ouvert le plus pertinent : bouton de fermeture s'il existe (la voie
       // « propre » de chaque composant), sinon bascule de classe (celle que sync() observe).
       const closeTop = () => {
+        // Bug retour carte : le plein écran carte est une CLASSE CSS (.homemap-card.fs), pas un overlay
+        // enregistré → le retour Android ne le fermait pas (il changeait d'onglet sous la carte). On
+        // l'intercepte EN PREMIER : un retour = quitter le plein écran de la carte.
+        const fsMap = document.querySelector(".homemap-card.fs");
+        if (fsMap) { try { if (typeof toggleHomeFull === "function") toggleHomeFull(false); else fsMap.classList.remove("fs"); } catch (e) {} return true; }
         const open = (window._smOvCands ? window._smOvCands() : []).filter((el) => window._smOvIsOpen && window._smOvIsOpen(el));
         if (!open.length) return false;
         const el = open[open.length - 1];
@@ -13369,9 +13374,10 @@
       const sig = cities.join("|");
       if (sig === _questCitiesSig) return; // pas de changement → on garde le menu (et la sélection)
       _questCitiesSig = sig;
-      // Retour Maxime : PLUS d'option « toutes les villes » SÉLECTIONNABLE (le bouton 🌍 Tout voir
-      // s'occupe du dézoom) → simple libellé d'invite (disabled), le menu ne sert qu'à choisir une ville.
-      sel.innerHTML = '<option value="" disabled hidden>Choisir une ville…</option>' + cities.map((c) => '<option value="' + escapeHtml(c) + '">' + escapeHtml(c.replace(/, France$/, "")) + "</option>").join("");
+      // Retour Maxime (rétabli) : « Toutes les villes » REDEVIENT une option sélectionnable en tête
+      // → on peut DÉSÉLECTIONNER une ville pour tout réafficher (value="" → le handler dézoome sur toute
+      // la carte). Le placeholder disabled précédent enfermait l'utilisateur sur une ville sans retour.
+      sel.innerHTML = '<option value="">Toutes les villes</option>' + cities.map((c) => '<option value="' + escapeHtml(c) + '">' + escapeHtml(c.replace(/, France$/, "")) + "</option>").join("");
       sel.value = (_questCity && cities.some((c) => _sameCity(c, _questCity))) ? (cities.find((c) => _sameCity(c, _questCity)) || "") : "";
     }
     { const cs = $("questCitySelect"); if (cs) cs.addEventListener("change", () => {
@@ -16996,6 +17002,14 @@
     }
     function unsubscribeSuggestions() { if (suggChannel) { db.removeChannel(suggChannel); suggChannel = null; } }
 
+    // Bug haut d'écran : la status-bar (theme-color) DOIT suivre le VRAI fond du mode courant —
+    // sinon, après un toggle jour/nuit en hiver/tropiques, applyTheme remettait une couleur générique
+    // qui jurait avec le contenu (« séparation nette / grain de couleur en haut »). On lit le --bg
+    // calculé du body APRÈS bascule des classes → correct dans les 6 modes, sans rien coder en dur.
+    function _smSyncStatusColor() {
+      try { var bg = getComputedStyle(document.body).getPropertyValue("--bg").trim();
+        var m = document.querySelector('meta[name="theme-color"]'); if (m && bg) m.setAttribute("content", bg); } catch (e) {}
+    }
     // ---- Thème : jour (aube) ↔ nuit (crépuscule plage) ----
     function applyTheme(t) {
       const dusk = t === "dusk";
@@ -17004,7 +17018,7 @@
         ? '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><circle cx="12" cy="12" r="5" fill="#ffd15c"/><g stroke="#FF8A3D" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></g></svg>'
         : '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><path d="M20 14.6A8 8 0 1 1 11 4.2a6.5 6.5 0 0 0 9 10.4z" fill="#ffd15c"/></svg>'; // #19 : point orange retiré (il intriguait plus qu'il ne décorait)
       const st = $("setThemeToggle"); if (st) st.checked = dusk; // garde le toggle des Réglages synchro
-      const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", dusk ? "#171026" : "#fbeee9");
+      _smSyncStatusColor(); // status-bar = vrai fond du mode (gère jour/nuit ET saison)
       if (typeof smRefreshMapTheme === "function") smRefreshMapTheme(); // la carte suit le thème
     }
     // Thème AUTO au coucher du soleil (clin d'œil DA) : si l'utilisateur n'a jamais choisi
@@ -17065,10 +17079,7 @@
       applyTheme(localStorage.getItem("sm_theme") || (document.body.classList.contains("theme-dusk") ? "dusk" : "day"));
       try { if (s) localStorage.setItem("sm_season", s); else localStorage.removeItem("sm_season"); if (manual) localStorage.setItem("sm_season_lock", "1"); } catch (e) {}
       _seasonIcon(s);
-      const meta = document.querySelector('meta[name="theme-color"]'); if (meta && s) {
-        const dusk = document.body.classList.contains("theme-dusk");
-        meta.setAttribute("content", s === "winter" ? (dusk ? "#0F1B2B" : "#EAF3FB") : (dusk ? "#0C1D17" : "#F7F9EC"));
-      }
+      _smSyncStatusColor(); // status-bar = vrai fond du mode courant (saison comprise, y compris retour au défaut)
       if (typeof smRefreshMapTheme === "function") smRefreshMapTheme(); // la carte suit la saison
     }
     let _seasonLpFired = false;
