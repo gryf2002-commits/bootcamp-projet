@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=454"></script>
+  <script src="sunmates-badges.js?v=455"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
@@ -3903,6 +3903,21 @@
     body.theme-tropic.theme-dusk .cic, body.theme-tropic.theme-dusk .qm-ic, body.theme-tropic.theme-dusk .sc-ic, body.theme-tropic.theme-dusk .hex, body.theme-tropic.theme-dusk .jo-ic, body.theme-tropic.theme-dusk .smgem, body.theme-tropic.theme-dusk .thumb {
       --ic1: color-mix(in oklab, var(--c1, #FF8A3D) 88%, #26573F);
       --ic2: color-mix(in oklab, var(--c2, #FF5A4D) 90%, #143427); }
+
+    /* Retour Maxime : en NUIT de saison, les familles CHAUDES (corail/rouge/or/lime/rose) restaient
+       trop VIVES (hors thème navy/jungle) et gardaient un HALO chaud. On les refroidit nettement plus
+       vers la teinte de saison (les familles froides — vert/bleu/violet — ne bougent pas, déjà OK). */
+    body.theme-winter.theme-dusk .thumb.coral, body.theme-winter.theme-dusk .thumb.red, body.theme-winter.theme-dusk .thumb.gold, body.theme-winter.theme-dusk .thumb.lime, body.theme-winter.theme-dusk .thumb.rose,
+    body.theme-winter.theme-dusk .cic.c-gold, body.theme-winter.theme-dusk .cic.c-pink, body.theme-winter.theme-dusk .hex {
+      --ic1: color-mix(in oklab, var(--c1) 56%, #2E4A74) !important; --ic2: color-mix(in oklab, var(--c2) 58%, #16314E) !important; }
+    body.theme-tropic.theme-dusk .thumb.coral, body.theme-tropic.theme-dusk .thumb.red, body.theme-tropic.theme-dusk .thumb.gold, body.theme-tropic.theme-dusk .thumb.lime, body.theme-tropic.theme-dusk .thumb.rose,
+    body.theme-tropic.theme-dusk .cic.c-gold, body.theme-tropic.theme-dusk .cic.c-pink, body.theme-tropic.theme-dusk .hex {
+      --ic1: color-mix(in oklab, var(--c1) 56%, #245A45) !important; --ic2: color-mix(in oklab, var(--c2) 58%, #143427) !important; }
+    /* Halo NEUTRE (plus de couleur chaude) sur toutes les tuiles en nuit de saison */
+    body.theme-winter.theme-dusk .thumb[class], body.theme-tropic.theme-dusk .thumb[class] {
+      box-shadow: 0 8px 18px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.3) !important; }
+    /* En-têtes de cartes de jeu (couleurs codées en dur, hors mix saison) : refroidies/assombries en nuit de saison */
+    body.theme-winter.theme-dusk .gcard .ghead, body.theme-tropic.theme-dusk .gcard .ghead { filter: saturate(.72) brightness(.82); }
 
     /* ============ #8 TRANSITION DE SAISON : voile doux + pluie de flocons/feuilles ============ */
     #seasonFx { position: fixed; inset: 0; z-index: var(--z-fx); pointer-events: none; overflow: hidden; opacity: 1; transition: opacity .55s ease; }

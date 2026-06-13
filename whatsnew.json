@@ -1,9 +1,9 @@
 {
-  "candidate": "v454",
+  "candidate": "v455",
   "items": [
-    "🛠️ CORRECTIF IMPORTANT : la carte ne passait plus en plein écran + une barre/séparation apparaissait en haut (tous modes). Cause : l'animation du switch Voyage/Maison ajoutée juste avant appliquait un léger déplacement sur le conteneur de la carte, ce qui « piégeait » le plein écran et décalait le haut. L'animation est repassée en simple fondu → plein écran rétabli, plus de barre.",
-    "🔍 LOT F de l'audit Impeccable : écrans vides plus accueillants (illustration + titre + encouragement) sur Notifications vides, Classement vide, Quêtes vides et Recherche sans résultat. FR + EN.",
-    "🙂 Laissés tels quels exprès : la note d'un lieu sans avis (résumé d'une ligne) et la liste de lieux filtrée vide (déjà bien expliquée).",
-    "ℹ️ En cours pour la suite : derniers halos rouges en nuit d'hiver (tuiles/badges/jeux) + couleurs de tuiles hors thème, puis lot G (tirets)."
+    "🎨 Nuit d'HIVER et nuit de JUNGLE : les tuiles « chaudes » (corail, rouge, or, rose) restaient trop vives et gardaient un halo chaud → elles juraient sur le fond navy/vert. Elles sont maintenant refroidies vers la teinte de la saison, et leur halo est neutre (sombre, plus de rouge). Les tuiles froides (vert/bleu/violet), déjà bonnes, ne bougent pas.",
+    "🏅 Badges et icônes chauds (or, rose) + en-têtes des cartes de jeu : même traitement → plus dans le ton de la saison en mode nuit.",
+    "✅ Vérifié par captures avant/après en nuit d'hiver et nuit de jungle : les tuiles chaudes sont assagies, plus de halo rouge, les familles froides restent distinctes.",
+    "ℹ️ Il restera le lot G (remplacer les tirets longs « — ») pour finir l'audit."
   ]
 }
