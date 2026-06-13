@@ -86,7 +86,7 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#FFF4E6" />
   <script>
-    // P8 : couleur de la status bar ALIGNÉE dès le 1er rendu — avant, elle restait crème ~1 s
+    // P8 : couleur de la status bar ALIGNÉE dès le 1er rendu · avant, elle restait crème ~1 s
     // au lancement en mode nuit/saison (la « vieille barre » qui jurait sous l'heure du téléphone).
     (function () { try {
       var t = localStorage.getItem("sm_theme"), h = new Date().getHours();
@@ -125,10 +125,10 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=455"></script>
+  <script src="sunmates-badges.js?v=456"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
-    // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
+    // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale · jamais depuis
     // la préversion (preview.html) ni une version archivée (releases/…) : elles se testent
     // « à nu », sans toucher au cache de l'app installée.
     var SM_IS_MAIN_PAGE = /(\/|\/index\.html)$/.test(location.pathname);
@@ -236,11 +236,11 @@
       -webkit-user-select: text; user-select: text; -webkit-touch-callout: default;
     }
     html, body { height: 100%; }
-    /* P10-fix : le fond de <html> suit le MODE via :has() — la v444 round 1 mettait var(--bg)
+    /* P10-fix : le fond de <html> suit le MODE via :has() · la v444 round 1 mettait var(--bg)
        sur html, or les thèmes redéfinissent les variables sur BODY → en mode sombre, le fond
        crème-rosé du :root transparaissait (le fameux « arrière-plan rose », un BUG, pas une DA).
        Et le calque body::before (bande unie sur la zone status bar) est SUPPRIMÉ : c'est LUI qui
-       créait la coupure nette au-dessus du fondu du header — le header peint déjà cette zone. */
+       créait la coupure nette au-dessus du fondu du header · le header peint déjà cette zone. */
     html { background: #fbeee9; }
     html:has(body.theme-dusk) { background: #190E2E; } /* Bug haut/overscroll : aligné sur le VRAI --bg nuit (#190E2E), avant #171026 = liseré au rebond */
     html:has(body.theme-winter) { background: #EAF3FB; }
@@ -259,7 +259,7 @@
     body.theme-dusk * { scrollbar-color: rgba(255,90,77,.5) transparent; }
     body.theme-dusk ::-webkit-scrollbar-thumb { background: rgba(255,90,77,.45); background-clip: padding-box; }
     body.theme-dusk ::-webkit-scrollbar-thumb:hover { background: rgba(255,90,77,.65); background-clip: padding-box; }
-    /* Lot B : la barre suit aussi les saisons (avant : brun chaud le jour, corail la nuit — hors palette en bleu/vert) */
+    /* Lot B : la barre suit aussi les saisons (avant : brun chaud le jour, corail la nuit · hors palette en bleu/vert) */
     body.theme-winter * { scrollbar-color: rgba(95,168,232,.5) transparent; }
     body.theme-winter ::-webkit-scrollbar-thumb { background: rgba(95,168,232,.42); background-clip: padding-box; }
     body.theme-winter ::-webkit-scrollbar-thumb:hover { background: rgba(95,168,232,.62); background-clip: padding-box; }
@@ -275,7 +275,7 @@
     /* Conteneur façon téléphone, centré */
     .app-shell {
       max-width: 460px; margin: 0 auto; min-height: 100vh;
-      /* P2.6 : 100dvh = la VRAIE hauteur visible du moment (barres du navigateur comprises) —
+      /* P2.6 : 100dvh = la VRAIE hauteur visible du moment (barres du navigateur comprises) ·
          100vh laissait une bande vide en bas sur Android/iPhone quand la barre se rétracte. */
       min-height: 100dvh;
       background: var(--bg); position: relative;
@@ -287,7 +287,7 @@
       display: flex; align-items: center; justify-content: space-between; gap: .75rem;
       /* safe-area-inset-top : laisse la place de l'encoche / status bar (iPhone) sans chevauchement */
       padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem .75rem; position: sticky; top: 0; z-index: var(--z-header);
-      /* P3 (retour Maxime) : la TRANSPARENCE revient, mais propre — opaque sur 62 % (la status
+      /* P3 (retour Maxime) : la TRANSPARENCE revient, mais propre · opaque sur 62 % (la status
          bar et le titre restent couverts → icônes natives du téléphone toujours lisibles), puis
          fondu DOUX vers transparent. Ce qui gênait avant : le dégradé partait de 86 % d'opacité
          (jamais plein) + une bordure de fin visible (« la barre noire ») → 100 % opaque en haut,
@@ -467,7 +467,7 @@
     .feed-composer .fc-row { display: flex; gap: .6rem; align-items: center; min-width: 0; }
     .feed-composer .fc-av { font-size: 1.4rem; flex-shrink: 0; line-height: 1; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: var(--cream); }
     body.theme-dusk .feed-composer .fc-av { background: var(--dcard,#2a2140); }
-    /* P8 : VRAI centrage du placeholder — min-height 44px avec padding symétrique (11,5px ×2
+    /* P8 : VRAI centrage du placeholder · min-height 44px avec padding symétrique (11,5px ×2
        + ligne 21px = 44px pile), face à l'avatar 38px. Avant : 52px avec 8px en haut → le
        « Écris quelque chose… » flottait en haut. */
     .feed-composer textarea { flex: 1 1 auto; min-width: 0; width: 100%; box-sizing: border-box; border: 0; background: transparent; resize: none; font: inherit; color: var(--ink); padding: .72rem .4rem; min-height: 44px; max-height: 7rem; overflow-y: auto; line-height: 1.4; word-break: break-word; }
@@ -653,7 +653,7 @@
     .bubble[data-pending="1"] { opacity: .66; }
     .bubble.msg-failed { background: #fde2e2 !important; color: #b91c1c !important; opacity: 1 !important; }
 
-    /* ---- Confettis (déblocage de badge) — refonte « grand soir » : chute + FLOTTEMENT
+    /* ---- Confettis (déblocage de badge) · refonte « grand soir » : chute + FLOTTEMENT
        (2 animations imbriquées : l'extérieur tombe, l'intérieur se balance) + starburst. ---- */
     /* P2.9 PERF : contain:strict isole la pluie du reste de la page, et le drop-shadow PAR
        confetti (70 filtres animés à chaque frame !) est retiré → célébration fluide sur mobile. */
@@ -901,8 +901,8 @@
 
     /* ============ LOT E : cibles tactiles ≥ 44px ============
        On agrandit la zone CLIQUABLE sans changer le visuel : un ::after transparent de 44×44
-       centré sur le bouton. Limité aux boutons ISOLÉS (les boutons en grappe — actions de bulle
-       de chat, × de wish-chip — sont exclus : deux zones de 44px se chevaucheraient et se voleraient
+       centré sur le bouton. Limité aux boutons ISOLÉS (les boutons en grappe · actions de bulle
+       de chat, × de wish-chip · sont exclus : deux zones de 44px se chevaucheraient et se voleraient
        le clic). Les 3 premiers sont déjà position:absolute (leur ::after se cale dessus tout seul) ;
        seuls les boutons EN FLUX reçoivent position:relative ci-dessous. */
     .hm-inspo-nav button, .onb-done button, .prep-go { position: relative; }
@@ -916,7 +916,7 @@
     .ad-bar { position: fixed; left: 50%; bottom: calc(.45rem + env(safe-area-inset-bottom)); transform: translateX(-50%); width: calc(100% - 1.2rem); max-width: 448px; z-index: var(--z-demo);
       background: linear-gradient(135deg, #54232C, #2E1118); color: #fff; border-radius: 18px;
       padding: .85rem 1.05rem; box-shadow: 0 18px 44px rgba(0,0,0,.5); animation: adIn .35s ease; transition: opacity .35s ease; }
-    /* #18 : la barre suit VRAIMENT le thème — JOUR = braise sunset (le violet sombre d'avant
+    /* #18 : la barre suit VRAIMENT le thème · JOUR = braise sunset (le violet sombre d'avant
        était hors DA en plein jour) ; nuit/hiver/tropiques = leurs encres respectives. */
     body.theme-dusk .ad-bar { background: linear-gradient(135deg, var(--dcard4,#352a52), var(--dcard2,#241b35)); }
     body.theme-winter .ad-bar { background: linear-gradient(135deg, #29486B, #1B344F); }
@@ -962,8 +962,8 @@
     .prof-trust b { font-size: 1rem; color: var(--accent-ink, var(--accent)); }
     .prof-trust .pt-info { opacity: .7; font-size: .8rem; }
     .prof-trust:active { transform: scale(.97); }
-    /* (retour Maxime : la version « photo à gauche » est ABANDONNÉE — carte centrée d'origine) */
-    /* #13 : « Mon parcours » habillé DA — bandeau doré discret + stats en pilules joyau */
+    /* (retour Maxime : la version « photo à gauche » est ABANDONNÉE · carte centrée d'origine) */
+    /* #13 : « Mon parcours » habillé DA · bandeau doré discret + stats en pilules joyau */
     .parcours-card { position: relative; border-radius: 14px; padding: .15rem .1rem 0; }
     .parcours-card .pc-head b { display: inline-flex; align-items: center; gap: .35rem; }
     .pc-stat { background: linear-gradient(160deg, rgba(255,209,92,.16), rgba(255,154,61,.06)); border: 1px solid rgba(232,150,31,.26); }
@@ -995,7 +995,7 @@
     .fc-gear { position: absolute; top: calc(1rem + env(safe-area-inset-top)); right: 1rem; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,.16); color: #fff; font-size: 1.1rem; cursor: pointer; display: grid; place-items: center; }
     .popinfo-ov.hidden { display: none; }
     .popinfo-card { position: relative; width: 100%; max-width: 340px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 1.5rem 1.3rem 1.3rem; box-shadow: 0 18px 50px rgba(0,0,0,.32); text-align: center; animation: popinfoPop .22s cubic-bezier(.2,1.2,.4,1);
-      /* P4 : AUCUNE tuile-détail ne déborde plus de l'écran (prévisu, Données…) —
+      /* P4 : AUCUNE tuile-détail ne déborde plus de l'écran (prévisu, Données…) ·
          hauteur bornée à l'écran réel + défilement INTERNE. */
       max-height: calc(100dvh - 2.4rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; }
     .popinfo-x { position: absolute; top: .6rem; right: .6rem; width: 30px; height: 30px; border: 0; border-radius: 50%; background: var(--cream); color: var(--muted); font-size: .9rem; cursor: pointer; display: grid; place-items: center; line-height: 1; padding: 0; }
@@ -1024,7 +1024,7 @@
     .inspo-chip { font-size: .74rem; font-weight: 700; background: var(--cream); border: 1px solid var(--line); border-radius: 999px; padding: .2rem .55rem; color: var(--ink); }
     body.theme-dusk .inspo-chip { background: var(--dcard,#2a2140); }
     @keyframes popinfoFade { from { opacity: 0; } to { opacity: 1; } }
-    /* Transitions ×100 : ressort doux (la courbe dépasse légèrement puis se pose) — transform/opacity only */
+    /* Transitions ×100 : ressort doux (la courbe dépasse légèrement puis se pose) · transform/opacity only */
     @keyframes popinfoPop { from { opacity: 0; transform: translateY(16px) scale(.93); } to { opacity: 1; transform: none; } }
     .popinfo-card { animation-duration: .3s !important; animation-timing-function: cubic-bezier(.22,1.36,.32,1) !important; }
     @keyframes sheetUp { from { opacity: .6; transform: translateY(30px); } to { opacity: 1; transform: none; } }
@@ -1108,9 +1108,9 @@
     .homemap-filters .chip.active { opacity: 1; }
     .homemap-filters .chip b { font-weight: 800; opacity: .85; }
     .homemap-wrap { position: relative; isolation: isolate; } /* contient les outils carte (z-index) -> ne débordent plus sur la nav du bas */
-    /* P9 : la carte est LA star de l'accueil — rehaussée à 300px (zone du dessus dégraissée). */
+    /* P9 : la carte est LA star de l'accueil · rehaussée à 300px (zone du dessus dégraissée). */
     .homemap { height: 300px; border-radius: 14px; overflow: hidden; background: var(--cream); position: relative; z-index: 0; isolation: isolate; }
-    /* P7 : pastille « touche la carte » — EN HAUT de la carte (le bas porte déjà Partager/
+    /* P7 : pastille « touche la carte » · EN HAUT de la carte (le bas porte déjà Partager/
        Autour de moi/Tout voir), aux couleurs DA (carte + encre, déclinée par mode), avec la
        petite main qui tapote pour l'intuition. */
     .hm-coop-hint { position: absolute; left: 50%; top: .6rem; transform: translateX(-50%) translateY(-6px); z-index: 1000;
@@ -1331,7 +1331,7 @@
       background: linear-gradient(158deg, rgba(255,255,255,.62) 0%, rgba(255,255,255,.22) 15%, rgba(255,255,255,.03) 36%, rgba(255,255,255,0) 58%);
       box-shadow: inset 0 1.5px 0 rgba(255,255,255,.65), inset 0 -16px 26px rgba(0,0,0,.12);
       pointer-events: none; }
-    /* (Anciennes couleurs/ombres figées SUPPRIMÉES — retour Maxime : le « halo » sous les
+    /* (Anciennes couleurs/ombres figées SUPPRIMÉES · retour Maxime : le « halo » sous les
        tuiles restait aux vieilles couleurs quel que soit le thème. Désormais l'ombre est
        DÉRIVÉE de la couleur réelle de la tuile via color-mix → elle suit chaque mode.) */
     .tile .t-name { font-weight: 700; color: var(--ink); font-size: .92rem; }
@@ -1605,7 +1605,7 @@
     .fc-btn span { width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; box-shadow: 0 8px 20px rgba(0,0,0,.4); }
     .fc-btn.accept span { background: #34c759; animation: fcShake 1s ease-in-out infinite; }
     .fc-btn.decline span { background: #ff3b30; }
-    /* #15 : écran d'appel plus CRÉDIBLE — numéro affiché, halo qui pulse pendant la sonnerie,
+    /* #15 : écran d'appel plus CRÉDIBLE · numéro affiché, halo qui pulse pendant la sonnerie,
        puis en ligne : chrono bien visible, avatar réduit, grille réactive au toucher. */
     .fc-num { color: rgba(255,255,255,.45); font-size: .92rem; margin-top: .3rem; letter-spacing: .4px; font-variant-numeric: tabular-nums; }
     .fakecall.ringing .fc-avatar { animation: fcPulse 1.7s ease-in-out infinite; }
@@ -1757,7 +1757,7 @@
     /* Tuile-joyau : dégradé sunset bombé + gloss + rim-light + ombre chaude (zéro crème) */
     .cic[data-smicon], .jo-ic[data-smicon] { position: relative; isolation: isolate; overflow: hidden; border: none;
       background: radial-gradient(120% 90% at 28% 22%, rgba(255,255,255,.42), rgba(255,255,255,0) 42%), linear-gradient(135deg, var(--ic1, var(--c1,#FF8A3D)), var(--ic2, var(--c2,#FF5A4D)));
-      /* halo dérivé de la couleur réelle de la pastille (suit le thème) — fini l'ombre corail figée */
+      /* halo dérivé de la couleur réelle de la pastille (suit le thème) · fini l'ombre corail figée */
       box-shadow: 0 7px 15px -4px color-mix(in oklab, var(--ic2, var(--c2, #FF5A4D)) 52%, transparent), 0 2px 4px rgba(60,28,14,.22), inset 0 1px 1px rgba(255,246,236,.85), inset 0 -2px 3px rgba(60,25,12,.26); }
     /* Reflet TOP plus léger (avant : blanc .5 sur 42% → givrait/floutait le glyphe). */
     .cic[data-smicon]::after, .jo-ic[data-smicon]::after { content:""; position:absolute; left:8%; right:8%; top:6%; height:34%; border-radius:50% 50% 60% 60%/70% 70% 100% 100%; background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.02)); pointer-events:none; z-index:0; }
@@ -1848,7 +1848,7 @@
     .nq-meta{ font-size:.8rem; }
     .nq-go{ flex-shrink:0; padding:.45rem .7rem; font-size:.82rem; white-space:nowrap; }
     /* Bannière « inviter des amis » (croissance) */
-    /* #10 : bannière DÉGONFLÉE (elle écrasait la page Mates) — pilule fine, même rôle */
+    /* #10 : bannière DÉGONFLÉE (elle écrasait la page Mates) · pilule fine, même rôle */
     .invite-banner{ display:flex; align-items:center; gap:.55rem; width:100%; text-align:left; margin:.5rem 0 .2rem; padding:.48rem .7rem; border:0; border-radius:14px; cursor:pointer;
       background:radial-gradient(120% 130% at 15% -10%, rgba(255,255,255,.28), rgba(255,255,255,0) 46%), var(--accent-grad); color:#fff; box-shadow:0 4px 10px color-mix(in oklab, var(--accent, #FF5A4D) 26%, transparent); }
     .invite-banner .inv-ic{ font-size:18px; flex-shrink:0; filter:var(--relief); }
@@ -3010,19 +3010,19 @@
       --accent:    #FF5A4D;            /* corail soleil, signature */
       --accent-2:  #FF8A3D;            /* mangue */
       --accent-3:  #FFC93C;            /* jaune soleil */
-      --accent-grad: linear-gradient(135deg, #FFC93C 0%, #FF7A3D 20%, #FF4F6D 52%); /* Lot A audit : stop foncé avancé à 52% → zone du label CTA ≥3:1 (avant ~2:1) — mêmes couleurs, ANNONCÉ */
+      --accent-grad: linear-gradient(135deg, #FFC93C 0%, #FF7A3D 20%, #FF4F6D 52%); /* Lot A audit : stop foncé avancé à 52% → zone du label CTA ≥3:1 (avant ~2:1) · mêmes couleurs, ANNONCÉ */
       --accent-soft: #FFE6DC;
-      --accent-ink: #C23A2D;          /* Lot A2 : corail FONCÉ réservé au TEXTE sur fond pâle (≈4.4:1) — le corail vif #FF5A4D reste pour fonds/icônes/dégradés */
+      --accent-ink: #C23A2D;          /* Lot A2 : corail FONCÉ réservé au TEXTE sur fond pâle (≈4.4:1) · le corail vif #FF5A4D reste pour fonds/icônes/dégradés */
       --teal:      #14C2B8; --teal-2: #22D3C5;   /* turquoise mer */
       --retro-teal:#0E9E96;
       --gold:      #FFB52E;
       --ink:       #39203A;            /* prune chaud (titres) */
       --ink-warm:  #44264A;
-      --text:      #5B4455; --muted: #7F6878; /* Lot A : muted jour 2.6→4.6:1, même famille prune (avant #AC93A3) — ANNONCÉ */
+      --text:      #5B4455; --muted: #7F6878; /* Lot A : muted jour 2.6→4.6:1, même famille prune (avant #AC93A3) · ANNONCÉ */
       --ok:        #11B5A0; --ok-ink: #1E7A5A; --danger: #F0384E; /* Lot A : --ok-ink = teal sobre pour le TEXTE (4.9:1), --ok reste pour fonds/icônes */
       --line:      #F6E3D6;
       --radius:    22px; --radius-sm: 14px; --radius-lg: 28px;
-      /* P12 (DA officielle, demande Maxime) : ombres DÉ-ROUGIES — le corail sous chaque carte
+      /* P12 (DA officielle, demande Maxime) : ombres DÉ-ROUGIES · le corail sous chaque carte
          donnait un « halo rouge partout » ; brun chaud neutre = la chaleur sans le rouge. */
       --shadow:    0 16px 38px rgba(45,38,52,.10), 0 3px 10px rgba(40,25,35,.05);
       --shadow-sm: 0 8px 18px rgba(45,38,52,.08);
@@ -3078,7 +3078,7 @@
     body.theme-dusk .tile, body.theme-dusk .gcard { border-color: rgba(255,255,255,.09) !important; }
     .thumb { background: var(--accent-grad); color: #fff; background-repeat: no-repeat; background-size: cover; overflow: hidden; }
     /* Retour Maxime (bis) : les couleurs de BASE elles-mêmes passent dans la DA « émaillée »
-       SunMates (mêmes familles bijou que les pastilles de Jeux) — fini le néon bonbon
+       SunMates (mêmes familles bijou que les pastilles de Jeux) · fini le néon bonbon
        bleu-ciel/violet-flashy/rose-barbie, MÊME EN MODE JOUR. La couche « palette malléable »
        (fin de feuille) les décline ensuite en nuit / hiver / tropiques. */
     .thumb.green { --c1:#2BC4A8; --c2:#128F7C; } /* turquoise bijou (zéro vert criard) */
@@ -3147,7 +3147,7 @@
     body.theme-dusk .feed-card, body.theme-dusk .pcell, body.theme-dusk .pprompt, body.theme-dusk .stat-box,
     body.theme-dusk .dstat, body.theme-dusk .tile, body.theme-dusk .gcard, body.theme-dusk .chip,
     body.theme-dusk .mseg, body.theme-dusk .coupon, body.theme-dusk .reco { background: #2E1B4C !important; }
-    /* P2.8 : FIL homogène en nuit — les posts rejoignent la MÊME famille violette que les cartes
+    /* P2.8 : FIL homogène en nuit · les posts rejoignent la MÊME famille violette que les cartes
        (avant : brun délavé #241b35 posé à côté de cartes #2A1846 = patchwork), un cran plus
        clair que la tuile principale (le composer, dégradé sombre) pour bien les distinguer. */
     body.theme-dusk:not(.theme-winter):not(.theme-tropic) .fpost { background: #2E1B4C; border-color: rgba(255,255,255,.10); }
@@ -3176,7 +3176,7 @@
     .brand .mark svg.logo-night { display: none; }
     body.theme-dusk .brand .mark svg.logo-day { display: none; }
     body.theme-dusk .brand .mark svg.logo-night { display: block; }
-    /* Logos SAISON : cristal en hiver, palmier-lagon en tropiques — et leurs VRAIES variantes
+    /* Logos SAISON : cristal en hiver, palmier-lagon en tropiques · et leurs VRAIES variantes
        NUIT (croissant de lune + flocon / palmier sous la lune), retour Maxime. */
     .brand .mark svg.logo-winter, .brand .mark svg.logo-tropic, .brand .mark svg.logo-winter-n, .brand .mark svg.logo-tropic-n { display: none; }
     body.theme-winter .brand .mark svg.logo-day, body.theme-winter .brand .mark svg.logo-night { display: none; }
@@ -3304,7 +3304,7 @@
     .sm-selsheet-ov { position: fixed; inset: 0; z-index: var(--z-sheet); background: rgba(20,8,30,.5); backdrop-filter: blur(2px);
       display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .18s; }
     .sm-selsheet-ov.show { opacity: 1; pointer-events: auto; }
-    /* P14 : feuille plus GRANDE (46→78dvh) — fini le mini-scroll désagréable du panneau Filtres
+    /* P14 : feuille plus GRANDE (46→78dvh) · fini le mini-scroll désagréable du panneau Filtres
        (carnet + 6 filtres tiennent désormais) ; si ça déborde quand même, scrollbar VISIBLE. */
     .sm-selsheet { width: 100%; max-width: 480px; background: var(--paper); border-radius: 22px 22px 0 0; max-height: 78dvh;
       display: flex; flex-direction: column; transform: translateY(26px); transition: transform .3s cubic-bezier(.22,1.22,.3,1); box-shadow: 0 -14px 44px rgba(0,0,0,.28);
@@ -3392,7 +3392,7 @@
     body.theme-winter .sm-date-preview { background: linear-gradient(135deg, #F4FAFF, #E4F0FB); }
     body.theme-tropic .sm-date-preview { background: linear-gradient(135deg, #FDFBE8, #EDF6DF); }
 
-    /* #6 : chat de GROUPE — feuille plein écran, bulles du chat réutilisées + nom de l'auteur */
+    /* #6 : chat de GROUPE · feuille plein écran, bulles du chat réutilisées + nom de l'auteur */
     .gchat { position: fixed; inset: 0; z-index: var(--z-gchat); background: rgba(20,12,8,.45); display: flex; align-items: flex-end; justify-content: center; }
     .gchat.hidden { display: none; }
     .gchat-card { width: 100%; max-width: 480px; height: 88dvh; background: var(--bg); border-radius: 22px 22px 0 0;
@@ -3452,8 +3452,8 @@
     .adm-live .al-cell b { display: block; font-size: .95rem; color: var(--ink); }
     .adm-live .al-cell span { font-size: .68rem; color: var(--muted); }
 
-    /* ====== Plaque de NIVEAU façon jeu (en-tête Jeux & Quêtes) — remplace le rond-photo ====== */
-    /* #7 : la plaque de niveau est CLAIRE le jour (crème/or) et sombre seulement la nuit —
+    /* ====== Plaque de NIVEAU façon jeu (en-tête Jeux & Quêtes) · remplace le rond-photo ====== */
+    /* #7 : la plaque de niveau est CLAIRE le jour (crème/or) et sombre seulement la nuit ·
        déclinée dans les 6 combinaisons jour/nuit × normal/hiver/tropiques. */
     .player-badge.player-hud { width: auto; height: auto; border-radius: 999px; overflow: visible;
       display: flex; align-items: center; gap: .55rem; padding: .3rem .8rem .3rem .32rem;
@@ -3538,7 +3538,7 @@
     .gp-tile span:last-child { font-size: .7rem; color: var(--muted); line-height: 1.35; }
     body.theme-dusk .gp-tile { background: var(--dcard, #2a2140); border-color: rgba(255,209,92,.2); }
 
-    /* #25 : anti « écran noir » — tant que la photo n'est pas chargée, shimmer crème sunset
+    /* #25 : anti « écran noir » · tant que la photo n'est pas chargée, shimmer crème sunset
        (l'attribut data-lazybg disparaît au chargement → le shimmer aussi). */
     [data-lazybg] { background-color: #F6E3CE;
       background-image: linear-gradient(110deg, rgba(255,255,255,0) 38%, rgba(255,255,255,.55) 50%, rgba(255,255,255,0) 62%), linear-gradient(135deg, #FBE6CC, #F2D5B2);
@@ -3547,13 +3547,13 @@
       background-image: linear-gradient(110deg, rgba(255,255,255,0) 38%, rgba(255,255,255,.08) 50%, rgba(255,255,255,0) 62%), linear-gradient(135deg, var(--dcard, #2a2140), var(--dcard2, #241b35)); }
     @keyframes lzShimmer { to { background-position: -120% 0, 0 0; } }
 
-    /* #24 : cartes repliables (Besoin d'aide) — fermé = seul le titre reste, chevron indicateur */
+    /* #24 : cartes repliables (Besoin d'aide) · fermé = seul le titre reste, chevron indicateur */
     [data-coll].coll-closed > :not(h3):not(.section-head) { display: none; }
     [data-coll].coll-closed h3 { margin-bottom: 0 !important; }
     [data-coll] .coll-chev { color: var(--accent); font-size: .85em; font-weight: 800; }
 
     /* ====== 🥚 Easter eggs (effets visuels · jamais documentés côté public) ====== */
-    /* (Golden Hour « 7 taps » SUPPRIMÉ — retour Maxime, il ne l'aimait pas au final.
+    /* (Golden Hour « 7 taps » SUPPRIMÉ · retour Maxime, il ne l'aimait pas au final.
        eggGoldShine est GARDÉ : l'écrin Premium s'en sert pour le titre Gold scintillant.) */
     @keyframes eggGoldShine { to { background-position: 200% 0; } }
     /* 🌍 Petit Globe : descend avec rebond, TOURNE (décélère), pin planté + drapeau du pays.
@@ -3584,7 +3584,7 @@
     .bottom-nav button.egp-land { animation: egpLand .8s cubic-bezier(.3,1.6,.4,1); }
     @keyframes egpLand { 0% { transform: translateY(0); } 30% { transform: translateY(-7px) scale(1.1); } 100% { transform: translateY(0); } }
 
-    /* (#40 « La valise folle » RETIRÉE — retour Maxime passe 3 : mal programmée.) */
+    /* (#40 « La valise folle » RETIRÉE · retour Maxime passe 3 : mal programmée.) */
 
     /* #38 : album souvenir PLUS PRÉSENT (lignes plus grandes, accents chauds) */
     .gal-city { padding: .65rem .55rem !important; font-size: .95rem; border: 1px solid var(--line); border-radius: 12px; margin-top: .4rem; background: var(--card); }
@@ -3592,7 +3592,7 @@
     .gal-city .hc-n { color: var(--accent); font-weight: 800; }
     body.theme-dusk .gal-city { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.08); }
 
-    /* #37 : pastille météo — pilule chaude cliquable, déclinée par mode */
+    /* #37 : pastille météo · pilule chaude cliquable, déclinée par mode */
     .weather-chip { display: inline-flex; align-items: center; gap: .35rem; margin: 0 0 .55rem; padding: .42rem .75rem;
       border-radius: 999px; border: 1px solid rgba(232,150,31,.3); background: linear-gradient(180deg, var(--cream), var(--card));
       color: var(--ink); font-weight: 700; font-size: .82rem; cursor: pointer; box-shadow: var(--shadow-sm); }
@@ -3601,7 +3601,7 @@
     .weather-chip .wc-hint { color: var(--accent); font-weight: 800; }
     body.theme-dusk .weather-chip { background: var(--dcard, #2a2140); border-color: rgba(255,209,92,.2); color: #f3e9f3; }
 
-    /* #18 : QR en écrin DA — cadre dégradé sunset, papier ivoire, soleil en sceau */
+    /* #18 : QR en écrin DA · cadre dégradé sunset, papier ivoire, soleil en sceau */
     .qr-frame { position: relative; display: inline-block; padding: 12px; border-radius: 20px; margin: .4rem auto .5rem;
       background: linear-gradient(135deg, #FFC93C, #FF8A3D 55%, #FF5A4D); box-shadow: 0 10px 26px rgba(232,120,60,.35); }
     .qr-frame .qr-box { background: #FFFBF2; border-radius: 12px; padding: 10px; display: grid; place-items: center; }
@@ -3633,7 +3633,7 @@
       64% { transform: translateX(-50%) translateY(0) scale(1) rotate(-3deg); opacity: 1; }
       100% { transform: translateX(-50%) translateY(-46px) scale(.8) rotate(0deg); opacity: 0; } }
 
-    /* Konami : allumage/extinction CRT — la ligne blanche s'étire puis balaie tout l'écran */
+    /* Konami : allumage/extinction CRT · la ligne blanche s'étire puis balaie tout l'écran */
     .crt-boot { position: fixed; inset: 0; z-index: var(--z-egg-top); pointer-events: none; animation: crtBg .95s steps(1) forwards; }
     .crt-boot::before { content: ""; position: absolute; left: 6%; right: 6%; top: 50%; height: 2px; border-radius: 2px;
       background: #fff; box-shadow: 0 0 24px 5px rgba(255,255,255,.9); transform: scaleX(0); animation: crtLine .95s cubic-bezier(.2,.8,.25,1) forwards; }
@@ -3704,7 +3704,7 @@
     /* ⚠️ PAS de filter sur .app-shell : un filtre crée un « containing block » qui DÉCOLLE
        tous les position:fixed enfants (la nav du bas partait au scroll). Les scanlines +
        la police machine + les pixels suffisent à l'ambiance CRT. */
-    /* 🦁 Hakuna matata — scène NIVEAU FILM (refonte design ×100) : ciel par THÈME, soleil
+    /* 🦁 Hakuna matata · scène NIVEAU FILM (refonte design ×100) : ciel par THÈME, soleil
        géant qui se couche derrière l'horizon, collines + acacias + double rangée d'herbes,
        la troupe marche EN FILE INDIENNE (proportions canon, zéro chevauchement), oiseaux
        qui BATTENT des ailes. Tout en transform/opacity (zéro coût layout). */
@@ -3719,7 +3719,7 @@
     .egg-savane .egs-sun { position: absolute; left: 50%; margin-left: -55px; bottom: calc(34px + env(safe-area-inset-bottom, 0px));
       filter: drop-shadow(0 0 38px rgba(255,180,60,.95)); animation: egsSunSet 9.8s ease forwards; }
     @keyframes egsSunSet { from { transform: translateY(-16px) scale(1); } to { transform: translateY(70px) scale(.93); } }
-    /* Collines lointaines (plan intermédiaire — la profondeur d'un vrai décor) */
+    /* Collines lointaines (plan intermédiaire · la profondeur d'un vrai décor) */
     .egg-savane .egs-hills { position: absolute; left: -4%; right: -4%; bottom: calc(56px + env(safe-area-inset-bottom, 0px)); height: 60px; opacity: .5;
       background: radial-gradient(58% 120% at 18% 100%, #5C3414 58%, transparent 60%), radial-gradient(70% 150% at 78% 100%, #5C3414 55%, transparent 57%); }
     .egg-savane .egs-ground { position: absolute; left: 0; right: 0; bottom: 0; height: calc(72px + env(safe-area-inset-bottom, 0px));
@@ -3731,7 +3731,7 @@
     .egg-savane .egs-acacia.a1 { left: 5%; }
     .egg-savane .egs-acacia.a2 { right: 7%; transform: scale(.55); transform-origin: bottom; opacity: .8; }
     /* LA TROUPE : un seul cortège (file indienne, écarts FIXES → aucun chevauchement possible),
-       Timon devant, Simba, puis Pumbaa — chacun avec son roulis et sa vraie marche 2 temps. */
+       Timon devant, Simba, puis Pumbaa · chacun avec son roulis et sa vraie marche 2 temps. */
     .egg-savane .egs-troupe { position: absolute; left: 0; bottom: calc(46px + env(safe-area-inset-bottom, 0px));
       display: flex; align-items: flex-end; gap: 30px; transform: translateX(-110%);
       animation: egsCross 9.2s linear forwards; will-change: transform; }
@@ -3814,10 +3814,10 @@
        MARIE au thème actif via color-mix : une seule règle par thème au lieu de re-déclarer
        chaque famille. Jour = couleurs d'origine. Nuit = encre violette (tons bijou sur fond
        sombre). Hiver = givre (poudré + acier). Tropiques = jus (soleil + lagon). */
-    /* (les pastilles .thumb des accès rapides/sécurité font partie du lot — retour Maxime ;
+    /* (les pastilles .thumb des accès rapides/sécurité font partie du lot · retour Maxime ;
        mix NUIT adouci : l'ancien 74/78 % rendait les tuiles « trop sombres ») */
     /* P13 (retour Maxime « l'arrière des tuiles ne va pas dans tous les modes ») : le mix
-       éteignait les tuiles — sur le fond sombre de la nuit, des tuiles assombries se FONDENT.
+       éteignait les tuiles · sur le fond sombre de la nuit, des tuiles assombries se FONDENT.
        Plus de couleur d'origine partout : les tuiles restent identifiables, peps conservé. */
     body.theme-dusk .cic, body.theme-dusk .qm-ic, body.theme-dusk .sc-ic, body.theme-dusk .hex, body.theme-dusk .jo-ic, body.theme-dusk .smgem, body.theme-dusk .thumb {
       --ic1: color-mix(in oklab, var(--c1, #FF8A3D) 90%, #43326B);
@@ -3872,7 +3872,7 @@
     body.theme-tropic.theme-dusk #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#4a3a1a,#5a4520); border-color: rgba(240,169,58,.4); color:#ffd98a; }
     body.theme-tropic.theme-dusk #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#143527,#1E4A38); border-color: rgba(92,216,168,.4); color:#9ADBBE; }
 
-    /* ============ LOT B : NUITS DE SAISON — anti-fuite violette ============
+    /* ============ LOT B : NUITS DE SAISON · anti-fuite violette ============
        La couche « nuit par défaut » (v3) code certaines surfaces en VIOLET DUR
        (#2A1846 / #2E1B4C / #22123A) → elles débordaient sur la nuit d'HIVER (navy) et la
        nuit de JUNGLE (vert), qui possèdent pourtant déjà leurs jetons de surface (--dcard, --card, --cream).
@@ -3906,7 +3906,7 @@
 
     /* Retour Maxime : en NUIT de saison, les familles CHAUDES (corail/rouge/or/lime/rose) restaient
        trop VIVES (hors thème navy/jungle) et gardaient un HALO chaud. On les refroidit nettement plus
-       vers la teinte de saison (les familles froides — vert/bleu/violet — ne bougent pas, déjà OK). */
+       vers la teinte de saison (les familles froides · vert/bleu/violet · ne bougent pas, déjà OK). */
     body.theme-winter.theme-dusk .thumb.coral, body.theme-winter.theme-dusk .thumb.red, body.theme-winter.theme-dusk .thumb.gold, body.theme-winter.theme-dusk .thumb.lime, body.theme-winter.theme-dusk .thumb.rose,
     body.theme-winter.theme-dusk .cic.c-gold, body.theme-winter.theme-dusk .cic.c-pink, body.theme-winter.theme-dusk .hex {
       --ic1: color-mix(in oklab, var(--c1) 56%, #2E4A74) !important; --ic2: color-mix(in oklab, var(--c2) 58%, #16314E) !important; }
@@ -4249,7 +4249,7 @@
     <div class="act-card" style="text-align:center;max-width:340px">
       <div class="picker-head"><h3 style="margin:0" data-i18n="qr.title">🪪 Mon QR SunMates</h3><button id="qrClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
       <p class="muted" style="font-size:.84rem;margin:.4rem 0" data-i18n="qr.sub">Fais-le scanner à un voyageur rencontré en vrai pour vous connecter en un instant.</p>
-      <!-- #18 : écrin DA — cadre sunset, coins soleil, pseudo en signature -->
+      <!-- #18 : écrin DA · cadre sunset, coins soleil, pseudo en signature -->
       <div class="qr-frame"><span class="qrf-sun">☀️</span><div class="qr-box" id="qrBox"></div></div>
       <div class="qr-sig"><b id="qrName">—</b><span class="muted" style="font-size:.72rem;display:block">voyage avec SunMates</span></div>
     </div>
@@ -4524,14 +4524,14 @@
         <div id="homeTravelMap">
 
         <!-- ===== Carte « tout-en-un » : lieux, Mates, activités, check-ins ===== -->
-        <!-- P9 : la CARTE est LA star de l'accueil — zone du dessus dégraissée (sous-titre retiré,
+        <!-- P9 : la CARTE est LA star de l'accueil · zone du dessus dégraissée (sous-titre retiré,
              « Ma journée » + météo déplacées SOUS la carte), carte rehaussée. -->
         <div class="section-head" style="justify-content:center"><h3 style="margin:.3rem 0 .4rem;text-align:center">Explore autour de toi 🗺️</h3></div>
         <div class="card homemap-card">
           <!-- Sélecteur de ville (menu déroulant) : concentre la carte sur une ville de jeu -->
           <!-- UNE seule rangée au-dessus de la carte : ville + À faire + Filtres (avant : 2 rangées éparpillées) -->
           <!-- Retour Maxime : plus d'option « toutes les villes » sélectionnable (le bouton 🌍 Tout voir fait déjà ça) -->
-          <!-- (P9 : le carnet 📓 vit EN TÊTE du panneau Filtres — un bouton de plus ici surchargeait l'accueil) -->
+          <!-- (P9 : le carnet 📓 vit EN TÊTE du panneau Filtres · un bouton de plus ici surchargeait l'accueil) -->
           <div class="city-pick"><select id="questCitySelect" aria-label="Choisir une ville"></select><button class="todo-toggle" id="questTodoToggle" type="button" title="N'afficher que les quêtes pas encore faites"><span class="tt-ic">🎯</span><span class="tt-lbl">À faire</span><span class="tt-state" id="todoState">OFF</span></button><button type="button" class="hm-layers-btn" id="hmLayersBtn">🗂️ Filtres <span class="hlb-cnt" id="hmLayersCnt">5</span></button></div>
           <!-- Chips gardés en DOM (pilotés par le panneau Filtres) mais plus affichés ici -->
           <div class="chips wrap homemap-filters as-btn" id="homeMapFilters" style="display:none">
@@ -4721,7 +4721,7 @@
 
           <!-- Sous-onglet : Messages -->
           <div class="mates-seg" data-msegpanel="messages">
-            <!-- #6 : conversations de GROUPE (events à plusieurs) — masqué tant que la
+            <!-- #6 : conversations de GROUPE (events à plusieurs) · masqué tant que la
                  migration supabase_migration_groupes.sql n'est pas lancée. -->
             <div class="card" id="groupCard" style="display:none">
               <div class="section-head" style="margin-bottom:.3rem">
@@ -4814,7 +4814,7 @@
           <div class="detail-hero tp-hero" id="tpHero">
             <div class="dh-emoji" id="tpEmoji">🧑</div>
             <div class="tp-hero-badges" id="tpHeroBadges"></div>
-            <div class="dh-body"><div class="dh-name" id="tpName">—</div><div class="dh-city" id="tpCity">📍 —</div></div>
+            <div class="dh-body"><div class="dh-name" id="tpName">—</div><div class="dh-city" id="tpCity">📍 ·</div></div>
           </div>
           <div id="tpDemoBanner" class="demo-banner" style="display:none">🤖 Profil de <b>démonstration</b> (compte IA), pour découvrir l'app, ce n'est pas un vrai voyageur.</div>
           <div id="tpSpot" style="margin:-.2rem 0 .8rem;display:none"></div>
@@ -5057,7 +5057,7 @@
           <!-- P2.28 : accès Premium/Admin gardés ICI, en haut → toujours visibles sans scroller. -->
           <div class="mseg" id="profSegNav" style="flex-wrap:wrap;margin-top:.7rem">
             <button data-pseg="premium">Premium ✨</button>
-            <!-- P14 : ESPACE PRO — visible pour les comptes partenaires (partner_place_id) et l'admin (démo bar/auberge) -->
+            <!-- P14 : ESPACE PRO · visible pour les comptes partenaires (partner_place_id) et l'admin (démo bar/auberge) -->
             <button data-pseg="pro" id="proSegBtn" style="display:none">Espace Pro 💼</button>
             <button data-pseg="admin" id="adminSegBtn" style="display:none">Admin 🛡️</button>
           </div>
@@ -5247,7 +5247,7 @@
         </div><!-- /prof-seg checkins -->
 
         <div class="prof-seg hidden" data-psegpanel="premium">
-          <!-- #23 : refonte « beau et impactant » — écrin sombre serti d'or, éclat qui balaie,
+          <!-- #23 : refonte « beau et impactant » · écrin sombre serti d'or, éclat qui balaie,
                couronne flottante, bénéfices en tuiles joyau. Tous les IDs sont conservés. -->
           <div class="card gold-hero">
             <div class="gh-shine"></div>
@@ -5262,7 +5262,7 @@
           </div>
 
           <div class="gold-perks">
-            <!-- P14 : « Mates illimités » retiré — le gratuit n'est PAS limité (incohérence) -->
+            <!-- P14 : « Mates illimités » retiré · le gratuit n'est PAS limité (incohérence) -->
             <div class="gp-tile"><span class="gp-ic">🚀</span><b>Profil mis en avant</b><span>Brille en tête des suggestions Découvrir</span></div>
             <div class="gp-tile"><span class="gp-ic">🎨</span><b>Collection Gold</b><span>Cadres d'avatar et titres réservés aux membres</span></div>
             <div class="gp-tile"><span class="gp-ic">⭐</span><b>BFF du moment</b><span>Mets ton meilleur Mate à l'honneur</span></div>
@@ -5275,13 +5275,13 @@
             <h3 style="margin-top:0">Gratuit vs Gold : l'avant / après</h3>
             <div id="goldCompare"></div>
             <!-- P14b (demande Maxime) : pendant la bêta TOUT est ouvert ; si des limites freemium
-                 arrivent un jour, les bêta-testeurs ne paieront rien — dit noir sur blanc, no stress. -->
+                 arrivent un jour, les bêta-testeurs ne paieront rien · dit noir sur blanc, no stress. -->
             <p class="muted" style="font-size:.76rem;margin:.7rem 0 0;background:var(--accent-soft);border-radius:12px;padding:.55rem .7rem">🧪 <b>Tu fais partie de la bêta ?</b> Alors tout est déjà débloqué pour toi. Et si certaines fonctions deviennent un jour réservées à Gold, no stress : <b>rien ne sera jamais facturé à nos bêta-testeurs préférés</b> 💛</p>
           </div>
           <p class="muted" style="font-size:.78rem;text-align:center;margin:.6rem 0 0">🛡️ <b>Notre promesse :</b> tout ce qui te protège (SOS, cercle de confiance, partage de position, minuteur, faux appel) est gratuit, pour toujours, pour tout le monde.</p>
         </div><!-- /prof-seg premium -->
 
-        <!-- P14 : ESPACE PRO partenaires (bar, auberge, café…) — rempli par renderProPanel -->
+        <!-- P14 : ESPACE PRO partenaires (bar, auberge, café…) · rempli par renderProPanel -->
         <div class="prof-seg hidden" data-psegpanel="pro">
           <div id="proPanel"><p class="muted">Chargement…</p></div>
         </div>
@@ -5327,7 +5327,7 @@
           </div>
 
           <!-- (#34 : l'ancien panneau « Livre blanc » séparé a fusionné dans le hub Démo
-               ci-dessus — le catalogue public y vit déjà via #featureCatalog, zéro doublon.) -->
+               ci-dessus · le catalogue public y vit déjà via #featureCatalog, zéro doublon.) -->
 
           <div class="aseg hidden" data-asegpanel="dash">
             <div class="card"><h3 style="margin-top:0">📊 Tableau de bord</h3><div id="adminDash" class="pgrid"><p class="muted">Chargement…</p></div></div>
@@ -5403,7 +5403,7 @@
             </div>
           </div>
 
-          <!-- P2.1 : PANNEAU DE CONTRÔLE DA — la source de vérité visuelle de SunMates,
+          <!-- P2.1 : PANNEAU DE CONTRÔLE DA · la source de vérité visuelle de SunMates,
                lue EN DIRECT dans le CSS calculé (jamais désynchronisée du code). -->
           <div class="aseg hidden" data-asegpanel="da">
             <div class="card">
@@ -5420,16 +5420,16 @@
             <div class="card"><h3 style="margin-top:0">🌅 Dégradés signature</h3><div id="daGrads"></div></div>
             <div class="card">
               <h3 style="margin-top:0">🔤 Typographies</h3>
-              <div class="da-type" style="font-family:Fraunces,serif;font-weight:700;font-size:1.3rem">Fraunces — titres éditoriaux</div>
-              <div class="da-type" style="font-family:Manrope,system-ui,sans-serif;font-weight:600;margin-top:.3rem">Manrope — interface &amp; textes</div>
+              <div class="da-type" style="font-family:Fraunces,serif;font-weight:700;font-size:1.3rem">Fraunces · titres éditoriaux</div>
+              <div class="da-type" style="font-family:Manrope,system-ui,sans-serif;font-weight:600;margin-top:.3rem">Manrope · interface &amp; textes</div>
               <p class="muted" style="font-size:.78rem;margin:.5rem 0 0">Graisse : Fraunces 400→900 (italique 500) · Manrope 400→800.</p>
             </div>
             <div class="card"><h3 style="margin-top:0">🏅 Familles de badges</h3>
-              <p class="muted" style="font-size:.78rem;margin:.2rem 0 .6rem">Chaque famille a SA couleur — un badge n'est jamais doré « par hasard ».</p>
+              <p class="muted" style="font-size:.78rem;margin:.2rem 0 .6rem">Chaque famille a SA couleur · un badge n'est jamais doré « par hasard ».</p>
               <div id="daFams"></div>
             </div>
-            <!-- P3 : l'INVENTAIRE des visuels — tout ce qui a un visuel dans l'app, expliqué -->
-            <div class="card"><h3 style="margin-top:0">🧩 Visuels &amp; emojis — qui fait quoi</h3>
+            <!-- P3 : l'INVENTAIRE des visuels · tout ce qui a un visuel dans l'app, expliqué -->
+            <div class="card"><h3 style="margin-top:0">🧩 Visuels &amp; emojis · qui fait quoi</h3>
               <p class="muted" style="font-size:.78rem;margin:.2rem 0 .6rem">L'inventaire de TOUT ce qui fait un visuel dans SunMates, et la règle de chacun.</p>
               <div id="daVisuels"></div>
               <p class="muted" style="font-size:.78rem;margin:.6rem 0 .3rem"><b>Les 6 logos</b> (un par monde) :</p>
@@ -5437,7 +5437,7 @@
             </div>
             <!-- P7 : composants-statuts rendus EN VRAI (sceau vérifié, boutons, chips, présence…) -->
             <div class="card"><h3 style="margin-top:0">🔘 Composants &amp; statuts (rendus en direct)</h3>
-              <p class="muted" style="font-size:.78rem;margin:.2rem 0 .6rem">Chaque composant est affiché avec sa VRAIE classe CSS — tap = copier son fond. Ils suivent le mode de l'app.</p>
+              <p class="muted" style="font-size:.78rem;margin:.2rem 0 .6rem">Chaque composant est affiché avec sa VRAIE classe CSS · tap = copier son fond. Ils suivent le mode de l'app.</p>
               <div id="daComps"></div>
             </div>
             <div class="card"><h3 style="margin-top:0">🟣 Pastilles (accès rapides &amp; sécurité)</h3>
@@ -5446,7 +5446,7 @@
             </div>
             <div class="card">
               <h3 style="margin-top:0">📤 Exporter le kit DA</h3>
-              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Télécharge TOUT (les 6 modes + dégradés + composants + typos) en un fichier JSON — parfait pour briefer un outil de design (Stitch, Figma…) ou un autre assistant sans rien oublier.</p>
+              <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Télécharge TOUT (les 6 modes + dégradés + composants + typos) en un fichier JSON · parfait pour briefer un outil de design (Stitch, Figma…) ou un autre assistant sans rien oublier.</p>
               <button class="btn-primary btn-block" id="daExport">💾 Télécharger le kit DA (JSON)</button>
             </div>
           </div>
@@ -5485,9 +5485,9 @@
               <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Sondées en direct avec ta session admin. ❌ = le fichier .sql du repo est à exécuter dans le SQL Editor.</p>
               <div id="sysMigrations"><p class="muted">Sonde en cours…</p></div>
             </div>
-            <!-- P14 : conformité — l'état des lieux honnête avant un vrai lancement -->
+            <!-- P14 : conformité · l'état des lieux honnête avant un vrai lancement -->
             <div class="card">
-              <h3 style="margin-top:0">📋 Conformité — l'état des lieux honnête</h3>
+              <h3 style="margin-top:0">📋 Conformité · l'état des lieux honnête</h3>
               <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Ce que l'app possède déjà ✅ et ce qui manque encore 🔲 avant un lancement public sérieux.</p>
               <div id="sysCompliance"></div>
             </div>
@@ -5632,7 +5632,7 @@
               <div class="cat-tile" data-jeuxnav="shop"><div class="cic c-pink" data-smicon="shop" data-smicon-size="36">🛍️</div><div class="clbl">Boutique</div></div>
             </div>
           </div>
-          <!-- (#40 « La valise folle » RETIRÉE — retour Maxime : mal programmée.) -->
+          <!-- (#40 « La valise folle » RETIRÉE · retour Maxime : mal programmée.) -->
 
           <!-- ⚡ QUÊTE DU JOUR (spotlight) · moteur renderQuestSpotlight ressuscité (le DOM avait sauté
                lors d'un dédoublonnage : le renderer tournait dans le vide). Contenu vivant au cœur du hub. -->
@@ -6178,7 +6178,7 @@
       if (authMode === "signup" && password.length < 8) { msg.style.color = "var(--danger)"; msg.textContent = "Mot de passe trop court : 8 caractères minimum."; return; }
       // P2.5 : pseudo obligatoire à l'inscription (2 à 20 caractères) → fini l'email affiché à l'onboarding.
       const pseudo = authMode === "signup" ? ($("authPseudo") ? $("authPseudo").value.trim() : "") : "";
-      if (authMode === "signup" && (pseudo.length < 2 || pseudo.length > 20)) { msg.style.color = "var(--danger)"; msg.textContent = "Choisis un pseudo (2 à 20 caractères) — c'est lui que les autres verront."; return; }
+      if (authMode === "signup" && (pseudo.length < 2 || pseudo.length > 20)) { msg.style.color = "var(--danger)"; msg.textContent = "Choisis un pseudo (2 à 20 caractères) · c'est lui que les autres verront."; return; }
       await once("auth:" + authMode, async () => {
         msg.style.color = "var(--muted)"; msg.textContent = "Un instant…";
         const { data, error } = authMode === "login"
@@ -6387,7 +6387,7 @@
     });
     // Liens "Voir tout" / tuiles d'accès rapide de l'accueil
     // #27 : les tuiles d'accès rapides qui DOUBLONNAIENT la nav du bas ont maintenant une vraie
-    // valeur ajoutée — un tap ouvre une TUILE-SOMMAIRE (les features de la destination, chacune
+    // valeur ajoutée · un tap ouvre une TUILE-SOMMAIRE (les features de la destination, chacune
     // cliquable en accès direct) + bouton « Ouvrir ». Les tuiles à vue précise restent directes.
     const QA_FEATURES = {
       connexions: { e: "🤝", t: "Mes Mates", rows: [["💬", "Mes conversations", () => { goToTab("connexions"); }], ["🔎", "Découvrir des voyageurs", () => { goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); }], ["📨", "Demandes reçues", () => { goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("requests"); }], ["🪪", "Mon QR à faire scanner", () => { if (typeof openQr === "function") openQr(); }]] },
@@ -6552,7 +6552,7 @@
       const d = myProfile || {};
       const pairs = [[d.prompt1_q, d.prompt1_a], [d.prompt2_q, d.prompt2_a], [d.prompt3_q, d.prompt3_a]];
       wrap.innerHTML = pairs.map((pr, i) => {
-        // #31 : question PERSO possible — si la question enregistrée n'est pas du catalogue,
+        // #31 : question PERSO possible · si la question enregistrée n'est pas du catalogue,
         // elle vit dans un champ texte libre (option « ✍️ Ma propre question… »).
         const isCustom = !!(pr[0] && !PROMPT_QUESTIONS.includes(pr[0]));
         const opts = ['<option value="">Choisir une question…</option>']
@@ -6614,7 +6614,7 @@
         st._celebrated = n;
         try { localStorage.setItem("sm_streak_" + (myUserId || "x"), JSON.stringify(st)); } catch (e) {}
         if (typeof toast === "function") toast("🔥", i18nT("{n} jours de série, tu es en feu ! Continue 🌟", { n: n }));
-        // P2.9 : la fête attend la FIN du boot (1,2 s) — avant, les confettis partaient pile
+        // P2.9 : la fête attend la FIN du boot (1,2 s) · avant, les confettis partaient pile
         // pendant le chargement (carte + données) et tout l'écran ramait.
         if (typeof celebrate === "function") setTimeout(celebrate, 1200);
       }
@@ -6778,7 +6778,7 @@
     // sécurité, pré-CGV Gold. Rédaction grand public, à faire relire avant tout lancement payant.
     function openCgv() {
       const h = "<div style='text-align:left;font-size:.82rem;line-height:1.55' class='selectable'>"
-        + "<p style='margin:.2rem 0'><b>SunMates — Conditions d'utilisation &amp; confidentialité</b><br><span class='muted'>Version bêta · mise à jour : juin 2026</span></p>"
+        + "<p style='margin:.2rem 0'><b>SunMates · Conditions d'utilisation &amp; confidentialité</b><br><span class='muted'>Version bêta · mise à jour : juin 2026</span></p>"
         + "<p style='margin:.5rem 0'><b>1 · L'app.</b> SunMates met en relation des voyageurs solo et propose des outils d'entraide et de sécurité. ⚠️ Ces outils (SOS, cercle, position, minuteur, faux appel) sont des <b>aides</b> : ils ne remplacent jamais les services de secours (112) ni ta vigilance.</p>"
         + "<p style='margin:.5rem 0'><b>2 · Ton compte.</b> Réservé aux <b>16 ans et plus</b>. Un seul compte par personne, des infos exactes, et tu es responsable de ce qui s'y passe.</p>"
         + "<p style='margin:.5rem 0'><b>3 · Les règles.</b> Respect d'abord : pas de harcèlement, de haine, de contenus illicites, d'usurpation ni de spam. Les signalements sont traités par la modération ; un compte peut être suspendu ou banni en cas d'abus.</p>"
@@ -6868,14 +6868,14 @@
       { f: "🇪🇸", c: "Barcelone", d: "Gaudí, tapas et plages urbaines", when: "Mai–juin & sept", budget: "Moyen", safe: "Sûre, gare aux pickpockets", why: "Le mariage parfait entre mer, architecture folle et fête jusqu'au bout de la nuit.", must: ["Sagrada Família", "Parc Güell", "Tapas au marché de la Boqueria", "Coucher de soleil aux Bunkers del Carmel"] },
       { f: "🇳🇴", c: "Tromsø", d: "fjords, aurores et nuits polaires", when: "Sept–mars (aurores)", budget: "Cher", safe: "Très sûre", why: "La porte de l'Arctique, sous l'un des meilleurs ciels d'aurores au monde.", must: ["Safari aurores boréales", "Téléphérique Fjellheisen", "Rencontre avec des huskies", "Cathédrale arctique"] },
       { f: "🇨🇴", c: "Carthagène", d: "façades colorées, salsa et Caraïbes", when: "Déc–avril", budget: "Abordable", safe: "Reste dans la vieille ville", why: "Une cité coloniale flamboyante au bord d'une mer turquoise.", must: ["Ville fortifiée au crépuscule", "Îles du Rosaire", "Cours de salsa", "Coucher de soleil au Café del Mar"] },
-      // #23 : inspirations BOOSTÉES — pépites hors des sentiers battus (et hors controverse)
+      // #23 : inspirations BOOSTÉES · pépites hors des sentiers battus (et hors controverse)
       { f: "🇦🇱", c: "Tirana & la Riviera albanaise", d: "criques turquoise, prix doux et accueil légendaire", when: "Mai–sept", budget: "Très éco", safe: "Sûre et chaleureuse", why: "La Méditerranée d'il y a 30 ans : plages sauvages, montagnes et cafés à 1 €.", must: ["Plages de Ksamil", "Vieille ville de Gjirokastër", "Col de Llogara", "Byrek tout chaud du matin"] },
       { f: "🇬🇪", c: "Tbilissi", d: "bains de soufre, vignes millénaires et Caucase", when: "Mai–juin & sept–oct", budget: "Éco", safe: "Très sûre", why: "Entre Europe et Asie : 8 000 ans de vin, des balcons sculptés et des montagnes à 2 h.", must: ["Bains d'Abanotubani", "Vieille ville et forteresse Narikala", "Excursion à Kazbegi", "Khinkali et pain chaud"] },
       { f: "🇸🇮", c: "Ljubljana & Bled", d: "rivière émeraude, château perché et lac de conte", when: "Mai–sept", budget: "Moyen", safe: "Ultra sûre", why: "La capitale verte d'Europe : à taille humaine, entre lac alpin et grottes géantes.", must: ["Lac de Bled en barque pletna", "Grottes de Postojna", "Marché central le samedi", "Gâteau kremšnita au bord du lac"] },
       { f: "🇺🇿", c: "Samarcande", d: "coupoles bleues, route de la soie et thé vert", when: "Avril–mai & sept–oct", budget: "Éco", safe: "Sûre et accueillante", why: "La route de la soie en vrai : mosaïques turquoise et hospitalité d'un autre temps.", must: ["Place du Régistan au lever du jour", "Nécropole Chah-i-Zinda", "Plov partagé chez l'habitant", "Train rapide vers Boukhara"] },
       { f: "🇹🇼", c: "Taipei", d: "marchés de nuit, sources chaudes et montagnes de thé", when: "Oct–avril", budget: "Moyen", safe: "Ultra sûre", why: "L'Asie la plus facile à voyager seul·e : sûre, gourmande, et la nature à 30 min de métro.", must: ["Marché de nuit de Raohe", "Sources chaudes de Beitou", "Maisons de thé de Jiufen", "Sentier de l'Éléphant au couchant"] },
       { f: "🇵🇹", c: "Les Açores", d: "lacs volcaniques, baleines et hortensias", when: "Mai–sept", budget: "Moyen", safe: "Très sûre", why: "Neuf îles vertes posées au milieu de l'Atlantique : volcans, vaches heureuses et thermes naturels.", must: ["Lac de Sete Cidades", "Observation des baleines", "Bain chaud à Furnas", "Cozido cuit dans le volcan"] },
-      { f: "🇲🇪", c: "Kotor", d: "bouches spectaculaires, remparts et eau cristalline", when: "Mai–sept", budget: "Abordable", safe: "Sûre", why: "Un fjord méditerranéen ourlé de villages de pierre — grandiose et encore confidentiel.", must: ["Montée aux remparts au lever du jour", "Perast et l'îlot Notre-Dame-du-Rocher", "Baignade dans les bouches", "Vieille ville à la lanterne"] },
+      { f: "🇲🇪", c: "Kotor", d: "bouches spectaculaires, remparts et eau cristalline", when: "Mai–sept", budget: "Abordable", safe: "Sûre", why: "Un fjord méditerranéen ourlé de villages de pierre · grandiose et encore confidentiel.", must: ["Montée aux remparts au lever du jour", "Perast et l'îlot Notre-Dame-du-Rocher", "Baignade dans les bouches", "Vieille ville à la lanterne"] },
       { f: "🇯🇴", c: "Petra & Wadi Rum", d: "cité rose, canyons et nuits sous les étoiles", when: "Mars–mai & oct–nov", budget: "Moyen", safe: "Sûre et hospitalière", why: "Marcher dans le Siq jusqu'au Trésor puis dormir dans le désert : inoubliable.", must: ["Le Trésor à l'aube", "Monastère par le sentier des 800 marches", "Nuit en camp bédouin au Wadi Rum", "Thé à la sauge sous les étoiles"] },
       { f: "🏴", c: "Île de Skye", d: "falaises noires, moutons et lumières changeantes", when: "Mai–sept", budget: "Moyen+", safe: "Très sûre", why: "L'Écosse mythique : brumes, fées et paysages qui changent toutes les dix minutes.", must: ["Old Man of Storr au lever", "Fairy Pools", "Quiraing en boucle", "Fish & chips à Portree"] },
       { f: "🇱🇦", c: "Luang Prabang", d: "moines au lever du jour, Mékong et cascades laiteuses", when: "Nov–févr", budget: "Très éco", safe: "Paisible", why: "La ville la plus douce d'Asie du Sud-Est, posée entre deux rivières et mille temples.", must: ["Aumône des moines à l'aube", "Cascades de Kuang Si", "Coucher de soleil au mont Phousi", "Marché de nuit artisanal"] },
@@ -7014,12 +7014,12 @@
       { name: "Croatie", flag: "🇭🇷", m: ["croatie", "croatia", "dubrovnik", "split", "zagreb", "🇭🇷"], visa: "Schengen : carte d'identité suffit.", money: "Euro (€) depuis 2023.", lang: "Croate ; bon anglais côté côte.", transport: "Bus confortables, ferries entre îles (Jadrolinija). Loue une voiture pour l'arrière-pays.", water: "Eau du robinet potable.", plug: "Prise type C/F (comme France), 230V.", tip: "Pourboire ~10 %.", health: "CEAM valable.", custom: "Côte adriatique détendue ; haute saison très fréquentée (juillet-août).", safe: "Très sûr." },
       { name: "Brésil", flag: "🇧🇷", m: ["brésil", "bresil", "brazil", "rio", "sao paulo", "são paulo", "🇧🇷"], visa: "Pas de visa pour les Français (≤ 90 j).", money: "Real (BRL). Cash + Pix (paiement instantané local) ; CB courante.", lang: "Portugais ; peu d'anglais.", transport: "Vols internes pour les distances, Uber/99 en ville (plus sûr que taxi).", water: "Eau en bouteille conseillée.", plug: "Prise type N (parfois C), 127/220V selon région.", tip: "Service 10 % souvent inclus.", health: "Vaccin fièvre jaune (Amazonie/zones) ; anti-moustiques (dengue).", custom: "Chaleureux et festif ; 'no dar bobeira' = discrétion avec tes affaires.", safe: "Varie fortement : discrétion (pas de bijoux/téléphone exposé), commande tes taxis, évite favelas non encadrées et la nuit isolée." },
       { name: "Canada", flag: "🇨🇦", m: ["canada", "montréal", "montreal", "toronto", "vancouver", "québec", "quebec", "🇨🇦"], visa: "AVE obligatoire (en ligne, avant départ) pour ≤ 6 mois.", money: "Dollar canadien (CAD). Sans contact partout.", lang: "Anglais + français (Québec).", transport: "Grandes distances → vols/voiture ; bons transports urbains.", water: "Eau du robinet potable.", plug: "Prise type A/B (US), 120V · adaptateur.", tip: "Pourboire ATTENDU 15-20 % ; taxes ajoutées en caisse.", health: "Soins chers → assurance voyage.", custom: "Très poli ; hivers rudes (équipe-toi).", safe: "Très sûr." },
-      // P14 : BASE BOOSTÉE — 16 destinations de plus (mêmes rubriques complètes)
+      // P14 : BASE BOOSTÉE · 16 destinations de plus (mêmes rubriques complètes)
       { name: "Pays-Bas", flag: "🇳🇱", m: ["pays-bas", "hollande", "amsterdam", "rotterdam", "utrecht", "🇳🇱"], visa: "UE : carte d'identité suffit.", money: "Euro (€). ⚠️ Beaucoup de commerces n'acceptent QUE la carte (parfois pas Visa/Mastercard crédit → prévois une carte de débit).", lang: "Néerlandais ; anglais excellent partout.", transport: "Vélo roi (loue le tien, attention aux pistes !), trains NS ponctuels, OVpay sans contact.", water: "Eau du robinet potable.", plug: "Type C/F, 230V.", tip: "Service inclus ; on arrondit.", health: "CEAM valable.", custom: "Direct et franc, ce n'est pas de l'impolitesse. Réserve les musées (Anne Frank !) des semaines à l'avance.", safe: "Très sûr ; gare aux vélos plus qu'aux gens." },
       { name: "Belgique", flag: "🇧🇪", m: ["belgique", "bruxelles", "bruges", "gand", "anvers", "liège", "🇧🇪"], visa: "UE : carte d'identité suffit.", money: "Euro (€). CB partout.", lang: "Français (Wallonie/Bruxelles), néerlandais (Flandre), anglais courant.", transport: "Trains SNCB denses (billet week-end -50 %), trams et métro à Bruxelles.", water: "Eau du robinet potable.", plug: "Type C/E, 230V.", tip: "Service inclus ; on arrondit.", health: "CEAM valable.", custom: "Frites en cornet, bières à respecter (chaque bière a SON verre). L'humour belge est un sport national.", safe: "Sûr ; vigilance pickpockets gare de Bruxelles-Midi." },
       { name: "Suisse", flag: "🇨🇭", m: ["suisse", "genève", "zurich", "lausanne", "berne", "interlaken", "🇨🇭"], visa: "Carte d'identité suffit (Schengen).", money: "Franc suisse (CHF). CB partout. ⚠️ Budget ×2 : tout est cher.", lang: "Français, allemand, italien selon la région ; anglais OK.", transport: "Trains CFF impeccables · Swiss Travel Pass rentable si tu bouges beaucoup.", water: "Eau du robinet excellente (fontaines publiques partout !).", plug: "Type J (3 broches) · adaptateur NÉCESSAIRE.", tip: "Service inclus.", health: "CEAM valable mais franchise élevée → assurance conseillée.", custom: "Ponctualité sacrée. Pique-nique au bord du lac = le bon plan budget.", safe: "Parmi les pays les plus sûrs du monde." },
       { name: "Autriche", flag: "🇦🇹", m: ["autriche", "vienne", "salzbourg", "innsbruck", "hallstatt", "🇦🇹"], visa: "UE : carte d'identité suffit.", money: "Euro (€). Cash encore apprécié dans les cafés.", lang: "Allemand ; anglais courant.", transport: "Trains ÖBB confortables, nightjets pour voyager de nuit.", water: "Eau du robinet excellente (eau des Alpes).", plug: "Type C/F, 230V.", tip: "Arrondir ou ~5-10 %.", health: "CEAM valable.", custom: "Cafés viennois : on s'installe pour DURER, le serveur ne presse jamais. Sissi et Mozart partout.", safe: "Très sûr, même la nuit." },
-      { name: "Irlande", flag: "🇮🇪", m: ["irlande", "dublin", "galway", "cork", "🇮🇪"], visa: "UE : carte d'identité suffit (hors Schengen mais UE).", money: "Euro (€). Sans contact partout.", lang: "Anglais (irlandais sur les panneaux).", transport: "Bus Éireann + trains ; voiture conseillée pour la côte ouest (conduite À GAUCHE).", water: "Eau du robinet potable.", plug: "Type G (UK !) · adaptateur NÉCESSAIRE.", tip: "~10 % au resto si service non inclus.", health: "CEAM valable.", custom: "Le pub est un lieu de VIE : musique live, conversations faciles — parfait en solo. Météo : 4 saisons par jour.", safe: "Très sûr et très accueillant." },
+      { name: "Irlande", flag: "🇮🇪", m: ["irlande", "dublin", "galway", "cork", "🇮🇪"], visa: "UE : carte d'identité suffit (hors Schengen mais UE).", money: "Euro (€). Sans contact partout.", lang: "Anglais (irlandais sur les panneaux).", transport: "Bus Éireann + trains ; voiture conseillée pour la côte ouest (conduite À GAUCHE).", water: "Eau du robinet potable.", plug: "Type G (UK !) · adaptateur NÉCESSAIRE.", tip: "~10 % au resto si service non inclus.", health: "CEAM valable.", custom: "Le pub est un lieu de VIE : musique live, conversations faciles · parfait en solo. Météo : 4 saisons par jour.", safe: "Très sûr et très accueillant." },
       { name: "Pologne", flag: "🇵🇱", m: ["pologne", "varsovie", "cracovie", "gdansk", "wroclaw", "🇵🇱"], visa: "UE : carte d'identité suffit.", money: "Złoty (PLN). CB partout · budget doux.", lang: "Polonais ; anglais courant chez les jeunes.", transport: "Trains PKP + FlixBus pas chers ; trams efficaces.", water: "Eau du robinet potable.", plug: "Type C/E, 230V.", tip: "~10 % apprécié. ⚠️ Dire « merci » quand on te rend la monnaie = « garde tout ».", health: "CEAM valable.", custom: "Pierogis et lait-bars (bar mleczny) = cantines locales géniales et pas chères. Cracovie ≫ en charme.", safe: "Très sûr ; villes vivantes et propres." },
       { name: "Tchéquie", flag: "🇨🇿", m: ["tchéquie", "république tchèque", "prague", "brno", "🇨🇿"], visa: "UE : carte d'identité suffit.", money: "Couronne tchèque (CZK). ⚠️ Évite les bureaux de change du centre de Prague (arnaques) → retire en distributeur de banque.", lang: "Tchèque ; anglais courant dans le tourisme.", transport: "Métro/tram excellents à Prague, billets à valider.", water: "Eau du robinet potable.", plug: "Type C/E, 230V.", tip: "~10 %.", health: "CEAM valable.", custom: "La bière coûte moins cher que l'eau au resto (vraiment). Lève les yeux : les façades de Prague sont le spectacle.", safe: "Très sûr ; pickpockets sur le pont Charles." },
       { name: "Hongrie", flag: "🇭🇺", m: ["hongrie", "budapest", "🇭🇺"], visa: "UE : carte d'identité suffit.", money: "Forint (HUF). CB répandue, petites coupures utiles.", lang: "Hongrois (unique au monde) ; anglais OK dans le tourisme.", transport: "Métro historique + trams ; tout Budapest se marche.", water: "Eau du robinet potable.", plug: "Type C/F, 230V.", tip: "~10 % (souvent ajouté d'office, vérifie l'addition).", health: "CEAM valable.", custom: "Les bains thermaux (Széchenyi, Gellért) = l'expérience à ne pas rater ; les ruin bars du quartier juif pour le soir.", safe: "Sûr ; taxis officiels uniquement (Bolt/Főtaxi)." },
@@ -7187,7 +7187,7 @@
         if (localSt === "pending" && myProfile.host_status === "approved") {
           try { localStorage.setItem("sm_host", "1"); } catch (e) {}
           if (typeof celebrate === "function") celebrate();
-          popInfo("🛟", i18nT("Tu es hôte SunMates !"), i18nT("Ta demande a été validée 🎉 Les voyageurs de passage voient maintenant ton badge 🛟 — merci de rendre ta ville plus accueillante 💛"));
+          popInfo("🛟", i18nT("Tu es hôte SunMates !"), i18nT("Ta demande a été validée 🎉 Les voyageurs de passage voient maintenant ton badge 🛟 · merci de rendre ta ville plus accueillante 💛"));
           renderHost();
         } else if (localSt === "pending" && myProfile.host_status === "rejected") {
           try { localStorage.removeItem("sm_host"); } catch (e) {}
@@ -8185,10 +8185,10 @@
       }) || "";
     }
     function _daCopy(txt) { try { navigator.clipboard.writeText(txt); toast("📋", "Copié : " + txt.slice(0, 48) + (txt.length > 48 ? "…" : "")); } catch (e) { toast("⚠️", "Copie impossible sur ce navigateur"); } }
-    // P3 : l'INVENTAIRE des visuels de l'app — chaque type, où il vit, et sa règle.
+    // P3 : l'INVENTAIRE des visuels de l'app · chaque type, où il vit, et sa règle.
     const DA_VISUELS = [
       ["😀", "Emojis natifs", "Le cœur de la chaleur SunMates (choix « DA v2.2 ») : pastilles d'accès rapides & Sécurité, tuiles de jeux, toasts, boutons, listes. Rendus par le téléphone, relief ajouté en CSS. La banque SVG v1 (désactivée) a été supprimée → base saine pour une future banque v2."],
-      ["🏅", "Médaillons de badges", "Cercles dégradés + emoji, couleur par FAMILLE (exploration corail · social violet · sécurité teal · accomplissement or) — un badge n'est jamais doré par hasard ; verrouillé = grisé façon jeu vidéo, secret = « ? »."],
+      ["🏅", "Médaillons de badges", "Cercles dégradés + emoji, couleur par FAMILLE (exploration corail · social violet · sécurité teal · accomplissement or) · un badge n'est jamais doré par hasard ; verrouillé = grisé façon jeu vidéo, secret = « ? »."],
       ["☀️", "Logos SunMates", "6 logos SVG dessinés main, un par monde (affichés ci-dessous) ; le logo du header change tout seul avec le mode."],
       ["🧭", "Icônes de navigation", "Les 5 icônes de la barre du bas : SVG au trait, monochromes, teintées par l'état actif (jamais d'emoji ici, lisibilité d'abord)."],
       ["🟣", "Pastilles émaillées", "Dégradés --c1/--c2 recolorés par mode via la couche color-mix (palette complète ci-dessous)."],
@@ -8197,16 +8197,16 @@
       ["💬", "Bulles de chat", "Arrondies asymétriques : « moi » = dégradé accent, « l'autre » = carte du thème ; état « en attente » grisé, bulle rouge touchable en cas d'échec d'envoi ; nom d'auteur dans les groupes."],
       ["📱", "QR & cartes à partager", "QR en écrin DA (cadre sunset, papier ivoire, encre aubergine) ; cartes souvenirs dessinées au canvas avec la typo Fraunces. (Le « récap story » a été retiré.)"],
       ["🗺️", "Carte", "Fond vectoriel recoloré DA (4 palettes : jour/nuit/hiver/tropiques) + épingles par type (lieux corail · mates violet · activités ambre · check-ins teal), fluide en plein écran."],
-      ["✓", "Sceau vérifié", "Pastille ronde dégradé sunset→teal avec ✓ blanc — LA marque de confiance de l'app (profils, lieux). Jamais de vert criard."],
-      ["✅", "Coche « accompli » DA", "Validations, objectifs et quêtes cochés en DORÉ-ambre — la coche verte générique est bannie de SunMates."],
+      ["✓", "Sceau vérifié", "Pastille ronde dégradé sunset→teal avec ✓ blanc · LA marque de confiance de l'app (profils, lieux). Jamais de vert criard."],
+      ["✅", "Coche « accompli » DA", "Validations, objectifs et quêtes cochés en DORÉ-ambre · la coche verte générique est bannie de SunMates."],
       ["🟠", "Présence & statuts", "Point « en ligne » ambre sur l'avatar + pilule « En ligne » ; chip « ☕ Dispo ? » ; série en chip 🔥 ambré ; pastille hôte 🛟."],
-      ["📊", "Jauges & barres", "Barre d'XP dorée brillante (halo doux), jauge de confiance, barres de progression — toujours en dégradé accent/or, coins 999px."],
+      ["📊", "Jauges & barres", "Barre d'XP dorée brillante (halo doux), jauge de confiance, barres de progression · toujours en dégradé accent/or, coins 999px."],
       ["🖼️", "Avatars & cadres", "Ronds, initiale sur fond chaud si pas de photo ; liseré dégradé au boost/match ; flamme de streak autour de l'avatar ; cadres cosmétiques de la boutique XP."],
       ["🔘", "Boutons & chips", "btn-primary = dégradé sunset + ombre chaude · btn-ghost = contour discret · chips de filtres = crème au repos, dégradé accent quand actives."],
       ["🍞", "Toasts", "Pilules en haut de l'écran, 2 visibles max + file d'attente, liseré accent, fonds déclinés par mode, balayables vers le haut, cliquables."],
       ["📜", "Détails d'interface", "Barre de défilement thémée (jamais blanche), sélection de texte corail, ombres chaudes (--shadow), rayons 22/14/28 px, ressort doux des modales."],
     ];
-    // P4 : les principaux emojis EN SERVICE, par zone — visualisables (et copiables d'un tap).
+    // P4 : les principaux emojis EN SERVICE, par zone · visualisables (et copiables d'un tap).
     const DA_EMOJIS = [
       ["Accès rapides & tuiles", ["🤝", "🛟", "📍", "🎮", "🏆", "🎟️", "👤", "☕", "🌿", "🔍", "🌍", "✈️", "🏠", "👀", "📌"]],
       ["Sécurité", ["🆘", "🚨", "🛡️", "⏱️", "📞", "🔦", "🧊", "📢", "☎️", "🧭"]],
@@ -8286,7 +8286,7 @@
           }).join("");
         }
       }
-      // P7 : composants-statuts — rendu VIVANT (vraie classe) + couleurs sondées du mode choisi
+      // P7 : composants-statuts · rendu VIVANT (vraie classe) + couleurs sondées du mode choisi
       const dc = $("daComps");
       if (dc) {
         const comps = _daReadComponents(_daMode);
@@ -8307,11 +8307,11 @@
         ex.dataset.wired = "1";
         ex.addEventListener("click", () => {
           const kit = { app: "SunMates", version: (typeof _appBuild === "function" ? _appBuild() : ""), fonts: { titres: "Fraunces 400-900 (italique 500)", interface: "Manrope 400-800" }, modes: {}, visuels: {} };
-          // P3 : le kit embarque AUSSI l'inventaire des visuels (emojis, logos, scènes…) —
+          // P3 : le kit embarque AUSSI l'inventaire des visuels (emojis, logos, scènes…) ·
           // un brief externe (Stitch, Figma, cowork) a TOUT, pas seulement les couleurs.
           DA_VISUELS.forEach(([ic, name, desc]) => kit.visuels[name] = desc);
           kit.emojis = {}; DA_EMOJIS.forEach(([zone, list]) => kit.emojis[zone] = list.join(" "));
-          // P7 : LE KIT LE PLUS COMPLET — tokens + pastilles + dégradés + COMPOSANTS-STATUTS
+          // P7 : LE KIT LE PLUS COMPLET · tokens + pastilles + dégradés + COMPOSANTS-STATUTS
           // (sceau vérifié, boutons, chips, présence, compteurs…) sondés dans CHAQUE mode.
           DA_MODES.forEach(([m]) => {
             kit.modes[m] = { tokens: {}, pastilles: {}, degrades: {}, composants: {} };
@@ -8373,7 +8373,7 @@
           mig.innerHTML = rows.map((r) => `<div class="qrow" style="align-items:center"><div class="qico">${r.ok === true ? "✅" : (r.ok === false ? "❌" : "❔")}</div><div class="qname" style="flex:1">${escapeHtml(r.label)}<div class="meta muted" style="font-size:.72rem">supabase_migration_${escapeHtml(r.k)}.sql${r.ok === false ? " · <b>À LANCER</b>" : (r.ok === null ? " · vérifiable via la corbeille de l'onglet Bêta" : " · en place")}</div></div></div>`).join("");
         });
       }
-      // P14 : CONFORMITÉ — checklist honnête (mise à jour à la main quand un point avance)
+      // P14 : CONFORMITÉ · checklist honnête (mise à jour à la main quand un point avance)
       const comp = $("sysCompliance");
       if (comp) {
         const items = [
@@ -8383,9 +8383,9 @@
           [true, "CGU + confidentialité dans l'app (Réglages → Conditions)"],
           [true, "Données hébergées en UE (Supabase) · positions purgées sous 24 h"],
           [true, "Modération : signalements, auto-blocage, bannissements"],
-          [false, "Vérification d'identité RÉELLE — le badge actuel est manuel/déclaratif (prévoir Stripe Identity ou équivalent)"],
+          [false, "Vérification d'identité RÉELLE · le badge actuel est manuel/déclaratif (prévoir Stripe Identity ou équivalent)"],
           [false, "Vérification de l'âge (16+ purement déclaratif aujourd'hui)"],
-          [false, "Mentions légales complètes (entité juridique, SIRET, directeur de publication) — dès que la structure existe"],
+          [false, "Mentions légales complètes (entité juridique, SIRET, directeur de publication) · dès que la structure existe"],
           [false, "Emails : domaine dédié + SPF/DKIM/DMARC à valider sur le SMTP"],
           [false, "Registre des traitements RGPD (document interne) ± DPO"],
           [false, "Sauvegardes testées + plan de restauration (vérifier les backups Supabase)"],
@@ -8556,7 +8556,7 @@
         ["🪪", "Profil complet", "Photo, bio, identité, voyage, style de vie, prompts."],
         ["📊", "Complétion %", "Globale + par catégorie, cliquable."],
         ["🧭", "Mon parcours", "Stats cliquables (check-ins, quêtes, badges, XP) + partage simple."],
-        ["📜", "Conditions & confidentialité", "CGU, données (RGPD), limites sécurité et pré-CGV Gold — dans Réglages."],
+        ["📜", "Conditions & confidentialité", "CGU, données (RGPD), limites sécurité et pré-CGV Gold · dans Réglages."],
         ["✅", "Vérification (MVP)", "Badge vérifié simulé + points de confiance."],
         ["🪪", "QR de profil", "Génère/scanne un QR pour se connecter en vrai."],
         ["⚙️", "Réglages", "Langue, thème, vibrations, présence, profil public/privé, QR, install."],
@@ -8565,9 +8565,9 @@
       ["📲 PWA & B2B", [
         ["📲", "Installation PWA", "Carte explicative + bannière persistante (snooze)."],
         ["📡", "Hors-ligne", "Bannière réseau + coquille en cache (service worker)."],
-        ["◀️", "Retour téléphone natif", "Le bouton retour Android (ou geste iOS) ferme la fenêtre ouverte, sinon ramène à l'Accueil, sinon quitte — comme une vraie app."],
+        ["◀️", "Retour téléphone natif", "Le bouton retour Android (ou geste iOS) ferme la fenêtre ouverte, sinon ramène à l'Accueil, sinon quitte · comme une vraie app."],
         ["🖐️", "Carte au geste coopératif", "Sur la mini-carte de l'Accueil : 1 doigt fait défiler la PAGE, pincement = zoom, exploration libre en plein écran."],
-        ["✍️", "Pseudo dès l'inscription", "Le pseudo se choisit à la création du compte — fini l'email affiché au premier Bonjour."],
+        ["✍️", "Pseudo dès l'inscription", "Le pseudo se choisit à la création du compte · fini l'email affiché au premier Bonjour."],
         ["💼", "Espace Pro / B2B", "Pitch partenaires + demande de partenariat ; les comptes partenaires (bar, auberge, café) ont leur TABLEAU DE BORD : stats réelles (check-ins, visiteurs uniques, avis), offre du moment affichée sur leur fiche, horaires/prix éditables, code de check-in."],
       ]],
       ["🛡️ Admin (back-office)", [
@@ -8584,7 +8584,7 @@
         ["🧪", "Préversion (bac à essai)", "preview.html = la PROCHAINE version testable en réel (même compte/base) sans toucher l'app de tout le monde ; ruban violet, aucun service worker. Valider = promotion en 1 commit."],
         ["🗃️", "Versions archivées", "releases/ garde les versions abouties + jalons de l'évolution (genèse, v1 toute moche, premier coup de pinceau, étapes 75/150, v225/300/375…) telles quelles, listées dans Système avec bouton Ouvrir + bannière « revenir à l'app » dans chaque archive. Pour en épingler une : demande à Claude."],
         ["🧱", "Migrations sondées en direct", "L'onglet Système interroge la base : chaque migration clé affiche ✅ en place ou ❌ à lancer (avec le nom du fichier .sql)."],
-        ["📋", "Conformité — état des lieux", "Checklist honnête de ce que l'app possède (RGPD self-service, modération, CGU…) et de ce qui manque (vérif d'identité réelle, mentions légales, DKIM…)."],
+        ["📋", "Conformité · état des lieux", "Checklist honnête de ce que l'app possède (RGPD self-service, modération, CGU…) et de ce qui manque (vérif d'identité réelle, mentions légales, DKIM…)."],
         ["👁️", "Aperçu mode gratuit", "Voir l'app comme un compte non-Gold."],
       ]],
       // 🥚 Easter eggs : zone marquée « admin » → JAMAIS dans le livre blanc ni le catalogue
@@ -8944,7 +8944,7 @@
         ? `<div class="adm-live"><div class="al-head"><span class="al-dot"></span> EN DIRECT <button class="btn-ghost" id="admLiveR" style="margin-left:auto;padding:.18rem .55rem;font-size:.72rem">↻</button></div>
             <div class="al-grid">${lcell("🟢", lv.active_now, "actifs maintenant")}${lcell("☀️", lv.active_today, "actifs aujourd'hui")}${lcell("💬", lv.messages_today, "messages aujourd'hui")}${lcell("📍", lv.checkins_today, "check-ins aujourd'hui")}${lcell("✨", lv.new_users_today, "inscrits aujourd'hui")}</div></div>`
         : '<p class="muted" style="font-size:.74rem;margin:.1rem 0 .6rem">📡 Stats en direct indisponibles · lance <b>supabase_migration_admin_live.sql</b> dans Supabase.</p>';
-      // #33 : sauts UTILES — chaque tuile cliquable ouvre SON panneau, y scrolle, et applique
+      // #33 : sauts UTILES · chaque tuile cliquable ouvre SON panneau, y scrolle, et applique
       // le bon filtre (ex : Suspendus → liste Membres déjà filtrée sur les suspendus).
       const cell = (k, v, jump, filt) => `<div class="pcell${jump ? " pcell-jump" : ""}"${jump ? ` data-dashjump="${jump}"${filt ? ` data-dashfilter="${filt}"` : ""} style="cursor:pointer"` : ""}><div class="k">${k}${jump ? " ›" : ""}</div><div class="v">${v ?? 0}</div></div>`;
       el.innerHTML = liveHtml + cell("Membres actifs", data.users, "users") + cell("Vérifiés", data.verified, "users") + cell("Gold 👑", data.gold)
@@ -9709,7 +9709,7 @@
         fileIn.value = "";
       });
     }
-    // #15 : faux numéro STABLE par nom (réalisme) — « Numéro inconnu » reste masqué.
+    // #15 : faux numéro STABLE par nom (réalisme) · « Numéro inconnu » reste masqué.
     function _fcFakeNum(name) {
       if (/inconnu|masqué|unknown/i.test(name)) return "Numéro masqué";
       let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
@@ -9763,7 +9763,7 @@
         };
       }, 40);
     }
-    // #15 : DÉLAI RÉGLABLE (5 s trop court pour ranger le téléphone) — persiste sur l'appareil.
+    // #15 : DÉLAI RÉGLABLE (5 s trop court pour ranger le téléphone) · persiste sur l'appareil.
     const FC_DELAYS = [[5, "5 s"], [30, "30 s"], [60, "1 min"], [300, "5 min"]];
     function _fcDelay() { try { const v = +localStorage.getItem("sm_fc_delay"); return FC_DELAYS.some(([s]) => s === v) ? v : 5; } catch (e) { return 5; } }
     function _fcDelayTxt(s) { const f = FC_DELAYS.find(([x]) => x === s); return f ? f[1] : s + " s"; }
@@ -9907,7 +9907,7 @@
       // « Mes conversations » = connexions acceptées (hors supprimées), triées par dernier message
       const convIds = [...connectedIds].filter((id) => !hiddenConvs.has(id));
       convIds.sort((a, b) => (lastByPeer[b]?.created_at || "").localeCompare(lastByPeer[a]?.created_at || ""));
-      // #13 : le BFF du moment vit ICI — conversation ÉPINGLÉE en tête, case dorée.
+      // #13 : le BFF du moment vit ICI · conversation ÉPINGLÉE en tête, case dorée.
       if (myBffId && convIds.includes(myBffId)) { convIds.splice(convIds.indexOf(myBffId), 1); convIds.unshift(myBffId); }
       $("convList").innerHTML = convIds.length
         ? convIds
@@ -10392,7 +10392,7 @@
       const url = myUserId ? (base + "?ref=" + encodeURIComponent(myUserId)) : base;
       // P2.21 : message SANS l'URL (sinon navigator.share l'ajoute via le champ `url` → lien en double).
       // PAS de promesse de récompense ici : le programme de parrainage (1er verre offert)
-      // n'est pas encore branché côté serveur — on le rajoutera quand il sera réel.
+      // n'est pas encore branché côté serveur · on le rajoutera quand il sera réel.
       const msg = "🌍 Rejoins-moi sur SunMates ☀️ · l'appli pour voyager solo en sécurité et se faire de vrais potes en route.";
       try { if (typeof track === "function") track("invite_shared", {}); } catch (e) {}
       // Compteur local d'invitations partagées (sert au badge « Early Bird » de la campagne de lancement)
@@ -10516,7 +10516,7 @@
     // Photos liées à la VILLE/capitale (LoremFlickr = photos Flickr libres par
     // mot-clé). `lock` rend l'image stable. Un dégradé vif reste derrière, donc
     // jamais d'image cassée. Mots-clés distincts → villes/pays variés.
-    // #25 : pools THÉMATIQUES triés à la planche-contact (_sheet2.png) — la photo raconte enfin
+    // #25 : pools THÉMATIQUES triés à la planche-contact (_sheet2.png) · la photo raconte enfin
     // ce qu'est la quête / le lieu (café → tasse, rando → canyon, soirée → lanternes…).
     // Toujours DÉTERMINISTE (même clé → même photo, ne change plus jamais) + cache média SW.
     const PHOTO_POOLS = {
@@ -10621,7 +10621,7 @@
       decide: null, // géré à part (pile ou face / oui-non)
       bingo: ["Parler à un inconnu", "Goûter un plat local", "Prendre une photo de coucher de soleil", "Visiter un lieu gratuit", "Apprendre un mot en langue locale", "Marcher +5 000 pas", "Boire un café en terrasse", "Découvrir une ruelle cachée", "Aider un·e voyageur·se"],
     };
-    // P8 : SESSIONS FINIES — paquet MÉLANGÉ sans répétition, compteur x/N, écran de fin.
+    // P8 : SESSIONS FINIES · paquet MÉLANGÉ sans répétition, compteur x/N, écran de fin.
     // (avant : tirage aléatoire infini → « c'est toujours les mêmes qui tournent »)
     const _gmSess = {};                                  // { key: { deck, i, score, n } }
     const _GM_LEN = { wheel: 8, ice: 8, quiz: 10, twolies: 3 };
@@ -10712,7 +10712,7 @@
         }, 30);
       }
     }
-    // P8 : écran de FIN DE SESSION — score (quiz) ou récap, record gardé, « Nouvelle session ».
+    // P8 : écran de FIN DE SESSION · score (quiz) ou récap, record gardé, « Nouvelle session ».
     function _gmEnd(key, g, s, wireChallenge, challengeBtn) {
       let html;
       if (key === "quiz") {
@@ -10726,7 +10726,7 @@
       } else {
         html = "<div style='font-size:2.2rem;margin:.2rem 0'>🎉</div>" +
           "<p style='font-weight:800;font-size:1.05rem;margin:.2rem 0'>" + i18nT("Session terminée !") + "</p>" +
-          "<p class='muted' style='font-size:.85rem;margin:.2rem 0'>" + i18nT("Toutes les cartes sont passées — relance pour un nouveau paquet mélangé.") + "</p>";
+          "<p class='muted' style='font-size:.85rem;margin:.2rem 0'>" + i18nT("Toutes les cartes sont passées · relance pour un nouveau paquet mélangé.") + "</p>";
       }
       popInfo(g.emoji, g.name, html + "<button class='btn-accent btn-block' id='gameAgain' style='margin-top:1rem'>🔄 " + i18nT("Nouvelle session") + "</button>" + challengeBtn);
       setTimeout(() => { const b2 = $("gameAgain"); if (b2) b2.onclick = () => playGame(key, true); wireChallenge(key === "quiz" ? s.score + "/" + s.n : ""); }, 30);
@@ -10862,7 +10862,7 @@
       const earned = shown.filter((d) => myBadgeKeys.has(d.key)).length;
       { const bc = $("badgeCollCount"); if (bc) bc.textContent = earned + " / " + shown.length; } // vrai compteur (fini le 36/44 codé en dur)
       // #10 : couleur par FAMILLE DA (exploration=corail, social=violet, sécurité=teal,
-      // accomplissement=or) — avant : hash aléatoire par clé → polyglotte tombait sur l'or
+      // accomplissement=or) · avant : hash aléatoire par clé → polyglotte tombait sur l'or
       // sans raison. Le hash ne sert plus que de repli pour les badges hors catalogue.
       const SHAPES = ["shape-circle"];
       const GRADS = ["grad-sun", "grad-violet", "grad-gold", "grad-teal"];
@@ -11646,7 +11646,7 @@
         if (typeof toast === "function") toast("🗑️", "Message supprimé");
         return;
       }
-      // (L'heure se révèle en GLISSANT la conversation vers la gauche · peek façon Insta —
+      // (L'heure se révèle en GLISSANT la conversation vers la gauche · peek façon Insta ·
       //  pas au simple tap, pour ne pas chevaucher ses propres bulles.)
     });
 
@@ -12161,7 +12161,7 @@
       } else if (bubble) {
         // Succès → on remplace "⏳ envoi…" par l'heure réelle (le temps réel finira le travail).
         track("message_sent");
-        // 🥚 #42 : envoyer « 67 » → six-seven ! (1×/jour) — chiffres qui rebondissent à l'écran
+        // 🥚 #42 : envoyer « 67 » → six-seven ! (1×/jour) · chiffres qui rebondissent à l'écran
         if (text.trim() === "67") {
           const day = new Date().toISOString().slice(0, 10);
           if (_eggAdmin() || localStorage.getItem("sm_egg_67_day") !== day) {
@@ -12401,7 +12401,7 @@
       if (typeof renderTravelerExtras === "function") renderTravelerExtras(p);
       showMatesView("matesProfile");
       // Retour Maxime : on n'affiche PLUS la collection complète de badges sur le profil de
-      // quelqu'un — seulement les 3 à l'HONNEUR (épinglés pour soi, les plus récents pour les
+      // quelqu'un · seulement les 3 à l'HONNEUR (épinglés pour soi, les plus récents pour les
       // autres). Le BFF, lui, reste visible (cellule ⭐ de la grille d'infos).
       const { data: badges } = await db.from("user_badges").select("badge_key,name,emoji,earned_at").eq("user_id", p.id);
       if (badges && badges.length && currentTravelerId === p.id) {
@@ -12474,7 +12474,7 @@
         else showMatesView("matesHome");
       }));
 
-    // (#40 « La valise folle » RETIRÉE — retour Maxime : mal programmée.)
+    // (#40 « La valise folle » RETIRÉE · retour Maxime : mal programmée.)
 
     // ====================== #6 CONVERSATIONS DE GROUPE (events à plusieurs) ======================
     // Tables group_chats / group_members / group_messages (migration supabase_migration_groupes.sql).
@@ -12680,7 +12680,7 @@
     document.querySelectorAll("[data-secu]").forEach((el) =>
       el.addEventListener("click", () => handleSecu(el.dataset.secu)));
 
-    // #25 : VERROU DE DÉFILEMENT — tant qu'une modale/feuille est visible, la page derrière
+    // #25 : VERROU DE DÉFILEMENT · tant qu'une modale/feuille est visible, la page derrière
     // ne bouge plus (body.modal-open). Observé sur les classes des overlays connus.
     (function scrollLock() {
       const isOpen = (el) => el.classList.contains("sm-selsheet-ov") ? el.classList.contains("show") : !el.classList.contains("hidden");
@@ -12700,7 +12700,7 @@
       window._smOvCands = cands; window._smOvIsOpen = isOpen;
     })();
 
-    // P2.3 : BOUTON RETOUR DU TÉLÉPHONE (Android / geste iOS) — comme une vraie app native.
+    // P2.3 : BOUTON RETOUR DU TÉLÉPHONE (Android / geste iOS) · comme une vraie app native.
     // Principe : une entrée « garde » est posée dans l'historique du navigateur. Le retour
     // système arrive donc chez nous (popstate) au lieu de fermer la PWA :
     //   1) une modale/feuille est ouverte  → on la FERME (la plus haute) ;
@@ -12755,14 +12755,14 @@
       guard();
     })();
 
-    // P2.10 : ruban PRÉVERSION — visible UNIQUEMENT sur preview.html / releases/… (jamais sur
+    // P2.10 : ruban PRÉVERSION · visible UNIQUEMENT sur preview.html / releases/… (jamais sur
     // l'app officielle). Rappelle qu'on est dans le bac à essai, sans service worker.
     // P3 : le ruban est CLIQUABLE → récap « quoi de neuf » (whatsnew.json, maintenu à chaque préversion).
     if (window.SM_PREVIEW) {
       const r = document.createElement("button"); r.id = "smPreviewRibbon"; r.type = "button";
       const isArchive = /releases\//.test(location.pathname);
       // P12 : le NUMÉRO de candidate sur le ruban → on sait toujours QUELLE préversion on teste
-      // (le cache HTTP de GitHub Pages peut servir une vieille copie ~10 min — « rien n'a changé »).
+      // (le cache HTTP de GitHub Pages peut servir une vieille copie ~10 min · « rien n'a changé »).
       r.textContent = isArchive ? "🗃️ VERSION ARCHIVÉE" : "🧪 PRÉVERSION " + (typeof _appBuild === "function" ? _appBuild() : "") + " · quoi de neuf ?";
       r.addEventListener("click", async () => {
         if (isArchive) { try { location.href = "../index.html"; } catch (e) {} return; }
@@ -12776,7 +12776,7 @@
       document.body.appendChild(r);
     }
 
-    // #24 : cartes REPLIABLES dans « Besoin d'aide » — toucher le titre replie/déplie,
+    // #24 : cartes REPLIABLES dans « Besoin d'aide » · toucher le titre replie/déplie,
     // et l'état est GARDÉ (localStorage) jusqu'à réouverture manuelle.
     (function collapsibleCards() {
       document.querySelectorAll("[data-coll]").forEach((card) => {
@@ -13070,7 +13070,7 @@
       dusk: { // nuit tropicale : violets profonds + océan MARINE de nuit + étiquettes crème
         bg: "#251C38", water: "#16314E", waterLine: "#1F4264", park: "#2C3A2C", wood: "#27331F",
         residential: "#2B2143", building: "#322749", sand: "#3A2F4E", ice: "#2E3C4A",
-        // P13 (retour Maxime « on ne lit pas les rues ») : routes ÉCLAIRCIES — elles se
+        // P13 (retour Maxime « on ne lit pas les rues ») : routes ÉCLAIRCIES · elles se
         // détachent vraiment du fond #251C38 maintenant (app de voyage = la carte se LIT).
         roadMinor: "#574A8A", roadMajor: "#7A68B4", motorway: "#9683CC", casing: "#1C1430",
         rail: "#3C3055", aeroway: "#322749", boundary: "#51416B", text: "#F0E2CC", halo: "#16102A",
@@ -13091,7 +13091,7 @@
     };
     function smActiveMapPalette() {
       const b = document.body.classList;
-      // #9 : la NUIT prime — en « nuit d'hiver / nuit tropicale », la carte passe en palette
+      // #9 : la NUIT prime · en « nuit d'hiver / nuit tropicale », la carte passe en palette
       // nuit (sinon une carte claire éblouit sur l'app sombre).
       if (b.contains("theme-dusk")) return SM_MAP_PALETTES.dusk;
       if (b.contains("theme-winter")) return SM_MAP_PALETTES.winter;
@@ -13138,7 +13138,7 @@
           }
           if (ly.type === "symbol") {
             // P13b (« carrés blancs sur la carte ») : les ÉCUSSONS routiers (A86, N13…) ont un
-            // sprite BLANC — leur peindre le texte en crème donnait des rectangles blancs vides.
+            // sprite BLANC · leur peindre le texte en crème donnait des rectangles blancs vides.
             // On les laisse 100 % d'origine : panneau blanc + numéro sombre, lisible partout.
             if (/shield/.test(id)) return;
             set(ly.id, "text-color", P.text);
@@ -13148,9 +13148,9 @@
             set(ly.id, "text-halo-width", document.body.classList.contains("theme-dusk") ? 1.3 : 1.1);
           }
         });
-        // P13 : LABELS EN FRANÇAIS — le style « bright » affiche name/name:en (« des trucs en
+        // P13 : LABELS EN FRANÇAIS · le style « bright » affiche name/name:en (« des trucs en
         // anglais qui dénaturent la carte »). Priorité : name:fr → name:latin → name.
-        // P13b : on ne touche QU'AUX champs basés sur un NOM — les écussons ({ref} = numéro de
+        // P13b : on ne touche QU'AUX champs basés sur un NOM · les écussons ({ref} = numéro de
         // route) et numéros de maison gardent leur champ d'origine (sinon : écussons vides).
         layers.forEach((ly) => {
           if (ly.type !== "symbol" || !(ly.layout && ly.layout["text-field"])) return;
@@ -13170,12 +13170,12 @@
       })();
       if (glOk) {
         const lyr = L.maplibreGL({
-          // « bright » (et plus « positron ») : style COMPLET — POIs, commerces, parcs nommés,
+          // « bright » (et plus « positron ») : style COMPLET · POIs, commerces, parcs nommés,
           // numéros… positron était trop minimaliste (« il n'y a plus que les noms de rues »).
           style: "https://tiles.openfreemap.org/styles/bright",
           attribution: "© OpenStreetMap · OpenFreeMap",
           attributionControl: false,
-          padding: 0.3,             // P10 : marge LARGE re-nécessaire — en plein écran on ne resynchronise
+          padding: 0.3,             // P10 : marge LARGE re-nécessaire · en plein écran on ne resynchronise
                                     // PLUS pendant le geste (anti-tremblement), c'est elle qui couvre les bords
           fadeDuration: 0,          // étiquettes immédiates (pas de fondu coûteux)
           pixelRatio: Math.min(window.devicePixelRatio || 1, 2), // cap rétina : ÉNORME gain GPU sur mobile
@@ -13190,7 +13190,7 @@
             m.once("load", () => _smRecolorStyle(m));
           } catch (e) {}
         }, 0);
-        // P2.4 : CHIEN DE GARDE « carte vide » — si le style vectoriel n'est pas chargé au bout
+        // P2.4 : CHIEN DE GARDE « carte vide » · si le style vectoriel n'est pas chargé au bout
         // de 8 s (réseau capricieux, CDN KO), la carte restait un carré beige à l'infini. On
         // remplace alors le fond GL par le raster CARTO (toujours une carte visible) ; le fond
         // vectoriel reviendra naturellement au prochain lancement.
@@ -13271,7 +13271,7 @@
     let homeMapSig = null;                                   // signature des données du dernier rendu carte (perf : évite un rebuild identique)
     let _questCity = "";                                     // ville sélectionnée pour les quêtes ("" = toutes)
     let _homeCityPts = [];                                   // TOUS les points datés d'une ville (quêtes + lieux sûrs) → menu villes + cadrage
-    // #14 : normalisation RENFORCÉE — on coupe à la virgule (n'importe quel pays, pas que la
+    // #14 : normalisation RENFORCÉE · on coupe à la virgule (n'importe quel pays, pas que la
     // France) et on retire les accents → « Lisbonne », « Lisbonne, Portugal » et « Lisbonnè »
     // ne font plus qu'UNE ville dans les menus.
     const _cityNorm = (c) => String(c || "").split(",")[0].trim().toLowerCase()
@@ -13411,7 +13411,7 @@
       const seen = new Map();
       (pts || []).forEach((q) => { const c = q.city; if (!c) return; const k = _cityNorm(c); if (k && !seen.has(k)) seen.set(k, c); });
       // Retour Maxime : la pseudo-ville « Partout » (spots cachés/géo-libres en base) ne doit
-      // PAS apparaître comme un choix — ce n'est pas une ville, et ça spoile les secrets.
+      // PAS apparaître comme un choix · ce n'est pas une ville, et ça spoile les secrets.
       const cities = [...seen.values()].filter((c) => !/^\s*partout\s*$/i.test(c)).sort((a, b) => a.localeCompare(b, "fr"));
       const sig = cities.join("|");
       if (sig === _questCitiesSig) return; // pas de changement → on garde le menu (et la sélection)
@@ -13474,7 +13474,7 @@
           // #12 : UN seul monde (fini les cartes côte à côte au dézoom) + bords élastiques doux
           minZoom: 2.4, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 0.8, worldCopyJump: false,
           preferCanvas: true, tap: false, zoomAnimation: true, fadeAnimation: true, inertiaDeceleration: 2000 }).setView([46.6, 2.3], 4); /* P6 : inertie plus douce, glisse « à la Plans » */
-        // P4 (retour Maxime, remplace le geste P2.7) : TAP-POUR-EXPLORER — la mini-carte dort
+        // P4 (retour Maxime, remplace le geste P2.7) : TAP-POUR-EXPLORER · la mini-carte dort
         // (1 doigt = la page défile) ; un TAP dessus la RÉVEILLE (drag direct, 100 % réactive,
         // liseré corail discret) ; toucher la page EN DEHORS la rendort → le scroll de
         // l'accueil reste naturel, sans passer par le plein écran.
@@ -13482,7 +13482,7 @@
         if (window._smCoarse) {
           try { homeLeaf.dragging.disable(); } catch (e) {}
           // P6 (retour Maxime : « le bouton est pas visible ») : le badge « touche pour
-          // explorer » est VISIBLE EN PERMANENCE tant que la carte dort — plus seulement
+          // explorer » est VISIBLE EN PERMANENCE tant que la carte dort · plus seulement
           // pendant un geste. Il disparaît au réveil, revient quand elle se rendort.
           const hint = document.createElement("div"); hint.className = "hm-coop-hint show";
           hint.innerHTML = '<span class="hh">🖐️</span>' + escapeHtml(i18nT("Touche la carte pour l'explorer"));
@@ -13955,14 +13955,14 @@
       // PERF plein écran : le canvas GPU devient ~4× plus grand → résolution de rendu ×1.0
       // le temps du plein écran (légèrement moins net, BEAUCOUP plus fluide), netteté ×2
       // restaurée en revenant en vue carte réduite.
-      // P10 : netteté ×1 restaurée en plein écran — on ne re-rend plus PENDANT le geste
+      // P10 : netteté ×1 restaurée en plein écran · on ne re-rend plus PENDANT le geste
       // (anti-tremblement), donc le GPU a le temps de rendre net aux moments calmes.
       try { _smGlMaps.forEach((m) => { if (m && typeof m.setPixelRatio === "function") m.setPixelRatio(on ? 1 : Math.min(window.devicePixelRatio || 1, 2)); }); } catch (e) {}
       if (homeLeaf) {
         if (homeLeaf.scrollWheelZoom) { on ? homeLeaf.scrollWheelZoom.enable() : homeLeaf.scrollWheelZoom.disable(); }
         // P4 : plein écran = drag toujours actif ; en sortir rendort la mini-carte (tap pour réveiller)
         try { if (window._smCoarse && homeLeaf.dragging) { if (on) homeLeaf.dragging.enable(); else if (window._smMapSleep) window._smMapSleep(); else homeLeaf.dragging.disable(); } } catch (e) {}
-        // P5 (retour Maxime) : le swap raster du plein écran est RETIRÉ — la carte garde le
+        // P5 (retour Maxime) : le swap raster du plein écran est RETIRÉ · la carte garde le
         // fond vectoriel SunMates recoloré par MODE (jour/nuit/hiver/tropiques) partout.
         // La fluidité plein écran se joue ailleurs : resync GL à chaque frame (voir renderHomeMap).
         // iOS : le conteneur change de taille via CSS sans event resize natif fiable.
@@ -14155,7 +14155,7 @@
       };
       render(); ov.classList.add("show");
     }
-    // #6 : LE CARNET D'ADRESSES PERSO — liste complète des 📌, avec CATÉGORIES (tap sur
+    // #6 : LE CARNET D'ADRESSES PERSO · liste complète des 📌, avec CATÉGORIES (tap sur
     // l'emoji = on fait défiler café/resto/bar/dodo/spot/divers), note, voir-sur-carte, retirer.
     const PIN_CATS = [["📌", "Divers"], ["☕", "Café"], ["🍽️", "Resto"], ["🍹", "Bar"], ["🛏️", "Dodo"], ["🌅", "Spot"]];
     function openMyPinsBook() {
@@ -14336,7 +14336,7 @@
     function showTourStep(i) {
       if (i >= _activeTour.length) { endTour(); return; }
       tourIdx = i; const st = _activeTour[i];
-      // #21 : « Suivant » doit répondre AU DOIGT — on ne paie le délai de placement que si
+      // #21 : « Suivant » doit répondre AU DOIGT · on ne paie le délai de placement que si
       // l'étape change réellement d'onglet (sinon la cible est déjà peinte : quasi instantané).
       const curTab = (document.querySelector(".bottom-nav button.active") || { dataset: {} }).dataset.tab;
       const tabChanges = !!(st.tab && st.tab !== curTab);
@@ -14349,7 +14349,7 @@
       $("tourProg").textContent = (i + 1) + " / " + _activeTour.length;
       $("tourNext").textContent = i === _activeTour.length - 1 ? "Terminer 🎉" : "Suivant →";
       show($("tourPrev"), i > 0); // « Précédent » caché à la 1re étape
-      // #30 : la bulle ne CLIGNOTE plus entre les étapes — elle reste visible et GLISSE vers
+      // #30 : la bulle ne CLIGNOTE plus entre les étapes · elle reste visible et GLISSE vers
       // sa nouvelle place (masquée seulement à la toute 1re étape, le temps du placement).
       { const sp = $("tourSpot"), pp = $("tourPop"); if (i === 0) { if (pp) pp.style.opacity = "0"; if (sp) { sp.style.opacity = "0"; sp.classList.add("no-anim"); } } }
       setTimeout(() => positionTour(st, i === 0), tabChanges ? 200 : 60);
@@ -14438,14 +14438,14 @@
       if (seg === "admin" && typeof showAdminSegment === "function") showAdminSegment("demo");
       if (seg === "pro" && typeof loadProSpace === "function") loadProSpace();
       // P2.28 : on amène le panneau à l'écran (sinon il s'ouvre plus bas, hors vue, après la carte profil).
-      // Retour Maxime : « je descends trop bas » — on s'aligne sur la rangée d'onglets
+      // Retour Maxime : « je descends trop bas » · on s'aligne sur la rangée d'onglets
       // Premium/Admin (le panneau s'ouvre juste en dessous), pas sur le panneau lui-même.
       const anchor = document.getElementById("profSegNav") || document.querySelector('[data-psegpanel="' + seg + '"]');
       if (anchor) setTimeout(() => { try { anchor.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) {} }, 40);
     }
     document.querySelectorAll("[data-pseg]").forEach((b) => b.addEventListener("click", () => showProfileSegment(b.dataset.pseg)));
 
-    // ====== P14 : ESPACE PRO — le tableau de bord du partenaire (bar, auberge, café…) ======
+    // ====== P14 : ESPACE PRO · le tableau de bord du partenaire (bar, auberge, café…) ======
     // RÉPOND AUX 4 PROMESSES de l'offre Pro : Visibilité (fiche + offre mise en avant),
     // Badge « Lieu sûr », Plus de trafic (offre du moment + coupons), Statistiques (réelles).
     // CÂBLAGE : profiles.partner_place_id → partner_cafes.id (migration supabase_migration_pro.sql).
@@ -14481,7 +14481,7 @@
           <p class="muted" style="font-size:.74rem;margin:.5rem 0 0">Chaque check-in = un·e voyageur·se SunMates passé·e chez toi, vérifié·e par ton code.</p>
         </div>
         <div class="card"><h3 style="margin-top:0">🎁 Ton offre du moment</h3>
-          <p class="muted" style="font-size:.78rem;margin:.2rem 0 .5rem">Affichée sur ta fiche dans l'app — c'est elle qui fait venir les voyageurs.</p>
+          <p class="muted" style="font-size:.78rem;margin:.2rem 0 .5rem">Affichée sur ta fiche dans l'app · c'est elle qui fait venir les voyageurs.</p>
           <input id="proOffer" maxlength="90" value="${escapeHtml(d.offer || "")}" placeholder="Ex : 1 café offert au 1ᵉʳ check-in" />
           <div class="row" style="margin-top:.5rem">
             <div style="flex:1"><label>Horaires</label><input id="proHours" maxlength="80" value="${escapeHtml(d.hours || "")}" /></div>
@@ -14507,7 +14507,7 @@
         if (d.demo) { if (msg) { msg.style.color = "var(--muted)"; msg.textContent = "Démo : rien n'est écrit. Avec un compte partenaire associé, c'est enregistré pour de vrai."; } return; }
         const upd = { offer: ($("proOffer").value || "").trim() || null, hours: ($("proHours").value || "").trim() || null, price_range: ($("proPrice").value || "").trim() || null };
         const { error } = await db.from("partner_cafes").update(upd).eq("id", d.id);
-        if (msg) { msg.style.color = error ? "var(--danger)" : "var(--ok)"; msg.textContent = error ? "La base a refusé — migration supabase_migration_pro.sql à lancer (droits partenaire)." : "Enregistré ✓ visible sur ta fiche."; }
+        if (msg) { msg.style.color = error ? "var(--danger)" : "var(--ok)"; msg.textContent = error ? "La base a refusé · migration supabase_migration_pro.sql à lancer (droits partenaire)." : "Enregistré ✓ visible sur ta fiche."; }
       });
     }
     async function loadProSpace() {
@@ -14646,7 +14646,7 @@
     // Comparatif Gratuit vs Gold (avant / après)
     (function buildGoldCompare() {
       const el = $("goldCompare"); if (!el) return;
-      // P14 : comparatif RÉÉCRIT de A à Z — l'ancien annonçait des limites gratuites qui
+      // P14 : comparatif RÉÉCRIT de A à Z · l'ancien annonçait des limites gratuites qui
       // n'existent pas dans l'app (1 Mate/jour, 3 max…) = incohérent. Vérité produit :
       // le GRATUIT est complet, Gold = confort, style et visibilité.
       const rows = [
@@ -14913,7 +14913,7 @@
     const nameById = (id) => (travelerMap[id]?.username) || "Un voyageur";
 
     // ---- Toasts (notifications éphémères) ----
-    // #36 : notifs civilisées — 2 visibles MAX (les autres font la file), glissement vers le
+    // #36 : notifs civilisées · 2 visibles MAX (les autres font la file), glissement vers le
     // HAUT pour balayer, cliquables (curseur + fermeture propre), thémées via les variables.
     const _toastQ = { top: [], low: [] };
     function toast(emoji, html, onClick, opts) {
@@ -15816,7 +15816,7 @@
         // mais la table solo_tasks de la base est en retard → on COCHE quand même (sans XP, honnête)
         // au lieu d'un message d'erreur brut. → lancer supabase_migration_solo_tasks_sync.sql.
         if (!error && data && data.ok === false && /inconnue/i.test(data.message || "")) {
-          return { ok: true, xp: 0, soft: i18nT("Coché ✓ — l'XP arrivera après la synchro de la base") };
+          return { ok: true, xp: 0, soft: i18nT("Coché ✓ · l'XP arrivera après la synchro de la base") };
         }
         if (!error && data) { if (data.ok && myProfile) myProfile.xp = (myProfile.xp || 0) + (data.xp || 0); return { ok: !!data.ok, xp: data.xp || 0, message: data.message }; }
       } catch (e) {}
@@ -16000,7 +16000,7 @@
       const qCity = {}; (typeof allQuests !== "undefined" ? allQuests : []).forEach((q) => { if (q.key) qCity[q.key] = (q.city || "").replace(/, France$/, ""); });
       const byCity = {}; doneQuests.forEach((r) => { const c = qCity[r.quest_key]; if (c) byCity[c] = (byCity[c] || 0) + 1; });
       const cities = Object.keys(byCity).sort((a, b) => byCity[b] - byCity[a]);
-      // #38 : ouverture INSTANTANÉE — les photos passent en lazy-load (data-lazybg + shimmer),
+      // #38 : ouverture INSTANTANÉE · les photos passent en lazy-load (data-lazybg + shimmer),
       // « Tes Mates d'aventure » est REPLIABLE (état gardé), l'album est plus présent.
       let galFolded = false; try { galFolded = localStorage.getItem("sm_coll_galmates") === "1"; } catch (e) {}
       const matesHtml = mates.length
@@ -16209,7 +16209,7 @@
     }));
 
     /* ====================== 🥚 EASTER EGGS (chut… réservé aux explorateurs) ======================
-       RÈGLE : AUCUNE mention dans l'UI publique — tout se découvre par hasard. La liste vit
+       RÈGLE : AUCUNE mention dans l'UI publique · tout se découvre par hasard. La liste vit
        dans le catalogue ADMIN. Chaque egg débloque un badge SECRET (badges : lancer
        supabase_migration_easter_eggs.sql). Tout est best-effort : un egg qui casse ne doit
        JAMAIS gêner l'app (try/catch partout). */
@@ -16222,13 +16222,13 @@
         const { data, error } = await db.rpc("sm_grant_badge", { p_key: key });
         if (!error) return !(data && data.ok === false);
       } catch (e) {}
-      try { // repli (vieille base sans la RPC) : tentative directe — peut être bloquée par la RLS
+      try { // repli (vieille base sans la RPC) : tentative directe · peut être bloquée par la RLS
         const def = (typeof allBadgeDefs !== "undefined" && allBadgeDefs.find((b) => b.key === key)) || {};
         const { error: e2 } = await db.from("user_badges").upsert({ user_id: myUserId, badge_key: key, name: def.name || null, emoji: def.emoji || null }, { onConflict: "user_id,badge_key" });
         return !e2;
       } catch (e) { return false; }
     }
-    // #13 : MODÉRATION AUTO des textes publiés (messages, fil, groupes, commentaires) — les
+    // #13 : MODÉRATION AUTO des textes publiés (messages, fil, groupes, commentaires) · les
     // insultes et slurs FR/EN sont VOILÉS (✿✿✿) avant l'envoi. Filtre volontairement strict
     // sur les slurs, mesuré sur le reste. (Photos : nécessite un service serveur, noté.)
     const _BADWORDS = /\b(connard|connasse|encul[ée]s?|salopes?|salauds?|putes?|fdp|ntm|nique (?:ta|sa|leur)|niqu[ée]|ta gueule|tg|batards?|bâtards?|bougnoules?|youpins?|negro|nègres?|negres?|tapettes?|fiottes?|gouines?|pd|mongol(?:iens?)?|attard[ée]s?|asshole|bitch|bastard|cunt|fag(?:got)?s?|nigg(?:er|a)s?|whores?|sluts?|motherfuckers?|retards?)\b/gi;
@@ -16247,14 +16247,14 @@
       } catch (e) {}
     }
 
-    // ---- Boîte à outils FX (animations VECTORIELLES dessinées main — fini les emojis cheap) ----
+    // ---- Boîte à outils FX (animations VECTORIELLES dessinées main · fini les emojis cheap) ----
     const _eggAdmin = () => !!(myProfile && myProfile.is_admin); // l'admin peut re-déclencher (démo/tests)…
     // …mais garde un MINI-cooldown (10 s) : zéro limite = avalanche d'effets (retour Maxime).
     function _eggCool(key, ms) { const eff = _eggAdmin() ? Math.min(ms, 10000) : ms; const k = "_eggcool_" + key, now = Date.now(); if (window[k] && now - window[k] < eff) return false; window[k] = now; return true; }
     const EGG_SUN_SVG = (px) => `<svg viewBox="0 0 64 64" width="${px}" height="${px}"><defs><radialGradient id="egsun" cx="50%" cy="45%"><stop offset="0%" stop-color="#FFE9A8"/><stop offset="55%" stop-color="#FFC93C"/><stop offset="100%" stop-color="#FF8A3D"/></radialGradient></defs><g class="eg-rays" stroke="#FFB13C" stroke-width="3.4" stroke-linecap="round"><line x1="32" y1="2" x2="32" y2="11"/><line x1="32" y1="53" x2="32" y2="62"/><line x1="2" y1="32" x2="11" y2="32"/><line x1="53" y1="32" x2="62" y2="32"/><line x1="11" y1="11" x2="17" y2="17"/><line x1="47" y1="47" x2="53" y2="53"/><line x1="53" y1="11" x2="47" y2="17"/><line x1="17" y1="47" x2="11" y2="53"/></g><circle cx="32" cy="32" r="16" fill="url(#egsun)"/></svg>`;
     const EGG_BALLOON_SVG = (c1, c2, w) => `<svg viewBox="0 0 40 66" width="${w || 30}" height="${Math.round((w || 30) * 1.65)}"><path d="M20 3C11.2 3 4.5 10 4.5 18.5 4.5 28 13 36.5 20 41.5 27 36.5 35.5 28 35.5 18.5 35.5 10 28.8 3 20 3z" fill="${c1}"/><path d="M13.5 8.5c-3 2-5 5.5-5 9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none" opacity=".65"/><path d="M20 41.5l-2.6 4.5h5.2z" fill="${c2}"/><path d="M20 46c1.4 6-2.2 9 .4 17" stroke="${c2}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/></svg>`;
 
-    // 🌍 LE PETIT GLOBE — 7 taps sur le logo (remplace l'ancien Golden Hour) : un globe
+    // 🌍 LE PETIT GLOBE · 7 taps sur le logo (remplace l'ancien Golden Hour) : un globe
     // dessiné main descend, TOURNE (décélère), un pin se plante sur un pays au hasard →
     // sa fiche s'ouvre : « Et si c'était ta prochaine destination ? » + badge « Tour du monde ».
     (function eggGlobe() {
@@ -16302,7 +16302,7 @@
       });
     })();
 
-    // 🐋 LA BALEINE — zoomer au large (le centre de la carte est sur l'eau) : elle apparaît.
+    // 🐋 LA BALEINE · zoomer au large (le centre de la carte est sur l'eau) : elle apparaît.
     let _whaleMk = null;
     function _eggWhaleCheck() {
       try {
@@ -16350,7 +16350,7 @@
       } catch (e) {}
     }
 
-    // 🎂 ANNIVERSAIRE — le jour J (date de naissance du profil), une fois par an.
+    // 🎂 ANNIVERSAIRE · le jour J (date de naissance du profil), une fois par an.
     function _eggBirthday() {
       try {
         if (!myProfile || !myProfile.birthdate || !myUserId) return;
@@ -16366,7 +16366,7 @@
       } catch (e) {}
     }
 
-    // ☀️ MOTS MAGIQUES — certains mots tapés dans la recherche de l'accueil réveillent des choses.
+    // ☀️ MOTS MAGIQUES · certains mots tapés dans la recherche de l'accueil réveillent des choses.
     (function eggMagicWords() {
       const inp = $("homeSearch"); if (!inp) return;
       inp.addEventListener("input", () => {
@@ -16381,19 +16381,19 @@
             awardSecretBadge("badge_sunword");
             return;
           }
-          // 🛸 42 : la réponse à la grande question (H2G2 — la bible du voyageur)
+          // 🛸 42 : la réponse à la grande question (H2G2 · la bible du voyageur)
           if (v === "42") {
             if (!_eggCool("h2g2", 45000)) return;
-            popInfo("🛸", i18nT("La réponse."), i18nT("« 42 : la réponse à la grande question sur la vie, l'univers et le reste. » Bon voyage galactique — et n'oublie jamais ta serviette 🧻✨"));
+            popInfo("🛸", i18nT("La réponse."), i18nT("« 42 : la réponse à la grande question sur la vie, l'univers et le reste. » Bon voyage galactique · et n'oublie jamais ta serviette 🧻✨"));
             awardSecretBadge("badge_h2g2");
             return;
           }
-          // 🦁 hakuna matata : les TROIS LOUSTICS SunMates (lion, phacochère, suricate — dessinés
+          // 🦁 hakuna matata : les TROIS LOUSTICS SunMates (lion, phacochère, suricate · dessinés
           // main dans la DA, créations maison) trottinent en bas de l'écran sous un halo doré.
           if (v === "hakuna matata") {
             if (!_eggCool("hakuna", 60000)) return;
             // SILHOUETTES iconiques (refonte design) : profils noirs sur le couchant, façon
-            // « crête de savane » — la beauté vient de la silhouette, pas du cartoon coloré.
+            // « crête de savane » · la beauté vient de la silhouette, pas du cartoon coloré.
             // Chaque personnage a DEUX jeux de pattes (.lgA/.lgB) alternés = vraie marche 2 temps.
             // VRAI TRAIT DE CRAYON (retour Maxime) : UN SEUL contour courbe continu par
             // personnage (plus d'empilement de ronds/carrés), pattes et queues en coups de
@@ -16430,7 +16430,7 @@
               + '<g class="bwB"><path d="M2 6Q8 12 14 6Q20 12 26 6" stroke="#5C3414" stroke-width="2.2" fill="none" stroke-linecap="round"/></g></svg>';
             const w = document.createElement("div"); w.className = "egg-savane";
             // FILE INDIENNE canon (aucun chevauchement) : Pumbaa massif derrière, Simba élancé
-            // au milieu, Timon petit devant — un seul cortège, écarts fixes.
+            // au milieu, Timon petit devant · un seul cortège, écarts fixes.
             w.innerHTML = '<div class="egs-sky"></div><div class="egs-stars"></div><div class="egs-glow"></div>'
               + '<div class="egs-sun">' + EGG_SUN_SVG(110) + "</div>"
               + '<div class="egs-hills"></div>'
@@ -16449,9 +16449,9 @@
       });
     })();
 
-    // 🎮 KONAMI — ↑↑↓↓←→←→BA au clavier, ou la même séquence en SWIPES sur mobile :
+    // 🎮 KONAMI · ↑↑↓↓←→←→BA au clavier, ou la même séquence en SWIPES sur mobile :
     // l'app passe en mode RÉTRO 8-bit pendant 10 min (scanlines, pixels, police machine).
-    // Allumage/extinction d'écran CRT (ligne blanche qui s'étire puis balaie l'écran) — utilisé
+    // Allumage/extinction d'écran CRT (ligne blanche qui s'étire puis balaie l'écran) · utilisé
     // par le Konami pour entrer/sortir de 1988 avec un vrai effet de télé cathodique.
     function _crtFx() {
       try {
@@ -16531,7 +16531,7 @@
       }, { passive: true });
     })();
 
-    // 🎈 LÀ-HAUT — 5 taps rapides sur « À la maison » : la VRAIE tuile décolle, accrochée à des
+    // 🎈 LÀ-HAUT · 5 taps rapides sur « À la maison » : la VRAIE tuile décolle, accrochée à des
     // ballons vectoriels, et DISPARAÎT de l'accueil pendant 1 minute (elle revient en douceur).
     // Grappe de ballons « Là-haut » (refonte design) : bouquet de 8 ballons dégradés DA,
     // ficelles vers un nœud + double suspension vers la tuile. Construite en SVG à la volée.
@@ -16581,7 +16581,7 @@
       });
     })();
 
-    // ✈️ L'AVION EN PAPIER — 5 taps sur la tuile « En voyage » : il DÉCOLLE de la tuile, fait
+    // ✈️ L'AVION EN PAPIER · 5 taps sur la tuile « En voyage » : il DÉCOLLE de la tuile, fait
     // un LOOPING en laissant une traînée pointillée qui court, et se pose sur l'onglet Jeux
     // où il dépose un petit bonus (+5 XP, 1×/jour) + badge « Première classe ».
     (function eggPlane() {
@@ -16605,7 +16605,7 @@
             + ` a ${lr} ${lr} 0 1 1 -0.2 -0.2`
             + ` C ${mx + 84} ${my + 64}, ${ex + 56} ${ey - 130}, ${ex} ${ey}`;
           // #2 : c'est l'ÉMOJI ✈️ DE LA TUILE qui décolle (il quitte vraiment la tuile et
-          // reviendra se poser 30 s plus tard) — plus de dessin à part.
+          // reviendra se poser 30 s plus tard) · plus de dessin à part.
           const emo = btn.querySelector(".tm-emo");
           const ov = document.createElement("div"); ov.className = "egg-plane";
           ov.innerHTML = `<svg class="egp-trail" width="${innerWidth}" height="${innerHeight}" viewBox="0 0 ${innerWidth} ${innerHeight}"><path d="${d}" pathLength="100" fill="none"/></svg>`
@@ -16627,7 +16627,7 @@
               if (window.SMSound) { try { SMSound.play("coin"); } catch (e) {} }
               let gained = false;
               if (localStorage.getItem("sm_egg_plane_day") !== day) {
-                // petit bonus plaisir : +5 XP, 1×/jour (même chemin que le repli des rituels — pas de triche possible au-delà)
+                // petit bonus plaisir : +5 XP, 1×/jour (même chemin que le repli des rituels · pas de triche possible au-delà)
                 try { if (myUserId && myProfile) { const nx = (myProfile.xp || 0) + 5; const { error } = await db.from("profiles").update({ xp: nx }).eq("id", myUserId); if (!error) { myProfile.xp = nx; gained = true; localStorage.setItem("sm_egg_plane_day", day); if (typeof renderGameHub === "function") renderGameHub(); } } } catch (e) {}
               }
               if (typeof toast === "function") toast("✈️", gained ? i18nT("Atterrissage parfait · +5 XP déposés sur Jeux ✨") : i18nT("Atterrissage parfait ✈️ (le bonus du jour est déjà pris)"), null, { low: true });
@@ -16641,7 +16641,7 @@
       });
     })();
 
-    // 🚢 TITANIC — naviguer sur la carte jusqu'aux coordonnées du naufrage (41.73 N, 49.95 W).
+    // 🚢 TITANIC · naviguer sur la carte jusqu'aux coordonnées du naufrage (41.73 N, 49.95 W).
     function _eggTitanicCheck() {
       try {
         if (!homeLeaf || homeLeaf.getZoom() < 8) return;
@@ -16676,7 +16676,7 @@
       } catch (e) {}
     }
 
-    // ⭐ MAY THE 4TH — ouvrir l'app un 4 mai.
+    // ⭐ MAY THE 4TH · ouvrir l'app un 4 mai.
     function _eggMay4th() {
       try {
         const n = new Date();
@@ -16688,7 +16688,7 @@
       } catch (e) {}
     }
 
-    // 🗼 PÈLERIN — être physiquement à <150 m d'un monument légendaire (via la géoloc déjà accordée).
+    // 🗼 PÈLERIN · être physiquement à <150 m d'un monument légendaire (via la géoloc déjà accordée).
     const EGG_MONUMENTS = [
       ["la Tour Eiffel", 48.85837, 2.29448], ["le Sacré-Cœur", 48.88670, 2.34310], ["le Mont-Saint-Michel", 48.63601, -1.51144],
       ["le Colisée", 41.89021, 12.49223], ["la Sagrada Família", 41.40363, 2.17436], ["Big Ben", 51.50072, -0.12462],
@@ -16709,7 +16709,7 @@
       } catch (e) {}
     }
 
-    // 🍸 SECOUSSE COCKTAIL — secouer le téléphone : le hasard choisit une quête ou un lieu.
+    // 🍸 SECOUSSE COCKTAIL · secouer le téléphone : le hasard choisit une quête ou un lieu.
     // (iOS demande une permission explicite → l'egg y dort, pas de pop-up intrusive.)
     function _eggShakeResult() {
       try {
@@ -16744,7 +16744,7 @@
       } catch (e) {}
     })();
 
-    // 🌠 MINUIT PILE — ouvrir l'app entre 00:00 et 00:05 : pluie d'étoiles filantes.
+    // 🌠 MINUIT PILE · ouvrir l'app entre 00:00 et 00:05 : pluie d'étoiles filantes.
     function _eggMidnight() {
       try {
         const n = new Date();
@@ -16762,7 +16762,7 @@
       } catch (e) {}
     }
 
-    // 🔥 FLAMME 30 JOURS — série ≥30 : l'avatar s'embrase (profil + badge joueur).
+    // 🔥 FLAMME 30 JOURS · série ≥30 : l'avatar s'embrase (profil + badge joueur).
     function applyStreakFlame() {
       try {
         let st = {}; try { st = JSON.parse(localStorage.getItem("sm_streak_" + (myUserId || "x")) || "{}") || {}; } catch (e) {}
@@ -16866,7 +16866,7 @@
         // Aperçu (1 phrase marimba) de la sonnerie du faux appel → visible/testable dans l'admin
         ringtone: (n) => { [523, 659, 784, 1047, 880, 784, 659, 587].forEach((f, i) => { blip(f, 0.45, "triangle", 0.16, n + i * 0.26); blip(f * 2, 0.26, "sine", 0.05, n + i * 0.26); }); },
         // Jingle SAVANE 100% ORIGINAL (pentatonique façon kalimba + bourdon chaud) pour l'egg
-        // hakuna matata — la mélodie du film est protégée, on évoque l'ambiance sans la copier.
+        // hakuna matata · la mélodie du film est protégée, on évoque l'ambiance sans la copier.
         savane: (n) => {
           [392, 523, 587, 659, 523, 587, 784, 659, 587, 523].forEach((f, i) => warm(f, 0.3, 0.065, n + i * 0.17));
           warm(196, 1.5, 0.04, n); warm(196, 1.3, 0.035, n + 0.85); // bourdon de brousse
@@ -17044,7 +17044,7 @@
     }
     function unsubscribeSuggestions() { if (suggChannel) { db.removeChannel(suggChannel); suggChannel = null; } }
 
-    // Bug haut d'écran : la status-bar (theme-color) DOIT suivre le VRAI fond du mode courant —
+    // Bug haut d'écran : la status-bar (theme-color) DOIT suivre le VRAI fond du mode courant ·
     // sinon, après un toggle jour/nuit en hiver/tropiques, applyTheme remettait une couleur générique
     // qui jurait avec le contenu (« séparation nette / grain de couleur en haut »). On lit le --bg
     // calculé du body APRÈS bascule des classes → correct dans les 6 modes, sans rien coder en dur.
@@ -17072,7 +17072,7 @@
     // Clic simple = jour/nuit PARTOUT (la nuit coexiste avec les saisons, #9).
     // Auto météo : <0 °C → hiver, >30 °C → tropiques.
     function seasonMode() { try { return localStorage.getItem("sm_season") || ""; } catch (e) { return ""; } }
-    // #8 : transition de saison/thème SOIGNÉE — voile doux + pluie de flocons (hiver),
+    // #8 : transition de saison/thème SOIGNÉE · voile doux + pluie de flocons (hiver),
     // feuilles (tropiques) ou étoiles/rayons (nuit/jour). Légère, 1,5 s, auto-nettoyée.
     function _seasonFx(kind) {
       try {
@@ -17116,7 +17116,7 @@
     function applySeason(s, manual) {
       document.body.classList.toggle("theme-winter", s === "winter");
       document.body.classList.toggle("theme-tropic", s === "tropic");
-      // #9 : la saison ne REMPLACE plus jour/nuit — les deux coexistent (nuit d'hiver,
+      // #9 : la saison ne REMPLACE plus jour/nuit · les deux coexistent (nuit d'hiver,
       // nuit tropicale). On ré-applique le thème choisi par-dessus la saison.
       applyTheme(localStorage.getItem("sm_theme") || (document.body.classList.contains("theme-dusk") ? "dusk" : "day"));
       try { if (s) localStorage.setItem("sm_season", s); else localStorage.removeItem("sm_season"); if (manual) localStorage.setItem("sm_season_lock", "1"); } catch (e) {}
@@ -17144,7 +17144,7 @@
     { const tt = $("themeToggle"); let _lpT = null, _lpHint = null;
       const start = () => { clearTimeout(_lpT); clearTimeout(_lpHint);
         // Easter egg : l'indice à 3 s ne s'affiche qu'à ceux qui SAVENT (admin, ou déjà en
-        // mode saison — il faut bien pouvoir en sortir). Les autres découvrent par hasard.
+        // mode saison · il faut bien pouvoir en sortir). Les autres découvrent par hasard.
         // Toast EN BAS (low) : sinon le bandeau recouvrait le bouton qu'on est en train de tenir.
         _lpHint = setTimeout(() => { const initie = seasonMode() || (myProfile && myProfile.is_admin); if (initie && typeof toast === "function") toast(seasonMode() ? "🌞" : "❄️", i18nT("Continue d'appuyer (10 s) pour changer de saison…"), null, { low: true }); }, 3000);
         _lpT = setTimeout(() => {
@@ -17188,7 +17188,7 @@
       if (w.uv >= 8) tips.push("🧴 <b>UV très fort (" + w.uv + ")</b> : crème toutes les 2 h, chapeau, et l'ombre entre 12 h et 16 h.");
       else if (w.uv >= 6) tips.push("🧴 <b>UV fort (" + w.uv + ")</b> : crème solaire et lunettes pour explorer.");
       else if (w.uv >= 3) tips.push("😎 UV modéré (" + w.uv + ") : un peu de crème si tu restes dehors longtemps.");
-      if (w.rain > 0.4) tips.push("☔ <b>Il pleut</b> : musée, café cosy ou fiche pays — l'aventure peut être intérieure.");
+      if (w.rain > 0.4) tips.push("☔ <b>Il pleut</b> : musée, café cosy ou fiche pays · l'aventure peut être intérieure.");
       if (w.wind >= 40) tips.push("💨 <b>Vent fort (" + Math.round(w.wind) + " km/h)</b> : évite les crêtes et balcons exposés.");
       if (w.temp >= 30) tips.push("🥤 <b>Grosse chaleur</b> : bois souvent, vise les activités tôt le matin ou en soirée.");
       if (w.temp <= 0) tips.push("🧣 <b>Il gèle</b> : superpose les couches, gants pour le téléphone.");
@@ -17244,11 +17244,11 @@
     // Clés = texte FR EXACT (trimmé) tel qu'affiché. Le contenu utilisateur n'y est pas.
     const I18N_DICT = {
       // ===== Passe EN (audit) : chaînes JS statiques manquantes (toasts/modales/confirmations) =====
-      // · Flammes / série / joker —
+      // · Flammes / série / joker ·
       "Jour manqué rattrapé ! Ton <b>joker hebdo</b> a sauvé ta flamme 🔥": "Missed day recovered! Your <b>weekly joker</b> saved your flame 🔥",
       "Réessaie dans un instant.": "Try again in a moment.",
       "Réessaie.": "Try again.",
-      // · Voyages / souvenirs / récap —
+      // · Voyages / souvenirs / récap ·
       "Supprimer ce voyage ?": "Delete this trip?", "Ce voyage sera retiré de ton profil.": "This trip will be removed from your profile.",
       "Ajouter un voyage": "Add a trip", "Ta semaine sur SunMates": "Your week on SunMates",
       "Localisation de la ville…": "Locating the city…",
@@ -17256,7 +17256,7 @@
       "Génération de ton récap…": "Generating your recap…", "Impossible de générer l'image.": "Couldn't generate the image.",
       "Récap téléchargé ! Partage-le en story ☀️": "Recap downloaded! Share it as a story ☀️",
       "✓ Ajouté à tes envies": "✓ Added to your wishlist",
-      // · Hôte —
+      // · Hôte ·
       "Tu es hôte SunMates": "You're a SunMates host", "Demande en cours": "Request pending", "Devenir hôte SunMates": "Become a SunMates host",
       "✕ Annuler ma demande": "✕ Cancel my request",
       // 🥚 (textes d'eggs : visibles seulement quand l'egg se déclenche)
@@ -17268,7 +17268,7 @@
       "J'y vais !": "I'm going!",
       "Minuit pile · fais un vœu, noctambule…": "Midnight sharp · make a wish, night owl…",
       "La réponse.": "The answer.",
-      "« 42 : la réponse à la grande question sur la vie, l'univers et le reste. » Bon voyage galactique — et n'oublie jamais ta serviette 🧻✨": "“42: the answer to the great question of life, the universe and everything.” Safe galactic travels — and never forget your towel 🧻✨",
+      "« 42 : la réponse à la grande question sur la vie, l'univers et le reste. » Bon voyage galactique · et n'oublie jamais ta serviette 🧻✨": "“42: the answer to the great question of life, the universe and everything.” Safe galactic travels · and never forget your towel 🧻✨",
       "Hakuna matata · mais quelle phrase magnifique !": "Hakuna matata · what a wonderful phrase!",
       "conseils": "tips", "Météo du moment": "Weather right now",
       "six seveeen !": "six seveeen!", "Flamme envoyée ! 🔥": "Flame sent! 🔥",
@@ -17287,18 +17287,18 @@
       "Que la Force soit avec toi, voyageur·se.": "May the Force be with you, traveller.",
       "Demande annulée · tu peux la refaire quand tu veux 💛": "Request cancelled · you can send it again any time 💛",
       "Tu es hôte SunMates !": "You're a SunMates host!",
-      "Ta demande a été validée 🎉 Les voyageurs de passage voient maintenant ton badge 🛟 — merci de rendre ta ville plus accueillante 💛": "Your request has been approved 🎉 Travellers passing through can now see your 🛟 badge — thank you for making your city more welcoming 💛",
+      "Ta demande a été validée 🎉 Les voyageurs de passage voient maintenant ton badge 🛟 · merci de rendre ta ville plus accueillante 💛": "Your request has been approved 🎉 Travellers passing through can now see your 🛟 badge · thank you for making your city more welcoming 💛",
       "La demande n'est pas partie, réessaie dans un instant.": "The request didn't go through, try again in a moment.",
-      // · Profil / photo / vérif —
+      // · Profil / photo / vérif ·
       "Optimisation & envoi…": "Optimising & uploading…",
       "Choisis une image.": "Choose an image.", "Fichier trop lourd (max 15 Mo).": "File too big (max 15 MB).",
       "Erreur de recadrage.": "Cropping error.",
-      // · Lieux / check-in / avis —
+      // · Lieux / check-in / avis ·
       "Connecte-toi d'abord avec un Mate pour lui recommander un lieu.": "Connect with a Mate first to recommend a place.",
       "📍 Localisation…": "📍 Locating…",
       "Check-in": "Check-in",
       "Nettoyage du cache…": "Clearing cache…", "Cache vidé ✅ rechargement…": "Cache cleared ✅ reloading…",
-      // · Admin / modération —
+      // · Admin / modération ·
       "Membre suspendu, signalement traité": "Member suspended, report handled",
       "Supprimer ce signalement ?": "Delete this report?", "Suppression définitive de ce signalement.": "This report will be permanently deleted.",
       "Écris une réponse": "Write a reply", "Réponse envoyée · l'auteur sera notifié": "Reply sent · the author will be notified",
@@ -17306,7 +17306,7 @@
       "Bannir définitivement ?": "Ban permanently?", "Ce membre disparaîtra de la liste.": "This member will disappear from the list.",
       "Membre": "Member", "Ce lieu partenaire sera supprimé.": "This partner place will be deleted.",
       "Aperçu": "Preview", "Profil indisponible": "Profile unavailable", "Badge": "Badge",
-      // · Sécurité / position / minuteur / faux appel —
+      // · Sécurité / position / minuteur / faux appel ·
       "Partager ma position ?": "Share my location?",
       "Déclencher une alerte d'urgence ?": "Trigger an emergency alert?", "Ta position sera diffusée aussitôt à ton cercle de confiance.": "Your location will be shared instantly with your trust circle.", "Déclencher l'alerte": "Trigger the alert",
       "Minuteur en cours": "Timer running", "Rentrée en sécurité": "Home safe",
@@ -17318,7 +17318,7 @@
       "Fichier trop lourd (max 2 Mo). Prends un extrait plus court / moins bon débit.": "File too big (max 2 MB). Pick a shorter clip / lower bitrate.",
       "Ta sonnerie est enregistrée !": "Your ringtone is saved!", "Impossible d'enregistrer ce fichier.": "Couldn't save this file.",
       "Appel entrant…": "Incoming call…", "📞 Configurer le faux appel": "📞 Set up the fake call",
-      // · Jeux / quêtes / XP / boutique —
+      // · Jeux / quêtes / XP / boutique ·
       "Invitation copiée, partage-la !": "Invite copied, share it!",
       "Décide pour moi": "Decide for me", "Quiz du voyageur": "Traveller quiz", "Bingo de voyage": "Travel bingo",
       "BINGO ! Grille complète, bravo 🎉": "BINGO! Full grid, well done 🎉",
@@ -17334,7 +17334,7 @@
       "⭐ Ta progression": "⭐ Your progress", "🎯 Objectifs de la semaine": "🎯 Weekly goals", "🏙️ Ville à l'honneur": "🏙️ City of the day", "🎯 Quêtes proches de toi": "🎯 Quests near you", "🗺️ Ma collection": "🗺️ My collection",
       "Invite un Mate pour une sortie de groupe (+bonus XP) ✨": "Invite a Mate for a group outing (+XP bonus) ✨",
       "Décris en quelques mots comment tu l'as accomplie (anti-triche).": "Describe in a few words how you did it (anti-cheat).",
-      // · Chat / messages / flammes / vocaux —
+      // · Chat / messages / flammes / vocaux ·
       "Ce message sera retiré de la conversation.": "This message will be removed from the conversation.",
       "Message supprimé": "Message deleted",
       "Tes messages de cette conversation seront supprimés.": "Your messages in this conversation will be deleted.",
@@ -17347,10 +17347,10 @@
       "Activer le micro ?": "Enable the mic?", "Pour une note vocale (30 s max). Rien n'est gardé tant que tu n'envoies pas.": "For a voice note (30 s max). Nothing is kept until you send.",
       "Échec envoi vocal (lance la migration s36 ?)": "Voice note failed (run migration s36?)", "Lecture impossible": "Playback failed",
       "✓ Vu": "✓ Seen",
-      // · Activités carte —
+      // · Activités carte ·
       "⏳ Localisation…": "⏳ Locating…", "Publication…": "Posting…",
       "Elle sera retirée de la carte.": "It will be removed from the map.",
-      // · Compte / confidentialité / données —
+      // · Compte / confidentialité / données ·
       "✅ Réponse de l'équipe SunMates": "✅ Reply from the SunMates team",
       "SunMates Gold 👑": "SunMates Gold 👑",
       "Supprimer ton compte ?": "Delete your account?", "Suppression DÉFINITIVE de ton compte et de toutes tes données. Cette action est irréversible.": "PERMANENT deletion of your account and all your data. This action can't be undone.",
@@ -17358,25 +17358,25 @@
       "Erreur : réessaie.": "Error: try again.",
       "Préparation de tes données…": "Preparing your data…", "Tes données ont été téléchargées 📦": "Your data has been downloaded 📦",
       "Confidentialité & données": "Privacy & data",
-      // · Coupons / blocage —
+      // · Coupons / blocage ·
       "Il sera marqué utilisé et ne pourra plus servir.": "It'll be marked as used and can't be used again.", "Marquer utilisé": "Mark as used",
       "Bloquer ce voyageur ?": "Block this traveller?", "Il n'apparaîtra plus dans ta découverte ni tes messages. Tu pourras le débloquer plus tard.": "They won't appear in your discovery or messages anymore. You can unblock them later.",
-      // · Fil / posts / commentaires —
+      // · Fil / posts / commentaires ·
       "Supprimer ce post ?": "Delete this post?", "Ce post sera retiré du fil.": "This post will be removed from the feed.", "Post supprimé": "Post deleted",
       "Commentaires": "Comments", "Commentaire supprimé": "Comment deleted",
       "Connecte-toi pour commenter.": "Log in to comment.", "Connecte-toi pour voter.": "Log in to vote.",
       "Mets au moins 2 options.": "Add at least 2 options.", "Erreur, réessaie.": "Error, try again.",
-      // · Rituels / souvenirs —
+      // · Rituels / souvenirs ·
       "Mon rituel à moi": "My own ritual",
       "Ajoute une photo de profil dans « Modifier mon profil »": "Add a profile photo in “Edit my profile”",
-      // · QR / caméra / installation —
+      // · QR / caméra / installation ·
       "QR indisponible": "QR unavailable",
       "Activer la caméra ?": "Enable the camera?", "Uniquement pour scanner le QR d'un Mate. Aucune image n'est enregistrée ni envoyée.": "Only to scan a Mate's QR. No image is saved or sent.",
       "Afficher": "Show",
       "Sur iPhone/iPad, l'installation se fait via le menu Partager de Safari.": "On iPhone/iPad, install via Safari's Share menu.",
       "SunMates est déjà installée sur cet appareil 🎉": "SunMates is already installed on this device 🎉",
       // ===== fin passe EN audit =====
-      // · Accueil / mode Voyage & Maison —
+      // · Accueil / mode Voyage & Maison ·
       "Bonjour": "Hello", "Regarde qui traîne dans le coin 👀": "See who's around 👀",
       "✈️ En voyage": "✈️ Travelling", "🏠 À la maison": "🏠 At home",
       "Explore autour de toi 🗺️": "Explore around you 🗺️", "⛶ Plein écran": "⛶ Fullscreen", "✕ Fermer": "✕ Close",
@@ -17423,11 +17423,11 @@
       "Mes voyages 🧳": "My trips 🧳", "De passage chez toi 👋": "Passing through 👋",
       "Deviens hôte SunMates": "Become a SunMates host", "🛟 Tu es hôte SunMates": "🛟 You're a SunMates host", "Je veux aider": "I want to help", "✓ Hôte actif": "✓ Active host",
       "🎒 Préparatifs": "🎒 Trip prep",
-      // · Lieux —
+      // · Lieux ·
       "Tous": "All", "Éco": "Eco", "Près de moi": "Near me", "Top notés": "Top rated", "Populaires": "Popular",
       "Rechercher un lieu ou une ville…": "Search a place or city…", "⭐ Avis": "⭐ Reviews", "📍 Carte": "📍 Map",
       "☀️ Mon spot du jour": "☀️ My spot of the day", "Publier": "Post", "Effacer": "Clear",
-      // · Mates —
+      // · Mates ·
       "Rencontre des voyageurs, discute et pars à l'aventure ensemble 🌍": "Meet travellers, chat and go on adventures together 🌍",
       "Rechercher par pseudo ou ville…": "Search by username or city…", "🔎 Filtres avancés": "🔎 Advanced filters", "Réinitialiser les filtres": "Reset filters",
       "Trier par": "Sort by", "💬 Message": "💬 Message", "🤝 Se connecter": "🤝 Connect", "Connexion": "Connect", "✅ Connecté": "✅ Connected",
@@ -17435,14 +17435,14 @@
       "📨 Demandes reçues": "📨 Requests received", "Accepter": "Accept", "Envoyer un message…": "Send a message…",
       "Âge": "Age", "Genre": "Gender", "Orientation": "Orientation", "Recherche": "Looking for", "Métier": "Job", "Études": "Education",
       "Langues": "Languages", "Style de voyage": "Travel style", "Personnalité": "Personality", "Signe astro": "Star sign",
-      // · Jeux —
+      // · Jeux ·
       "Relève des défis, gagne de l'XP et débloque des coupons.": "Take on challenges, earn XP and unlock coupons.",
       "Quêtes": "Quests", "Jeux": "Games", "Badges": "Badges", "Coupons": "Coupons", "Classement": "Leaderboard", "Boutique": "Shop",
       "Quêtes du jour": "Today's quests", "Jeux populaires": "Popular games", "Description": "Description", "🎁 Récompenses": "🎁 Rewards",
       "➕ Rejoindre la quête": "➕ Join the quest", "✅ Marquer comme accompli": "✅ Mark as done", "🤝 Proposer à un Mate": "🤝 Suggest to a Mate", "📍 Voir sur la carte": "📍 See on map",
       "🛍️ Boutique XP": "🛍️ XP Shop", "🏷️ Titres de profil": "🏷️ Profile titles", "🖼️ Cadres d'avatar": "🖼️ Avatar frames", "Gratuit": "Free", "Débloqué": "Unlocked", "✓ Équipé": "✓ Equipped",
       "🗓️ Objectifs de la semaine": "🗓️ Weekly goals", "Accomplir 2 quêtes": "Complete 2 quests", "Faire 1 check-in": "Do 1 check-in", "Profil complété à 80 %": "Profile 80% complete",
-      // · Sécurité —
+      // · Sécurité ·
       "En cas de besoin, un seul geste. On est là pour toi.": "If you need it, one tap. We're here for you.", "Besoin d'aide ?": "Need help?",
       "🆘 J'ai besoin d'aide": "🆘 I need help", "✅ Je vais bien": "✅ I'm okay", "Conseil sécurité du jour": "Safety tip of the day",
       "Accès rapides": "Quick actions", "Faux appel": "Fake call", "Sortie de secours": "Emergency exit", "Signal d'aide": "Help signal", "Se signaler": "Be seen",
@@ -17452,33 +17452,33 @@
       "Numéros d'urgence": "Emergency numbers", "Par pays 🌍": "By country 🌍", "📞 Numéros d'urgence": "📞 Emergency numbers", "Rechercher un pays…": "Search a country…", "Urgences": "Emergency", "Police": "Police", "Ambulance": "Ambulance",
       "🚩 Signaler un voyageur": "🚩 Report a traveller", "Signaler un voyageur": "Report a traveller", "📋 Mes signalements": "📋 My reports", "Historique de rencontres": "Meetings history",
       "Qui peut me contacter": "Who can contact me", "Premiers secours · gestes qui sauvent": "First aid · lifesaving moves", "Voyager en sécurité": "Travel safely",
-      // · Profil & réglages —
+      // · Profil & réglages ·
       "Modifier mon profil": "Edit my profile", "🪪 Aperçu": "🪪 Preview", "Premium ✨": "Premium ✨", "Admin 🛡️": "Admin 🛡️", "Mes check-ins": "My check-ins",
       "⚙️ Paramètres du compte": "⚙️ Account settings", "Se déconnecter": "Log out", "Déconnexion": "Log out", "Changer de thème": "Switch theme",
-      // · Auth —
+      // · Auth ·
       "Pars solo, trouve ta bande 🌍": "Travel solo, find your crew 🌍", "Email": "Email", "Mot de passe": "Password",
       "Compte créé ! Bienvenue 🌞": "Account created! Welcome 🌞",
-      // · Communs —
+      // · Communs ·
       "Annuler": "Cancel", "Enregistrer": "Save", "Fermer": "Close", "Retour": "Back", "Suivant →": "Next →", "Passer": "Skip", "C'est parti ! 🚀": "Let's go! 🚀",
       "Chargement…": "Loading…", "Aucun résultat.": "No results.", "Voir le profil ›": "See profile ›",
-      // · Onboarding —
+      // · Onboarding ·
       "Salut": "Hi", "Ta carte vivante": "Your living map", "Crée des moments": "Create moments", "Joue & gagne": "Play & win", "Des lieux sûrs": "Safe places", "…et l'esprit léger": "…and peace of mind",
       "Retour": "Back",
-      // · Sections du profil —
+      // · Sections du profil ·
       "📸 Photo & présentation": "📸 Photo & intro", "🧭 Voyage & affinités": "🧭 Travel & affinities", "🪪 Identité": "🪪 Identity", "💼 Travail & études": "💼 Work & studies", "🌿 Style de vie": "🌿 Lifestyle", "✨ Plus sur moi": "✨ More about me", "✍️ Infos inutiles mais importantes !": "✍️ Useless but important info!",
       "Pseudo": "Username", "Ville": "City", "Bio": "Bio", "Centres d'intérêt": "Interests", "Mode de vie": "Lifestyle",
-      // · Réglages —
+      // · Réglages ·
       "🌍 Langue / Language": "🌍 Language / Langue", "Vibrations (haptique)": "Vibrations (haptics)", "Afficher ma présence": "Show my presence", "Profil public": "Public profile", "Thème sombre": "Dark theme", "🪪 Mon QR": "🪪 My QR", "📷 Scanner": "📷 Scan", "Nouvel email": "New email", "Changer l'email": "Change email", "Changer le mot de passe": "Change password", "📲 Installer l'app": "📲 Install the app", "🚀 Revoir la présentation": "🚀 Replay the intro",
-      // · Premium / Gold —
+      // · Premium / Gold ·
       "Passe en SunMates Gold": "Go SunMates Gold", "Mates illimités": "Unlimited Mates", "Check-ins illimités": "Unlimited check-ins", "Filtres avancés": "Advanced filters", "Profil mis en avant": "Featured profile", "Gratuit": "Free", "Inclus": "Included",
-      // · Parcours / souvenir —
+      // · Parcours / souvenir ·
       "🧭 Mon parcours": "🧭 My journey", "Partager": "Share", "check-ins": "check-ins", "quêtes": "quests", "badges": "badges", "voyages": "trips",
-      // · Toasts & messages fréquents —
+      // · Toasts & messages fréquents ·
       "Profil enregistré ✅": "Profile saved ✅", "Position partagée 📍": "Location shared 📍", "Email mis à jour ✅": "Email updated ✅", "Mot de passe mis à jour ✅": "Password updated ✅", "Tu participes au classement !": "You're on the leaderboard!", "Voyage planifié ! Bons préparatifs ✨": "Trip planned! Happy packing ✨",
       "Aucune conversation pour l'instant": "No conversations yet", "Aucune demande reçue": "No requests received", "Aucun check-in encore": "No check-ins yet",
-      // · Admin —
+      // · Admin ·
       "📊 Tableau de bord": "📊 Dashboard", "👥 Membres": "👥 Members", "📍 Lieux sûrs": "📍 Safe places", "🚩 Signalements": "🚩 Reports", "💼 Demandes de devis B2B": "💼 B2B quote requests", "Rechercher un pseudo…": "Search a username…", "Vérifier": "Verify", "Bannir": "Ban", "Débannir": "Unban",
-      // · Batch 3 : couverture élargie —
+      // · Batch 3 : couverture élargie ·
       // Chat
       "Voir le profil ›": "See profile ›", "Supprimer la conversation": "Delete conversation", "Traduire": "Translate", "🌐 Traduire": "🌐 Translate",
       // Notifications
@@ -17513,7 +17513,7 @@
       // États vides & divers
       "Personne pour l'instant 🌍": "Nobody yet 🌍", "Reviens bientôt 🌍": "Come back soon 🌍", "Aucun lieu ne correspond. Essaie un autre filtre.": "No place matches. Try another filter.", "Aucun voyageur trouvé": "No traveller found", "Aucune rencontre pour l'instant. Connecte-toi avec des voyageurs !": "No meetings yet. Connect with travellers!",
       "Demander une révision": "Request a review", "Compte suspendu": "Account suspended",
-      // · Batch 4 : gaps repérés au rendu —
+      // · Batch 4 : gaps repérés au rendu ·
       "Rechercher un lieu ou un·e voyageur·se…": "Search a place or a traveller…",
       "Filtre, puis": "Filter, then", "touche une pastille": "tap a pin", "pour agir 👇": "to act 👇",
       "📍 Lieux": "📍 Places", "🧑 Mates": "🧑 Mates", "🎉 Activités": "🎉 Activities", "✅ Check-ins": "✅ Check-ins",
@@ -17521,22 +17521,22 @@
       "Explore autour de toi": "Explore around you", "Découvrir": "Discover", "Demandes": "Requests", "Messages": "Messages",
       "Pars solo, trouve ta bande 🌍": "Travel solo, find your crew 🌍", "Repère les voyageurs autour de toi, propose un café ou une virée, et repars avec des potes.": "Spot travellers around you, suggest a coffee or an outing, and leave with friends.",
       "Inscription": "Sign up", "Créer mon compte": "Create my account",
-      // · P2 (passe 2) : pseudo à l'inscription + retour système —
+      // · P2 (passe 2) : pseudo à l'inscription + retour système ·
       "Pseudo": "Username", "Chloé l'exploratrice": "Chloe the explorer",
-      "Choisis un pseudo (2 à 20 caractères) — c'est lui que les autres verront.": "Pick a username (2 to 20 characters) — that's what others will see.",
+      "Choisis un pseudo (2 à 20 caractères) · c'est lui que les autres verront.": "Pick a username (2 to 20 characters) · that's what others will see.",
       "Encore un retour pour quitter": "Press back once more to exit",
       "Plein écran pour explorer la carte": "Full screen to explore the map",
       "Quoi de neuf dans cette préversion": "What's new in this preview",
       "Touche la carte pour l'explorer": "Tap the map to explore it",
       "Conditions & confidentialité": "Terms & privacy",
-      // · P8 : mini-jeux en sessions + divers —
+      // · P8 : mini-jeux en sessions + divers ·
       "Question {i} sur {n}": "Question {i} of {n}", "Carte {i} sur {n}": "Card {i} of {n}",
       "Session terminée !": "Session complete!", "Nouvelle session": "New session",
       "Suivant": "Next", "Terminer": "Finish",
       "Bonnes réponses : {s} sur {n}": "Correct answers: {s} of {n}",
-      "Toutes les cartes sont passées — relance pour un nouveau paquet mélangé.": "All cards have been played — start again for a freshly shuffled deck.",
-      "Coché ✓ — l'XP arrivera après la synchro de la base": "Checked ✓ — XP will arrive after the database sync",
-      // · P11 (audit agents) : noms & descriptions des mini-jeux — manquaient au dico EN —
+      "Toutes les cartes sont passées · relance pour un nouveau paquet mélangé.": "All cards have been played · start again for a freshly shuffled deck.",
+      "Coché ✓ · l'XP arrivera après la synchro de la base": "Checked ✓ · XP will arrive after the database sync",
+      // · P11 (audit agents) : noms & descriptions des mini-jeux · manquaient au dico EN ·
       "Roue des défis": "Challenge wheel", "Brise-glace": "Icebreaker", "Quiz du voyageur": "Traveller quiz",
       "2 vérités, 1 mensonge": "Two truths, one lie", "Décide pour moi": "Decide for me", "Bingo de voyage": "Travel bingo",
       "Un défi fun tiré au sort, à relever seul·e ou avec un Mate.": "A fun random challenge, to take on alone or with a Mate.",
@@ -17545,15 +17545,15 @@
       "Le jeu ultime pour apprendre à se connaître.": "The ultimate game to get to know each other.",
       "Hésitant·e ? Laisse le sort choisir ta prochaine aventure.": "Can't decide? Let fate pick your next adventure.",
       "Coche les expériences vécues, vise la ligne complète !": "Tick off what you've lived, aim for the full line!",
-      // · Batch 5 : gaps onglet Sécurité —
+      // · Batch 5 : gaps onglet Sécurité ·
       "Partage de position, alerte d'urgence, cercle de confiance et plus.": "Location sharing, emergency alert, trust circle and more.",
       "En cas d'urgence": "In an emergency", "Un geste, et tu n'es plus seul·e.": "One tap, and you're not alone.", "📍 Partager ma position (sans urgence)": "📍 Share my location (no emergency)",
       "Tes proches à joindre en un geste. Stockés sur ton appareil (privé).": "Your close contacts, one tap away. Stored on your device (private).",
       "Seules les positions de tes connexions acceptées apparaissent ici.": "Only the locations of your accepted connections appear here.",
       "Trouver de l'aide autour de moi": "Find help around me",
-      // · Onboarding slide « spots » (reformulée fun) —
+      // · Onboarding slide « spots » (reformulée fun) ·
       "Tes spots préférés": "Your favourite spots", "Découvre les": "Discover the", "meilleurs spots": "best spots", "de la communauté (cafés, co-livings, bars), avis et notes à l'appui, pour retrouver du monde 🎉": "from the community (cafés, co-livings, bars), backed by reviews and ratings, to meet up with people 🎉",
-      // · Batch 6 : onglet Profil (labels + textes) —
+      // · Batch 6 : onglet Profil (labels + textes) ·
       "Non vérifié": "Not verified", "Confiance ⓘ": "Trust ⓘ", "Confiance": "Trust", "📤 Partager": "📤 Share",
       "Touche une section pour la déplier. Pense à": "Tap a section to expand. Remember to", "en bas.": "at the bottom.", "Enregistrer": "Save",
       "Demander la vérification": "Request verification", "Aperçu de mon profil public": "Preview of my public profile",
@@ -17562,13 +17562,13 @@
       "Nom de l'établissement": "Place name", "Nom du contact": "Contact name", "Taille (cm)": "Height (cm)", "Langue parlée": "Spoken language",
       "Langues parlées": "Spoken languages", "Enfants": "Children", "Avec photo": "With photo", "Métier": "Job", "Emploi": "Job", "Entreprise": "Company",
       "Centres d'intérêt": "Interests", "Intention": "Intent", "Je suis ici pour": "I'm here to", "Animaux": "Pets", "Musique": "Music",
-      // · Batch 7 : Lieux + labels stat Mates + divers —
+      // · Batch 7 : Lieux + labels stat Mates + divers ·
       "Les meilleurs spots pour se retrouver ☕ Fais un check-in pour grimper au classement 🏆": "The best spots to meet up ☕ Check in to climb the leaderboard 🏆",
       "Mates de confiance ›": "Trusted Mates ›", "Trouve tes premiers Mates 🌍 ›": "Find your first Mates 🌍 ›",
       "(privé · jamais affiché)": "(private · never shown)", "Ajouter le tien ›": "Add yours ›",
       "Plein écran": "Fullscreen", "Quitter le plein écran": "Exit fullscreen", "Tout afficher": "Show all", "Centrer sur ma position": "Center on my location",
       "Partager une activité sur la carte": "Share an activity on the map", "Quand, où exactement, niveau…": "When, where exactly, level…",
-      // · Batch 8 : vues profondes (réglages, premium, B2B, actions profil, chat) —
+      // · Batch 8 : vues profondes (réglages, premium, B2B, actions profil, chat) ·
       "Application": "App", "Compte": "Account", "Apparaître dans le classement": "Appear in the leaderboard", "Mode sombre": "Dark mode", "🌙 Mode sombre": "🌙 Dark mode", "Thème « nuit tropicale », repose les yeux": "“Tropical night” theme, easy on the eyes", "Langue": "Language",
       "Afficher ma présence": "Show my presence", "« En ligne » sur ton avatar": "“Online” on your avatar",
       "Mes connexions": "My connections", "Voir mes connexions": "See my connections", "✅ Mes connexions": "✅ My connections",
@@ -17580,13 +17580,13 @@
       "Badge « Lieu sûr »": "“Safe place” badge", "Check-ins & offres": "Check-ins & deals", "Fréquentation & avis": "Footfall & reviews", "Mis en avant sur la carte": "Featured on the map", "La confiance en plus": "Extra trust",
       "Quêtes à confirmer": "Quests to confirm", "Défis reçus": "Challenges received", "Quêtes du jour": "Today's quests", "Jeux populaires": "Popular games",
       "Mon parcours de voyageur·se": "My traveller journey", "Partager mon parcours": "Share my journey",
-      // · Batch 9 : page de connexion + Pro —
+      // · Batch 9 : page de connexion + Pro ·
       "Seul·e au départ, jamais à l'arrivée ☀️": "Solo when you leave, never when you arrive ☀️",
       "Fais de ton établissement un lieu sûr repéré par les voyageurs solo.": "Make your venue a safe spot spotted by solo travellers.", "Espace Pro": "Pro space",
       "Cafés, co-livings, bars et hôtels demandent à être référencés comme lieux sûrs.": "Cafés, co-livings, bars and hotels apply to be listed as safe places.", "🚀 Démarrer": "🚀 Get started",
       "🚀 Démarrer, Espace Pro": "🚀 Get started, Pro space", "Aucun compte requis : découvre l'offre et envoie ta demande de partenariat.": "No account needed: discover the offer and send your partnership request.",
       "Pourquoi nous rejoindre": "Why join us", "Votre tableau de bord Pro": "Your Pro dashboard", "Demande de référencement": "Listing request", "Envoyer ma demande": "Send my request",
-      // · Batch 10 : toasts fréquents —
+      // · Batch 10 : toasts fréquents ·
       "Profil enregistré 🎉": "Profile saved 🎉", "Photo de profil mise à jour": "Profile photo updated", "Demande de connexion envoyée !": "Connection request sent!", "Quête rejointe !": "Quest joined!",
       "Conversation supprimée": "Conversation deleted", "Coupon utilisé, bon plan !": "Coupon used, nice deal!", "Merci pour ton avis !": "Thanks for your review!", "Contact d'urgence ajouté": "Emergency contact added", "Contact supprimé": "Contact deleted",
       "Activité publiée sur la carte ✅": "Activity posted on the map ✅", "Activité supprimée": "Activity deleted", "Ajouté à tes envies !": "Added to your wishlist!", "Tu participes au classement !": "You're on the leaderboard!",
@@ -17595,10 +17595,10 @@
       "Parcours copié, colle-le où tu veux !": "Journey copied, paste it anywhere!", "Appel simulé dans 5 s… range ton téléphone 😉": "Simulated call in 5s… put your phone away 😉", "Appel simulé dans {d}… range ton téléphone 😉": "Simulated call in {d}… put your phone away 😉", "Profil introuvable": "Profile not found",
       "Signalement supprimé": "Report deleted", "Signalement traité": "Report handled", "Indique une destination et une date 🙂": "Enter a destination and a date 🙂", "Voyage planifié ! Bons préparatifs ✨": "Trip planned! Happy packing ✨",
       "Quête accomplie ! 🎉": "Quest completed! 🎉", "Demande de connexion envoyée": "Connection request sent", "Connexion réussie !": "Logged in!", "Tu n'es plus hôte.": "You're no longer a host.", "Tu es hôte ! Merci 💛": "You're a host! Thank you 💛",
-      // · Batch 11 : bannière PWA + divers noms propres composés —
+      // · Batch 11 : bannière PWA + divers noms propres composés ·
       "Installer SunMates": "Install SunMates", "Installer": "Install", "Installer l'app": "Install the app", "Installer l'application": "Install the app", "Ajouter à l'écran d'accueil": "Add to home screen", "Plus tard": "Later", "Menu du navigateur": "Browser menu",
       "Découvrir des Mates": "Discover Mates", "Voir les lieux sûrs": "See safe places", "Trouve des voyageurs de confiance et envoie une demande de connexion.": "Find trusted travellers and send a connection request.",
-      // · Pré-traductions auto (texte descriptif, généré) —
+      // · Pré-traductions auto (texte descriptif, généré) ·
       "📡 Hors-ligne, vérifie ta connexion": "📡 Offline, check your connection",
       "Accès direct depuis ton écran d'accueil, comme une vraie app.": "Direct access from your home screen, like a real app.",
       "Ajoute SunMates à ton écran d'accueil : accès direct, plein écran, et même hors-ligne. Voici comment :": "Add SunMates to your home screen: direct access, full screen, and even offline. Here's how:",
@@ -17633,7 +17633,7 @@
       "🛡️ C'est quoi, ton score de confiance ?": "🛡️ What's your trust score?",
       "Des preuves": "Proof",
       "réelles": "real",
-      "et difficiles à falsifier que tu es un voyageur fiable, avec qui se rencontrer en sécurité :": "— real and hard to fake — that you're a reliable traveller, safe to meet up with:",
+      "et difficiles à falsifier que tu es un voyageur fiable, avec qui se rencontrer en sécurité :": "· real and hard to fake · that you're a reliable traveller, safe to meet up with:",
       "✅ Identité vérifiée": "✅ Verified identity",
       "À faire": "To do",
       "📍 Check-ins dans des lieux validés": "📍 Check-ins at validated places",
@@ -17647,7 +17647,7 @@
       ", elles, rapportent de l'": ", on the other hand, earn ",
       "(monnaie de jeu), pas de la confiance.": "(game currency), not trust.",
       "🪪 Mon QR SunMates": "🪪 My SunMates QR",
-      "Fais-le scanner à un voyageur rencontré en vrai pour vous connecter en un instant.": "Have a traveller you met in real life scan it — you'll be connected in a snap.",
+      "Fais-le scanner à un voyageur rencontré en vrai pour vous connecter en un instant.": "Have a traveller you met in real life scan it · you'll be connected in a snap.",
       "📷 Scanner un QR": "📷 Scan a QR",
       "Vise le QR SunMates d'un autre voyageur.": "Point at another traveller's SunMates QR.",
       "👁️ Aperçu « mode Gratuit » : les fonctions 👑 Gold sont grisées": "👁️ “Free mode” preview: 👑 Gold features are greyed out",
@@ -17696,7 +17696,7 @@
       "Découvre nos voyageurs ci-dessus 🌍 Pour trouver une vraie personne, tape son pseudo dans la recherche.": "Meet our travellers above 🌍 To find a real person, type their username in the search.",
       "🤖 Profil de": "🤖 This is a",
       "démonstration": "demo",
-      "(compte IA), pour découvrir l'app, ce n'est pas un vrai voyageur.": "profile (AI account), here so you can explore the app — not a real traveller.",
+      "(compte IA), pour découvrir l'app, ce n'est pas un vrai voyageur.": "profile (AI account), here so you can explore the app · not a real traveller.",
       "👍 Recommandé par des Mates": "👍 Recommended by Mates",
       "❤️ Pourquoi vous matchez ·": "❤️ Why you match ·",
       "Une alerte est en cours": "An alert is active",
@@ -17735,7 +17735,7 @@
       "Choisis une question et réponds-y pour donner vie à ton profil.": "Pick a question and answer it to bring your profile to life.",
       "🔎 Vérification": "🔎 Verification is",
       "simulée": "simulated",
-      "(démo MVP), la vraie vérification d'identité arrivera avec le backend.": "(MVP demo) — real identity verification will arrive with the backend.",
+      "(démo MVP), la vraie vérification d'identité arrivera avec le backend.": "(MVP demo) · real identity verification will arrive with the backend.",
       "Bientôt disponible": "Coming soon",
       "Me prévenir au lancement": "Notify me at launch",
       "🔔 Me prévenir au lancement": "🔔 Notify me at launch",
@@ -17785,7 +17785,7 @@
       "bien plus avantageux.": "much better perks.",
       "🎯 Défis reçus": "🎯 Challenges received",
       "👥 Quêtes à confirmer": "👥 Quests to confirm",
-      "Un Mate t'a inclus·e dans une quête de groupe. Confirme pour valider, vous gagnez tous les deux l'XP": "A Mate added you to a group quest. Confirm to validate it — you both earn the XP",
+      "Un Mate t'a inclus·e dans une quête de groupe. Confirme pour valider, vous gagnez tous les deux l'XP": "A Mate added you to a group quest. Confirm to validate it · you both earn the XP",
       "👑 Avec Gold : coupon": "👑 With Gold: coupon",
       "et bien plus avantageux (offre doublée).": "and much better perks (offer doubled).",
       "👥 Valider avec un Mate (+ bonus XP)": "👥 Validate with a Mate (+ XP bonus)",
@@ -17794,7 +17794,7 @@
       "cosmétiques": "cosmetics",
       "pour personnaliser ton profil. Rien à payer : tu débloques en jouant. Ton XP n'est": "to customise your profile. Nothing to pay: you unlock by playing. Your XP is",
       "jamais dépensé": "never spent",
-      ", il sert de palier.": " — it works as a milestone.",
+      ", il sert de palier.": " · it works as a milestone.",
       "Affiché sous ton pseudo. Un seul actif.": "Shown under your username. One active at a time.",
       "Encadre ta photo de profil.": "Frames your profile photo.",
       "Faites de votre établissement un lieu sûr repéré par les voyageurs solo.": "Make your venue a safe spot solo travellers look out for.",
@@ -18087,7 +18087,7 @@
       "👋 On démarre": "👋 Here we go",
       "On découvre SunMates de A à Z, comme un tout nouvel utilisateur, depuis le tout premier écran.": "We explore SunMates from A to Z, like a brand-new user, from the very first screen.",
       "🔑 L'écran de connexion": "🔑 The login screen",
-      "Le premier contact : un pitch clair, et trois entrées : Connexion, Inscription, et un espace Pro pour les établissements.": "First impression: a clear pitch and three doors — Log in, Sign up, and a Pro space for venues.",
+      "Le premier contact : un pitch clair, et trois entrées : Connexion, Inscription, et un espace Pro pour les établissements.": "First impression: a clear pitch and three doors · Log in, Sign up, and a Pro space for venues.",
       "✨ L'onboarding en arrivant": "✨ Onboarding on arrival",
       "Juste après l'inscription, l'app se présente toute seule en six étapes animées : bienvenue, rencontres, carte vivante, activités, sécurité et c'est parti.": "Right after sign-up, the app introduces itself in six animated steps: welcome, meeting people, the living map, activities, safety and let's go.",
       "💼 L'espace Pro (B2B)": "💼 The Pro space (B2B)",
@@ -18148,7 +18148,7 @@
       "On peut changer son email, son mot de passe, et revoir la présentation animée à tout moment.": "You can change your email, your password, and replay the animated intro any time.",
       "Cloche, panneau, pastilles et toasts en temps réel : on ne rate rien.": "Bell, panel, dots and toasts in real time: you won't miss a thing.",
       "🌍 SunMates en anglais": "🌍 SunMates in English",
-      "Un simple réglage bascule toute l'interface en anglais, pratique pour les voyageurs du monde entier. Regarde la navigation et les filtres changer en direct.": "One setting switches the whole interface to English — handy for travellers from all over. Watch the navigation and filters change live.",
+      "Un simple réglage bascule toute l'interface en anglais, pratique pour les voyageurs du monde entier. Regarde la navigation et les filtres changer en direct.": "One setting switches the whole interface to English · handy for travellers from all over. Watch the navigation and filters change live.",
       "🌙 Le mode sombre": "🌙 Dark mode",
       "Un thème « nuit tropicale » repose les yeux le soir.": "A “tropical night” theme, easy on the eyes after dark.",
       "☀️ …et le retour au jour": "☀️ …and back to daylight",
@@ -18166,7 +18166,7 @@
       "Signalé": "Reported",
       "Vérifier ✅": "Verify ✅",
       "Édition de « ": "Editing “",
-      " », le code actuel est affiché, modifie-le si besoin.": "” — the current code is shown, edit it if needed.",
+      " », le code actuel est affiché, modifie-le si besoin.": "” · the current code is shown, edit it if needed.",
       "Supprimer ce lieu ?": "Delete this place?",
       "Le nom est requis.": "Name is required.",
       " (adresse non localisée sur la carte)": " (address not located on the map)",
@@ -18355,7 +18355,7 @@
       "Défi proposé ✅": "Challenge sent ✅",
       "Vérification ✅": "Verification ✅",
       "En savoir plus sur la vérification": "Learn more about verification",
-      "3 badges max sur ton profil, retires-en un d'abord.": "Max 3 badges on your profile — remove one first.",
+      "3 badges max sur ton profil, retires-en un d'abord.": "Max 3 badges on your profile · remove one first.",
       "📌 Retirer de mon profil": "📌 Remove from my profile",
       "📌 Afficher sur mon profil": "📌 Show on my profile",
       "✍️ en train d'écrire…": "✍️ typing…",
@@ -18483,7 +18483,7 @@
       "📣 Partagées": "📣 Shared",
       "Vois qui est autour, les spots sympas et les activités du moment. Clique une pastille pour foncer !": "See who's around, the cool spots and what's happening right now. Tap a pin and go for it!",
       "Des spots à découvrir": "Spots to discover",
-      "Cafés, co-livings et lieux cools. Fais un check-in quand tu y es, ça te fait gagner des points.": "Cafés, co-livings and cool places. Check in when you're there — it earns you points.",
+      "Cafés, co-livings et lieux cools. Fais un check-in quand tu y es, ça te fait gagner des points.": "Cafés, co-livings and cool places. Check in when you're there · it earns you points.",
       "Activités & défis": "Activities & challenges",
       "Lance des activités, relève des défis, gagne des badges et des coupons.": "Start activities, take on challenges, earn badges and coupons.",
       "Tes Mates": "Your Mates",
@@ -18498,7 +18498,7 @@
       "Génial ! On te préviendra dès le lancement de Gold 🎉": "Great! We'll let you know when Gold launches 🎉",
       "🪪 Aperçu : voici ton profil tel que les autres voyageurs le voient": "🪪 Preview: this is your profile as other travellers see it",
       "Sécurité complète": "Full safety",
-      "Partage de position, alerte d'urgence et cercle de confiance, pas seulement le 112.": "Location sharing, emergency alert and trust circle — not just 112.",
+      "Partage de position, alerte d'urgence et cercle de confiance, pas seulement le 112.": "Location sharing, emergency alert and trust circle · not just 112.",
       "Aucune limite quotidienne + bonus de points de confiance.": "No daily limit + trust point bonus.",
       "Quêtes illimitées": "Unlimited quests",
       "Toutes les quêtes et activités chaque jour, sans restriction.": "All quests and activities every day, no limits.",
@@ -19058,7 +19058,7 @@
         h.addEventListener("change", async () => {
           if (!navigator.vibrate) {
             h.checked = false; localStorage.setItem("sm_haptics", "0");
-            popInfo("📳", "Vibrations indisponibles", "Ton appareil (ou ton navigateur) ne propose pas la vibration aux applis web — c'est le cas des iPhone notamment. Rien à faire de ton côté 💛");
+            popInfo("📳", "Vibrations indisponibles", "Ton appareil (ou ton navigateur) ne propose pas la vibration aux applis web · c'est le cas des iPhone notamment. Rien à faire de ton côté 💛");
             return;
           }
           if (h.checked) {
