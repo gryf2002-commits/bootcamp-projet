@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=447"></script>
+  <script src="sunmates-badges.js?v=448"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
@@ -219,6 +219,13 @@
       --z-popinfo:  6500;  /* tuile explicative centrée */
       --z-sheet:    6600;  /* bottom-sheet du sélecteur DA */
       --z-fakecall: 6700;  /* faux appel plein écran (doit couvrir TOUT) */
+      /* Lot C : valeurs jadis « brutes » nommées (MÊMES valeurs, aucun ré-empilement) */
+      --z-safetimer:1200;  /* barre minuteur sécurité (au-dessus du contenu, sous les modales) */
+      --z-gchat:    6200;  /* overlay chat de groupe */
+      --z-fx:       8000;  /* effets météo/saison décoratifs plein écran */
+      --z-ribbon:   9999;  /* ruban préversion (artefact dev) */
+      --z-egg:      99998; /* easter eggs cinématiques + écran de bannissement (couvrent tout) */
+      --z-egg-top:  99999; /* boot CRT / retro fx (au-dessus même des eggs) */
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -360,7 +367,7 @@
     .act-bff:hover { box-shadow: 0 8px 18px rgba(255,178,116,.3); }
     .act-block { background: #fef2f2; color: #dc2626; border-color: #fbd5d5; }
     .act-block .ic { background: #fbd5d5; }
-    .act-block:hover { box-shadow: 0 8px 18px rgba(239,68,68,.18); }
+    .act-block:hover { box-shadow: 0 8px 18px rgba(45,38,52,.16); } /* Lot C : ombre dé-rougie → gris chaud (doctrine) */
     body.theme-dusk .act-challenge { background: rgba(122,92,255,.18); color: #c9bcff; border-color: rgba(122,92,255,.34); }
     body.theme-dusk .act-challenge .ic { background: rgba(122,92,255,.34); }
     body.theme-dusk .act-bff { background: rgba(255,178,116,.16); color: #ffce9b; border-color: rgba(255,178,116,.32); }
@@ -498,7 +505,7 @@
     /* Pastille « Dispo maintenant » affichée sur la fiche d'un voyageur */
     .avail-badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .72rem; font-weight: 800; color: #6b3d00; background: linear-gradient(135deg, #FFD15C, #FF9F1C); border-radius: 999px; padding: .15rem .5rem; }
     /* Barre minuteur « Rentrée en sécurité » : sunset, fixée au-dessus de la nav, visible partout */
-    #safeTimerBar { position: fixed; left: 0; right: 0; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); z-index: 1200; margin: 0 auto; max-width: 460px; width: calc(100% - 1.4rem); display: flex; align-items: center; gap: .55rem; padding: .55rem .7rem; border-radius: 14px; background: linear-gradient(135deg, #FF8A3D, #FF5A4D); color: #fff; box-shadow: 0 8px 22px rgba(45,38,52,.16); font-size: .85rem; font-weight: 700; }
+    #safeTimerBar { position: fixed; left: 0; right: 0; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); z-index: var(--z-safetimer); margin: 0 auto; max-width: 460px; width: calc(100% - 1.4rem); display: flex; align-items: center; gap: .55rem; padding: .55rem .7rem; border-radius: 14px; background: linear-gradient(135deg, #FF8A3D, #FF5A4D); color: #fff; box-shadow: 0 8px 22px rgba(45,38,52,.16); font-size: .85rem; font-weight: 700; }
     #safeTimerBar .stb-ic { font-size: 1.1rem; }
     #safeTimerBar .stb-txt { flex: 1; }
     #safeTimerBar #safeArrivedBtn { background: rgba(255,255,255,.95); color: #c2410c; border: 0; border-radius: 999px; padding: .4rem .7rem; font-weight: 800; font-size: .8rem; cursor: pointer; flex-shrink: 0; }
@@ -1106,7 +1113,7 @@
     /* P4 : carte RÉVEILLÉE (tap) = liseré corail discret, pour voir qu'elle est « en main » */
     .homemap.hm-live::after { content: ""; position: absolute; inset: 0; border: 2px solid var(--accent); border-radius: 14px; pointer-events: none; opacity: .5; z-index: 899; }
     /* P2.10 : ruban préversion / version archivée */
-    #smPreviewRibbon { position: fixed; top: calc(.4rem + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 9999;
+    #smPreviewRibbon { position: fixed; top: calc(.4rem + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: var(--z-ribbon);
       background: #6638D6; color: #fff; font: 800 .66rem/1 Manrope, system-ui, sans-serif; letter-spacing: .06em;
       padding: .38rem .75rem; border-radius: 999px; box-shadow: 0 6px 18px rgba(0,0,0,.3); white-space: nowrap;
       border: 0; cursor: pointer; }
@@ -1557,7 +1564,7 @@
     .review-stars { color: #FFB52E; font-size: .82rem; letter-spacing: 1px; flex-shrink: 0; }
     .review-txt { font-size: .85rem; color: var(--text); line-height: 1.4; margin-top: .15rem; }
     /* Faux appel (sortie de secours), plein écran façon appel entrant */
-    .ban-screen { position: fixed; inset: 0; z-index: 99998; background: linear-gradient(180deg,#2a1a1a,#160d0d); display: grid; place-items: center; padding: 1.4rem; }
+    .ban-screen { position: fixed; inset: 0; z-index: var(--z-egg); background: linear-gradient(180deg,#2a1a1a,#160d0d); display: grid; place-items: center; padding: 1.4rem; }
     .ban-screen.hidden { display: none; }
     .ban-card { width: 100%; max-width: 360px; background: var(--card); border-radius: 20px; padding: 1.6rem 1.3rem; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.5); }
     .ban-emoji { font-size: 3rem; }
@@ -2931,7 +2938,7 @@
     button { font-family: "Manrope", sans-serif; font-weight: 700; border-radius: var(--radius-sm); }
     .btn-primary { background: var(--accent) !important; color: #fff; box-shadow: 0 8px 20px rgba(190,86,64,.26) !important; }
     .btn-primary::before, .btn-danger::before { display: none !important; } /* on retire la brillance pour un rendu net */
-    .btn-primary:hover { filter: brightness(1.04); transform: translateY(-1px); box-shadow: 0 12px 26px rgba(190,86,64,.34) !important; }
+    .btn-primary:hover { filter: brightness(1.04); transform: translateY(-1px); box-shadow: 0 12px 26px rgba(45,38,52,.24) !important; } /* Lot C : halo de survol dé-rougi (la couche v3 ne couvrait pas le :hover) → gris chaud */
     .btn-accent { background: var(--accent-soft); color: var(--accent); }
     .btn-ghost { background: transparent; border: 1.5px solid var(--line); color: var(--ink); }
     .btn-danger { background: var(--danger) !important; color: #fff; box-shadow: 0 8px 20px rgba(178,58,46,.3) !important; }
@@ -2998,7 +3005,7 @@
       --shadow-sm: 0 8px 18px rgba(45,38,52,.08);
       --shadow-pop:0 22px 50px rgba(40,34,46,.22);
       --sunset-grad: linear-gradient(150deg, #FFC93C 0%, #FF7A3D 38%, #FF4F6D 72%, #B25CC9 100%);
-      --ring:      0 0 0 4px rgba(255,90,77,.18);
+      --ring:      0 0 0 4px rgba(255,90,77,.16); /* Lot C : aligné sur le plafond doctrine .16 */
     }
     /* #8 + bug fond admin : le body (degrade) et l app-shell (#FFF7EE) avaient une base DIFFERENTE
        -> jointure « scindee en couleurs distinctes » la ou le contenu s arrete (page longue / rebond).
@@ -3034,7 +3041,7 @@
     .btn-primary:hover { transform: translateY(-2px); filter: saturate(1.05); }
     .btn-accent { background: var(--accent-soft); color: var(--accent-ink, var(--accent)); } /* Lot A2 : encre foncée sur fond corail pâle (2.58 → ≈4.2:1) */
     .btn-ghost { background: #fff; border: 1.5px solid var(--line); color: var(--ink); }
-    .btn-danger { background: linear-gradient(135deg,#FF6A6A,#F0384E) !important; color: #fff; box-shadow: 0 12px 26px rgba(240,56,78,.34) !important; }
+    .btn-danger { background: linear-gradient(135deg,#FF6A6A,#F0384E) !important; color: #fff; box-shadow: 0 12px 26px rgba(45,38,52,.24) !important; } /* Lot C : ombre dé-rougie → gris chaud (le bouton reste rouge par son fond) */
 
     input, textarea, select, .search input { background: #fff !important; border: 1.5px solid var(--line) !important; color: var(--text); }
     input:focus, textarea:focus, select:focus { border-color: var(--accent) !important; box-shadow: var(--ring); }
@@ -3363,7 +3370,7 @@
     body.theme-tropic .sm-date-preview { background: linear-gradient(135deg, #FDFBE8, #EDF6DF); }
 
     /* #6 : chat de GROUPE — feuille plein écran, bulles du chat réutilisées + nom de l'auteur */
-    .gchat { position: fixed; inset: 0; z-index: 6200; background: rgba(20,12,8,.45); display: flex; align-items: flex-end; justify-content: center; }
+    .gchat { position: fixed; inset: 0; z-index: var(--z-gchat); background: rgba(20,12,8,.45); display: flex; align-items: flex-end; justify-content: center; }
     .gchat.hidden { display: none; }
     .gchat-card { width: 100%; max-width: 480px; height: 88dvh; background: var(--bg); border-radius: 22px 22px 0 0;
       padding: .8rem .8rem calc(.8rem + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; box-shadow: 0 -18px 44px rgba(0,0,0,.3); animation: gchatIn .28s cubic-bezier(.22,.8,.3,1); }
@@ -3528,7 +3535,7 @@
     @keyframes eggGoldShine { to { background-position: 200% 0; } }
     /* 🌍 Petit Globe : descend avec rebond, TOURNE (décélère), pin planté + drapeau du pays.
        Le voile de fond suit le thème (--accent-soft) → l'egg vit dans les 4 modes. */
-    .egg-globe { position: fixed; inset: 0; z-index: 99998; pointer-events: none; display: grid; place-items: center;
+    .egg-globe { position: fixed; inset: 0; z-index: var(--z-egg); pointer-events: none; display: grid; place-items: center;
       background: radial-gradient(62% 42% at 50% 44%, var(--accent-soft), transparent 72%); transition: opacity .55s ease; }
     .egg-globe.out { opacity: 0; }
     .egl-wrap { position: relative; animation: eglDrop .85s cubic-bezier(.25,1.35,.4,1) both; filter: drop-shadow(0 16px 30px rgba(40,90,130,.35)); }
@@ -3541,7 +3548,7 @@
     @keyframes eglFlag { from { opacity: 0; transform: translateX(-50%) scale(.5); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
     /* ✈️ Avion en papier : suit sa trajectoire (offset-path) nez en avant, la traînée
        pointillée COURT le long du chemin (dashoffset), couleur = accent du thème actif. */
-    .egg-plane { position: fixed; inset: 0; z-index: 99998; pointer-events: none; transition: opacity .6s ease .15s; }
+    .egg-plane { position: fixed; inset: 0; z-index: var(--z-egg); pointer-events: none; transition: opacity .6s ease .15s; }
     .egg-plane.out { opacity: 0; }
     .egg-plane .egp-trail { position: absolute; inset: 0; }
     .egg-plane .egp-trail path { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 2.2 3.2; stroke-linecap: round; opacity: .55; animation: egpTrail 2.8s linear forwards; }
@@ -3594,7 +3601,7 @@
     body.theme-dusk .rit-row.rit-add { background: rgba(255,126,114,.10); }
 
     /* 🥚 #42 : « 67 » dans le chat → les chiffres font le show (rebond + balancier, 1×/jour) */
-    .egg-67 { position: fixed; left: 50%; top: 38%; z-index: 99998; pointer-events: none; font-size: 64px;
+    .egg-67 { position: fixed; left: 50%; top: 38%; z-index: var(--z-egg); pointer-events: none; font-size: 64px;
       transform: translateX(-50%); animation: egg67 2.5s cubic-bezier(.3,1.5,.4,1) forwards; filter: drop-shadow(0 10px 20px rgba(120,50,20,.35)); }
     @keyframes egg67 { 0% { transform: translateX(-50%) translateY(60px) scale(.3) rotate(-14deg); opacity: 0; }
       18% { transform: translateX(-50%) translateY(-12px) scale(1.15) rotate(8deg); opacity: 1; }
@@ -3604,7 +3611,7 @@
       100% { transform: translateX(-50%) translateY(-46px) scale(.8) rotate(0deg); opacity: 0; } }
 
     /* Konami : allumage/extinction CRT — la ligne blanche s'étire puis balaie tout l'écran */
-    .crt-boot { position: fixed; inset: 0; z-index: 99999; pointer-events: none; animation: crtBg .95s steps(1) forwards; }
+    .crt-boot { position: fixed; inset: 0; z-index: var(--z-egg-top); pointer-events: none; animation: crtBg .95s steps(1) forwards; }
     .crt-boot::before { content: ""; position: absolute; left: 6%; right: 6%; top: 50%; height: 2px; border-radius: 2px;
       background: #fff; box-shadow: 0 0 24px 5px rgba(255,255,255,.9); transform: scaleX(0); animation: crtLine .95s cubic-bezier(.2,.8,.25,1) forwards; }
     @keyframes crtLine { 0% { transform: scaleX(0) scaleY(1); opacity: 1; } 32% { transform: scaleX(1) scaleY(1); opacity: 1; }
@@ -3647,7 +3654,7 @@
     @keyframes egshDrift { from { transform: translateY(0) rotate(-1deg); } to { transform: translateY(-5px) rotate(1.5deg); } }
     @keyframes egshSmoke { 0% { opacity: 0; transform: translateY(4px); } 40% { opacity: .8; } 100% { opacity: 0; transform: translateY(-9px); } }
     /* Soleil invoqué (vectoriel) : traverse l'écran en arc, rayons en rotation */
-    .egg-sun { position: fixed; z-index: 99998; pointer-events: none; left: -14%; top: 60%;
+    .egg-sun { position: fixed; z-index: var(--z-egg); pointer-events: none; left: -14%; top: 60%;
       filter: drop-shadow(0 0 20px rgba(255,190,60,.85)); animation: eggSunArc 3.2s ease-in-out forwards; }
     @keyframes eggSunArc {
       0% { left: -14%; top: 62%; transform: scale(.8); }
@@ -3655,7 +3662,7 @@
       100% { left: 104%; top: 62%; transform: scale(.8); }
     }
     /* Minuit pile : étoiles filantes vectorielles (traînée dégradée) */
-    .egg-stars { position: fixed; inset: 0; z-index: 99998; pointer-events: none; overflow: hidden; }
+    .egg-stars { position: fixed; inset: 0; z-index: var(--z-egg); pointer-events: none; overflow: hidden; }
     .egg-stars span { position: absolute; top: -9%; opacity: 0; animation: eggStarFall 3.6s linear forwards; }
     @keyframes eggStarFall { 0% { opacity: 0; transform: translate(0,0); } 8% { opacity: 1; } 80% { opacity: .9; } 100% { opacity: 0; transform: translate(-24vw, 118vh); } }
     /* Flamme 30 jours : halo qui flamboie autour de l'avatar (profil + badge joueur) */
@@ -3666,7 +3673,7 @@
     @keyframes eggFlame { from { transform: scale(.92) rotate(-6deg); } to { transform: scale(1.1) rotate(6deg); } }
     body.streak-flame #profileAvatar { box-shadow: 0 0 0 2.5px rgba(255,150,50,.65), 0 0 18px rgba(255,140,40,.45); }
     /* 🎮 Mode rétro 8-bit (Konami) : scanlines CRT + pixels + police machine, 10 min */
-    #retroFx { position: fixed; inset: 0; z-index: 99999; pointer-events: none;
+    #retroFx { position: fixed; inset: 0; z-index: var(--z-egg-top); pointer-events: none;
       background: repeating-linear-gradient(0deg, rgba(20,10,40,.10) 0 1px, transparent 1px 3px);
       box-shadow: inset 0 0 120px rgba(40,10,60,.35); }
     body.retro-8bit, body.retro-8bit * { font-family: "Courier New", ui-monospace, Consolas, monospace !important; letter-spacing: .01em; }
@@ -3678,7 +3685,7 @@
        géant qui se couche derrière l'horizon, collines + acacias + double rangée d'herbes,
        la troupe marche EN FILE INDIENNE (proportions canon, zéro chevauchement), oiseaux
        qui BATTENT des ailes. Tout en transform/opacity (zéro coût layout). */
-    .egg-savane { position: fixed; inset: 0; z-index: 99998; pointer-events: none; overflow: hidden; animation: egsFade 9.8s ease forwards; }
+    .egg-savane { position: fixed; inset: 0; z-index: var(--z-egg); pointer-events: none; overflow: hidden; animation: egsFade 9.8s ease forwards; }
     @keyframes egsFade { 0% { opacity: 0; } 7% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; } }
     .egg-savane .egs-sky { position: absolute; left: 0; right: 0; bottom: 0; height: 54vh;
       background: linear-gradient(to top, #FF9A3D 0%, #F2607E 38%, rgba(122,61,150,.5) 72%, rgba(122,61,150,0) 100%); opacity: .94; }
@@ -3727,7 +3734,7 @@
     body.theme-winter .egg-savane .egs-glow { background: radial-gradient(120% 90% at 50% 100%, rgba(255,220,170,.42), rgba(190,170,200,.14) 55%, transparent); }
     body.theme-tropic .egg-savane .egs-sky { background: linear-gradient(to top, #FF8A3D 0%, #E8557E 40%, rgba(20,128,95,.4) 78%, rgba(20,128,95,0) 100%); }
     /* 🎈 Là-haut : la VRAIE tuile « À la maison » décolle, pendue à des ballons vectoriels */
-    .egg-flyhome { position: fixed; z-index: 99998; pointer-events: none; animation: efhFly 5.6s ease-in forwards; }
+    .egg-flyhome { position: fixed; z-index: var(--z-egg); pointer-events: none; animation: efhFly 5.6s ease-in forwards; }
     @keyframes efhFly {
       /* 1. la tuile S'AFFAISSE d'abord (la grappe se déploie, bien visible)… 2. puis l'envol */
       0% { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
@@ -3875,7 +3882,7 @@
       --ic2: color-mix(in oklab, var(--c2, #FF5A4D) 90%, #143427); }
 
     /* ============ #8 TRANSITION DE SAISON : voile doux + pluie de flocons/feuilles ============ */
-    #seasonFx { position: fixed; inset: 0; z-index: 8000; pointer-events: none; overflow: hidden; opacity: 1; transition: opacity .55s ease; }
+    #seasonFx { position: fixed; inset: 0; z-index: var(--z-fx); pointer-events: none; overflow: hidden; opacity: 1; transition: opacity .55s ease; }
     #seasonFx.out { opacity: 0; }
     #seasonFx::before { content: ""; position: absolute; inset: -20%; opacity: 0; background: radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.92), rgba(255,255,255,.35) 45%, rgba(255,255,255,0) 75%); animation: sfxWash 1.05s ease both; }
     body.theme-dusk #seasonFx::before { background: radial-gradient(120% 100% at 50% 0%, rgba(30,22,56,.92), rgba(30,22,56,.4) 45%, rgba(30,22,56,0) 75%); }
