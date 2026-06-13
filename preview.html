@@ -126,7 +126,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
   <script src="sunmates-badges.js?v=463"></script>
-  <script src="sunmates-icons.js?v=474"></script>
+  <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale · jamais depuis
     // la préversion (preview.html) ni une version archivée (releases/…) : elles se testent
@@ -482,7 +482,7 @@
     .fc-chip.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 7px rgba(45,38,52,.16); }
     body.theme-dusk .fc-chip { background: var(--dcard,#2a2140); color: #eee; border-color: rgba(255,255,255,.1); }
     .fc-hint { font-size: .72rem; color: var(--muted); font-weight: 600; margin-top: .35rem; }
-    .fc-kind { font-size: .76rem; font-weight: 700; padding: .35rem .75rem; border-radius: 999px; border: 0; background: transparent; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .3rem; }
+    .fc-kind { font-size: .76rem; font-weight: 700; padding: .35rem .75rem; border-radius: 999px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
     .fc-kind.active { background: var(--accent-grad); color: #fff; box-shadow: 0 2px 8px rgba(45,38,52,.16); }
     /* P8 : halo du bouton Publier ADOUCI et remonté (l'ombre descendait sur la note
        « Visible par toute la communauté » juste en dessous et la voilait). */
@@ -499,7 +499,7 @@
     .fpost { background: var(--card); border: 1.5px solid var(--line); border-radius: 18px; padding: .8rem .9rem; margin-bottom: .9rem; box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .15s ease; }
     body.theme-dusk .fpost { background: var(--dcard2,#241b35); border-color: rgba(255,255,255,.12); box-shadow: 0 10px 26px rgba(0,0,0,.4); }
     /* Chip « Dispo ? » : intention de rencontre. État actif = ambre/sunset (jamais vert vif, DA). */
-    .avail-chip { flex-shrink: 0; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .3rem .6rem; font-size: .74rem; font-weight: 800; cursor: pointer; transition: .12s; display: inline-flex; align-items: center; gap: .25rem; }
+    .avail-chip { flex-shrink: 0; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .3rem .6rem; font-size: .74rem; font-weight: 800; cursor: pointer; transition: .12s; }
     .avail-chip:active { transform: scale(.95); }
     .avail-chip.on { background: linear-gradient(135deg, #FFC93C, #FF8A3D); color: #6b3d00; border-color: transparent; box-shadow: 0 2px 8px rgba(255,138,61,.35); }
     /* Pastille « Dispo maintenant » affichée sur la fiche d'un voyageur */
@@ -1205,7 +1205,7 @@
       left: auto; top: auto; align-items: flex-end; z-index: 1500; max-width: calc(60% - 1rem); }
     .homemap-card.fs .homemap-fsclose { z-index: 1600; }
     .homemap-tools { position: absolute; right: .55rem; bottom: .55rem; z-index: 1100; display: flex; flex-direction: column; gap: .4rem; align-items: flex-end; pointer-events: auto; }
-    .homemap-tools button { background: var(--card); color: var(--ink); border: 1px solid rgba(0,0,0,.08); border-radius: 999px; padding: .4rem .7rem; font-size: .76rem; font-weight: 700; box-shadow: var(--shadow-sm); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .3rem; }
+    .homemap-tools button { background: var(--card); color: var(--ink); border: 1px solid rgba(0,0,0,.08); border-radius: 999px; padding: .4rem .7rem; font-size: .76rem; font-weight: 700; box-shadow: var(--shadow-sm); cursor: pointer; }
     .homemap-tools button:hover { background: var(--accent-grad); color: #fff; }
     .homemap-tools #hmAdd { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 16px rgba(45,38,52,.16); }
     .homemap-capture { position: absolute; inset: 0; z-index: 1050; cursor: crosshair; background: rgba(122,92,255,.06); }
@@ -1336,32 +1336,29 @@
     /* --------------------- Grille cartes accueil -------------------- */
     .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
     .tile {
-      background: var(--card); border-radius: var(--radius-sm); padding: .7rem .6rem; text-align: center;
+      background: var(--card); border-radius: var(--radius-sm); padding: .9rem;
       box-shadow: var(--shadow-sm); cursor: pointer; transition: transform .1s;
     }
     .tile:active { transform: scale(.98); }
-    /* Chantier premium v2 (retour Maxime : « trop mat et rectangle ») → THUMB = pastille SQUIRCLE
-       arrondie centrée (fini le gros rectangle), reflet vivant (pas mat), gemme bijou. */
     .tile .thumb {
-      width: 60px; height: 60px; border-radius: 18px; margin: 0 auto .5rem; color: #fff;
-      background-image: radial-gradient(circle at 38% 24%, rgba(255,255,255,.45), rgba(255,255,255,0) 58%), var(--accent-grad);
-      display: grid; place-items: center; font-size: 30px; box-shadow: 0 7px 16px -5px rgba(45,38,52,.32), inset 0 1px 1px rgba(255,255,255,.5);
+      height: 84px; border-radius: 12px; margin-bottom: .55rem;
+      background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), var(--accent-grad);
+      display: grid; place-items: center; font-size: 30px; box-shadow: 0 6px 16px rgba(45,38,52,.22);
       transition: transform .15s ease;
     }
-    .tile .thumb svg { width: 36px; height: 36px; position: relative; z-index: 1; filter: drop-shadow(0 1.5px 2.5px rgba(60,25,10,.3)); }
     .tile:hover .thumb { transform: translateY(-2px) scale(1.02); }
     /* POLISH VERRE + PEPS : reflet glossy marqué (verre brillant) + liseré clair + ombre interne
        basse pour le volume (fini le rendu pastel/plat), sans le halo blanc vertical moche. */
     .tile .thumb { position: relative; overflow: hidden; filter: saturate(1.04) brightness(1.01); } /* néon coupé : la couleur émaillée DA suffit */
     .tile .thumb::before { content: ""; position: absolute; inset: 0; border-radius: inherit;
-      background: linear-gradient(158deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.2) 18%, rgba(255,255,255,.04) 40%, rgba(255,255,255,0) 62%);
-      box-shadow: inset 0 1.5px 0 rgba(255,255,255,.6), inset 0 -12px 22px rgba(0,0,0,.14);
-      pointer-events: none; } /* reflet VIVANT (gemme glossy candy, pas mat) */
+      background: linear-gradient(158deg, rgba(255,255,255,.62) 0%, rgba(255,255,255,.22) 15%, rgba(255,255,255,.03) 36%, rgba(255,255,255,0) 58%);
+      box-shadow: inset 0 1.5px 0 rgba(255,255,255,.65), inset 0 -16px 26px rgba(0,0,0,.12);
+      pointer-events: none; }
     /* (Anciennes couleurs/ombres figées SUPPRIMÉES · retour Maxime : le « halo » sous les
        tuiles restait aux vieilles couleurs quel que soit le thème. Désormais l'ombre est
        DÉRIVÉE de la couleur réelle de la tuile via color-mix → elle suit chaque mode.) */
-    .tile .t-name { font-weight: 700; color: var(--ink); font-size: .82rem; line-height: 1.2; }
-    .tile .t-meta { color: var(--muted); font-size: .7rem; line-height: 1.25; margin-top: .1rem; }
+    .tile .t-name { font-weight: 700; color: var(--ink); font-size: .92rem; }
+    .tile .t-meta { color: var(--muted); font-size: .78rem; }
 
     /* ----------------------- Carte « featured » --------------------- */
     .feature {
@@ -1796,33 +1793,6 @@
        on SUPPRIME le voile ::before générique de .cat-tile (l'empilement rendait le glyphe flou). */
     .cat-tile .cic[data-smicon]::before, .jo-ic[data-smicon]::before { display:none; }
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg { display:block; position:relative; z-index:1; }
-    /* Icônes maison (moteur SMIcon) : taille relative au conteneur + ombre douce pour la lisibilité sur toute couleur. */
-    svg.smi { width: 60%; height: 60%; display: block; filter: drop-shadow(0 1.5px 2.5px rgba(60,25,10,.3)); }
-    .cic svg.smi, .qico svg.smi, .smgem svg.smi, .sc-ic svg.smi { width: 54%; height: 54%; }
-    /* Couleurs d'icônes HARMONISÉES en mode sombre (retour Maxime « les verts dénotent en sombre ») :
-       désaturé un poil + éclairci → les teintes vives ne jurent plus sur les pastilles neutres-sombres. */
-    body.theme-dusk svg.smi, body.theme-winter.theme-dusk svg.smi, body.theme-tropic.theme-dusk svg.smi,
-    body.theme-dusk .smji svg, body.theme-winter.theme-dusk .smji svg, body.theme-tropic.theme-dusk .smji svg {
-      filter: saturate(.72) brightness(1.06) sepia(.1) drop-shadow(0 1.5px 2.5px rgba(0,0,0,.4)); }
-    /* Icône sur BOUTON COLORÉ (fond accent/corail) → BLANCHE, sinon elle se fond (ex. avion corail sur
-       « En voyage » corail = invisible · retour Maxime). brightness(0)+invert(1) = silhouette blanche. */
-    .mode-switch button.active svg.smi, .mode-switch button.active .smji svg,
-    .btn-primary svg.smi, .btn-primary .smji svg, .btn-accent svg.smi, .btn-accent .smji svg,
-    .fc-kind.active svg.smi, .chip.active svg.smi, .homemap-tools #hmAdd svg.smi,
-    .su-btn svg.smi, .fc-send svg.smi {
-      filter: brightness(0) invert(1) drop-shadow(0 1px 1.5px rgba(0,0,0,.2)) !important; }
-    /* Emoji-icône CONVERTI dans le TEXTE (descriptions/labels/titres) : à la taille du texte, sur la ligne. */
-    .smji { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; flex-shrink: 0; }
-    .smji svg.smi { width: 100%; height: 100%; filter: drop-shadow(0 1px 1.5px rgba(60,25,10,.22)); }
-    /* Drapeaux pays SVG maison (fiches pays) : petit drapeau arrondi à la taille du texte. */
-    .smflag { display: inline-block; width: 1.5em; height: 1.13em; vertical-align: -.2em; border-radius: 3px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,.18); }
-    .smflag .smflagsvg { width: 100%; height: 100%; display: block; }
-    .tile .thumb svg.smi { width: 58%; height: 58%; }
-    /* Icônes maison INLINE (boutons/chips/barres) : taille fixe ~em pour ne pas exploser. */
-    .iconbtn svg.smi { width: 23px; height: 23px; }
-    .chip svg.smi, .fc-kind svg.smi, .tpa-ic svg.smi, .tt-ic svg.smi, .stb-ic svg.smi, .avail-chip svg.smi,
-    .hm-layers-btn svg.smi, .homemap-tools button svg.smi, .btn-primary svg.smi, .btn-accent svg.smi,
-    .tpa-btn svg.smi, .mode-switch button svg.smi { width: 1.25em; height: 1.25em; vertical-align: -.24em; flex-shrink: 0; }
     .cat-tile.active .cic[data-smicon] { box-shadow: 0 8px 18px -4px rgba(45,38,52,.16), 0 2px 4px rgba(180,60,40,.32), inset 0 1px 1px rgba(255,246,236,.9), inset 0 -2px 3px rgba(150,45,30,.32); }
     /* Palette par tuile : un spectre DA distinct par catégorie (anti-uniformité) */
     [data-smicon="quest"]{--c1:#FF7A4D;--c2:#FF5238} [data-smicon="games"]{--c1:#8a5cff;--c2:#6638d6} [data-smicon="medal"]{--c1:#E8A33A;--c2:#D07F10} [data-smicon="coupon"]{--c1:#FF6FA5;--c2:#E84D86} [data-smicon="rank"]{--c1:#5E74E8;--c2:#3641B8} [data-smicon="shop"]{--c1:#FF5A8A;--c2:#C43A8A}
@@ -3142,44 +3112,22 @@
        SunMates (mêmes familles bijou que les pastilles de Jeux) · fini le néon bonbon
        bleu-ciel/violet-flashy/rose-barbie, MÊME EN MODE JOUR. La couche « palette malléable »
        (fin de feuille) les décline ensuite en nuit / hiver / tropiques. */
-    /* ═══ TONS BIJOU MAÎTRISÉS (chantier UX/UI premium, choix Maxime) : couleurs PROFONDES façon pierres
-       précieuses (pas criardes), chaque famille = sa pierre, cohérent dans toute l'app. Warm conservé. ═══ */
-    .thumb.green { --c1:#1FAE90; --c2:#0C6E5B; } /* émeraude sourde */
-    .thumb.blue  { --c1:#4258C9; --c2:#26318E; } /* saphir profond (famille classement) */
-    .thumb.purp  { --c1:#7C57D4; --c2:#46258F; } /* améthyste profonde (famille jeux) */
-    .thumb.coral { --c1:#EC7E45; --c2:#C2491A; } /* corail braise (famille solo) */
-    .thumb.lime  { --c1:#D9A82E; --c2:#A88011; } /* citrine / miel */
-    .thumb.indigo{ --c1:#6A46CC; --c2:#391E8C; } /* indigo crépuscule (famille couronne) */
-    .thumb.rose  { --c1:#DA5587; --c2:#A52759; } /* framboise profonde (famille coupons) */
-    .thumb.gold  { --c1:#E6A82E; --c2:#B5740E; } /* topaze / ambre maîtrisé */
-    .thumb.teal  { --c1:#2BB39B; --c2:#0D6E66; } /* lagon émaillé profond */
-    .thumb.red   { --c1:#D6414E; --c2:#8E1F2A; } /* rubis profond (alerte/sécurité) */
+    .thumb.green { --c1:#2BC4A8; --c2:#128F7C; } /* turquoise bijou (zéro vert criard) */
+    .thumb.blue  { --c1:#5E74E8; --c2:#3641B8; } /* bleu-indigo nuit (famille classement) */
+    .thumb.purp  { --c1:#9B7BFF; --c2:#6638D6; } /* violet bijou (famille jeux) */
+    .thumb.coral { --c1:#FF9A5C; --c2:#E8631F; } /* corail braise (famille solo) */
+    .thumb.lime  { --c1:#FFC93C; --c2:#D98414; } /* ambre doré */
+    .thumb.indigo{ --c1:#8A5CFF; --c2:#5028B0; } /* indigo crépuscule (famille couronne) */
+    .thumb.rose  { --c1:#FF6FA5; --c2:#D63A78; } /* framboise (famille coupons) */
+    .thumb.gold  { --c1:#FFC93C; --c2:#E8961F; } /* or franc */
+    .thumb.teal  { --c1:#4ED8B8; --c2:#149E8C; } /* lagon émaillé */
+    .thumb.red   { --c1:#FF5A4D; --c2:#C9281F; } /* corail-rouge d'alerte */
     .thumb.green, .thumb.blue, .thumb.purp, .thumb.coral, .thumb.lime, .thumb.indigo, .thumb.rose, .thumb.gold, .thumb.teal, .thumb.red {
       background: linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))) !important;
       /* halo DÉRIVÉ de la couleur réelle (suit le thème) + assise neutre douce */
       box-shadow: 0 7px 16px color-mix(in oklab, var(--ic2, var(--c2, #C0392B)) 36%, transparent), 0 2px 5px rgba(40,18,8,.14) !important; }
     body.theme-dusk .thumb.green, body.theme-dusk .thumb.blue, body.theme-dusk .thumb.purp, body.theme-dusk .thumb.coral, body.theme-dusk .thumb.lime, body.theme-dusk .thumb.indigo, body.theme-dusk .thumb.rose, body.theme-dusk .thumb.gold, body.theme-dusk .thumb.teal, body.theme-dusk .thumb.red {
       box-shadow: 0 7px 16px color-mix(in oklab, var(--ic2, var(--c2, #C0392B)) 30%, transparent), 0 3px 8px rgba(0,0,0,.35) !important; }
-    /* ═══ DA ICÔNES MAISON v3 : la PASTILLE derrière l'icône suit la DA (sunset doux), JAMAIS blanche,
-       déclinée SUBTILEMENT par mode. La couleur de famille vit dans l'ICÔNE (plate colorée), la pastille
-       est une surface chaude neutre qui la fait ressortir. Spéc. body + !important pour battre la malléable. ═══ */
-    /* ⚠️ CONTRASTE (retour Maxime « certaines couleurs invisibles selon le mode ») : la pastille reste
-       QUASI-NEUTRE (faible saturation) par mode → une icône de N'IMPORTE quelle teinte ressort toujours
-       (avant : tuile aubergine/navy/verte avalait les icônes violette/bleue/verte). Soupçon de teinte mode seulement. */
-    body .tile .thumb, body .cic, body .qico, body .smgem, body .jo-ic, body .cic[data-smicon], body .qico[data-smicon] {
-      background: linear-gradient(160deg, #FFF4E8, #FBEAD8) !important;
-      box-shadow: 0 5px 13px rgba(120,60,30,.12), inset 0 1px 1px rgba(255,255,255,.75) !important; border: 0 !important; }
-    body.theme-dusk .tile .thumb, body.theme-dusk .cic, body.theme-dusk .qico, body.theme-dusk .smgem, body.theme-dusk .jo-ic {
-      background: linear-gradient(160deg, #343039, #29262F) !important;
-      box-shadow: 0 5px 13px rgba(0,0,0,.32), inset 0 1px 1px rgba(255,255,255,.09) !important; }
-    body.theme-winter .tile .thumb, body.theme-winter .cic, body.theme-winter .qico, body.theme-winter .smgem, body.theme-winter .jo-ic {
-      background: linear-gradient(160deg, #F2F4F7, #E7EBF0) !important; }
-    body.theme-winter.theme-dusk .tile .thumb, body.theme-winter.theme-dusk .cic, body.theme-winter.theme-dusk .qico, body.theme-winter.theme-dusk .smgem, body.theme-winter.theme-dusk .jo-ic {
-      background: linear-gradient(160deg, #2B2F35, #20242A) !important; }
-    body.theme-tropic .tile .thumb, body.theme-tropic .cic, body.theme-tropic .qico, body.theme-tropic .smgem, body.theme-tropic .jo-ic {
-      background: linear-gradient(160deg, #F3F5EE, #E9ECE1) !important; }
-    body.theme-tropic.theme-dusk .tile .thumb, body.theme-tropic.theme-dusk .cic, body.theme-tropic.theme-dusk .qico, body.theme-tropic.theme-dusk .smgem, body.theme-tropic.theme-dusk .jo-ic {
-      background: linear-gradient(160deg, #2C302C, #212521) !important; }
 
     /* Navigation : icônes vives */
     .bottom-nav { background: #fff7f2; box-shadow: 0 -8px 28px rgba(45,38,52,.10); }
@@ -4122,7 +4070,6 @@
 <body>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
   <div id="bgFx" aria-hidden="true"></div>
-  <!-- (Les dégradés smGem/smGemGloss des icônes maison sont injectés par sunmates-icons.js) -->
   <!-- Bannière d'alerte temps réel (cachée par défaut) -->
   <div id="alertBanner" class="hidden"></div>
 
@@ -4163,8 +4110,8 @@
       <div class="picker-head"><h3 style="margin:0">✂️ Cadre ta photo</h3><button id="cropCancel" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
       <p class="muted" style="font-size:.78rem;margin:.2rem 0 .5rem">Glisse pour positionner, zoome · puis publie.</p>
       <div id="cropStage" class="crop-stage"><img id="cropImg" alt="" draggable="false" /><div class="crop-ring"></div></div>
-      <div class="crop-zoom"><span data-smicon="minus">➖</span><input type="range" id="cropZoom" min="1" max="3" step="0.01" value="1" /><span data-smicon="plus">➕</span></div>
-      <button class="btn-primary btn-block" id="cropApply" style="margin-top:.6rem"><span data-smicon="check">✅</span> Recadrer &amp; publier</button>
+      <div class="crop-zoom"><span>➖</span><input type="range" id="cropZoom" min="1" max="3" step="0.01" value="1" /><span>➕</span></div>
+      <button class="btn-primary btn-block" id="cropApply" style="margin-top:.6rem">✅ Recadrer &amp; publier</button>
       <div class="msg" id="cropMsg" style="text-align:center"></div>
     </div>
   </div>
@@ -4244,7 +4191,7 @@
           <div class="name" style="font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="gchatName">—</div>
           <div class="meta muted" style="font-size:.78rem" id="gchatMeta"></div>
         </div>
-        <button class="iconbtn" id="gchatLeave" title="Quitter le groupe" aria-label="Quitter le groupe"><span data-smicon="door">🚪</span></button>
+        <button class="iconbtn" id="gchatLeave" title="Quitter le groupe" aria-label="Quitter le groupe">🚪</button>
       </div>
       <div class="chat-body" id="gchatBody" data-noptr></div>
       <div class="chat-input">
@@ -4480,10 +4427,10 @@
       <!-- Bloc Pro / B2B : 4 tuiles séparées, cliquables → chacune pop son détail (pas de redirect direct) -->
       <div id="authProBlock" class="hidden">
         <div class="grid2 pro-grid">
-          <div class="tile" data-protile="visi"><div class="thumb gold" data-smicon="chart">📈</div><div class="t-name">Visibilité</div><div class="t-meta">Touche pour en savoir +</div></div>
-          <div class="tile" data-protile="badge"><div class="thumb teal" data-smicon="shieldsafe">🛟</div><div class="t-name">Badge « Lieu sûr »</div><div class="t-meta">Touche pour en savoir +</div></div>
-          <div class="tile" data-protile="traffic"><div class="thumb coral" data-smicon="coupon">🎟️</div><div class="t-name">Plus de trafic</div><div class="t-meta">Touche pour en savoir +</div></div>
-          <div class="tile" data-protile="stats"><div class="thumb indigo" data-smicon="stats">📊</div><div class="t-name">Statistiques</div><div class="t-meta">Touche pour en savoir +</div></div>
+          <div class="tile" data-protile="visi"><div class="thumb gold">📈</div><div class="t-name">Visibilité</div><div class="t-meta">Touche pour en savoir +</div></div>
+          <div class="tile" data-protile="badge"><div class="thumb teal">🛟</div><div class="t-name">Badge « Lieu sûr »</div><div class="t-meta">Touche pour en savoir +</div></div>
+          <div class="tile" data-protile="traffic"><div class="thumb coral">🎟️</div><div class="t-name">Plus de trafic</div><div class="t-meta">Touche pour en savoir +</div></div>
+          <div class="tile" data-protile="stats"><div class="thumb indigo">📊</div><div class="t-name">Statistiques</div><div class="t-meta">Touche pour en savoir +</div></div>
         </div>
         <button class="btn-primary btn-block" id="authProStart" style="margin-top:1rem;font-size:1.05rem;padding:1rem">🚀 Démarrer, Espace Pro</button>
         <p class="muted" style="text-align:center;font-size:.78rem;margin-top:.6rem">Aucun compte requis : découvre l'offre et envoie ta demande de partenariat.</p>
@@ -4512,7 +4459,7 @@
     </header>
     <div id="goldPreviewBanner">👁️ Aperçu « mode Gratuit » : les fonctions 👑 Gold sont grisées</div>
     <!-- Barre flottante du minuteur « Rentrée en sécurité » (visible sur tous les onglets quand actif) -->
-    <div id="safeTimerBar" class="hidden"><span class="stb-ic" data-smicon="clock">⏱️</span><span class="stb-txt">Minuteur sécurité · <b id="safeTimerCount">--:--</b></span><button id="safeArrivedBtn" type="button"><span data-smicon="check">✅</span> Bien arrivé·e</button></div>
+    <div id="safeTimerBar" class="hidden"><span class="stb-ic">⏱️</span><span class="stb-txt">Minuteur sécurité · <b id="safeTimerCount">--:--</b></span><button id="safeArrivedBtn" type="button">✅ Bien arrivé·e</button></div>
 
     <main>
       <!-- ---------------- Onglet ACCUEIL ---------------- -->
@@ -4520,7 +4467,7 @@
         <h1 id="homeHello">Bonjour</h1>
         <div class="hello-row">
           <p class="muted" id="homeSubtitle" style="margin:0">Regarde qui traîne dans le coin 👀</p>
-          <button id="availChip" class="avail-chip" type="button" title="Signale que tu es dispo pour une rencontre"><span data-smicon="coffee">☕</span> Dispo ?</button>
+          <button id="availChip" class="avail-chip" type="button" title="Signale que tu es dispo pour une rencontre">☕ Dispo ?</button>
           <button id="homeStreak" class="streak-chip hidden" title="Ta série de jours sur SunMates"></button>
         </div>
 
@@ -4684,16 +4631,16 @@
           <!-- UNE seule rangée au-dessus de la carte : ville + À faire + Filtres (avant : 2 rangées éparpillées) -->
           <!-- Retour Maxime : plus d'option « toutes les villes » sélectionnable (le bouton 🌍 Tout voir fait déjà ça) -->
           <!-- (P9 : le carnet 📓 vit EN TÊTE du panneau Filtres · un bouton de plus ici surchargeait l'accueil) -->
-          <div class="city-pick"><select id="questCitySelect" aria-label="Choisir une ville"></select><button class="todo-toggle" id="questTodoToggle" type="button" title="N'afficher que les quêtes pas encore faites"><span class="tt-ic" data-smicon="quest">🎯</span><span class="tt-lbl">À faire</span><span class="tt-state" id="todoState">OFF</span></button><button type="button" class="hm-layers-btn" id="hmLayersBtn"><span data-smicon="layers">🗂️</span> Filtres <span class="hlb-cnt" id="hmLayersCnt">5</span></button></div>
+          <div class="city-pick"><select id="questCitySelect" aria-label="Choisir une ville"></select><button class="todo-toggle" id="questTodoToggle" type="button" title="N'afficher que les quêtes pas encore faites"><span class="tt-ic">🎯</span><span class="tt-lbl">À faire</span><span class="tt-state" id="todoState">OFF</span></button><button type="button" class="hm-layers-btn" id="hmLayersBtn">🗂️ Filtres <span class="hlb-cnt" id="hmLayersCnt">5</span></button></div>
           <!-- Chips gardés en DOM (pilotés par le panneau Filtres) mais plus affichés ici -->
           <div class="chips wrap homemap-filters as-btn" id="homeMapFilters" style="display:none">
-            <button class="chip active cl-places" data-layer="places"><span data-smicon="near">📍</span> Lieux <b data-cnt></b></button>
-            <button class="chip active cl-mates" data-layer="mates"><span data-smicon="usersolo">🧑</span> Mates <b data-cnt></b></button>
-            <button class="chip active cl-acts" data-layer="activities"><span data-smicon="party">🎉</span> Activités <b data-cnt></b></button>
-            <button class="chip active cl-checkins" data-layer="checkins"><span data-smicon="check">✅</span> Check-ins <b data-cnt></b></button>
-            <button class="chip active cl-quests" data-layer="quests"><span data-smicon="quest">🎯</span> Quêtes <b data-cnt></b></button>
+            <button class="chip active cl-places" data-layer="places">📍 Lieux <b data-cnt></b></button>
+            <button class="chip active cl-mates" data-layer="mates">🧑 Mates <b data-cnt></b></button>
+            <button class="chip active cl-acts" data-layer="activities">🎉 Activités <b data-cnt></b></button>
+            <button class="chip active cl-checkins" data-layer="checkins">✅ Check-ins <b data-cnt></b></button>
+            <button class="chip active cl-quests" data-layer="quests">🎯 Quêtes <b data-cnt></b></button>
             <!-- #6 : la chip MANQUAIT → le filtre « Mes adresses » du panneau tournait dans le vide -->
-            <button class="chip active cl-mypins" data-layer="mypins"><span data-smicon="pin">📌</span> Mes adresses <b data-cnt></b></button>
+            <button class="chip active cl-mypins" data-layer="mypins">📌 Mes adresses <b data-cnt></b></button>
           </div>
           <div class="homemap-wrap">
             <div id="homeMap" class="homemap"></div>
@@ -4702,9 +4649,9 @@
             <button class="homemap-fsclose" id="hmFullClose">✕ Fermer</button>
             <div class="homemap-hint hidden" id="homeMapHint">👆 Touche la carte pour placer ton activité · <a id="homeMapHintCancel">Annuler</a></div>
             <div class="homemap-tools">
-              <button id="hmAdd" title="Partager une activité sur la carte"><span data-smicon="plus">➕</span> Partager</button>
-              <button id="hmLocate" title="Centrer sur ma position"><span data-smicon="near">📍</span> Autour de moi</button>
-              <button id="hmFit" title="Tout afficher"><span data-smicon="globe">🌍</span> Tout voir</button>
+              <button id="hmAdd" title="Partager une activité sur la carte">➕ Partager</button>
+              <button id="hmLocate" title="Centrer sur ma position">📍 Autour de moi</button>
+              <button id="hmFit" title="Tout afficher">🌍 Tout voir</button>
             </div>
           </div>
           <!-- Légende supprimée : les chips colorés au-dessus font office de légende (anti-surcharge). -->
@@ -4765,9 +4712,9 @@
           <div id="feedPollOptions" class="hidden"></div>
           <div class="fc-bottom">
             <div class="fc-kinds">
-              <button class="fc-kind active" data-fkind="post" type="button"><span data-smicon="mood">✨</span> Humeur</button>
-              <button class="fc-kind" data-fkind="spot" type="button"><span data-smicon="near">📍</span> Spot</button>
-              <button class="fc-kind" data-fkind="poll" type="button"><span data-smicon="chart">📊</span> Sondage</button>
+              <button class="fc-kind active" data-fkind="post" type="button">✨ Humeur</button>
+              <button class="fc-kind" data-fkind="spot" type="button">📍 Spot</button>
+              <button class="fc-kind" data-fkind="poll" type="button">📊 Sondage</button>
             </div>
             <button class="btn-primary fc-send" id="feedPostBtn" type="button">Publier</button>
           </div>
@@ -4784,14 +4731,14 @@
 
         <div class="section-head"><h3>Accès rapides</h3></div>
         <div class="grid2">
-          <div class="tile" data-goto="connexions"><div class="thumb purp" data-smicon="users">🤝</div><div class="t-name">Mes Mates</div><div class="t-meta" id="qaMates">Tes compagnons d'aventure</div></div>
-          <div class="tile" data-goto="securite"><div class="thumb red" data-smicon="shieldsafe">🛟</div><div class="t-name">Sécurité</div><div class="t-meta">L'esprit tranquille</div></div>
-          <div class="tile" data-goto="lieux"><div class="thumb gold" data-smicon="near">📍</div><div class="t-name">Lieux sûrs</div><div class="t-meta" id="qaLieux">Tes spots à explorer</div></div>
-          <div class="tile" data-goto="jeux"><div class="thumb green" data-smicon="games">🎮</div><div class="t-name">Jeux &amp; Quêtes</div><div class="t-meta" id="qaJeux">Joue, gagne, brille ⭐</div></div>
-          <div class="tile" data-goto="jeux" data-jeuxview="jeuxRank"><div class="thumb blue" data-smicon="rank">🏆</div><div class="t-name">Classement</div><div class="t-meta">Vise le sommet</div></div>
-          <div class="tile" data-goto="jeux" data-jeuxview="jeuxCoupons"><div class="thumb teal" data-smicon="coupon">🎟️</div><div class="t-name">Coupons</div><div class="t-meta" id="qaCoupons">Des cadeaux à débloquer</div></div>
-          <div class="tile tile-soon" id="goldTile" aria-disabled="true" title="SunMates Gold · bientôt"><div class="thumb gold-soon" data-smicon="crown">👑</div><div class="t-name">Gold</div><div class="t-meta">Le meilleur, bientôt</div></div>
-          <div class="tile" data-goto="profil"><div class="thumb indigo" data-smicon="usersolo">👤</div><div class="t-name">Mon profil</div><div class="t-meta" id="qaProfil">Ton aura voyageuse</div></div>
+          <div class="tile" data-goto="connexions"><div class="thumb purp">🤝</div><div class="t-name">Mes Mates</div><div class="t-meta" id="qaMates">Tes compagnons d'aventure</div></div>
+          <div class="tile" data-goto="securite"><div class="thumb red">🛟</div><div class="t-name">Sécurité</div><div class="t-meta">L'esprit tranquille</div></div>
+          <div class="tile" data-goto="lieux"><div class="thumb green">📍</div><div class="t-name">Lieux sûrs</div><div class="t-meta" id="qaLieux">Tes spots à explorer</div></div>
+          <div class="tile" data-goto="jeux"><div class="thumb gold">🎮</div><div class="t-name">Jeux &amp; Quêtes</div><div class="t-meta" id="qaJeux">Joue, gagne, brille ⭐</div></div>
+          <div class="tile" data-goto="jeux" data-jeuxview="jeuxRank"><div class="thumb blue">🏆</div><div class="t-name">Classement</div><div class="t-meta">Vise le sommet</div></div>
+          <div class="tile" data-goto="jeux" data-jeuxview="jeuxCoupons"><div class="thumb teal">🎟️</div><div class="t-name">Coupons</div><div class="t-meta" id="qaCoupons">Des cadeaux à débloquer</div></div>
+          <div class="tile tile-soon" id="goldTile" aria-disabled="true" title="SunMates Gold · bientôt"><div class="thumb gold-soon">👑</div><div class="t-name">Gold</div><div class="t-meta">Le meilleur, bientôt</div></div>
+          <div class="tile" data-goto="profil"><div class="thumb indigo">👤</div><div class="t-name">Mon profil</div><div class="t-meta" id="qaProfil">Ton aura voyageuse</div></div>
         </div>
       </div>
 
@@ -4847,8 +4794,8 @@
         <!-- Moteur de filtrage (piloté par les cat-tiles ci-dessus ; masqué visuellement) -->
         <div class="chips wrap" id="cafeFilters" style="display:none">
           <button class="chip active" data-cf="all">Tous</button>
-          <button class="chip" data-cf="eco"><span data-smicon="eco">🌱</span> Éco-responsables</button>
-          <button class="chip" data-cf="near"><span data-smicon="near">📍</span> Près de moi</button>
+          <button class="chip" data-cf="eco">🌱 Éco-responsables</button>
+          <button class="chip" data-cf="near">📍 Près de moi</button>
         </div>
         <div id="cafesCount" class="muted" style="font-size:.8rem;margin-bottom:.5rem"></div>
         <div class="gold-only-note" style="margin-bottom:.7rem">👑 Gratuit : 1 check-in par jour. Gold : check-ins illimités + bonus de points.</div>
@@ -4873,9 +4820,9 @@
           </button>
 
           <div class="mseg">
-            <button data-mseg="messages" class="active"><span data-i18n="mates.messages">Messages</span><span class="segb hidden" id="segMsg"></span></button>
-            <button data-mseg="discover"><span data-i18n="mates.discover">Découvrir</span></button>
-            <button data-mseg="requests"><span data-i18n="mates.requests">Demandes</span><span class="segb hidden" id="segReq"></span></button>
+            <button data-mseg="messages" class="active"><span data-smicon="chat" data-smicon-size="15" style="vertical-align:-2px"></span> <span data-i18n="mates.messages">Messages</span><span class="segb hidden" id="segMsg"></span></button>
+            <button data-mseg="discover"><span data-smicon="search" data-smicon-size="15" style="vertical-align:-2px"></span> <span data-i18n="mates.discover">Découvrir</span></button>
+            <button data-mseg="requests"><span data-smicon="mail" data-smicon-size="15" style="vertical-align:-2px"></span> <span data-i18n="mates.requests">Demandes</span><span class="segb hidden" id="segReq"></span></button>
           </div>
 
           <!-- Sous-onglet : Messages -->
@@ -4885,7 +4832,7 @@
             <div class="card" id="groupCard" style="display:none">
               <div class="section-head" style="margin-bottom:.3rem">
                 <h3 style="margin:0">👥 Tes groupes</h3>
-                <button class="btn-accent" id="groupCreateBtn" style="padding:.35rem .7rem;font-size:.78rem"><span data-smicon="plus">➕</span> Créer</button>
+                <button class="btn-accent" id="groupCreateBtn" style="padding:.35rem .7rem;font-size:.78rem">➕ Créer</button>
               </div>
               <div id="groupList"></div>
             </div>
@@ -4949,8 +4896,8 @@
               <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;flex-wrap:wrap">
                 <span class="muted" style="font-size:.82rem;white-space:nowrap">Trier par</span>
                 <div id="travSort" style="display:flex;gap:.4rem">
-                  <button type="button" class="chip active" data-sort="compat">Compatibilité <span data-smicon="heart">❤️</span></button>
-                  <button type="button" class="chip" data-sort="trust">Confiance <span data-smicon="shieldsafe">🛡️</span></button>
+                  <button type="button" class="chip active" data-sort="compat">Compatibilité ❤️</button>
+                  <button type="button" class="chip" data-sort="trust">Confiance 🛡️</button>
                 </div>
               </div>
               <div id="travelersList"><div class="skel-row"><div class="skel skel-av"></div><div class="skel-lines"><div class="skel skel-line m"></div><div class="skel skel-line s"></div></div></div><div class="skel-row"><div class="skel skel-av"></div><div class="skel-lines"><div class="skel skel-line l"></div><div class="skel skel-line s"></div></div></div></div>
@@ -4986,15 +4933,15 @@
           </div>
           <!-- Actions principales : visibles tout de suite, sans scroll -->
           <div class="row">
-            <button class="btn-primary" id="tpMsgBtn"><span data-smicon="message">💬</span> Message</button>
-            <button class="btn-accent" id="tpConnectBtn"><span data-smicon="handshake">🤝</span> Se connecter</button>
+            <button class="btn-primary" id="tpMsgBtn">💬 Message</button>
+            <button class="btn-accent" id="tpConnectBtn">🤝 Se connecter</button>
           </div>
           <div class="msg" id="tpMsg" style="text-align:center;margin:.5rem 0 .6rem"></div>
           <!-- Actions secondaires : rangée compacte, remontée pour être bien visible -->
           <div class="tp-actions2" style="margin-bottom:1rem">
-            <button class="tpa-btn tpa-chal" id="tpChallengeBtn"><span class="tpa-ic" data-smicon="quest">🎯</span><span>Défi</span></button>
-            <button class="tpa-btn tpa-bff" id="tpBffBtn" style="display:none"><span class="tpa-ic" data-smicon="star">⭐</span><span>BFF</span></button>
-            <button class="tpa-btn tpa-danger" id="tpBlockBtn"><span class="tpa-ic" data-smicon="block">🚫</span><span>Bloquer</span></button>
+            <button class="tpa-btn tpa-chal" id="tpChallengeBtn"><span class="tpa-ic">🎯</span><span>Défi</span></button>
+            <button class="tpa-btn tpa-bff" id="tpBffBtn" style="display:none"><span class="tpa-ic">⭐</span><span>BFF</span></button>
+            <button class="tpa-btn tpa-danger" id="tpBlockBtn"><span class="tpa-ic">🚫</span><span>Bloquer</span></button>
           </div>
           <div class="card">
             <div class="section-head" style="margin-bottom:.4rem"><h3 style="margin:0">À propos</h3><span id="tpVerif"></span></div>
@@ -5032,7 +4979,7 @@
             </div>
             <span class="chat-flame hidden" id="chatFlame" title="Votre flamme">🔥<b id="chatFlameN">0</b></span>
             <div style="position:relative">
-              <button class="iconbtn" id="chatMenuBtn" title="Options" aria-label="Options" style="font-size:1.1rem"><span data-smicon="dots">⋯</span></button>
+              <button class="iconbtn" id="chatMenuBtn" title="Options" aria-label="Options" style="font-size:1.1rem">⋯</button>
               <div class="chat-menu hidden" id="chatMenu">
                 <button data-cmenu="profile">👤 Voir le profil</button>
                 <button data-cmenu="flame">🔥 Flammes (24 h)</button>
@@ -5049,8 +4996,8 @@
             <button class="btn-primary" id="voiceStop" style="padding:.3rem .7rem">Envoyer ➤</button>
           </div>
           <div class="chat-input">
-            <button class="iconbtn chat-poc" id="chatPoc" title="Envoyer une flamme 🔥"><span data-smicon="flame">🔥</span></button>
-            <button class="iconbtn chat-mic" id="chatMic" title="Note vocale (30 s max)"><span data-smicon="mic">🎤</span></button>
+            <button class="iconbtn chat-poc" id="chatPoc" title="Envoyer une flamme 🔥">🔥</button>
+            <button class="iconbtn chat-mic" id="chatMic" title="Note vocale (30 s max)">🎤</button>
             <input id="chatInput" type="text" maxlength="1000" placeholder="Envoyer un message…" />
             <button class="btn-primary" id="chatSend">➤</button>
           </div>
@@ -5191,7 +5138,7 @@
         <!-- Retour Maxime : la mise en page « photo à gauche » ne plaisait pas (et la roue ⚙️
              devenait incliquable) → ON REMET la carte CENTRÉE d'origine. -->
         <div class="card prof-head" style="position:relative;text-align:center">
-          <button class="iconbtn" id="profileSettingsBtn" title="Paramètres du compte" aria-label="Paramètres du compte" style="position:absolute;top:.7rem;right:.7rem;z-index:2"><span data-smicon="settings">⚙️</span></button>
+          <button class="iconbtn" id="profileSettingsBtn" title="Paramètres du compte" aria-label="Paramètres du compte" style="position:absolute;top:.7rem;right:.7rem;z-index:2">⚙️</button>
           <!-- Photo ENTIÈRE (non rognée), centrée -->
           <div class="prof-photo" id="profileAvatar">😎</div>
           <div class="name prof-name"><span id="profileName">Voyageur</span> <span id="verifBadge"></span> <span id="profileHostBadge" class="badge ok hidden">🛟 Hôte</span></div>
@@ -5821,10 +5768,10 @@
           <!-- Carte-LISTE (refonte) : chaque rangée montre la VRAIE donnée (objectifs x/3, quête la
                plus proche, collection n/n, ville du jour). Mêmes data-prog → handlers inchangés. -->
           <div class="card prog-card">
-            <button type="button" class="prog-row" data-prog="goals"><span class="cic c-gold" data-smicon="calendar">🗓️</span><span class="pr-tx"><b>Objectifs de la semaine</b><span class="pr-sub" id="prGoalsSub">3 défis qui tournent chaque lundi</span></span><b class="pr-val" id="prGoalsVal"></b><span class="pr-chev">›</span></button>
-            <button type="button" class="prog-row" data-prog="nearquest"><span class="cic c-sun" data-smicon="near">📍</span><span class="pr-tx"><b>Quête la plus proche</b><span class="pr-sub" id="prQuestSub">Active ta position pour la repérer</span></span><span class="pr-chev">›</span></button>
-            <button type="button" class="prog-row" data-prog="collection"><span class="cic c-purp" data-smicon="map">🗺️</span><span class="pr-tx"><b>Collection de quêtes</b><span class="pr-sub" id="prCollSub">Complète la carte, ville après ville</span></span><b class="pr-val" id="prCollVal"></b><span class="pr-chev">›</span></button>
-            <button type="button" class="prog-row" data-prog="capitale"><span class="cic c-green" data-smicon="cityscape">🏙️</span><span class="pr-tx"><b>Ville à l'honneur</b><span class="pr-sub" id="prCitySub">Une nouvelle ville chaque jour</span></span><span class="pr-chev">›</span></button>
+            <button type="button" class="prog-row" data-prog="goals"><span class="cic c-gold">🗓️</span><span class="pr-tx"><b>Objectifs de la semaine</b><span class="pr-sub" id="prGoalsSub">3 défis qui tournent chaque lundi</span></span><b class="pr-val" id="prGoalsVal"></b><span class="pr-chev">›</span></button>
+            <button type="button" class="prog-row" data-prog="nearquest"><span class="cic c-sun">📍</span><span class="pr-tx"><b>Quête la plus proche</b><span class="pr-sub" id="prQuestSub">Active ta position pour la repérer</span></span><span class="pr-chev">›</span></button>
+            <button type="button" class="prog-row" data-prog="collection"><span class="cic c-purp">🗺️</span><span class="pr-tx"><b>Collection de quêtes</b><span class="pr-sub" id="prCollSub">Complète la carte, ville après ville</span></span><b class="pr-val" id="prCollVal"></b><span class="pr-chev">›</span></button>
+            <button type="button" class="prog-row" data-prog="capitale"><span class="cic c-green">🏙️</span><span class="pr-tx"><b>Ville à l'honneur</b><span class="pr-sub" id="prCitySub">Une nouvelle ville chaque jour</span></span><span class="pr-chev">›</span></button>
           </div>
           <!-- Note Gold reléguée APRÈS la progression (info secondaire) + cliquable → tuile explicative -->
           <div class="gold-only-note" id="goldNote" role="button" tabindex="0" style="cursor:pointer">👑 Gratuit : 1 quête + 1 activité par jour. Gold : illimité + <b>coupons exclusifs</b> bien plus avantageux. <span style="opacity:.7">ⓘ</span></div>
@@ -14366,9 +14313,7 @@
       const loc = $("hmLocate"); if (loc) loc.addEventListener("click", homeLocateMe);
       const fit = $("hmFit"); if (fit) fit.addEventListener("click", homeFitAll);
       const add = $("hmAdd"); if (add) add.addEventListener("click", () => {
-        // Recherche-AVANT-pin (retour Maxime) : « ➕ Partager » ouvre directement la fiche, centrée sur la
-        // carte, avec le champ de recherche de lieu en tête → on cherche le lieu d'abord (plus besoin de
-        // toucher un point précis). La position est ensuite calée par la recherche (ou reste le centre).
+        // Recherche-AVANT-pin (retour Maxime) : ouvre la fiche centrée sur la carte avec la recherche de lieu.
         try { if (homeLeaf && typeof openActCreate === "function") { setHomeAddMode(false); openActCreate(homeLeaf.getCenter()); return; } } catch (e) {}
         setHomeAddMode(!homeAddMode);
       });
