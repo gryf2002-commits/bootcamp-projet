@@ -66,7 +66,7 @@
   var GLYPHS = {
     // Lieux / découverte
     near: G('pin', 'teal', dot(24, 17.5, 5)),
-    coffee: G('cup', 'amber', '<path d="M35 16h3.4a4.6 4.6 0 0 1 0 9.2H35" fill="none" stroke="#C26A1E" stroke-width="1.7"/><rect x="9" y="37" width="26" height="4.2" rx="2.1" fill="#F0A23A" stroke="#C26A1E" stroke-width="1.7"/>'),
+    coffee: '<path d="M9 14h23v8.5a11.5 11.5 0 0 1-23 0z" fill="' + C.amber[0] + '" stroke="' + C.amber[1] + '" stroke-width="1.7" stroke-linejoin="round"/><path d="M32 16h3.4a4.6 4.6 0 0 1 0 9.2H32" fill="none" stroke="' + C.amber[1] + '" stroke-width="2.4"/><rect x="8" y="37" width="25" height="4.2" rx="2.1" fill="' + C.amber[0] + '" stroke="' + C.amber[1] + '" stroke-width="1.7"/><g stroke="' + K + '" stroke-width="2.2" stroke-linecap="round" opacity=".85"><path d="M16 5c-1.6 2.2 1.6 3.2 0 5.4"/><path d="M24 4c-1.6 2.2 1.6 3.2 0 5.4"/></g>',
     eco: G('leaf', 'green', '<path d="M31 17C24 23 17 30 14 36" fill="none" stroke="' + K + '" stroke-width="2.4" stroke-linecap="round"/>'),
     rating: G('star', 'gold'),
     popular: G('flame', 'coral'),
@@ -79,7 +79,7 @@
     shop: G('bag', 'rose', '<path d="M17.5 17a6.5 6.5 0 0 1 13 0" fill="none" stroke="' + K + '" stroke-width="2.6"/>'),
     calendar: G('cal', 'blue', '<line x1="7" y1="20" x2="41" y2="20" stroke="' + K + '" stroke-width="2"/><line x1="16" y1="6" x2="16" y2="14" stroke="#5E74E8" stroke-width="3.2" stroke-linecap="round"/><line x1="32" y1="6" x2="32" y2="14" stroke="#5E74E8" stroke-width="3.2" stroke-linecap="round"/>'),
     map: G('map', 'teal', '<path d="M18 8v28M30 12v28" stroke="' + K + '" stroke-opacity=".7" stroke-width="1.6"/>'),
-    cityscape: G('city', 'violet', '<g fill="' + K + '"><rect x="34" y="20" width="3" height="3"/><rect x="34" y="27" width="3" height="3"/><rect x="11" y="28" width="3" height="3"/></g>'),
+    cityscape: '<g fill="' + C.violet[0] + '" stroke="' + C.violet[1] + '" stroke-width="1.6" stroke-linejoin="round"><rect x="6" y="22" width="11" height="20" rx="1.5"/><rect x="18" y="13" width="12" height="29" rx="1.5"/><rect x="31" y="27" width="11" height="15" rx="1.5"/></g><g fill="' + K + '"><rect x="9.5" y="26" width="2.4" height="2.4"/><rect x="9.5" y="32" width="2.4" height="2.4"/><rect x="22" y="18" width="2.4" height="2.4"/><rect x="22" y="24" width="2.4" height="2.4"/><rect x="25.5" y="18" width="2.4" height="2.4"/><rect x="34.5" y="31" width="2.4" height="2.4"/></g>',
     // Sécurité
     phone: G('phone', 'teal'),
     signal: '<path d="M18 6h12l-1.6 12H19.6z" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7" stroke-linejoin="round"/><rect x="20.5" y="18" width="7" height="24" rx="2.5" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7"/><g stroke="#FF8A3D" stroke-width="2.4" stroke-linecap="round"><line x1="33" y1="10" x2="38" y2="7"/><line x1="34" y1="16" x2="39" y2="16"/><line x1="15" y1="10" x2="10" y2="7"/><line x1="14" y1="16" x2="9" y2="16"/></g>',
@@ -98,18 +98,18 @@
     // Pro / divers
     chart: G('card', 'green', '<path d="M13 30l7-7 5 4 10-11" fill="none" stroke="' + K + '" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 16h6v6" fill="none" stroke="' + K + '" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>'),
     stats: G('card', 'blue', '<g fill="' + K + '"><rect x="13" y="26" width="5.5" height="9" rx="1.6"/><rect x="21.2" y="18" width="5.5" height="17" rx="1.6"/><rect x="29.4" y="22" width="5.5" height="13" rx="1.6"/></g>'),
-    crown: G('crown', 'gold', '<rect x="7" y="37.5" width="34" height="5" rx="2.2" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7"/><circle cx="24" cy="20" r="2.6" fill="#FF5A4D"/>'),
+    crown: '<path d="M5 35 7 15l8.5 6.5L24 8l8.5 13.5L41 15l2 20z" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7" stroke-linejoin="round"/><rect x="6" y="35" width="36" height="6" rx="2" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7"/><g fill="#FF5A4D"><circle cx="14" cy="25" r="2"/><circle cx="24" cy="21" r="2.3"/><circle cx="34" cy="25" r="2"/></g>',
     trip: G('suitcase', 'amber', '<path d="M18 15v-3a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v3" fill="none" stroke="#C26A1E" stroke-width="3"/><line x1="24" y1="20" x2="24" y2="40" stroke="' + K + '" stroke-width="2" stroke-opacity=".7"/>'),
     bell: G('bell', 'gold', '<path d="M20 36a4 4 0 0 0 8 0" fill="' + K + '"/>'),
     search: '<circle cx="21" cy="21" r="12.5" fill="' + C.blue[0] + '" stroke="' + C.blue[1] + '" stroke-width="1.7"/><circle cx="21" cy="21" r="6.5" fill="none" stroke="' + K + '" stroke-width="2.4"/><line x1="30.5" y1="30.5" x2="41" y2="41" stroke="' + C.blue[0] + '" stroke-width="5.5" stroke-linecap="round"/>',
     mail: G('env', 'blue', '<path d="M8 15l16 12 16-12" fill="none" stroke="' + K + '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'),
-    settings: G('gear', 'blue', dot(24, 24, 6)),
+    settings: '<g fill="' + C.blue[0] + '" stroke="' + C.blue[1] + '" stroke-width="1.5" stroke-linejoin="round"><rect x="21.5" y="3" width="5" height="9" rx="1.5"/><rect x="21.5" y="36" width="5" height="9" rx="1.5"/><rect x="3" y="21.5" width="9" height="5" rx="1.5"/><rect x="36" y="21.5" width="9" height="5" rx="1.5"/><rect x="8" y="8" width="5" height="9" rx="1.5" transform="rotate(45 10.5 12.5)"/><rect x="35" y="31" width="5" height="9" rx="1.5" transform="rotate(45 37.5 35.5)"/><rect x="35" y="8" width="5" height="9" rx="1.5" transform="rotate(-45 37.5 12.5)"/><rect x="8" y="31" width="5" height="9" rx="1.5" transform="rotate(-45 10.5 35.5)"/></g><circle cx="24" cy="24" r="12" fill="' + C.blue[0] + '" stroke="' + C.blue[1] + '" stroke-width="1.7"/><circle cx="24" cy="24" r="4.8" fill="' + K + '"/>',
     mic: G('mic', 'coral', '<path d="M12 22a12 12 0 0 0 24 0" fill="none" stroke="' + K + '" stroke-width="2.6" stroke-linecap="round"/><line x1="24" y1="34" x2="24" y2="42" stroke="' + C.coral[0] + '" stroke-width="3.4" stroke-linecap="round"/>'),
     flame: G('flame', 'coral'),
     star: G('star', 'gold'),
     handshake: '<circle cx="18" cy="24" r="8.5" fill="none" stroke="' + C.gold[0] + '" stroke-width="4.6"/><circle cx="30" cy="24" r="8.5" fill="none" stroke="' + C.coral[0] + '" stroke-width="4.6"/>',
     // --- inline (boutons/chips) ---
-    door: '<rect x="11" y="6" width="22" height="37" rx="3" fill="' + C.teal[0] + '" stroke="' + C.teal[1] + '" stroke-width="1.7"/><path d="M30 9l8 4v22l-8 4z" fill="' + C.teal[0] + '" stroke="' + C.teal[1] + '" stroke-width="1.7" stroke-linejoin="round"/>' + dot(33, 24, 1.8),
+    door: '<rect x="7" y="6" width="20" height="36" rx="3" fill="' + C.teal[0] + '" stroke="' + C.teal[1] + '" stroke-width="1.7"/><circle cx="22" cy="24" r="2" fill="' + K + '"/><path d="M28 24h13M36 18.5l5.5 5.5-5.5 5.5" fill="none" stroke="' + C.coral[0] + '" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>',
     check: G('target', 'green', '<path d="M16.5 24l5 5 9.5-10.5" fill="none" stroke="' + K + '" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>'),
     layers: '<path d="M24 6 43 16 24 26 5 16z" fill="' + C.gold[0] + '" stroke="' + C.gold[1] + '" stroke-width="1.7" stroke-linejoin="round"/><path d="M6 23l18 9 18-9M6 31l18 9 18-9" fill="none" stroke="' + C.gold[0] + '" stroke-width="2.6" stroke-linejoin="round"/>',
     party: '<path d="M6 42 18 14l16 16z" fill="' + C.coral[0] + '" stroke="' + C.coral[1] + '" stroke-width="1.7" stroke-linejoin="round"/><g fill="#FFD15C"><circle cx="34" cy="9" r="2.4"/><circle cx="41" cy="18" r="2.4"/><circle cx="28" cy="6" r="2"/></g><circle cx="38" cy="11" r="1.6" fill="#16C0A4"/>',
