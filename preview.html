@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=458"></script>
+  <script src="sunmates-badges.js?v=459"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale · jamais depuis
@@ -3944,6 +3944,13 @@
     body.theme-winter.theme-dusk .qm-xp, body.theme-winter.theme-dusk .sc-xp,
     body.theme-winter.theme-dusk .rit-cnt, body.theme-winter.theme-dusk .conv-bff .conv-pin {
       background: rgba(140,196,232,.16) !important; }
+
+    /* ============ CHIFFRES STAT = ACCENT DE SAISON (retour Maxime « chiffres corail ») ============
+       Les gros chiffres du profil (.stat) avaient un dégradé CORAIL codé en dur (l.~2541, sans override
+       saison) → ils restaient corail sur le navy (hiver) et le vert (jungle), jour comme nuit, alors que
+       --accent-grad est déjà saisonnier (bleu glacier en hiver, lagon en jungle). On le branche dessus.
+       Important : background-IMAGE (pas le raccourci background) pour NE PAS réinitialiser background-clip:text. */
+    body.theme-winter .stat, body.theme-tropic .stat { background-image: var(--accent-grad); }
 
     /* ============ #8 TRANSITION DE SAISON : voile doux + pluie de flocons/feuilles ============ */
     #seasonFx { position: fixed; inset: 0; z-index: var(--z-fx); pointer-events: none; overflow: hidden; opacity: 1; transition: opacity .55s ease; }

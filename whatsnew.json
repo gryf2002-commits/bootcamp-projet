@@ -1,8 +1,7 @@
 {
-  "candidate": "v458",
+  "candidate": "v459",
   "items": [
-    "❄️ Ors de nuit : en nuit d'HIVER, les accents OR/ambre (streak, XP, stats, pins) restaient dorés et juraient sur le navy → ils passent en BLEU GLACIER. La nuit de JUNGLE garde l'or (c'est sa couleur d'accent). La nuit normale (violette) aussi.",
-    "🪟 Bandeau du haut en VERRE DÉPOLI : il devient plus transparent avec un léger flou → le contenu qui glisse dessous est fondu proprement, au lieu d'apparaître « en fantôme ».",
+    "🔢 Chiffres du profil aux couleurs de la saison : les gros compteurs (check-ins, mates, etc.) restaient CORAIL même en hiver et en jungle, où ça jurait avec le thème. Ils suivent maintenant l'accent de saison → BLEU GLACIER en hiver, LAGON en jungle (jour comme nuit). En mode normal et au coucher de soleil, ils gardent le corail.",
     "ℹ️ Suite : passe premium avec l'œil UI UX Pro (dans la DA), et on continue le sujet du haut d'écran (séparation/barre avec la status-bar) avec une capture de ton écran pour viser juste."
   ]
 }
