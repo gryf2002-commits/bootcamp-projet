@@ -3112,16 +3112,18 @@
        SunMates (mêmes familles bijou que les pastilles de Jeux) · fini le néon bonbon
        bleu-ciel/violet-flashy/rose-barbie, MÊME EN MODE JOUR. La couche « palette malléable »
        (fin de feuille) les décline ensuite en nuit / hiver / tropiques. */
-    .thumb.green { --c1:#2BC4A8; --c2:#128F7C; } /* turquoise bijou (zéro vert criard) */
-    .thumb.blue  { --c1:#5E74E8; --c2:#3641B8; } /* bleu-indigo nuit (famille classement) */
-    .thumb.purp  { --c1:#9B7BFF; --c2:#6638D6; } /* violet bijou (famille jeux) */
-    .thumb.coral { --c1:#FF9A5C; --c2:#E8631F; } /* corail braise (famille solo) */
-    .thumb.lime  { --c1:#FFC93C; --c2:#D98414; } /* ambre doré */
-    .thumb.indigo{ --c1:#8A5CFF; --c2:#5028B0; } /* indigo crépuscule (famille couronne) */
-    .thumb.rose  { --c1:#FF6FA5; --c2:#D63A78; } /* framboise (famille coupons) */
-    .thumb.gold  { --c1:#FFC93C; --c2:#E8961F; } /* or franc */
-    .thumb.teal  { --c1:#4ED8B8; --c2:#149E8C; } /* lagon émaillé */
-    .thumb.red   { --c1:#FF5A4D; --c2:#C9281F; } /* corail-rouge d'alerte */
+    /* ═══ TONS BIJOU MAÎTRISÉS (chantier UX/UI premium, choix Maxime) : couleurs PROFONDES façon pierres
+       précieuses (pas criardes), chaque famille = sa pierre, cohérent dans toute l'app. Warm conservé. ═══ */
+    .thumb.green { --c1:#1FAE90; --c2:#0C6E5B; } /* émeraude sourde */
+    .thumb.blue  { --c1:#4258C9; --c2:#26318E; } /* saphir profond (famille classement) */
+    .thumb.purp  { --c1:#7C57D4; --c2:#46258F; } /* améthyste profonde (famille jeux) */
+    .thumb.coral { --c1:#EC7E45; --c2:#C2491A; } /* corail braise (famille solo) */
+    .thumb.lime  { --c1:#D9A82E; --c2:#A88011; } /* citrine / miel */
+    .thumb.indigo{ --c1:#6A46CC; --c2:#391E8C; } /* indigo crépuscule (famille couronne) */
+    .thumb.rose  { --c1:#DA5587; --c2:#A52759; } /* framboise profonde (famille coupons) */
+    .thumb.gold  { --c1:#E6A82E; --c2:#B5740E; } /* topaze / ambre maîtrisé */
+    .thumb.teal  { --c1:#2BB39B; --c2:#0D6E66; } /* lagon émaillé profond */
+    .thumb.red   { --c1:#D6414E; --c2:#8E1F2A; } /* rubis profond (alerte/sécurité) */
     .thumb.green, .thumb.blue, .thumb.purp, .thumb.coral, .thumb.lime, .thumb.indigo, .thumb.rose, .thumb.gold, .thumb.teal, .thumb.red {
       background: linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))) !important;
       /* halo DÉRIVÉ de la couleur réelle (suit le thème) + assise neutre douce */
@@ -4733,8 +4735,8 @@
         <div class="grid2">
           <div class="tile" data-goto="connexions"><div class="thumb purp">🤝</div><div class="t-name">Mes Mates</div><div class="t-meta" id="qaMates">Tes compagnons d'aventure</div></div>
           <div class="tile" data-goto="securite"><div class="thumb red">🛟</div><div class="t-name">Sécurité</div><div class="t-meta">L'esprit tranquille</div></div>
-          <div class="tile" data-goto="lieux"><div class="thumb green">📍</div><div class="t-name">Lieux sûrs</div><div class="t-meta" id="qaLieux">Tes spots à explorer</div></div>
-          <div class="tile" data-goto="jeux"><div class="thumb gold">🎮</div><div class="t-name">Jeux &amp; Quêtes</div><div class="t-meta" id="qaJeux">Joue, gagne, brille ⭐</div></div>
+          <div class="tile" data-goto="lieux"><div class="thumb gold">📍</div><div class="t-name">Lieux sûrs</div><div class="t-meta" id="qaLieux">Tes spots à explorer</div></div>
+          <div class="tile" data-goto="jeux"><div class="thumb green">🎮</div><div class="t-name">Jeux &amp; Quêtes</div><div class="t-meta" id="qaJeux">Joue, gagne, brille ⭐</div></div>
           <div class="tile" data-goto="jeux" data-jeuxview="jeuxRank"><div class="thumb blue">🏆</div><div class="t-name">Classement</div><div class="t-meta">Vise le sommet</div></div>
           <div class="tile" data-goto="jeux" data-jeuxview="jeuxCoupons"><div class="thumb teal">🎟️</div><div class="t-name">Coupons</div><div class="t-meta" id="qaCoupons">Des cadeaux à débloquer</div></div>
           <div class="tile tile-soon" id="goldTile" aria-disabled="true" title="SunMates Gold · bientôt"><div class="thumb gold-soon">👑</div><div class="t-name">Gold</div><div class="t-meta">Le meilleur, bientôt</div></div>
