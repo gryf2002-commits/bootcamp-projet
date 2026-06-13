@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=461"></script>
+  <script src="sunmates-badges.js?v=462"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale · jamais depuis
@@ -286,7 +286,7 @@
     .topbar {
       display: flex; align-items: center; justify-content: space-between; gap: .75rem;
       /* safe-area-inset-top : laisse la place de l'encoche / status bar (iPhone) sans chevauchement */
-      padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem .75rem; position: sticky; top: 0; z-index: var(--z-header);
+      padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem 1.05rem; position: sticky; top: 0; z-index: var(--z-header);
       /* P3 (retour Maxime) : la TRANSPARENCE revient, mais propre · opaque sur 62 % (la status
          bar et le titre restent couverts → icônes natives du téléphone toujours lisibles), puis
          fondu DOUX vers transparent. Ce qui gênait avant : le dégradé partait de 86 % d'opacité
@@ -3611,14 +3611,23 @@
     .gal-city .hc-n { color: var(--accent); font-weight: 800; }
     body.theme-dusk .gal-city { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.08); }
 
-    /* #37 : pastille météo · pilule chaude cliquable, déclinée par mode */
-    .weather-chip { display: inline-flex; align-items: center; gap: .35rem; margin: 0 0 .55rem; padding: .42rem .75rem;
+    /* #37 : pastille météo · pilule chaude cliquable, déclinée par mode.
+       Retour Maxime : « plus riche mais pas imposant / pas pleine largeur » → on garde inline-flex (la pilule
+       hug son contenu, jamais 100%), mais on enrichit : icône dans un pastillon teinté, temp marquée, max du
+       jour, UV en mini-badge. Reste compacte. */
+    .weather-chip { display: inline-flex; align-items: center; gap: .4rem; margin: 0 0 .55rem; padding: .34rem .34rem .34rem .42rem;
       border-radius: 999px; border: 1px solid rgba(232,150,31,.3); background: linear-gradient(180deg, var(--cream), var(--card));
-      color: var(--ink); font-weight: 700; font-size: .82rem; cursor: pointer; box-shadow: var(--shadow-sm); }
-    .weather-chip .wc-ic { font-size: 1.05rem; }
+      color: var(--ink); font-weight: 700; font-size: .82rem; cursor: pointer; box-shadow: var(--shadow-sm); max-width: 100%; }
+    .weather-chip .wc-ic { font-size: 1rem; display: grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 999px;
+      background: var(--accent-soft); flex-shrink: 0; }
+    .weather-chip .wc-temp { font-weight: 800; font-size: .96rem; line-height: 1; }
+    .weather-chip .wc-max { color: var(--muted); font-weight: 700; font-size: .74rem; }
+    .weather-chip .wc-uv { background: var(--accent-soft); color: var(--accent-ink, var(--accent)); font-weight: 800; font-size: .7rem;
+      padding: .08rem .4rem; border-radius: 999px; }
     .weather-chip .wc-sep { color: var(--muted); }
-    .weather-chip .wc-hint { color: var(--accent); font-weight: 800; }
+    .weather-chip .wc-hint { color: var(--accent); font-weight: 800; margin-right: .2rem; }
     body.theme-dusk .weather-chip { background: var(--dcard, #2a2140); border-color: rgba(255,209,92,.2); color: #f3e9f3; }
+    body.theme-dusk .weather-chip .wc-ic, body.theme-dusk .weather-chip .wc-uv { background: rgba(255,255,255,.1); }
 
     /* #18 : QR en écrin DA · cadre dégradé sunset, papier ivoire, soleil en sceau */
     .qr-frame { position: relative; display: inline-block; padding: 12px; border-radius: 20px; margin: .4rem auto .5rem;
@@ -3889,7 +3898,13 @@
        proprement. Mode-aware via var(--bg). !important pour gagner sur toutes les couches topbar par mode.
        (La topbar n'est pas un ancêtre de la carte → ce backdrop-filter ne casse PAS le plein écran.) */
     .topbar { background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 80%, transparent) 0%, color-mix(in srgb, var(--bg) 60%, transparent) 58%, transparent 100%) !important;
-      -webkit-backdrop-filter: blur(14px) saturate(1.1); backdrop-filter: blur(14px) saturate(1.1); }
+      -webkit-backdrop-filter: blur(14px) saturate(1.1); backdrop-filter: blur(14px) saturate(1.1);
+      /* Bug Maxime « le flou translucide du header est trop marqué d'une démarcation » : le backdrop-filter
+         a un BORD NET en bas (le flou s'arrête d'un coup = la ligne visible). On ESTOMPE ce bord avec un
+         masque dégradé → le flou ET le fond fondent en douceur sur les ~22px du bas (zone de padding, sous
+         les boutons → aucun rognage). Supprime aussi la « barre » qui ressautait aux switch jour/nuit. */
+      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%);
+      mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%); }
     /* Bug Maxime « coupure / barre sombre sous la status-bar en NUIT » : le verre dépoli (ci-dessus, 80% au sommet)
        laissait le halo violet TRANSPARAÎTRE sous la status-bar (elle = --bg PLEIN/sombre) → marche visible. En nuit,
        on rend le SOMMET du topbar OPAQUE (var(--bg) plein à 0%) = même couleur EXACTE que la status-bar → fondu invisible ;
@@ -17280,7 +17295,7 @@
                 tmax: Math.round((j.daily && j.daily.temperature_2m_max && j.daily.temperature_2m_max[0]) != null ? j.daily.temperature_2m_max[0] : j.current.temperature_2m) };
           try { localStorage.setItem("sm_weather", JSON.stringify({ t: Date.now(), w })); } catch (e) {}
         }
-        chip.innerHTML = `<span class="wc-ic">${_WMO(w.code)}</span><b>${w.temp}°</b><span class="wc-sep">·</span><span>UV ${w.uv}</span><span class="wc-sep">·</span><span class="wc-hint">${i18nT("conseils")} ›</span>`;
+        chip.innerHTML = `<span class="wc-ic">${_WMO(w.code)}</span><b class="wc-temp">${w.temp}°</b><span class="wc-max">↑${w.tmax}°</span><span class="wc-sep">·</span><span class="wc-uv">UV ${w.uv}</span><span class="wc-sep">·</span><span class="wc-hint">${i18nT("conseils")} ›</span>`;
         chip.style.display = "";
         chip.onclick = () => {
           popInfo(_WMO(w.code), i18nT("Météo du moment"), `<div style="text-align:left;line-height:1.6;font-size:.88rem">
@@ -19266,12 +19281,35 @@
       } catch (e) {}
     })();
 
-    // Bandeau d'état réseau : prévient quand on est hors-ligne (Supabase devient injoignable).
+    // Bandeau d'état réseau : prévient quand on est VRAIMENT hors-ligne (Supabase injoignable).
+    // ⚠️ Bug iOS (retour Maxime « le bandeau hors-ligne reste affiché non stop sur iOS ») :
+    // navigator.onLine est NOTOIREMENT faux sur Safari/PWA iOS — il renvoie souvent false à tort et
+    // l'event "online" ne re-déclenche pas → bandeau coincé. Parade : navigator.onLine=true est fiable
+    // (= en ligne), mais navigator.onLine=false est VÉRIFIÉ par un vrai ping réseau avant d'afficher.
+    // Le ping vise Supabase (origine NON mise en cache par le SW : il ne garde que /storage/) → vrai test.
     (function netStatus() {
       const b = $("netBanner"); if (!b) return;
-      const update = () => b.classList.toggle("show", !navigator.onLine);
+      let checking = false;
+      async function reallyOffline() {
+        if (navigator.onLine) return false; // fiable dans ce sens : on est en ligne
+        try {
+          const ctrl = new AbortController();
+          const t = setTimeout(() => ctrl.abort(), 3500);
+          // no-cors : on ne lit pas la réponse, on teste juste que le réseau répond (résout = en ligne).
+          await fetch("https://ihiwuharxkmkzaxixhae.supabase.co/auth/v1/health?_=" + Date.now(),
+            { mode: "no-cors", cache: "no-store", signal: ctrl.signal });
+          clearTimeout(t);
+          return false; // le réseau a répondu → faux négatif iOS, on est en ligne
+        } catch (e) { return true; } // ping échoué → vraiment hors-ligne
+      }
+      async function update() {
+        if (checking) return; checking = true;
+        try { b.classList.toggle("show", await reallyOffline()); } finally { checking = false; }
+      }
       window.addEventListener("online", update);
       window.addEventListener("offline", update);
+      // iOS ne fire pas "online" de façon fiable → on re-vérifie au retour au premier plan.
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) update(); });
       update();
     })();
 
