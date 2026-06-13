@@ -1,9 +1,8 @@
 {
-  "candidate": "v457",
+  "candidate": "v458",
   "items": [
-    "🔝 Séparation en haut (mode JOUR surtout) : le halo chaud du fond était trop intense PILE sous la barre d'état → il créait une bande qui jurait avec elle. Le halo est calmé au sommet (il remonte plus haut et démarre plus doux) : le haut de l'app reste plat, raccord avec la barre d'état ; la chaleur bloom plus bas. Décliné jour / hiver / tropiques.",
-    "🗺️ Plein écran de la carte BLINDÉ : quoi qu'il arrive, la barre du haut et la barre de navigation du bas DISPARAISSENT en plein écran (le bouton « ✕ Fermer » de la carte suffit pour sortir). Fini la carte qui « passe sous » les bandeaux ou les tuiles superposées.",
-    "📱 IMPORTANT : si tu testes depuis l'app installée sur ton écran d'accueil, FERME-la complètement (balaye-la des récents) et rouvre, sinon ton téléphone garde l'ancienne version en cache. Le plus sûr pour vérifier : ouvre le lien preview dans Chrome.",
-    "ℹ️ Note technique : sur Android, la COULEUR de la barre d'état peut tarder à suivre un changement jour/nuit tant que l'app n'est pas relancée (limite du système, pas de l'app)."
+    "❄️ Ors de nuit : en nuit d'HIVER, les accents OR/ambre (streak, XP, stats, pins) restaient dorés et juraient sur le navy → ils passent en BLEU GLACIER. La nuit de JUNGLE garde l'or (c'est sa couleur d'accent). La nuit normale (violette) aussi.",
+    "🪟 Bandeau du haut en VERRE DÉPOLI : il devient plus transparent avec un léger flou → le contenu qui glisse dessous est fondu proprement, au lieu d'apparaître « en fantôme ».",
+    "ℹ️ Suite : passe premium avec l'œil UI UX Pro (dans la DA), et on continue le sujet du haut d'écran (séparation/barre avec la status-bar) avec une capture de ton écran pour viser juste."
   ]
 }
