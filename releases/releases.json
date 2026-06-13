@@ -1,4 +1,5 @@
 [
+  { "v": "v445", "date": "2026-06-13", "note": "Épinglée sur demande — kit DA téléchargeable en .json (fini la copie presse-papier)", "file": "v445.html" },
   { "v": "v444", "date": "2026-06-13", "note": "Promue après 7 rounds — Espace Pro (bar/auberge), CGU/RGPD, conformité + migrations sondées, Premium honnête, carte FR lisible/fluide, ombres dé-rougies, 42 pays", "file": "v444.html" },
   { "v": "v443", "date": "2026-06-12", "note": "Passe bugs du soir — mini-jeux en sessions finies, carte star de l'accueil, plaque NIV lisible partout, app collée au téléphone, fix « Tâche inconnue »", "file": "v443.html" },
   { "v": "v442", "date": "2026-06-12", "note": "Promue après 6 rounds de préversion — kit DA maximal (composants 6 modes), carte fluide thémée, tap-pour-explorer, header fondu, anti-débordement", "file": "v442.html" },
