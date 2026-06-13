@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=445"></script>
+  <script src="sunmates-badges.js?v=446"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale — jamais depuis
@@ -1035,7 +1035,7 @@
     .trust-explain .te-sub { color: var(--muted); font-size: .84rem; margin: 0 0 .6rem; line-height: 1.45; }
     .trust-explain .te-row { display: flex; justify-content: space-between; align-items: center; gap: .6rem; padding: .45rem 0; border-bottom: 1px solid var(--line); font-size: .88rem; }
     .trust-explain .te-row:last-of-type { border-bottom: 0; }
-    .te-ok { color: var(--ok); font-weight: 700; white-space: nowrap; }
+    .te-ok { color: var(--ok-ink, var(--ok)); font-weight: 700; white-space: nowrap; }
     .te-todo { color: var(--accent); font-weight: 700; white-space: nowrap; }
     .trust-explain .te-note { color: var(--muted); font-size: .78rem; margin: .65rem 0 0; line-height: 1.5; }
 
@@ -1045,7 +1045,7 @@
     .place:last-child { border-bottom: 0; padding-bottom: 0; }
     .place .name { font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .4rem; }
     .place .meta { color: var(--muted); font-size: .85rem; }
-    .place .eco { color: var(--ok); font-size: .78rem; font-weight: 600; }
+    .place .eco { color: var(--ok-ink, var(--ok)); font-size: .78rem; font-weight: 600; }
     .place button { align-self: flex-start; margin-top: .5rem; padding: .55rem 1rem; font-size: .85rem; }
     /* Alerte d'urgence dans le cercle : carte qui DÉNOTE (rouge, bord vif, pastille pulsante). */
     .place-sos { background: rgba(239,68,68,.08); border: 1.5px solid rgba(239,68,68,.45); padding: .8rem .85rem; margin-bottom: .5rem; }
@@ -2658,7 +2658,7 @@
        =================================================================== */
     .topbar-actions { display: flex; align-items: center; gap: .5rem; }
     .iconbtn { background: rgba(255,255,255,.75); border: 1px solid rgba(45,38,52,.15); border-radius: 12px; padding: .45rem .6rem; font-size: 1.15rem; line-height: 1; box-shadow: var(--shadow-sm); cursor: pointer; position: relative; }
-    .nbadge { position: absolute; top: -6px; right: -6px; background: var(--accent); color: #fff; font-size: .62rem; font-weight: 800; min-width: 17px; height: 17px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 4px; box-shadow: 0 2px 6px rgba(45,38,52,.16); }
+    .nbadge { position: absolute; top: -6px; right: -6px; background: color-mix(in srgb, var(--accent) 75%, var(--ink)); color: #fff; /* Lot A : chiffre 3.1→4.0:1 en jour */ font-size: .62rem; font-weight: 800; min-width: 17px; height: 17px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 4px; box-shadow: 0 2px 6px rgba(45,38,52,.16); }
     .bottom-nav button { position: relative; }
     .navbadge { position: absolute; top: 3px; right: calc(50% - 22px); background: var(--accent); color: #fff; font-size: .6rem; font-weight: 800; min-width: 16px; height: 16px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 3px; box-shadow: 0 2px 6px rgba(45,38,52,.16); }
 
@@ -2973,15 +2973,15 @@
       --accent:    #FF5A4D;            /* corail soleil, signature */
       --accent-2:  #FF8A3D;            /* mangue */
       --accent-3:  #FFC93C;            /* jaune soleil */
-      --accent-grad: linear-gradient(135deg, #FFC93C 0%, #FF7A3D 46%, #FF4F6D 100%);
+      --accent-grad: linear-gradient(135deg, #FFC93C 0%, #FF7A3D 20%, #FF4F6D 52%); /* Lot A audit : stop foncé avancé à 52% → zone du label CTA ≥3:1 (avant ~2:1) — mêmes couleurs, ANNONCÉ */
       --accent-soft: #FFE6DC;
       --teal:      #14C2B8; --teal-2: #22D3C5;   /* turquoise mer */
       --retro-teal:#0E9E96;
       --gold:      #FFB52E;
       --ink:       #39203A;            /* prune chaud (titres) */
       --ink-warm:  #44264A;
-      --text:      #5B4455; --muted: #AC93A3;
-      --ok:        #11B5A0; --danger: #F0384E;
+      --text:      #5B4455; --muted: #7F6878; /* Lot A : muted jour 2.6→4.6:1, même famille prune (avant #AC93A3) — ANNONCÉ */
+      --ok:        #11B5A0; --ok-ink: #1E7A5A; --danger: #F0384E; /* Lot A : --ok-ink = teal sobre pour le TEXTE (4.9:1), --ok reste pour fonds/icônes */
       --line:      #F6E3D6;
       --radius:    22px; --radius-sm: 14px; --radius-lg: 28px;
       /* P12 (DA officielle, demande Maxime) : ombres DÉ-ROUGIES — le corail sous chaque carte
@@ -3096,10 +3096,10 @@
       --bg: #190E2E; --card: #271641; --paper: #271641; --cream: #2E1B4C;
       --accent: #FF6A5D; --accent-2: #FF9248; --accent-3: #FFD15C;
       --accent-soft: rgba(255,106,93,.18);
-      --accent-grad: linear-gradient(135deg, #FFD15C 0%, #FF8A45 46%, #FF5570 100%);
+      --accent-grad: linear-gradient(135deg, #FFD15C 0%, #FF8A45 20%, #FF5570 52%); /* Lot A : idem jour */
       --teal: #2BE0D0; --retro-teal: #36E0CE; --gold: #FFD15C;
       --ink: #FCEFE9; --ink-warm: #FFF3EC; --text: #E6D7EC; --muted: #A98FC0;
-      --ok: #2BE0B0; --danger: #FF6A78; --line: rgba(255,255,255,.10);
+      --ok: #2BE0B0; --ok-ink: var(--ok); --danger: #FF6A78; --line: rgba(255,255,255,.10);
       color: var(--text);
       background: radial-gradient(120% 70% at 50% -6%, #FF7A3D40 0%, #6A2A6E 24%, #34164F 52%, #190E2E 100%);
     }
@@ -3119,6 +3119,7 @@
     body.theme-dusk .bubble.them { background: #2E1B4C; color: #f3e9f3; }
     body.theme-dusk .iconbtn { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.14); }
     body.theme-dusk .notif-card, body.theme-dusk .picker-card { background: #22123A; }
+    body.theme-dusk .nbadge { background: color-mix(in srgb, var(--accent) 65%, var(--bg)); } /* Lot A : en nuit l'encre est claire → on assombrit vers le fond du mode (3.8-5.4:1 dans les 3 nuits) */
     /* Contraste : bouton fantôme (ex. « Déconnexion ») bien lisible en sombre */
     body.theme-dusk .btn-ghost { background: rgba(255,255,255,.07) !important; border-color: rgba(255,255,255,.2) !important; color: var(--ink) !important; }
     body.theme-dusk .badge.no { background: rgba(255,255,255,.08); color: var(--muted); border-color: rgba(255,255,255,.16); }
@@ -3746,16 +3747,16 @@
        L'âme SunMates (soleil, chaleur humaine) traduite pour les pays froids / la canicule.
        Les saisons remplacent visuellement jour/nuit (la classe theme-dusk est retirée). */
     body.theme-winter { --bg:#EAF3FB; --bg-grad:radial-gradient(125% 85% at 50% -12%, #F4FAFF 0%, #E8F2FB 40%, #E2EEF9 100%);
-      --card:#FFFFFF; --cream:#F2F8FD; --ink:#1E3A52; --text:#2C4862; --muted:#67839B; --line:#DDE9F3;
+      --card:#FFFFFF; --cream:#F2F8FD; --ink:#1E3A52; --text:#2C4862; --muted:#4F6B84; --line:#DDE9F3; /* Lot A : muted 3.5→5.2:1 */
       --accent:#3A8FD9; --accent-2:#6FB4E8; --accent-3:#A8D8F5; --accent-soft:#E3F1FB;
-      --accent-grad:linear-gradient(135deg, #A8D8F5 0%, #6FB4E8 45%, #3A8FD9 100%); }
+      --accent-grad:linear-gradient(135deg, #A8D8F5 0%, #6FB4E8 20%, #3A8FD9 52%); }
     body.theme-winter .topbar { background: linear-gradient(#EAF3FB 62%, rgba(234,243,251,0)); border-bottom: 0; }
     body.theme-winter #bgFx { background: radial-gradient(125% 48% at 50% -8%, rgba(168,216,245,.55) 0%, rgba(111,180,232,.12) 38%, rgba(255,255,255,0) 64%), var(--bg); }
     body.theme-winter .app-shell { background: transparent; }
     body.theme-tropic { --bg:#F7F9EC; --bg-grad:radial-gradient(125% 85% at 50% -12%, #FDFBE8 0%, #F3F7DE 40%, #ECF4DC 100%);
-      --card:#FFFFFF; --cream:#F8FBEE; --ink:#1C3D2E; --text:#2A4A3A; --muted:#6E8A77; --line:#E2EDD9;
+      --card:#FFFFFF; --cream:#F8FBEE; --ink:#1C3D2E; --text:#2A4A3A; --muted:#53705F; --line:#E2EDD9; /* Lot A : muted 3.5→5.2:1 */
       --accent:#0FA37C; --accent-2:#36C495; --accent-3:#FFC23D; --accent-soft:#E2F4EC;
-      --accent-grad:linear-gradient(135deg, #FFC23D 0%, #36C495 50%, #0FA37C 100%); }
+      --accent-grad:linear-gradient(135deg, #FFC23D 0%, #36C495 22%, #0FA37C 52%); }
     body.theme-tropic .topbar { background: linear-gradient(#F7F9EC 62%, rgba(247,249,236,0)); border-bottom: 0; }
     body.theme-tropic #bgFx { background: radial-gradient(125% 48% at 50% -8%, rgba(255,194,61,.40) 0%, rgba(54,196,149,.12) 38%, rgba(255,255,255,0) 64%), var(--bg); }
     body.theme-tropic .app-shell { background: transparent; }
@@ -3803,7 +3804,7 @@
       --card:#1A2B40; --paper:#16263A; --cream:#142233;
       --ink:#EAF3FB; --ink-warm:#EFF6FC; --text:#C9DAEA; --muted:#7E96AC; --line:rgba(255,255,255,.09);
       --accent:#5FA8E8; --accent-2:#8CC4F2; --accent-3:#BFD9F0; --accent-soft:rgba(95,168,232,.16);
-      --accent-grad:linear-gradient(135deg, #BFD9F0 0%, #8CC4F2 45%, #3A77B8 100%);
+      --accent-grad:linear-gradient(135deg, #BFD9F0 0%, #8CC4F2 20%, #3A77B8 52%);
       --dcard:#1B2C42; --dcard2:#152436; --dcard3:#1D3048; --dcard4:#243954; --dcard5:#12202F;
       color: var(--text);
       background: radial-gradient(130% 80% at 50% -8%, #1C3149 0%, #14253A 40%, #0F1B2B 100%);
@@ -3820,7 +3821,7 @@
       --card:#163027; --paper:#12281F; --cream:#10241C;
       --ink:#E9F7EF; --ink-warm:#F0FAF3; --text:#CBE6D6; --muted:#7FA18E; --line:rgba(255,255,255,.09);
       --accent:#2BC48A; --accent-2:#5CD8A8; --accent-3:#FFC23D; --accent-soft:rgba(43,196,138,.16);
-      --accent-grad:linear-gradient(135deg, #FFC23D 0%, #5CD8A8 50%, #1FA67A 100%);
+      --accent-grad:linear-gradient(135deg, #FFC23D 0%, #5CD8A8 22%, #1FA67A 52%);
       --dcard:#17332A; --dcard2:#122A21; --dcard3:#1A3A2E; --dcard4:#21453A; --dcard5:#0F241C;
       color: var(--text);
       background: radial-gradient(130% 80% at 50% -8%, #16352A 0%, #102A20 40%, #0C1D17 100%);
