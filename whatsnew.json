@@ -1,7 +1,8 @@
 {
   "candidate": "v460",
   "items": [
-    "🌙 Plus de « coupure » sombre sous la status-bar du téléphone en mode NUIT : le haut du bandeau prend désormais EXACTEMENT la couleur de la barre d'état (au lieu de laisser le halo violet transparaître juste dessous) → le fondu est invisible. Vrai dans les 3 nuits (violette, hiver, jungle). Le verre dépoli reste présent plus bas, là où le contenu défile.",
-    "ℹ️ Côté carte : le plein écran est OK dans cette version (la carte couvre tout l'écran, le fil passe bien derrière). Si tu vois encore le fil par-dessus la carte, c'est du CACHE → vide les données du site / réinstalle la PWA."
+    "🗺️ VRAI fix carte plein écran : le fil et les tuiles « Accès rapides » passaient PAR-DESSUS la carte en plein écran (ce n'était PAS du cache !). Cause technique : une animation d'opacité sur le conteneur de la carte emprisonnait sa priorité d'affichage. Réglé en masquant tout le reste de l'Accueil pendant le plein écran → la carte est seule à l'écran.",
+    "🌙 Plus de « coupure » sombre sous la status-bar du téléphone en mode NUIT : le haut du bandeau prend désormais EXACTEMENT la couleur de la barre d'état au lieu de laisser le halo transparaître dessous. Vrai dans les 3 nuits (violette, hiver, jungle) ; le verre dépoli reste plus bas.",
+    "✨ En cours de vérif : textes dorés qui se baladent encore en nuit d'hiver, et relecture des CGU (âge 18 ans + coquilles)."
   ]
 }

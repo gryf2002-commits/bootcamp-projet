@@ -1182,6 +1182,15 @@
        est en plein écran (le bouton « ✕ Fermer » de la carte suffit pour sortir). La carte couvre alors
        vraiment TOUT l'écran. */
     body:has(.homemap-card.fs) .topbar, body:has(.homemap-card.fs) .bottom-nav { display: none !important; }
+    /* ⚠️⚠️ BUG CARTE PLEIN ÉCRAN (retour Maxime, confirmé sonde) : le feed + les tuiles « Accès rapides »
+       passaient PAR-DESSUS la carte plein écran. Cause = #homeTravelMap (ancêtre de la carte) porte une
+       animation d'OPACITÉ (hmModeIn) + .tab-panel une animation fadeOnly → elles créent un CONTEXTE
+       D'EMPILEMENT qui EMPRISONNE le z-index:3500 de la carte (même piège que le transform v453, autre
+       propriété). Le z-index ne peut donc PAS gagner. FIX ROBUSTE indépendant du z-index : en plein écran,
+       on MASQUE tout le panneau Accueil SAUF #homeTravelMap (qui contient la carte). Plus rien ne peut
+       déborder, quel que soit le stacking. LEÇON : opacity (même animée) crée un stacking context, pas
+       que transform/filter. */
+    body:has(.homemap-card.fs) .tab-panel[data-panel="accueil"] > *:not(#homeTravelMap) { display: none !important; }
     .homemap-card.fs .homemap-wrap { flex: 1; min-height: 0; margin: .4rem 0; }
     .homemap-card.fs .homemap { height: 100% !important; border-radius: 12px; }
     /* P12 : le pane Leaflet (fond + épingles) reste composité GPU pendant le plein écran → drag soyeux */
