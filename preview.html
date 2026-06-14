@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=466"></script>
+  <script src="sunmates-badges.js?v=467"></script>
   <script src="sunmates-icons-v2.js?v=520"></script>
   <style>
     /* Banque d'icônes v2 « fait main » : emblèmes monochromes posés sur les pastilles-joyaux
@@ -4180,37 +4180,68 @@
       /* Le contenu se cale à droite du rail, en colonne lisible centrée. */
       #appView > .topbar { padding-left: calc(220px + 1.6rem); padding-right: 1.6rem; }
       #appView > #goldPreviewBanner, #appView > #safeTimerBar { margin-left: 220px; }
-      #appView > main { padding-left: calc(220px + 2rem); padding-right: 2rem; padding-bottom: 3rem; }
-      #appView > main > .tab-panel { max-width: 720px; margin-left: auto; margin-right: auto; }
+      #appView > main { padding-left: calc(220px + 2.2rem); padding-right: 2.2rem; padding-bottom: 3rem; scroll-behavior: smooth; }
+      #appView > main > .tab-panel { max-width: 900px; margin-left: auto; margin-right: auto; }
+      /* moins de scroll : les grilles internes respirent et utilisent la largeur */
+      #appView > main .grid2 { gap: 1rem; }
     }
     @media (min-width: 1280px) {
-      #appView.app-shell { max-width: 1240px; }
-      #appView > .bottom-nav { left: max(0px, calc(50vw - 620px)); }
-      #appView > main > .tab-panel { max-width: 760px; }
+      #appView.app-shell { max-width: 1280px; }
+      #appView > .bottom-nav { left: max(0px, calc(50vw - 640px)); }
+      #appView > main > .tab-panel { max-width: 980px; }
     }
 
     /* ---------- D2 · LANDING pré-connexion (#authView) ---------- */
+    /* #authView SOMBRE par défaut (déconnecté·e) — sans toucher au thème global de l'app. */
     #authView.auth-wrap {
-      --lp-bg: #fbeee9;
-      --lp-bg-grad: radial-gradient(125% 85% at 50% -12%, #ffe6d2 0%, #fdeee7 42%, #fbe9e4 100%);
-      --lp-paper: #fffaf3;
-      --lp-accent: #FF5A4D;
+      /* Palette MARKETING (landing) — sombre */
+      --lp-bg: #190E2E;
+      --lp-bg-grad: radial-gradient(130% 80% at 50% -8%, #3b2550 0%, #2a1c3e 34%, #20182f 64%, #171026 100%);
+      --lp-paper: #221a33;
+      --lp-accent: #ff8a7d;
       --lp-grad: linear-gradient(135deg, #FFC93C 0%, #FF8A3D 45%, #FF5A4D 100%);
-      --lp-sunset: linear-gradient(180deg, #ffb27e 0%, #ff8f6e 42%, #FF5A4D 100%);
-      --lp-ink: #2a1f2e; --lp-text: #5b4b57; --lp-muted: #9a8b95;
-      --lp-line: rgba(244,101,94,.14);
-      --lp-shadow: 0 14px 40px rgba(45,38,52,.12);
-      --lp-shadow-pop: 0 22px 60px rgba(45,38,52,.20);
-      display: block; min-height: 100dvh;
+      --lp-sunset: linear-gradient(135deg, #FFC93C 0%, #FF7A3D 46%, #FF4F6D 100%);
+      --lp-ink: #f6eef8; --lp-text: #ded3e6; --lp-muted: #a99fbe;
+      --lp-line: rgba(255,255,255,.10);
+      --lp-shadow: 0 14px 40px rgba(0,0,0,.40);
+      --lp-shadow-pop: 0 22px 60px rgba(0,0,0,.50);
+      /* Palette APP forcée NUIT pour le formulaire historique (#authCore) */
+      --bg:#190E2E; --card:#271641; --paper:#241b35; --cream:#2b2240;
+      --accent:#ff7e72; --accent-2:#ff9a8d; --accent-3:#ffc07a;
+      --accent-soft: rgba(255,126,114,.18);
+      --accent-grad: linear-gradient(135deg, #ffc07a 0%, #ff9a8d 45%, #ff7e72 100%);
+      --ink:#f3ecf6; --text:#ded3e6; --muted:#a99fbe; --line: rgba(255,255,255,.10);
+      display: flex; flex-direction: column; min-height: 100dvh;
       background: var(--lp-bg-grad), var(--lp-bg);
       color: var(--lp-text); line-height: 1.6; overflow-x: hidden;
       font-family: "Manrope", system-ui, -apple-system, sans-serif;
     }
-    #authView .lp { width: 100%; }
-    #authView .lp h1, #authView .lp h2, #authView .lp h3 { font-family: "Fraunces", Georgia, serif; color: var(--lp-ink); line-height: 1.12; margin: 0; }
-    #authView .lp p { margin: 0; }
-    #authView .lp a { color: inherit; text-decoration: none; }
-    #authView .lp-wrap { width: min(1080px, 90vw); margin: 0 auto; }
+    /* Titres landing en Fraunces (PAS le formulaire historique, qui garde son style) */
+    #authView .lp-chrome h1, #authView .lp-chrome h2, #authView .lp-chrome h3, #authView .lp-join-head h2 { font-family: "Fraunces", Georgia, serif; color: var(--lp-ink); line-height: 1.12; margin: 0; }
+    #authView .lp-chrome p { margin: 0; }
+    #authView .lp-chrome a { color: inherit; text-decoration: none; }
+    /* Overrides sombres ciblés du formulaire historique #authCore */
+    #authView input, #authView textarea, #authView select { background:#2b2240; color:#ede6f2; border-color: rgba(255,255,255,.14); }
+    #authView input:focus, #authView textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+    #authView .seg { background: rgba(255,255,255,.07); }
+    #authView .seg button { color: var(--muted); }
+    #authView .seg button.active { background: var(--accent-grad); color:#fff; }
+    #authView .tile { background:#2a2140; border-color: rgba(255,255,255,.08); }
+    #authView .auth-hero { box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+    /* Médaillons piliers : vrais SVG SunMates (line-art blanc) */
+    #authView .lp-ico svg { width: 28px; height: 28px; display:block; }
+    /* CTA flottant qui suit le scroll (desktop only) */
+    #authView .lp-fab { position: fixed; right: 24px; bottom: 24px; z-index: 40; display:none; align-items:center; gap:.4rem;
+      background: var(--lp-grad); color:#fff; font-weight:800; text-decoration:none; font-size:.95rem;
+      padding: .85rem 1.3rem; border-radius: 999px; box-shadow: 0 14px 34px rgba(255,90,77,.45); transition: transform .15s ease; }
+    #authView .lp-fab:hover { transform: translateY(-3px); }
+    /* auth-core : MOBILE = plein écran (page de connexion historique) */
+    #authView .auth-core { flex: 1; display: flex; flex-direction: column; }
+    #authView .lp-join-head { display: none; }
+    /* MOBILE (<900px) : la chrome marketing disparaît → page de connexion historique seule */
+    @media (max-width: 899.98px) {
+      #authView .lp-chrome, #authView .lp-only { display: none !important; }
+    }
 
     /* nav */
     #authView .lp-nav { position: sticky; top: 0; z-index: 30; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(255,250,243,.80); border-bottom: 1px solid var(--lp-line); }
@@ -4323,7 +4354,18 @@
     }
     @media (max-width: 720px) { #authView .lp-link { display: none; } }
     @media (prefers-reduced-motion: reduce) {
-      #authView .lp-btn, #authView .lp-pillar { transition: none !important; }
+      #authView .lp-btn, #authView .lp-pillar, #authView .lp-fab { transition: none !important; }
+    }
+    /* DESKTOP (≥900px) : vraie landing sombre autour du formulaire (qui devient une carte « rejoindre ») */
+    @media (min-width: 900px) {
+      #authView.auth-wrap { display: block; }
+      #authView .lp-fab { display: inline-flex; }
+      #authView .auth-core { display: block; flex: none; max-width: 460px; margin: 0 auto; padding: 0 1rem clamp(3rem, 7vw, 5rem); }
+      #authView .lp-join-head { display: block; text-align: center; max-width: 46ch; margin: 0 auto 1.4rem; }
+      #authView .lp-join-head h2 { font-size: clamp(1.7rem, 4.4vw, 2.5rem); font-weight: 700; }
+      #authView .lp-join-head p { margin-top: .6rem; color: var(--lp-text); }
+      #authView .auth-core .auth-hero { border-radius: 28px 28px 0 0; padding: 2rem 1.5rem 1.6rem; margin: 0; }
+      #authView .auth-core .auth-body { background: var(--lp-paper); border-radius: 0 0 28px 28px; box-shadow: var(--lp-shadow-pop); max-width: none; padding: 1.6rem 1.5rem 1.9rem; }
     }
   </style>
 </head>
@@ -4635,13 +4677,20 @@
   <!-- ============ ÉCRAN CONNEXION / INSCRIPTION ============ -->
   <!-- hidden au boot : on ne révèle login OU app qu'une fois l'état d'auth connu (anti-flash) -->
   <section id="authView" class="auth-wrap hidden">
-    <!-- LANDING (vue déconnecté·e) : marketing complet + formulaire d'auth intégré.
-         Classes lp-* (cf. <style id="sm2026">). Tous les ids du formulaire sont conservés. -->
-    <div class="lp">
-      <!-- ---------- Barre du haut ---------- -->
-      <header class="lp-nav">
+    <!-- ============================================================
+         AUTH déconnecté·e — v467
+         · MOBILE : on retrouve la page de connexion historique (sombre),
+           = #authCore seul (la chrome marketing .lp-* est masquée < 900px).
+         · DESKTOP : vraie landing sombre autour du formulaire (CTA collant,
+           vrais SVG SunMates). #authView est forcé en mode sombre (cf. CSS).
+         Tous les ids du formulaire sont conservés.
+         ============================================================ -->
+
+    <!-- ---------- MARKETING (desktop only) : avant le formulaire ---------- -->
+    <div class="lp-chrome lp-before">
+      <header class="lp-nav" id="lp-top">
         <div class="lp-nav-inner">
-          <a class="lp-brand" href="#lp-top"><span class="lp-logo">☀️</span> SunMates</a>
+          <a class="lp-brand" href="#lp-top"><span class="lp-logo"><svg viewBox="0 0 64 64" width="26" height="26" aria-hidden="true"><g stroke="#fff" stroke-width="3.4" stroke-linecap="round"><line x1="32" y1="8" x2="32" y2="15"/><line x1="15" y1="16" x2="20" y2="21"/><line x1="49" y1="16" x2="44" y2="21"/><line x1="9" y1="34" x2="16" y2="34"/><line x1="48" y1="34" x2="55" y2="34"/></g><circle cx="32" cy="34" r="11" fill="#fff"/><path d="M13 47h38" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></span> SunMates</a>
           <nav class="lp-nav-links">
             <a class="lp-link" href="#lp-why">Pourquoi</a>
             <a class="lp-link" href="#lp-app">L'app</a>
@@ -4650,158 +4699,172 @@
               <button type="button" data-lang="fr">FR</button>
               <button type="button" data-lang="en">EN</button>
             </div>
-            <a class="lp-btn lp-btn-primary lp-btn-sm" href="#lp-join">Rejoindre</a>
+            <a class="lp-btn lp-btn-primary lp-btn-sm" href="#authCore" onclick="try{setAuthMode('signup')}catch(e){}">Rejoindre</a>
           </nav>
         </div>
       </header>
 
-      <main id="lp-top">
-        <!-- ---------- Hero ---------- -->
-        <section class="lp-hero">
-          <div class="lp-hero-grid">
-            <div>
-              <span class="lp-eyebrow">☀️ Ton aventure solo commence ici</span>
-              <h1 class="lp-h1"><span class="lp-grad">Pars solo, trouve ta bande.</span></h1>
-              <p class="lp-lede">Explore une ville, croise des voyageurs comme toi, relève des quêtes ensemble. Le solo, c'est juste le début de l'histoire.</p>
-              <div class="lp-cta">
-                <a class="lp-btn lp-btn-primary" href="#lp-join" onclick="try{setAuthMode('signup')}catch(e){}">Rejoindre l'aventure →</a>
-                <a class="lp-btn lp-btn-ghost" href="#lp-how">Voir comment ça marche</a>
-              </div>
-              <p class="lp-trust">🗺️ Repère les lieux et les voyageurs autour de toi, et pars l'esprit tranquille.</p>
+      <section class="lp-hero">
+        <div class="lp-hero-grid">
+          <div>
+            <span class="lp-eyebrow">☀️ Ton aventure solo commence ici</span>
+            <h1 class="lp-h1"><span class="lp-grad">Pars solo, trouve ta bande.</span></h1>
+            <p class="lp-lede">Explore une ville, croise des voyageurs comme toi, relève des quêtes ensemble. Le solo, c'est juste le début de l'histoire.</p>
+            <div class="lp-cta">
+              <a class="lp-btn lp-btn-primary" href="#authCore" onclick="try{setAuthMode('signup')}catch(e){}">Rejoindre l'aventure →</a>
+              <a class="lp-btn lp-btn-ghost" href="#lp-how">Voir comment ça marche</a>
             </div>
-            <div class="lp-phone-stage">
-              <div class="lp-phone"><img src="shot_accueil.jpg" alt="L'accueil de SunMates : une carte avec les lieux sûrs et les voyageurs autour de toi" width="390" height="844" loading="eager" /></div>
-            </div>
+            <p class="lp-trust">🗺️ Repère les lieux et les voyageurs autour de toi, et pars l'esprit tranquille.</p>
           </div>
-        </section>
-
-        <!-- ---------- 3 piliers ---------- -->
-        <section id="lp-why" class="lp-sec">
-          <div class="lp-sec-head"><h2>Pourquoi tu vas adorer</h2></div>
-          <div class="lp-pillars">
-            <article class="lp-pillar">
-              <div class="lp-ico sun">🗺️</div>
-              <h3>Explore autour de toi</h3>
-              <p>Une carte vivante te montre les lieux qui valent le détour et les voyageurs dans le coin. Tu n'as jamais voyagé seul·e, tu ne le savais juste pas encore.</p>
-            </article>
-            <article class="lp-pillar">
-              <div class="lp-ico purp">🤝</div>
-              <h3>Trouve ta bande</h3>
-              <p>Croise des gens qui vibrent comme toi, connecte, et transforme un café partagé en souvenirs de voyage. L'amitié, version golden hour.</p>
-            </article>
-            <article class="lp-pillar">
-              <div class="lp-ico game">🎮</div>
-              <h3>Joue, gagne, brille</h3>
-              <p>Quêtes, badges, coupons, classement : chaque sortie te rapporte de l'XP. Voyager devient un terrain de jeu.</p>
-            </article>
+          <div class="lp-phone-stage">
+            <div class="lp-phone"><img src="shot_accueil.jpg" alt="L'accueil de SunMates : une carte avec les lieux sûrs et les voyageurs autour de toi" width="390" height="844" loading="eager" /></div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <!-- ---------- Aperçu (vraies captures) ---------- -->
-        <section id="lp-app" class="lp-sec">
-          <div class="lp-sec-head">
-            <h2>Jette un œil à l'intérieur</h2>
-            <p>De vraies captures de l'app, pas des promesses.</p>
+      <section id="lp-why" class="lp-sec">
+        <div class="lp-sec-head"><h2>Pourquoi tu vas adorer</h2></div>
+        <div class="lp-pillars">
+          <article class="lp-pillar">
+            <div class="lp-ico sun"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.8-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.2 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.4"/></svg></div>
+            <h3>Explore autour de toi</h3>
+            <p>Une carte vivante te montre les lieux qui valent le détour et les voyageurs dans le coin. Tu n'as jamais voyagé seul·e, tu ne le savais juste pas encore.</p>
+          </article>
+          <article class="lp-pillar">
+            <div class="lp-ico purp"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.3a3 3 0 0 1 0 5.6"/><path d="M17.6 13.7A5.5 5.5 0 0 1 20.5 19"/></svg></div>
+            <h3>Trouve ta bande</h3>
+            <p>Croise des gens qui vibrent comme toi, connecte, et transforme un café partagé en souvenirs de voyage. L'amitié, version golden hour.</p>
+          </article>
+          <article class="lp-pillar">
+            <div class="lp-ico game"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6.5" width="19" height="11" rx="4"/><path d="M6.5 11h4M8.5 9v4"/><circle cx="16" cy="10.7" r="1.1"/><circle cx="18.3" cy="13.3" r="1.1"/></svg></div>
+            <h3>Joue, gagne, brille</h3>
+            <p>Quêtes, badges, coupons, classement : chaque sortie te rapporte de l'XP. Voyager devient un terrain de jeu.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="lp-app" class="lp-sec">
+        <div class="lp-sec-head">
+          <h2>Jette un œil à l'intérieur</h2>
+          <p>De vraies captures de l'app, pas des promesses.</p>
+        </div>
+        <div class="lp-gallery">
+          <figure class="lp-shot">
+            <div class="lp-phone"><img src="shot_accueil.jpg" alt="Carte d'accueil de SunMates" loading="lazy" /></div>
+            <figcaption class="lp-cap"><b>Toute la carte à portée de pouce.</b> Repère les lieux et les voyageurs autour de toi.</figcaption>
+          </figure>
+          <figure class="lp-shot">
+            <div class="lp-phone"><img src="shot_jeux.jpg" alt="Onglet Jeux : quêtes, badges, coupons et classement" loading="lazy" /></div>
+            <figcaption class="lp-cap"><b>Quêtes, badges et coupons.</b> Transforme chaque sortie en partie à gagner.</figcaption>
+          </figure>
+          <figure class="lp-shot">
+            <div class="lp-phone"><img src="shot_profil.jpg" alt="Profil avec XP, Mates et check-ins" loading="lazy" /></div>
+            <figcaption class="lp-cap"><b>Ton aventure en chiffres.</b> XP, Mates et check-ins qui s'accumulent.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="lp-how" class="lp-sec">
+        <div class="lp-sec-head"><h2>En 3 temps, tu es lancé·e</h2></div>
+        <div class="lp-steps">
+          <div class="lp-step"><div class="lp-num">1</div><h3>Crée ton profil</h3><p>Quelques infos, ta vibe, et te voilà sur la carte.</p></div>
+          <div class="lp-step"><div class="lp-num">2</div><h3>Explore et connecte</h3><p>Repère les lieux et les voyageurs autour de toi, lance le premier hello.</p></div>
+          <div class="lp-step"><div class="lp-num">3</div><h3>Relève des quêtes</h3><p>Check-in, défis, badges : amuse-toi et fais grimper ton XP avec ta bande.</p></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ---------- FORMULAIRE (mobile = page de connexion historique ; desktop = carte « rejoindre ») ---------- -->
+    <div id="authCore" class="auth-core">
+      <div class="lp-join-head lp-only"><h2>Prêt·e à embarquer ?</h2><p>Crée ton compte en 30 secondes, c'est gratuit.</p></div>
+      <div class="auth-hero">
+        <div class="logo-badge"><svg viewBox="0 0 64 64" width="48" height="48">
+          <defs><linearGradient id="sunG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD15C"/><stop offset="0.55" stop-color="#FF8A3D"/><stop offset="1" stop-color="#FF4F6D"/></linearGradient></defs>
+          <g stroke="#FF8A3D" stroke-width="3.4" stroke-linecap="round">
+            <line x1="32" y1="6" x2="32" y2="13"/>
+            <line x1="14" y1="14" x2="19" y2="19"/><line x1="50" y1="14" x2="45" y2="19"/>
+            <line x1="7" y1="33" x2="14" y2="33"/><line x1="50" y1="33" x2="57" y2="33"/>
+          </g>
+          <circle cx="32" cy="33" r="13" fill="url(#sunG)"/>
+          <path d="M10 47h44" stroke="#FF4F6D" stroke-width="3.4" stroke-linecap="round"/>
+          <path d="M17 53h30" stroke="#FFB52E" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+        </svg></div>
+        <div class="logo-text">SUNMATES</div>
+        <div class="logo-tag">Seul·e au départ, jamais à l'arrivée ☀️</div>
+      </div>
+      <div class="auth-body">
+        <!-- Langue choisissable AVANT la connexion (le choix est mémorisé pour toute l'app) -->
+        <div class="auth-lang">
+          <button type="button" data-lang="fr">🇫🇷 FR</button>
+          <button type="button" data-lang="en">🇬🇧 EN</button>
+        </div>
+        <div class="auth-title">
+          <h1 id="authTitleH">Pars solo, trouve ta bande 🌍</h1>
+          <p id="authTitleP" style="font-size:.95rem;line-height:1.5;margin-top:.15rem">Repère les voyageurs autour de toi, propose un café ou une virée, et repars avec des potes.</p>
+        </div>
+        <div class="seg">
+          <button id="tabLogin" class="active" data-i18n="auth.login">Connexion</button>
+          <button id="tabSignup">Inscription</button>
+          <button id="tabPro">💼 Pro</button>
+        </div>
+
+        <!-- Formulaire voyageur (Connexion / Inscription) -->
+        <div id="authForm">
+          <label>Email</label>
+          <input id="authEmail" type="email" placeholder="chloe@exemple.com" />
+          <!-- P2.5 : pseudo choisi DÈS l'inscription (sinon c'était le début de l'email qui s'affichait partout) -->
+          <div id="authPseudoWrap" class="hidden">
+            <label>Pseudo</label>
+            <input id="authPseudo" type="text" maxlength="20" placeholder="Chloé l'exploratrice" autocomplete="nickname" />
           </div>
-          <div class="lp-gallery">
-            <figure class="lp-shot">
-              <div class="lp-phone"><img src="shot_accueil.jpg" alt="Carte d'accueil de SunMates" loading="lazy" /></div>
-              <figcaption class="lp-cap"><b>Toute la carte à portée de pouce.</b> Repère les lieux et les voyageurs autour de toi.</figcaption>
-            </figure>
-            <figure class="lp-shot">
-              <div class="lp-phone"><img src="shot_jeux.jpg" alt="Onglet Jeux : quêtes, badges, coupons et classement" loading="lazy" /></div>
-              <figcaption class="lp-cap"><b>Quêtes, badges et coupons.</b> Transforme chaque sortie en partie à gagner.</figcaption>
-            </figure>
-            <figure class="lp-shot">
-              <div class="lp-phone"><img src="shot_profil.jpg" alt="Profil avec XP, Mates et check-ins" loading="lazy" /></div>
-              <figcaption class="lp-cap"><b>Ton aventure en chiffres.</b> XP, Mates et check-ins qui s'accumulent.</figcaption>
-            </figure>
+          <label>Mot de passe</label>
+          <div style="position:relative">
+            <input id="authPassword" type="password" placeholder="••••••••" style="padding-right:2.8rem" autocomplete="current-password" />
+            <button type="button" id="authPwToggle" class="pw-eye" title="Afficher / masquer le mot de passe"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.7 9.7 0 0 1 12 6c5 0 9 6 9 6a14 14 0 0 1-2.3 2.7"/><path d="M6.6 6.6A14 14 0 0 0 3 12s4 6 9 6c1.3 0 2.5-.4 3.6-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
           </div>
-        </section>
+          <div class="auth-play"><button id="authPlay" aria-label="Se connecter">Se connecter</button></div>
+          <div class="msg" id="authMsg" style="text-align:center"></div>
+        </div>
 
-        <!-- ---------- Comment ça marche ---------- -->
-        <section id="lp-how" class="lp-sec">
-          <div class="lp-sec-head"><h2>En 3 temps, tu es lancé·e</h2></div>
-          <div class="lp-steps">
-            <div class="lp-step"><div class="lp-num">1</div><h3>Crée ton profil</h3><p>Quelques infos, ta vibe, et te voilà sur la carte.</p></div>
-            <div class="lp-step"><div class="lp-num">2</div><h3>Explore et connecte</h3><p>Repère les lieux et les voyageurs autour de toi, lance le premier hello.</p></div>
-            <div class="lp-step"><div class="lp-num">3</div><h3>Relève des quêtes</h3><p>Check-in, défis, badges : amuse-toi et fais grimper ton XP avec ta bande.</p></div>
+        <!-- Bloc Pro / B2B : 4 tuiles séparées, cliquables → chacune pop son détail (pas de redirect direct) -->
+        <div id="authProBlock" class="hidden">
+          <div class="grid2 pro-grid">
+            <div class="tile" data-protile="visi"><div class="thumb gold">📈</div><div class="t-name">Visibilité</div><div class="t-meta">Touche pour en savoir +</div></div>
+            <div class="tile" data-protile="badge"><div class="thumb teal">🛟</div><div class="t-name">Badge « Lieu sûr »</div><div class="t-meta">Touche pour en savoir +</div></div>
+            <div class="tile" data-protile="traffic"><div class="thumb coral">🎟️</div><div class="t-name">Plus de trafic</div><div class="t-meta">Touche pour en savoir +</div></div>
+            <div class="tile" data-protile="stats"><div class="thumb indigo">📊</div><div class="t-name">Statistiques</div><div class="t-meta">Touche pour en savoir +</div></div>
           </div>
-        </section>
+          <button class="btn-primary btn-block" id="authProStart" style="margin-top:1rem;font-size:1.05rem;padding:1rem">🚀 Démarrer, Espace Pro</button>
+          <p class="muted" style="text-align:center;font-size:.78rem;margin-top:.6rem">Aucun compte requis : découvre l'offre et envoie ta demande de partenariat.</p>
+        </div>
+      </div>
+    </div>
 
-        <!-- ---------- Rejoindre : formulaire d'auth (ids conservés) ---------- -->
-        <section id="lp-join" class="lp-sec lp-join">
-          <div class="lp-sec-head"><h2>Prêt·e à embarquer ?</h2><p>Crée ton compte en 30 secondes, c'est gratuit.</p></div>
-          <div class="lp-join-card">
-            <div class="auth-title">
-              <h1 id="authTitleH">Pars solo, trouve ta bande 🌍</h1>
-              <p id="authTitleP">Repère les voyageurs autour de toi, propose un café ou une virée, et repars avec des potes.</p>
-            </div>
-            <div class="seg">
-              <button id="tabLogin" class="active" data-i18n="auth.login">Connexion</button>
-              <button id="tabSignup">Inscription</button>
-              <button id="tabPro">💼 Pro</button>
-            </div>
+    <!-- ---------- MARKETING (desktop only) : après le formulaire ---------- -->
+    <div class="lp-chrome lp-after">
+      <section id="lp-faq" class="lp-sec">
+        <div class="lp-sec-head"><h2>Les questions qu'on nous pose</h2></div>
+        <div class="lp-faq">
+          <details open><summary>C'est une appli de dating ?</summary><p>Non ! Ici on cherche des potes de voyage, pas un date. SunMates, c'est l'amitié et les aventures partagées.</p></details>
+          <details><summary>Je voyage seul·e, je vais vraiment rencontrer du monde ?</summary><p>Carrément. La carte te montre les voyageurs et les lieux autour de toi, un message, un café, et c'est parti.</p></details>
+          <details><summary>Ça sert à quoi, les quêtes et les badges ?</summary><p>À pimenter le voyage. Tu gagnes de l'XP, tu débloques des badges et des coupons, et tu grimpes au classement avec ta bande.</p></details>
+          <details><summary>Et mes données ?</summary><p>Elles restent les tiennes. Tu choisis ce que tu partages, et tu voyages tranquille.</p></details>
+        </div>
+      </section>
 
-            <!-- Formulaire voyageur (Connexion / Inscription) -->
-            <div id="authForm">
-              <label>Email</label>
-              <input id="authEmail" type="email" placeholder="chloe@exemple.com" />
-              <!-- P2.5 : pseudo choisi DÈS l'inscription (sinon c'était le début de l'email qui s'affichait partout) -->
-              <div id="authPseudoWrap" class="hidden">
-                <label>Pseudo</label>
-                <input id="authPseudo" type="text" maxlength="20" placeholder="Chloé l'exploratrice" autocomplete="nickname" />
-              </div>
-              <label>Mot de passe</label>
-              <div style="position:relative">
-                <input id="authPassword" type="password" placeholder="••••••••" style="padding-right:2.8rem" autocomplete="current-password" />
-                <button type="button" id="authPwToggle" class="pw-eye" title="Afficher / masquer le mot de passe"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.7 9.7 0 0 1 12 6c5 0 9 6 9 6a14 14 0 0 1-2.3 2.7"/><path d="M6.6 6.6A14 14 0 0 0 3 12s4 6 9 6c1.3 0 2.5-.4 3.6-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
-              </div>
-              <div class="auth-play"><button id="authPlay" aria-label="Se connecter">Se connecter</button></div>
-              <div class="msg" id="authMsg" style="text-align:center"></div>
-            </div>
+      <section class="lp-sec">
+        <div class="lp-final-card">
+          <h2>Ta bande t'attend quelque part</h2>
+          <p>Une nouvelle ville, des visages à découvrir, des quêtes à relever, il ne manque plus que toi.</p>
+          <a class="lp-btn lp-btn-ghost" href="#authCore" onclick="try{setAuthMode('signup')}catch(e){}">Rejoindre l'aventure ☀️</a>
+        </div>
+      </section>
 
-            <!-- Bloc Pro / B2B : 4 tuiles séparées, cliquables → chacune pop son détail (pas de redirect direct) -->
-            <div id="authProBlock" class="hidden">
-              <div class="grid2 pro-grid">
-                <div class="tile" data-protile="visi"><div class="thumb gold">📈</div><div class="t-name">Visibilité</div><div class="t-meta">Touche pour en savoir +</div></div>
-                <div class="tile" data-protile="badge"><div class="thumb teal">🛟</div><div class="t-name">Badge « Lieu sûr »</div><div class="t-meta">Touche pour en savoir +</div></div>
-                <div class="tile" data-protile="traffic"><div class="thumb coral">🎟️</div><div class="t-name">Plus de trafic</div><div class="t-meta">Touche pour en savoir +</div></div>
-                <div class="tile" data-protile="stats"><div class="thumb indigo">📊</div><div class="t-name">Statistiques</div><div class="t-meta">Touche pour en savoir +</div></div>
-              </div>
-              <button class="btn-primary btn-block" id="authProStart" style="margin-top:1rem;font-size:1.05rem;padding:1rem">🚀 Démarrer, Espace Pro</button>
-              <p class="muted" style="text-align:center;font-size:.78rem;margin-top:.6rem">Aucun compte requis : découvre l'offre et envoie ta demande de partenariat.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- ---------- FAQ ---------- -->
-        <section id="lp-faq" class="lp-sec">
-          <div class="lp-sec-head"><h2>Les questions qu'on nous pose</h2></div>
-          <div class="lp-faq">
-            <details open><summary>C'est une appli de dating ?</summary><p>Non ! Ici on cherche des potes de voyage, pas un date. SunMates, c'est l'amitié et les aventures partagées.</p></details>
-            <details><summary>Je voyage seul·e, je vais vraiment rencontrer du monde ?</summary><p>Carrément. La carte te montre les voyageurs et les lieux autour de toi, un message, un café, et c'est parti.</p></details>
-            <details><summary>Ça sert à quoi, les quêtes et les badges ?</summary><p>À pimenter le voyage. Tu gagnes de l'XP, tu débloques des badges et des coupons, et tu grimpes au classement avec ta bande.</p></details>
-            <details><summary>Et mes données ?</summary><p>Elles restent les tiennes. Tu choisis ce que tu partages, et tu voyages tranquille.</p></details>
-          </div>
-        </section>
-
-        <!-- ---------- CTA final ---------- -->
-        <section class="lp-sec">
-          <div class="lp-final-card">
-            <h2>Ta bande t'attend quelque part</h2>
-            <p>Une nouvelle ville, des visages à découvrir, des quêtes à relever, il ne manque plus que toi.</p>
-            <a class="lp-btn lp-btn-ghost" href="#lp-join" onclick="try{setAuthMode('signup')}catch(e){}">Rejoindre l'aventure ☀️</a>
-          </div>
-        </section>
-      </main>
-
-      <!-- ---------- Pied de page ---------- -->
       <footer class="lp-footer">
         <div class="lp-footer-inner">
-          <a class="lp-brand" href="#lp-top"><span class="lp-logo">☀️</span> SunMates</a>
+          <a class="lp-brand" href="#lp-top"><span class="lp-logo"><svg viewBox="0 0 64 64" width="22" height="22" aria-hidden="true"><g stroke="#fff" stroke-width="3.4" stroke-linecap="round"><line x1="32" y1="8" x2="32" y2="15"/><line x1="15" y1="16" x2="20" y2="21"/><line x1="49" y1="16" x2="44" y2="21"/><line x1="9" y1="34" x2="16" y2="34"/><line x1="48" y1="34" x2="55" y2="34"/></g><circle cx="32" cy="34" r="11" fill="#fff"/><path d="M13 47h38" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></span> SunMates</a>
           <nav class="lp-foot-links">
-            <a href="#lp-join">Rejoindre</a>
+            <a href="#authCore" onclick="try{setAuthMode('signup')}catch(e){}">Rejoindre</a>
             <a href="#lp-why">Pourquoi</a>
             <a href="#lp-faq">FAQ</a>
             <a href="mailto:gryf2002@gmail.com">Contact</a>
@@ -4810,6 +4873,9 @@
         </div>
       </footer>
     </div>
+
+    <!-- CTA flottant (desktop) : nous suit tout au long de la page -->
+    <a class="lp-fab lp-only" href="#authCore" onclick="try{setAuthMode('signup')}catch(e){}">Rejoindre l'aventure ☀️</a>
   </section>
 
   <!-- ============ APPLICATION (après connexion) ============ -->
@@ -17766,6 +17832,7 @@
     const I18N_DICT = {
       // ===== LANDING (pré-connexion) · EN maîtrisé, jamais machine-traduit =====
       "Pourquoi": "Why", "L'app": "The app", "Rejoindre": "Join",
+      "Seul·e au départ, jamais à l'arrivée ☀️": "Solo at the start, never at the finish ☀️",
       "☀️ Ton aventure solo commence ici": "☀️ Your solo adventure starts here",
       "Pars solo, trouve ta bande.": "Travel solo, find your crew.",
       "Explore une ville, croise des voyageurs comme toi, relève des quêtes ensemble. Le solo, c'est juste le début de l'histoire.": "Explore a city, cross paths with travellers like you, take on quests together. Going solo is just the start of the story.",

@@ -1,9 +1,9 @@
 {
-  "candidate": "v466",
+  "candidate": "v467",
   "items": [
-    "🖥️ DESKTOP de A à Z : sur grand écran, l'app n'est plus une colonne de téléphone perdue au milieu. La barre du bas devient un VRAI rail de navigation à gauche, le contenu se cale dans une colonne lisible centrée, en gardant l'âme SunMates. 100% du mobile reste identique au pixel près (tout est sous @media min-width:900px).",
-    "🚀 VRAIE PAGE D'ACCUEIL (landing) : en arrivant sur le site déconnecté·e, on découvre enfin un site comme les autres — héro « Pars solo, trouve ta bande », 3 piliers, vraies captures de l'app, « comment ça marche », FAQ, et le formulaire de connexion intégré dans une carte. Responsive mobile + desktop, FR et EN soignés.",
-    "🔎 SEO & partage : titre, description, Open Graph, carte Twitter et données structurées (JSON-LD) dans le <head> + robots.txt et sitemap.xml. Les aperçus de lien et les moteurs comprennent enfin SunMates.",
-    "📱 Prêt pour les stores (base) : manifest enrichi (id + captures) pour une future mise sur Google Play (TWA) / App Store, et un dossier ASO_STORE_METADATA.md avec les textes FR/EN prêts à coller."
+    "📱 Mobile : on retrouve la PAGE DE CONNEXION HISTORIQUE (sombre), exactement comme avant. La landing ne s'affiche plus sur téléphone / PWA quand on se déconnecte, place au formulaire qu'on aimait.",
+    "🌙 Landing desktop : refonte complète EN MODE SOMBRE par défaut, avec un CTA « Rejoindre » qui te suit tout au long de la page (barre du haut collante + bouton flottant).",
+    "🎨 Vrais visuels SunMates : le logo et les icônes des piliers sont désormais nos VRAIS SVG maison (fini les emojis génériques).",
+    "🖥️ Desktop de l'app plus agréable : colonne de contenu élargie (moins de scroll, moins de vide), navigation plus fluide, arrière-plans nettoyés."
   ]
 }
