@@ -1,10 +1,9 @@
 {
-  "candidate": "v496",
+  "candidate": "v497",
   "items": [
-    "🟡 La tuile « Gold » de l'accueil (et les tuiles « bientôt ») suivent enfin le preset : leur fond était écrit en dur, il est désormais piloté.",
-    "🌙 La nuit suit vraiment le preset : les surfaces (cartes, chips) ne restent plus figées prune — un bloc figé à forte priorité a été neutralisé.",
-    "🔗 Liens d'action (« Masquer », « + Ajouter »…) : fini le vert figé, ils suivent l'accent du preset + contraste AA.",
-    "♿ Labels de navigation + textes secondaires : contraste AA garanti sur page ET cartes.",
-    "🔍 Nouvel outil interne `da-scan.cjs` : scanne le pixel rendu de chaque preset × mode pour traquer tout écart DA (plus de chasse à l'aveugle)."
+    "↩️ Retour à une base stable : la refonte de la direction artistique (presets/loader DA des versions v483→v496) est retirée — elle créait trop d'incohérences visuelles.",
+    "✅ On garde tous les correctifs récents : fix du chargement infini, minuteur de sécurité, export RGPD, accessibilité (contraste/clavier), erreurs en français et parité anglais hors-ligne.",
+    "🎨 L'app reprend son apparence éprouvée (emojis + emblèmes joaillerie), sans le système de presets qui posait problème.",
+    "🛠️ La refonte DA n'est pas perdue : elle reste archivée (versions v483 à v496) pour être reprise proprement plus tard."
   ]
 }
