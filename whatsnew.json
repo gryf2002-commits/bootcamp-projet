@@ -1,9 +1,7 @@
 {
-  "candidate": "v472",
+  "candidate": "v473",
   "items": [
-    "🌑 Ombres « gris chaud » partout : les ombres brunes/terre résiduelles sur les emojis de tuiles, joyaux et états vides repassent en gris chaud (doctrine DA v444) → plus de salissure, des reliefs nets.",
-    "🔆 Contraste corrigé sur les badges des lieux : « 🌱 Éco » et « 🏆 Top noté » passent en texte foncé lisible (avant : blanc presque invisible sur les dégradés clairs) → conforme WCAG AA.",
-    "💬 Erreurs de connexion en français rassurant : fini « Invalid login credentials » → « Email ou mot de passe incorrect. Réessaie 🙂 » (et les autres cas mappés proprement).",
-    "♿ Les notifications (toasts) sont maintenant annoncées aux lecteurs d'écran (aria-live) → accessibilité renforcée, y compris pour les messages de sécurité."
+    "🍪 Bandeau de consentement repositionné AU-DESSUS de la barre de navigation : il ne masque plus le contenu ni les onglets, et il apparaît en douceur (petit délai) pour ne plus se superposer à la pop « Installer ».",
+    "⌨️ Focus clavier renforcé : l'anneau de mise au point gagne un liséré clair → bien visible dans les 6 modes (jour/nuit/saisons), même sur un élément déjà corail. Meilleure navigation au clavier."
   ]
 }
