@@ -126,7 +126,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=471"></script>
+  <script src="sunmates-badges.js?v=472"></script>
   <script src="sunmates-icons-v2.js?v=540"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -589,10 +589,10 @@
     .pcard .pcard-chip { font-size: .72rem; font-weight: 800; padding: .26rem .55rem; border-radius: 999px; box-shadow: 0 3px 8px rgba(0,0,0,.2); white-space: nowrap; }
     .pcard .pcard-chips-l { position: absolute; top: .6rem; left: .6rem; z-index: 2; display: flex; gap: .3rem; flex-wrap: wrap; }
     .pcard .pcard-rate, .pcard .pcard-new { position: absolute; top: .6rem; right: .6rem; z-index: 2; }
-    .pcard-eco { background: linear-gradient(135deg,#4ED8B8,#179E8C); color: #fff; } /* DA : turquoise bijou (pas de vert émeraude vif) */
+    .pcard-eco { background: linear-gradient(135deg,#4ED8B8,#179E8C); color: #06352D; } /* DA : turquoise bijou (pas de vert émeraude vif) · texte teal foncé ≥4.8:1 (loi de contraste, ANNONCÉ) */
     /* « Sois le·la 1er·ère à checker ! » = vrai bouton (lance le check-in), plus un texte gris décoratif */
     .pcard-firstck { border: 0; background: none; padding: 0; font: inherit; font-weight: 800; color: var(--accent); cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
-    .pcard-top { background: linear-gradient(135deg,#FFC93C,#FF8A3D); color: #fff; }
+    .pcard-top { background: linear-gradient(135deg,#FFC93C,#FF8A3D); color: #4A2A08; } /* texte ambre foncé ≥5:1 (avant : blanc ~1.6:1, échec AA) · ANNONCÉ */
     .pcard-rate { background: rgba(255,255,255,.96); color: #B5740E; }
     .pcard-rate b { opacity: .6; font-weight: 700; }
     .pcard-new { background: rgba(255,255,255,.92); color: var(--muted); }
@@ -649,8 +649,8 @@
     .empty .empty-ill { width: 78px; height: 78px; border-radius: 50%; margin: 0 auto .8rem; display: grid; place-items: center;
       background: radial-gradient(120% 90% at 30% 24%, #ffe8d0, #ffba90 78%, #ff9e74);
       box-shadow: 0 8px 18px -4px rgba(255,138,61,.26), inset 0 1px 1px rgba(255,255,255,.75), inset 0 -2px 4px rgba(180,80,45,.25); }
-    .empty .empty-ill svg { filter: drop-shadow(0 1px 1px rgba(122,36,21,.32)); }
-    .empty .empty-ill .ie { font-size: 2.1rem; line-height: 1; filter: drop-shadow(0 2px 3px rgba(122,36,21,.25)); }
+    .empty .empty-ill svg { filter: drop-shadow(0 1px 1px rgba(45,38,52,.32)); }
+    .empty .empty-ill .ie { font-size: 2.1rem; line-height: 1; filter: drop-shadow(0 2px 3px rgba(45,38,52,.25)); }
     body.theme-dusk .empty .empty-ill { box-shadow: 0 10px 22px -6px rgba(255,138,61,.35), inset 0 1px 1px rgba(255,255,255,.3); }
     .empty .etitle { font-weight: 700; color: var(--ink); margin-bottom: .2rem; }
     .empty .esub { font-size: .86rem; margin-bottom: .9rem; }
@@ -1610,7 +1610,7 @@
     .rate-chip { display: inline-flex; align-items: center; gap: .15rem; font-size: .76rem; font-weight: 800; color: #B5740E; background: rgba(255,177,60,.18); padding: .05rem .4rem; border-radius: 999px; white-space: nowrap; }
     .rate-chip.empty { color: var(--muted); background: var(--cream); font-weight: 600; }
     .rate-chip b { font-weight: 700; opacity: .7; }
-    .rate-top { display: inline-flex; align-items: center; font-size: .7rem; font-weight: 800; color: #fff; background: linear-gradient(135deg,#FFC93C,#FF8A3D); padding: .05rem .4rem; border-radius: 999px; white-space: nowrap; }
+    .rate-top { display: inline-flex; align-items: center; font-size: .7rem; font-weight: 800; color: #4A2A08; background: linear-gradient(135deg,#FFC93C,#FF8A3D); padding: .05rem .4rem; border-radius: 999px; white-space: nowrap; } /* texte ambre foncé ≥5:1 (loi de contraste, ANNONCÉ) */
     .reviews-avg { text-align: center; padding: .3rem 0 .2rem; }
     .star-input { display: flex; gap: .25rem; font-size: 1.9rem; line-height: 1; cursor: pointer; }
     .star-input span { color: #d8d2cc; transition: color .1s, transform .1s; }
@@ -1813,7 +1813,7 @@
     [data-smicon="alert"]{--c1:#FF4D4D;--c2:#D81E2A} [data-smicon="aid"]{--c1:#FF7A4D;--c2:#FF9A3D} [data-smicon="chat"]{--c1:#7a8cff;--c2:#5560f0}
     /* Pastille-joyau réutilisable (icône ivoire sur dégradé) pour harmoniser les emojis hors tuiles */
     .smgem { background: linear-gradient(135deg, var(--ic1, var(--c1,#FF8A3D)), var(--ic2, var(--c2,#FF5A4D))) !important; box-shadow: 0 4px 10px rgba(45,38,52,.28), inset 0 1px 1px rgba(255,246,236,.6) !important; color: #fff !important; }
-    .smgem svg { filter: drop-shadow(0 1px 1px rgba(122,36,21,.25)); }
+    .smgem svg { filter: drop-shadow(0 1px 1px rgba(45,38,52,.25)); }
     .sv-stat .sv-ico { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; vertical-align: -5px; margin-right: 4px; }
 
     /* ============================================================= */
@@ -1852,7 +1852,7 @@
       background:linear-gradient(135deg,#FFF2C2,#FFD15C 55%,#E8961F); border-radius:999px; border:2px solid #fff; box-shadow:0 3px 8px rgba(184,90,18,.4); }
     .ph-id{ flex:1; min-width:0; }
     .ph-name{ font-family:"Fraunces",serif; font-weight:900; font-size:1.12rem; line-height:1.08; letter-spacing:.2px;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow:0 1px 2px rgba(120,40,0,.22); }
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow:0 1px 2px rgba(45,38,52,.22); }
     .ph-title{ font-size:.8rem; font-weight:700; opacity:.92; margin-top:.1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .ph-streak{ flex-shrink:0; align-self:flex-start; display:inline-flex; align-items:center; gap:.2rem; min-height:38px; padding:.4rem .65rem;
       background:rgba(255,255,255,.20); border:1.5px solid rgba(255,255,255,.4); border-radius:999px; color:#fff; font-weight:800; font-size:.9rem; cursor:pointer;
@@ -2233,19 +2233,19 @@
     /* ============ V2.2 · DA unifiée : RELIEF / PROFONDEUR (ADN onb-emoji) ============ */
     /* Une seule signature d'ombre, partagée par icônes maison, emojis natifs ET badges,
        pour qu'ils sortent enfin du même monde (la profondeur des emojis d'onboarding). */
-    :root { --relief: drop-shadow(0 8px 14px rgba(120,40,0,.34)) drop-shadow(0 2px 3px rgba(0,0,0,.18));
-      --relief-strong: drop-shadow(0 12px 22px rgba(0,0,0,.42)) drop-shadow(0 3px 5px rgba(120,40,0,.30)); }
+    :root { --relief: drop-shadow(0 8px 14px rgba(45,38,52,.34)) drop-shadow(0 2px 3px rgba(0,0,0,.18));
+      --relief-strong: drop-shadow(0 12px 22px rgba(0,0,0,.42)) drop-shadow(0 3px 5px rgba(45,38,52,.30)); }
     @keyframes floatySoft { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
     /* Emojis natifs des tuiles : relief/profondeur (DA onb-emoji) · ils décollent de leur tuile */
     .cic, .jo-ic, .qm-ic, .smgem, .thumb, .qico, .sv-ico, .cico {
-      filter: drop-shadow(0 3px 4px rgba(90,25,10,.38)) drop-shadow(0 1px 1px rgba(0,0,0,.22)); }
+      filter: drop-shadow(0 3px 4px rgba(45,38,52,.38)) drop-shadow(0 1px 1px rgba(0,0,0,.22)); }
     /* Emojis-héros natifs : même signature de relief (DA cohérente partout) */
     .qs-emblem, .ph-av-emoji, .sp-next-bdg, .qm-ic, .hm-hero-ic, .hm-host-ic, .rit-ic, .empty-ill, .fe-emoji,
     .dh-emoji, .tip-ic, .onb-emoji, .sos-logo, .coupon .cico, .su-e, .su-ic { filter: var(--relief); }
     .sm-emoji3d { filter: var(--relief); } .sm-emoji3d.sm-float { animation: floatySoft 3.2s ease-in-out infinite; }
     /* Badges RONDS à emoji : peps ÉCLATANT · couleurs pleines + relief dimensionnel */
     .br-medal, .smbadge-wrap, .sm-badge {
-      filter: drop-shadow(0 5px 11px rgba(120,40,0,.26)) drop-shadow(0 1px 2px rgba(0,0,0,.14)) saturate(1.06);
+      filter: drop-shadow(0 5px 11px rgba(45,38,52,.26)) drop-shadow(0 1px 2px rgba(0,0,0,.14)) saturate(1.06);
       position: relative; isolation: isolate; }
     .br-medal::before, .smbadge-wrap::before { content: none; }
     @media (prefers-reduced-motion: reduce) { .sm-float { animation: none !important; } }
@@ -2259,7 +2259,7 @@
     /* Héros joueur SOBRE & COMPACT (la carte/map reste reine ; plus de halo ni de brillance criarde) */
     .player-hero .ph-glow { display: none; } /* halo soleil de la carte coupé → plus basique */
     .player-hero { padding: .7rem .9rem .8rem; border-radius: var(--radius); margin: .2rem 0 .9rem;
-      box-shadow: 0 4px 14px rgba(120,40,0,.16); }
+      box-shadow: 0 4px 14px rgba(45,38,52,.16); }
     .player-hero::after { content:""; position:absolute; inset:0; background:rgba(0,0,0,.06); pointer-events:none; } /* calme le dégradé */
     .ph-avatar, .ph-av-emoji { width: 46px; height: 46px; }
     .ph-av-emoji { font-size: 23px; }
@@ -2277,7 +2277,7 @@
     .tab-panel[data-panel="accueil"] .tile .thumb,
     .tab-panel[data-panel="securite"] .tile .thumb {
       /* saturation calmée (1.28 → 1.06) : le « pop » vient des couleurs émaillées DA, pas d'un boost néon */
-      filter: drop-shadow(0 5px 9px rgba(90,25,10,.40)) saturate(1.06) brightness(1.02); position: relative; overflow: hidden; }
+      filter: drop-shadow(0 5px 9px rgba(45,38,52,.40)) saturate(1.06) brightness(1.02); position: relative; overflow: hidden; }
     .tab-panel[data-panel="accueil"] .tile .thumb::after,
     .tab-panel[data-panel="securite"] .tile .thumb::after {
       content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
@@ -4403,7 +4403,7 @@
   </div>
 
   <!-- Notifications éphémères (toasts) -->
-  <div id="toastWrap"></div>
+  <div id="toastWrap" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <!-- Bandeau d'état réseau (hors-ligne / Supabase injoignable) -->
   <div id="netBanner" class="net-banner">📡 Hors-ligne, vérifie ta connexion</div>
@@ -6732,10 +6732,21 @@
 
     // Extrait un message lisible d'une erreur Supabase (les AuthError ont des props non énumérables → {} sinon).
     function _authErr(e) {
-      if (!e) return "inconnue";
-      const m = e.message || e.error_description || e.msg || e.code || e.name || (e.status ? "HTTP " + e.status : "");
-      if (m) return m;
-      try { return JSON.stringify(e, Object.getOwnPropertyNames(e)); } catch (_) { return String(e); }
+      // On ne montre JAMAIS le message technique brut (anglais Supabase) au grand public :
+      // on mappe les cas connus vers du français rassurant, et on logue le détail en console.
+      if (!e) return "Connexion impossible pour l'instant. Réessaie dans un instant.";
+      const code = (e.code || "").toLowerCase();
+      const raw = ((e.message || e.error_description || e.msg || "") + "").toLowerCase();
+      const has = (s) => code.includes(s) || raw.includes(s);
+      if (has("invalid login") || has("invalid_credentials")) return "Email ou mot de passe incorrect. Réessaie 🙂";
+      if (has("already registered") || has("user_already_exists")) return "Cette adresse a déjà un compte. Connecte-toi plutôt 👇";
+      if (has("rate limit") || has("too many") || has("over_email_send")) return "Trop d'essais d'un coup. Patiente une minute et retente.";
+      if (has("email not confirmed") || code === "email_not_confirmed") return "Tu dois confirmer ton email avant de te connecter.";
+      if ((has("password") && has("at least")) || has("weak_password")) return "Mot de passe trop court : 8 caractères minimum.";
+      if (has("network") || has("failed to fetch") || has("load failed")) return "Connexion réseau impossible. Vérifie ta connexion et réessaie.";
+      if (has("validation") && has("email")) return "Cet email n'a pas l'air valide. Vérifie l'adresse.";
+      console.warn("[SunMates] auth error brut:", e);
+      return "Connexion impossible pour l'instant. Réessaie dans un instant.";
     }
     async function submitAuth() {
       const email = $("authEmail").value.trim();
@@ -6776,7 +6787,7 @@
                 reset();
               }
             });
-          } else { console.warn("[SunMates] auth error:", error); msg.style.color = "var(--danger)"; msg.textContent = "Erreur : " + _authErr(error); }
+          } else { console.warn("[SunMates] auth error:", error); msg.style.color = "var(--danger)"; msg.textContent = _authErr(error); }
         }
         else if (authMode === "signup") {
           track("signup");

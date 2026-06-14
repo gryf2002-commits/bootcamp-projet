@@ -1,9 +1,9 @@
 {
-  "candidate": "v471",
+  "candidate": "v472",
   "items": [
-    "🎨 Icônes « sticker » : pictogrammes pleins recolorés avec un liséré net → plus lisibles et homogènes sur toutes les tuiles.",
-    "💎 Joyaux de mode assagis : moins de surcharge visuelle, l'info ressort mieux à l'écran.",
-    "😄 Emojis fun natifs calés à 38px et contraste des joyaux/badges éclairci (suite v470).",
-    "♿ Balise « application web » à jour (meilleure installation en PWA sur mobile)."
+    "🌑 Ombres « gris chaud » partout : les ombres brunes/terre résiduelles sur les emojis de tuiles, joyaux et états vides repassent en gris chaud (doctrine DA v444) → plus de salissure, des reliefs nets.",
+    "🔆 Contraste corrigé sur les badges des lieux : « 🌱 Éco » et « 🏆 Top noté » passent en texte foncé lisible (avant : blanc presque invisible sur les dégradés clairs) → conforme WCAG AA.",
+    "💬 Erreurs de connexion en français rassurant : fini « Invalid login credentials » → « Email ou mot de passe incorrect. Réessaie 🙂 » (et les autres cas mappés proprement).",
+    "♿ Les notifications (toasts) sont maintenant annoncées aux lecteurs d'écran (aria-live) → accessibilité renforcée, y compris pour les messages de sécurité."
   ]
 }
