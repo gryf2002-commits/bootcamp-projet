@@ -198,7 +198,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
   <script src="sunmates-badges.js?v=486"></script>
-  <script src="sunmates-icons-v2.js?v=540"></script>
+  <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
     .smicon { display: inline-block; vertical-align: middle; }
@@ -732,10 +732,9 @@
     body.sm-no-shadow .card, body.sm-no-shadow .cic[data-smicon], body.sm-no-shadow .jo-ic[data-smicon], body.sm-no-shadow .smgem { box-shadow: none !important; }
     body.sm-no-polish .cic[data-smicon]::after, body.sm-no-polish .jo-ic[data-smicon]::after { display: none !important; } /* retire le reflet/gloss, garde la couleur */
     body.sm-mirror .cic[data-smicon] svg, body.sm-mirror .jo-ic[data-smicon] svg, body.sm-mirror .smgem svg { transform: scaleX(-1); }
-    /* DA pilotée — LEVER 3 (couleur des emblèmes), OPT-IN : la classe sm-icc n'est posée par le loader
-       QUE si des couleurs d'emblèmes sont définies → les glyphes prennent la couleur --icc de leur catégorie
-       (rendu monochrome assumé). Sans couleurs définies : joyaux multi-couleurs « joaillerie » intacts par défaut. */
-    body.sm-icc .cic[data-smicon] svg *, body.sm-icc .jo-ic[data-smicon] svg *, body.sm-icc .smgem svg * { fill: var(--icc, currentColor) !important; stroke: var(--icc, currentColor) !important; }
+    /* DA pilotée — couleur des emblèmes : gérée NATIVEMENT par la banque recolorable cowork (sunmates-icons-v2.js,
+       chaque emblème en fill="var(--icc, couleur naturelle)"). Le loader pose --icc par catégorie → recolor propre.
+       (L'ancienne bidouille CSS d'aplat forcé est retirée : la banque fait mieux, sans !important.) */
     /* ---- Focus clavier visible (accessibilité) ---- */
     :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; box-shadow: 0 0 0 2px var(--card,#fff); } /* a11y : anneau corail + liseré carte → visible sur les 6 modes, même si l'élément focalisé est lui-même corail */
 
@@ -8344,7 +8343,10 @@
             ]);
             if (tk && tk.data && tk.data.tokens && Object.keys(tk.data.tokens).length) window.SM_DA_TOKENS = tk.data.tokens;
             if (st && st.data && st.data.strings && Object.keys(st.data.strings).length) window.SM_DA_STRINGS = st.data.strings;
-            if (window.SMDA) {
+            // Si un BROUILLON local existe (admin en train de « tester en live »), le loader l'a déjà appliqué
+            // au boot → on NE l'écrase PAS avec la version publiée (sinon impossible de prévisualiser avant publication).
+            var _hasDraft = false; try { _hasDraft = !!localStorage.getItem("sm_da_live"); } catch (e) {}
+            if (window.SMDA && !_hasDraft) {
               try { SMDA.apply(window.SM_DA_TOKENS); } catch (e) {}
               try { SMDA.applyStrings(window.SM_DA_STRINGS); if (typeof applyI18n === "function") applyI18n(); } catch (e) {} // re-render pour que les overrides de texte prennent
             }
@@ -10360,6 +10362,7 @@
             const t = parse(); if (!t) return; const m = $("daLiveMsg"); if (m) { m.style.color = "var(--muted)"; m.textContent = "Publication…"; }
             const { error } = await db.from("da_tokens").upsert({ id: 1, tokens: t, updated_by: myUserId });
             if (error) { if (m) { m.style.color = "var(--danger)"; m.textContent = errFr(error); } return; }
+            try { localStorage.removeItem("sm_da_live"); } catch (e) {} // publié → on efface le brouillon local (au reload : version publiée)
             if (window.SMDA) { try { SMDA.apply(t); } catch (e) {} }
             if (m) { m.style.color = "var(--ok)"; m.textContent = "Publié ! Visible pour tous au prochain chargement ✨"; }
           })); }

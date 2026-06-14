@@ -1,8 +1,8 @@
 {
   "candidate": "v486",
   "items": [
-    "🎨 Console DA enrichie (cowork) : 21 presets prêts (calés sur les 6 modes), et la couleur de police (titres / corps / méta) est désormais pilotable et appliquée à l'app.",
-    "🌅 Nouvelle icône d'app / PWA / favicon (glyphe soleil, dégradé sunset) — visible après réinstallation/rafraîchissement de la PWA.",
-    "🔄 Rappel : après avoir collé un JSON dans l'admin DA, clique « Tester en live » puis « 🔄 Recharger » pour voir le rendu complet."
+    "🎨 Console DA complète : 21 presets (calés sur les 6 modes), couleur de police pilotable (titres/corps/méta), et — nouveau — la couleur des emblèmes est VRAIMENT pilotable par catégorie (banque d'icônes recolorable : couleurs naturelles par défaut, ta couleur quand tu la choisis).",
+    "🌅 Nouvelle icône d'app / PWA / favicon (glyphe soleil, dégradé sunset).",
+    "🔄 Flux de test fiabilisé : « Tester en live » garde ton brouillon au rechargement (aperçu privé avant publication) ; « Publier » repasse tout le monde sur la version officielle. Pense au bouton « 🔄 Recharger » après avoir collé un JSON."
   ]
 }
