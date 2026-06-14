@@ -1,6 +1,6 @@
 {
-  "candidate": "v478",
+  "candidate": "v479",
   "items": [
-    "🗺️ Compteurs de la carte plus lisibles : les pastilles regroupant plusieurs marqueurs (le petit nombre, ex. « 16 ») avaient un blanc peu lisible sur fond clair (orange/turquoise/ambre). Fond légèrement assombri + ombre du texte → chiffre net, contraste WCAG AA, en gardant la couleur de chaque catégorie."
+    "🌍 Dernier détail EN hors-ligne : les fenêtres du minuteur « Rentrée en sécurité » (texte explicatif avec mots en gras) sont maintenant traduites d'un bloc, donc nettes en anglais même sans réseau. L'écran Sécurité est désormais 100% bilingue hors-ligne."
   ]
 }

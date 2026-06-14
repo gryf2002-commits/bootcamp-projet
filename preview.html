@@ -174,7 +174,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=478"></script>
+  <script src="sunmates-badges.js?v=479"></script>
   <script src="sunmates-icons-v2.js?v=540"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -6667,6 +6667,10 @@
       "Déclencher une alerte d'urgence ?": "Trigger an emergency alert?", "Ta position sera diffusée aussitôt à ton cercle de confiance.": "Your location will be shared instantly with your trust circle.", "Déclencher l'alerte": "Trigger the alert",
       "Minuteur en cours": "Timer running", "Rentrée en sécurité": "Home safe",
       "J'ai besoin d'aide": "I need help", "Minuteur « bien arrivé·e »": "“Arrived safely” timer", "✅ Je suis bien arrivé·e": "✅ I've arrived safely",
+      // Corps de modales popInfo (balises <b> incluses dans la clé → traduites en un bloc par i18nT, pas via le DOM)
+      "Ton minuteur de rentrée est <b>actif</b>. Touche « Bien arrivé·e » pour l'arrêter, sinon ta position sera diffusée à ton cercle.": "Your home timer is <b>active</b>. Tap “Arrived safely” to stop it, otherwise your location will be shared with your circle.",
+      "Lance un minuteur avant de rentrer. Si tu ne confirmes pas « bien arrivé·e » à temps, ta position est <b>diffusée à ton cercle de confiance</b> 🛟": "Start a timer before heading home. If you don't confirm “arrived safely” in time, your location is <b>shared with your trust circle</b> 🛟",
+      "⚠️ Garde SunMates ouvert (même en arrière-plan) pour que le minuteur veille.": "⚠️ Keep SunMates open (even in the background) so the timer can watch over you.",
       "Minuteur lancé. Confirme « bien arrivé·e » avant la fin 🛟": "Timer started. Confirm “arrived safely” before it ends 🛟",
       "Bien arrivé·e ! Minuteur arrêté.": "Arrived safely! Timer stopped.", "Minuteur écoulé": "Timer's up",
       "Nouveau contact d'urgence": "New emergency contact", "Indique un nom.": "Enter a name.", "Indique un numéro.": "Enter a number.",
@@ -11528,15 +11532,15 @@
     function openSafeArrival() {
       const active = _safeState();
       if (active && active.deadline > Date.now()) {
-        popInfo("⏱️", "Minuteur en cours", `<p style="text-align:center">Ton minuteur de rentrée est <b>actif</b>. Touche « Bien arrivé·e » pour l'arrêter, sinon ta position sera diffusée à ton cercle.</p><button class="btn-primary btn-block" id="saConfirmNow" style="margin-top:.6rem">✅ Je suis bien arrivé·e</button>`);
+        popInfo("⏱️", i18nT("Minuteur en cours"), `<p style="text-align:center">${i18nT("Ton minuteur de rentrée est <b>actif</b>. Touche « Bien arrivé·e » pour l'arrêter, sinon ta position sera diffusée à ton cercle.")}</p><button class="btn-primary btn-block" id="saConfirmNow" style="margin-top:.6rem">${i18nT("✅ Je suis bien arrivé·e")}</button>`);
         setTimeout(() => { const b = $("saConfirmNow"); if (b) b.addEventListener("click", () => { confirmSafeArrival(); if (typeof closePopInfo === "function") closePopInfo(); }); }, 30);
         return;
       }
       const opts = [[30, "30 min"], [60, "1 h"], [120, "2 h"]].map(([m, l]) => `<button class="btn-ghost sadur" data-min="${m}" style="flex:1">${l}</button>`).join("");
-      popInfo("⏱️", "Rentrée en sécurité", `
-        <p class="muted" style="font-size:.84rem;margin:0 0 .6rem;text-align:center">Lance un minuteur avant de rentrer. Si tu ne confirmes pas « bien arrivé·e » à temps, ta position est <b>diffusée à ton cercle de confiance</b> 🛟</p>
+      popInfo("⏱️", i18nT("Rentrée en sécurité"), `
+        <p class="muted" style="font-size:.84rem;margin:0 0 .6rem;text-align:center">${i18nT("Lance un minuteur avant de rentrer. Si tu ne confirmes pas « bien arrivé·e » à temps, ta position est <b>diffusée à ton cercle de confiance</b> 🛟")}</p>
         <div style="display:flex;gap:.4rem;margin-bottom:.6rem">${opts}</div>
-        <p class="muted" style="font-size:.72rem;text-align:center">⚠️ Garde SunMates ouvert (même en arrière-plan) pour que le minuteur veille.</p>`);
+        <p class="muted" style="font-size:.72rem;text-align:center">${i18nT("⚠️ Garde SunMates ouvert (même en arrière-plan) pour que le minuteur veille.")}</p>`);
       setTimeout(() => { document.querySelectorAll(".sadur").forEach((b) => b.addEventListener("click", () => { startSafeTimer(Number(b.dataset.min)); if (typeof closePopInfo === "function") closePopInfo(); })); }, 30);
     }
     function startSafeTimer(mins) {
