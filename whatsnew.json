@@ -1,7 +1,7 @@
 {
-  "candidate": "v476",
+  "candidate": "v477",
   "items": [
-    "🌍 Version anglaise fiable HORS-LIGNE sur les écrans critiques : les messages de connexion, de confirmation d'email et toutes les erreurs sont désormais traduits en dur (plus de dépendance à une traduction en ligne qui échouait sans réseau, et fini le bref flash en français).",
-    "✈️ Pensé voyage : même avec une connexion faible ou coupée, l'app reste cohérente en anglais là où ça compte le plus (entrée dans l'app + messages d'erreur)."
+    "🌍 Écran Sécurité complété en anglais hors-ligne : les derniers libellés non traduits (« J'ai besoin d'aide », le minuteur « bien arrivé·e », la confirmation de rentrée) sont désormais en dur dans le dictionnaire → cohérents même sans réseau.",
+    "🛟 Bonne nouvelle : les conseils de sécurité du jour et les numéros d'urgence par pays étaient déjà bilingues — rien à changer côté réseau pour eux."
   ]
 }
