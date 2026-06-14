@@ -1,8 +1,8 @@
 {
-  "candidate": "v464",
+  "candidate": "v465",
   "items": [
-    "🎯 Bouton de connexion enfin EXPLICITE : le petit rond « ▶ » devient un bouton PLEINE LARGEUR libellé « Se connecter » / « Créer mon compte » selon l'onglet. Plus visible, plus clair (corrige le point n°1 de l'audit UX : « CTA peu proéminent / pas orienté action »).",
-    "🔆 Proposition de valeur sous le titre : texte renforcé (passe du gris secondaire à l'encre principale) → meilleur contraste et hiérarchie de lecture.",
-    "🇬🇧 Nouveau libellé traduit en anglais (Log in / Create my account)."
+    "📱 Barre du haut qui s'ADAPTE : « SunMates » ne peut plus se superposer aux boutons (cloche, thème, déconnexion). La marque se clippe proprement et la barre se compacte sur petit écran (≤430px) et avec la police agrandie (accessibilité).",
+    "🧹 Anti-débordement général (audit de TOUS les écrans avec plusieurs agents) : pseudos, libellés d'onglets, boutons de jeu, auteurs du fil, réglages et tags ne débordent plus / ne se chevauchent plus — ils se tronquent avec « … ».",
+    "👆 Cible tactile de l'œil « afficher le mot de passe » agrandie (≥40px) sur l'écran de connexion."
   ]
 }

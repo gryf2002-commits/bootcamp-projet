@@ -125,7 +125,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=464"></script>
+  <script src="sunmates-badges.js?v=465"></script>
   <script src="sunmates-icons.js?v=445"></script>
   <script>
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale · jamais depuis
@@ -295,7 +295,9 @@
       background: linear-gradient(var(--bg) 62%, rgba(255,244,230,0));
     }
     /* min-width:0 : le wordmark peut rétrécir au lieu de pousser les actions ; padding-right : espace constant avec le bouton thème */
-    .brand { display: flex; align-items: center; gap: .5rem; min-width: 0; padding-right: .25rem; font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: .5px; }
+    /* flex:0 1 auto + overflow:hidden : la marque peut rétrécir/clipper au lieu de DÉBORDER par-dessus
+       les boutons d'action (chevauchement « SunMates » sur la cloche/thème vu sur petits Android/iPhone). */
+    .brand { display: flex; align-items: center; gap: .5rem; flex: 0 1 auto; min-width: 0; overflow: hidden; padding-right: .25rem; font-weight: 800; font-size: 1.15rem; color: var(--ink); letter-spacing: .5px; }
     .topbar-actions { flex-shrink: 0; }
     .brand .mark {
       width: 30px; height: 30px; border-radius: 9px; background: var(--accent-grad);
@@ -304,7 +306,7 @@
     /* Les 3 glyphes de la barre du haut (soleil-logo, cloche, lune/soleil-thème) rendus à la
        MÊME taille exacte (22px) quelle que soit leur source SVG (évite l'effet « tailles différentes »). */
     .brand .mark svg, #notifBell svg, #themeToggle svg { width: 22px !important; height: 22px !important; display: block; }
-    .brand b { font-weight: 800; }
+    .brand b { font-weight: 800; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .brand b .sun { color: var(--accent); }
     /* Marque « SunMates Pro » : soleil doré distinct + badge PRO (espace B2B) */
     .mark-pro { background: linear-gradient(150deg,#FFC93C,#E89B2B) !important; box-shadow: 0 6px 16px rgba(232,155,43,.4) !important; }
@@ -3232,7 +3234,7 @@
     #pickerOverlay.info { align-items: center; }
     #pickerOverlay.info .picker-card { border-radius: 22px; max-width: 380px; margin: 0 1rem; }
     /* Œil pour révéler le mot de passe */
-    .pw-eye { position: absolute; right: .5rem; top: 50%; transform: translateY(-50%); background: none; border: 0; cursor: pointer; padding: .3rem; line-height: 1; color: var(--muted); }
+    .pw-eye { position: absolute; right: .35rem; top: 50%; transform: translateY(-50%); background: none; border: 0; cursor: pointer; padding: .3rem; line-height: 1; color: var(--muted); min-width: 40px; min-height: 40px; display: grid; place-items: center; }
     .pw-eye svg { display: block; }
     .pw-eye:hover { color: var(--accent); }
     /* Aperçu « vue Gratuit » (admin) : les fonctions Gold se grisent */
@@ -4067,6 +4069,33 @@
       *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
       html { scroll-behavior: auto !important; }
     }
+
+    /* ===== Barre du haut : compactage mobile (≤430px) ===== anti-chevauchement marque/actions.
+       Réduit légèrement logo, espacements et bouton « Déconnexion » pour que « SunMates » + les
+       3 actions tiennent TOUJOURS sur une ligne, même avec la police agrandie (accessibilité). */
+    @media (max-width: 430px) {
+      .topbar { padding-left: .9rem; padding-right: .9rem; gap: .4rem; }
+      .topbar-actions { gap: .3rem; }
+      .brand { font-size: 1.05rem; letter-spacing: .3px; }
+      .brand .mark { width: 28px; height: 28px; }
+      .iconbtn { min-width: 38px; min-height: 38px; padding: .4rem .5rem; }
+      #logoutBtn { padding: .42rem .55rem !important; font-size: .76rem !important; }
+    }
+
+    /* ===== Durcissement responsive (audit multi-écrans) =====
+       Empêche le texte dynamique (pseudos, libellés, derniers messages) de DÉBORDER et de se
+       superposer dans les lignes flex sur petits écrans / police agrandie. Règles additives sûres :
+       on borne la largeur (min-width:0) et on tronque proprement (…) au lieu de chevaucher. */
+    .info .name { overflow: hidden; }                       /* filet : un pseudo trop long est clippé, jamais par-dessus le badge/la flèche */
+    .info .name > .nm-txt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* pseudo tronqué avec …, le badge/pin reste visible */
+    .info .name .conv-pin, .info .name .vchip { flex-shrink: 0; }
+    .fpost-who b, .fpost-who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* auteurs du fil */
+    .seg button, .mseg button { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* onglets : plus de retour à la ligne */
+    .qs-mode-btn { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }   /* boutons mode de jeu */
+    .pcard .pcard-actions button { overflow: hidden; text-overflow: ellipsis; }                      /* « Check-in (+10) » */
+    .set-toggle > :first-child { min-width: 0; }                                                      /* le libellé rétrécit, l'interrupteur reste à droite */
+    .set-toggle .st-lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .trav-tags span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* tags de voyageur */
   </style>
 </head>
 <body>
