@@ -1,5 +1,11 @@
 [
   {
+    "v": "v475",
+    "date": "2026-06-14",
+    "note": "errFr généralisé : ~40 error.message bruts (anglais/SQL Supabase) remplacés par des messages FR rassurants et actionnables (droits/session, doublon, réseau, rate-limit…) ; détail technique en console",
+    "file": "v475.html"
+  },
+  {
     "v": "v474",
     "date": "2026-06-14",
     "note": "A11y clavier : tuiles/lignes/cartes cliquables (des <div>) rendues focusables (tabindex+role=button) + Entrée/Espace → clic, garde anti-imbrication + suivi dynamique (MutationObserver)",
