@@ -1,5 +1,11 @@
 [
   {
+    "v": "v483",
+    "date": "2026-06-14",
+    "note": "Console DA pilotée (cowork) câblée : loader runtime (fetch da_tokens/da_strings + apply à chaud), bloc admin tester/publier, loader dans la coquille SW. Nécessite sunmates-da-schema.sql (lancé). Restes parqués : icônes currentColor, conso CSS des tailles/effets/logo, polices à charger.",
+    "file": "v483.html"
+  },
+  {
     "v": "v482",
     "date": "2026-06-14",
     "note": "Chasse aux bugs lot 2 : messages non lus suivis PAR conversation (sm_seen_by) — fini le marquage global qui pouvait faire rater un message d'un autre expéditeur",
