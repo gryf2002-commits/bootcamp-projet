@@ -1,5 +1,11 @@
 [
   {
+    "v": "v486",
+    "date": "2026-06-14",
+    "note": "DA cowork complète : 21 presets + couleur de police + BANQUE D'ICÔNES RECOLORABLE (296 emblèmes var(--icc), vraies couleurs par catégorie) + icônes app/PWA/favicon sunset + flux test fiabilisé (brouillon prioritaire au reload, boutons Recharger/Annuler). icons-v2 ?v=541, loader ?v=4, SW bump pour rafraîchir les PWA.",
+    "file": "v486.html"
+  },
+  {
     "v": "v485",
     "date": "2026-06-14",
     "note": "DA console : bouton « Recharger » dans l'admin + 3e levier (couleur emblèmes opt-in via sm-icc, rendu mono assumé ; joyaux multi-couleurs intacts par défaut) loader ?v=3 + mode d'emploi console à jour",
