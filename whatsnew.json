@@ -5,6 +5,7 @@
     "🐞 Stabilité : plus de plantage possible de la fiche profil / des % d'affinité quand des centres d'intérêt sont mal formés.",
     "👥 Création de groupe fiabilisée : si un mate ne peut pas être ajouté, le groupe et les autres membres sont quand même créés (avant : tout échouait en silence).",
     "📦 Export de tes données (RGPD) désormais complet (messages envoyés ET reçus).",
-    "🧹 Durcissements internes : cache de traduction borné, bonus quotidien/réponses support retentés après une coupure réseau, aperçus de conversation tronqués."
+    "🧹 Durcissements internes : cache de traduction borné, bonus quotidien/réponses support retentés après une coupure réseau, aperçus de conversation tronqués.",
+    "📍 Cohérence sécurité : les positions partagées au cercle expirent bien après 1 h (liste, carte et texte alignés)."
   ]
 }

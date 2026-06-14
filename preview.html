@@ -7583,7 +7583,7 @@
       "Salut {n} ! Partant·e pour une quête SunMates ensemble ? 🎯": "Hi {n}! Up for a SunMates quest together? 🎯",
       "Hey {n} 👋 qu'est-ce qui t'amène à voyager en ce moment ?": "Hey {n} 👋 what's got you travelling these days?",
       "🚨 Minuteur écoulé : position diffusée à ton cercle": "🚨 Timer's up: location shared with your circle",
-      "Personne de ton cercle n'a partagé de position dans les dernières 24 h.": "No one in your circle has shared a location in the last 24 hours.",
+      "Personne de ton cercle n'a partagé de position dans la dernière heure.": "No one in your circle has shared a location in the last hour.",
       "🚨 URGENCE": "🚨 EMERGENCY",
       "Voir sur la carte 📍": "See on the map 📍",
       "3 contacts max · supprime-en un pour en ajouter": "3 contacts max · remove one to add another",
@@ -11639,10 +11639,10 @@
         db.from("locations_realtime").select("*").order("created_at", { ascending: false }).limit(50),
         db.from("profiles").select("id, username"),
       ]);
-      circleLocs = locs || [];
       const nameOf = (id) => (profiles || []).find((p) => p.id === id)?.username || "Voyageur";
-      // Les alertes/positions partagées EXPIRENT après 24 h (on ne montre pas de vieilles alertes).
-      const cutoff = Date.now() - 24 * 3600 * 1000;
+      // Les positions partagées EXPIRENT après 1 h (cohérent avec le message « visible 1 h » à l'envoi).
+      const cutoff = Date.now() - 60 * 60 * 1000;
+      circleLocs = (locs || []).filter((l) => new Date(l.created_at).getTime() > cutoff); // carte d'accueil : pas de position de + d'1 h
       // On ne garde que la DERNIÈRE position de chaque personne : un « je vais bien »
       // (position non urgente plus récente) remplace ainsi son alerte dans la liste.
       const seen = new Set();
@@ -11656,7 +11656,7 @@
             <div class="meta">${timeAgo(l.created_at)} · ${new Date(l.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</div>
             <a href="https://www.google.com/maps?q=${l.lat},${l.lng}" target="_blank" rel="noopener" style="color:var(--accent);font-size:.85rem;font-weight:600">${i18nT("Voir sur la carte 📍")}</a>
           </div>`).join("")
-        : emptyState("🛟", i18nT("Aucune position partagée"), i18nT("Personne de ton cercle n'a partagé de position dans les dernières 24 h."), i18nT("📍 Partager ma position"), "shareloc");
+        : emptyState("🛟", i18nT("Aucune position partagée"), i18nT("Personne de ton cercle n'a partagé de position dans la dernière heure."), i18nT("📍 Partager ma position"), "shareloc");
     }
 
     // Feedback pendant le rafraîchissement (avant : bouton inerte → re-clics dans le vide)
