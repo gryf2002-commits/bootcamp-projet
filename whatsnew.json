@@ -1,7 +1,10 @@
 {
-  "candidate": "v480",
+  "candidate": "v481",
   "items": [
-    "♿ Champs de formulaire étiquetés pour les lecteurs d'écran : les zones de saisie qui n'avaient qu'un texte d'exemple (placeholder) reçoivent maintenant un vrai libellé accessible (aria-label), synchronisé avec la langue. Navigation au lecteur d'écran nettement plus claire.",
-    "🎉 v480 — petit jalon : on archive cette version comme étape de l'évolution de SunMates."
+    "🛟 Sécurité — correctif important : le minuteur « Rentrée en sécurité » se re-vérifie au retour de l'app (les téléphones gèlent les minuteurs en arrière-plan) → l'alerte au cercle ne peut plus être « oubliée ».",
+    "🐞 Stabilité : plus de plantage possible de la fiche profil / des % d'affinité quand des centres d'intérêt sont mal formés.",
+    "👥 Création de groupe fiabilisée : si un mate ne peut pas être ajouté, le groupe et les autres membres sont quand même créés (avant : tout échouait en silence).",
+    "📦 Export de tes données (RGPD) désormais complet (messages envoyés ET reçus).",
+    "🧹 Durcissements internes : cache de traduction borné, bonus quotidien/réponses support retentés après une coupure réseau, aperçus de conversation tronqués."
   ]
 }

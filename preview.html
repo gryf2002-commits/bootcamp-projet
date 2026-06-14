@@ -197,7 +197,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=480"></script>
+  <script src="sunmates-badges.js?v=481"></script>
   <script src="sunmates-icons-v2.js?v=540"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -11605,22 +11605,30 @@
     // bien ? ») au lieu d'alerter aussitôt · souvent on a juste oublié de confirmer. Sans
     // réponse, l'alerte part quand même : l'esprit du dispositif est préservé (fermer la
     // modale sans répondre ne l'annule PAS).
+    let _safeGraceOn = false;
     function _safeGraceCheck() {
       const st = _safeState();
       if (!st || !st.deadline || st.deadline > Date.now()) return false;
+      if (_safeGraceOn) return true;            // grâce déjà à l'écran → évite un double-déclenchement au retour
+      _safeGraceOn = true;
       let left = 30;
-      const fire = setTimeout(() => { if (typeof closePopInfo === "function") closePopInfo(); _triggerSafeAlert(); }, left * 1000);
+      const fire = setTimeout(() => { _safeGraceOn = false; if (typeof closePopInfo === "function") closePopInfo(); _triggerSafeAlert(); }, left * 1000);
       popInfo("⏱️", i18nT("Tout va bien ?"),
         '<p style="text-align:center">' + i18nT("Ton minuteur de rentrée s'est terminé pendant que l'app était fermée. Sans réponse de ta part, ta position sera diffusée à ton cercle de confiance 🛟") + "</p>" +
         '<button class="btn-primary btn-block" id="sgOkBtn" style="margin-top:.6rem">' + i18nT("✅ Je vais bien") + " (30)</button>");
       const cnt = setInterval(() => { left--; const b = $("sgOkBtn"); if (b && left > 0) b.textContent = i18nT("✅ Je vais bien") + " (" + left + ")"; if (left <= 0) clearInterval(cnt); }, 1000);
       setTimeout(() => { const b = $("sgOkBtn"); if (b) b.addEventListener("click", () => {
-        clearTimeout(fire); clearInterval(cnt);
+        _safeGraceOn = false; clearTimeout(fire); clearInterval(cnt);
         confirmSafeArrival();
         if (typeof closePopInfo === "function") closePopInfo();
       }); }, 30);
       return true;
     }
+    // SÉCURITÉ : au retour d'arrière-plan, on RE-vérifie le minuteur. Les navigateurs mobiles GÈLENT
+    // les setInterval des onglets cachés → sans cette ré-évaluation, l'alerte pouvait ne jamais partir.
+    function _safeOnVisible() { if (document.hidden) return; try { if (!_safeGraceCheck()) _safeRender(); } catch (e) {} }
+    document.addEventListener("visibilitychange", _safeOnVisible);
+    window.addEventListener("focus", _safeOnVisible);
 
     // Positions partagées par mon cercle de confiance (RLS : seules les connexions
     // acceptées peuvent lire mes positions, et inversement).
@@ -11977,7 +11985,7 @@
         ? convIds
             .map((other) => {
               const lm = lastByPeer[other];
-              const preview = lm ? ((lm.sender_id === myId ? "Toi : " : "") + lm.content) : "Toucher pour discuter 💬";
+              const preview = lm ? ((lm.sender_id === myId ? "Toi : " : "") + String(lm.content || "").slice(0, 140)) : "Toucher pour discuter 💬"; // aperçu borné : un message-pavé ne gonfle plus la liste
               const t = lm ? timeAgo(lm.created_at) : "";
               const isBff = other === myBffId;
               return `<div class="person conv-open${isBff ? " conv-bff" : ""}" data-chat="${other}" style="cursor:pointer">
@@ -12015,14 +12023,16 @@
     let myMatchProfile = null;
     const sameCityAs = (me, other) => !!(me?.city && other?.city &&
       me.city.trim().toLowerCase() === other.city.trim().toLowerCase());
-    // Éléments en commun entre deux listes (insensible à la casse)
+    // Éléments en commun entre deux listes (insensible à la casse).
+    // String(s) + filtre null : une colonne jsonb peut contenir un non-string → évite un TypeError
+    // qui ferait planter tout le rendu de la fiche profil / des % d'affinité.
     function sharedList(aArr, bArr) {
-      const b = new Set((bArr || []).map((s) => s.toLowerCase()));
-      return (aArr || []).filter((x) => b.has(x.toLowerCase()));
+      const b = new Set((bArr || []).filter((s) => s != null).map((s) => String(s).toLowerCase()));
+      return (aArr || []).filter((x) => x != null && b.has(String(x).toLowerCase()));
     }
     function jaccard(aArr, bArr) {
-      const a = new Set((aArr || []).map((s) => s.toLowerCase()));
-      const b = new Set((bArr || []).map((s) => s.toLowerCase()));
+      const a = new Set((aArr || []).filter((s) => s != null).map((s) => String(s).toLowerCase()));
+      const b = new Set((bArr || []).filter((s) => s != null).map((s) => String(s).toLowerCase()));
       if (!a.size && !b.size) return 0;
       let inter = 0; a.forEach((x) => { if (b.has(x)) inter++; });
       return inter / new Set([...a, ...b]).size;
@@ -13125,7 +13135,7 @@
           if (window.SMSound) SMSound.play("coin");
         }
         if (typeof renderShop === "function" && !$("jeuxShop").classList.contains("hidden")) renderShop();
-      } catch (e) {}
+      } catch (e) { _dailyCoinsTried = false; } // erreur réseau → on pourra retenter
     }
     // P2.34 : au passage dans l'app, si un de MES retours a reçu une réponse admin → toast.
     let _fbRepliesTried = false;
@@ -13144,7 +13154,7 @@
           else if (typeof toast === "function") toast("✅", "Ton retour a été traité 💛");
           if (window.SMSound) SMSound.play("notify");
         }
-      } catch (e) {}
+      } catch (e) { _fbRepliesTried = false; } // erreur réseau → on pourra retenter
     }
 
     // ===== BOOSTS (SunCoins, P2.17) : coups de pouce temporaires =====
@@ -14575,10 +14585,15 @@
         b.disabled = true; b.textContent = i18nT("Création…");
         const { data: g, error } = await db.from("group_chats").insert({ name: String(name).slice(0, 60), creator: myUserId }).select().single();
         if (error || !g) { b.disabled = false; b.textContent = "✨ " + i18nT("Créer le groupe"); toast("⚠️", i18nT("Erreur, réessaie.")); return; }
-        const rows = [{ group_id: g.id, user_id: myUserId, added_by: myUserId }].concat(picked.map((id) => ({ group_id: g.id, user_id: id, added_by: myUserId })));
-        const { error: e2 } = await db.from("group_members").insert(rows);
+        // On insère le créateur D'ABORD (toujours valide vis-à-vis de la RLS), PUIS chaque mate
+        // séparément. Avant : un insert batch — si UN mate n'était plus une connexion acceptée, la
+        // RLS rejetait TOUT le batch (créateur compris) → groupe à 0 membre + message trompeur.
+        const { error: eSelf } = await db.from("group_members").insert([{ group_id: g.id, user_id: myUserId, added_by: myUserId }]);
+        if (eSelf) { if (typeof closePopInfo === "function") closePopInfo(); b.disabled = false; b.textContent = "✨ " + i18nT("Créer le groupe"); toast("⚠️", i18nT("Erreur, réessaie.")); return; }
+        let _gFailed = 0;
+        for (const pid of picked) { const { error: em } = await db.from("group_members").insert([{ group_id: g.id, user_id: pid, added_by: myUserId }]); if (em) _gFailed++; }
         if (typeof closePopInfo === "function") closePopInfo();
-        if (e2) toast("⚠️", i18nT("Groupe créé, mais certains membres n'ont pas pu être ajoutés."));
+        if (_gFailed) toast("⚠️", i18nT("Groupe créé, mais certains membres n'ont pas pu être ajoutés."));
         else { toast("🎉", i18nT("Groupe créé ! À vous de jouer ✨")); if (typeof celebrate === "function") celebrate(); }
         await loadGroups();
         const created = myGroups.find((x) => x.id === g.id); if (created) openGroupChat(created);
@@ -16886,7 +16901,7 @@
       const grab = async (key, q) => { try { const { data } = await q; out[key] = data || []; } catch (e) { out[key] = { erreur: String((e && e.message) || e) }; } };
       await Promise.all([
         grab("profil", db.from("profiles").select("*").eq("id", myUserId)),
-        grab("messages_envoyes", db.from("messages").select("*").eq("sender_id", myUserId)),
+        grab("messages", db.from("messages").select("*").or(`sender_id.eq.${myUserId},recipient_id.eq.${myUserId}`)), // RGPD : envoyés ET reçus (portabilité complète)
         grab("connexions", db.from("matches_connections").select("*").or(`user_a.eq.${myUserId},user_b.eq.${myUserId}`)),
         grab("check_ins", db.from("checkpoints").select("*").eq("user_id", myUserId)),
         grab("quetes", db.from("user_quests").select("*").eq("user_id", myUserId)),
@@ -19461,7 +19476,7 @@
         const r = await fetch("https://api.mymemory.translated.net/get?q=" + encodeURIComponent(job.key) + "&langpair=fr|en&de=app@sunmates.app");
         const j = await r.json();
         const out = j && j.responseData && j.responseData.translatedText;
-        if (out && out.trim() && out.toLowerCase() !== job.key.toLowerCase() && !/MYMEMORY WARNING|QUERY LENGTH|INVALID/i.test(out)) { _autoTrCache[job.key] = out; _saveAutoTr(); _applyAuto(job.n, job.v, job.key, out); }
+        if (out && out.trim() && out.toLowerCase() !== job.key.toLowerCase() && !/MYMEMORY WARNING|QUERY LENGTH|INVALID/i.test(out)) { _autoTrCache[job.key] = out; var _ck = Object.keys(_autoTrCache); if (_ck.length > 600) { for (var _ci = 0; _ci < 120; _ci++) delete _autoTrCache[_ck[_ci]]; } _saveAutoTr(); _applyAuto(job.n, job.v, job.key, out); } // borne LRU grossière : évite que le cache trad sature le localStorage
       } catch (e) {}
     }
     async function _drainAuto() {
