@@ -1,8 +1,6 @@
 {
-  "candidate": "v486",
+  "candidate": "v487",
   "items": [
-    "🎨 Console DA complète : 21 presets (calés sur les 6 modes), couleur de police pilotable (titres/corps/méta), et — nouveau — la couleur des emblèmes est VRAIMENT pilotable par catégorie (banque d'icônes recolorable : couleurs naturelles par défaut, ta couleur quand tu la choisis).",
-    "🌅 Nouvelle icône d'app / PWA / favicon (glyphe soleil, dégradé sunset).",
-    "🔄 Flux de test fiabilisé : « Tester en live » garde ton brouillon au rechargement (aperçu privé avant publication) ; « Publier » repasse tout le monde sur la version officielle. Pense au bouton « 🔄 Recharger » après avoir collé un JSON."
+    "🔄 Fix : tirer pour rafraîchir (la roulette) met maintenant aussi à jour la DA pilotée (couleurs, polices, icônes publiées). Avant, seul un rechargement complet de la page la mettait à jour."
   ]
 }

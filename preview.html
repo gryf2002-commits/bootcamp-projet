@@ -197,7 +197,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=486"></script>
+  <script src="sunmates-badges.js?v=487"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -8321,6 +8321,25 @@
     db.auth.onAuthStateChange((_event, session) => { setTimeout(() => render(session), 0); });
 
     let _renderedUserId = null; // anti-flicker : ne relance PAS tout le pipeline à chaque event auth (TOKEN_REFRESHED, SIGNED_IN répétés…)
+    // DA PILOTÉE (console cowork) : récupère la config publiée (da_tokens/da_strings) et l'applique.
+    // Appelée au login (render) ET au pull-to-refresh (refreshCurrentTab) → la roulette actualise AUSSI la DA.
+    // Non bloquant ; respecte un brouillon local (« Tester en live ») ; repli silencieux si tables absentes.
+    async function applyPublishedDA() {
+      try {
+        if (typeof db === "undefined" || !db) return;
+        const [tk, st] = await Promise.all([
+          db.from("da_tokens").select("tokens").eq("id", 1).maybeSingle(),
+          db.from("da_strings").select("strings").eq("id", 1).maybeSingle(),
+        ]);
+        if (tk && tk.data && tk.data.tokens && Object.keys(tk.data.tokens).length) window.SM_DA_TOKENS = tk.data.tokens;
+        if (st && st.data && st.data.strings && Object.keys(st.data.strings).length) window.SM_DA_STRINGS = st.data.strings;
+        var _hasDraft = false; try { _hasDraft = !!localStorage.getItem("sm_da_live"); } catch (e) {}
+        if (window.SMDA && !_hasDraft) {
+          try { SMDA.apply(window.SM_DA_TOKENS); } catch (e) {}
+          try { SMDA.applyStrings(window.SM_DA_STRINGS); if (typeof applyI18n === "function") applyI18n(); } catch (e) {}
+        }
+      } catch (e) {}
+    }
     async function render(session) {
       const loggedIn = !!session;
       show($("authView"), !loggedIn);
@@ -8333,26 +8352,7 @@
         myUserId = session.user.id;
         myEmail = session.user.email; // email géré dans Réglages, plus affiché sous le pseudo
         await ensureAuthedSession(); // attend que le jeton soit rattaché (course au rechargement)
-        // DA PILOTÉE (console cowork) : récupère la config publiée (da_tokens/da_strings) et l'applique.
-        // NON BLOQUANT (tokens = variables CSS → s'appliquent à chaud, sans flash) ; repli silencieux si les
-        // tables n'existent pas encore (⚠️ lancer sunmates-da-schema.sql côté Supabase pour activer).
-        (async () => {
-          try {
-            const [tk, st] = await Promise.all([
-              db.from("da_tokens").select("tokens").eq("id", 1).maybeSingle(),
-              db.from("da_strings").select("strings").eq("id", 1).maybeSingle(),
-            ]);
-            if (tk && tk.data && tk.data.tokens && Object.keys(tk.data.tokens).length) window.SM_DA_TOKENS = tk.data.tokens;
-            if (st && st.data && st.data.strings && Object.keys(st.data.strings).length) window.SM_DA_STRINGS = st.data.strings;
-            // Si un BROUILLON local existe (admin en train de « tester en live »), le loader l'a déjà appliqué
-            // au boot → on NE l'écrase PAS avec la version publiée (sinon impossible de prévisualiser avant publication).
-            var _hasDraft = false; try { _hasDraft = !!localStorage.getItem("sm_da_live"); } catch (e) {}
-            if (window.SMDA && !_hasDraft) {
-              try { SMDA.apply(window.SM_DA_TOKENS); } catch (e) {}
-              try { SMDA.applyStrings(window.SM_DA_STRINGS); if (typeof applyI18n === "function") applyI18n(); } catch (e) {} // re-render pour que les overrides de texte prennent
-            }
-          } catch (e) {}
-        })();
+        applyPublishedDA(); // DA pilotée (cowork) : applique la config publiée (aussi rappelée au pull-to-refresh)
         // PERF (§17) : dès que le jeton est prêt, TOUT ce qui est indépendant part EN MÊME TEMPS
         // (avant : profil → ban → 4 listes → jeu → non-lus, en file indienne = somme des allers-retours).
         // Dépendances respectées : loadGameData attend connexions (travelerMap pour les noms des
@@ -19827,6 +19827,7 @@
         else if (tab === "jeux" && typeof loadGameData === "function") jobs.push(loadGameData());
         else if (tab === "profil" && typeof loadProfile === "function") jobs.push(loadProfile());
         else { if (typeof loadConnections === "function") jobs.push(loadConnections()); if (typeof buildHomeFeed === "function") jobs.push(buildHomeFeed()); if (typeof loadCheckins === "function") jobs.push(loadCheckins()); }
+        if (typeof applyPublishedDA === "function") jobs.push(applyPublishedDA()); // la roulette actualise AUSSI la DA publiée
       } catch (e) {}
       vibrate(15);
       return Promise.allSettled(jobs.filter((j) => j && j.then));
