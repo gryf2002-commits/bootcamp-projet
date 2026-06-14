@@ -127,7 +127,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
   <script src="sunmates-badges.js?v=470"></script>
-  <script src="sunmates-icons-v2.js?v=530"></script>
+  <script src="sunmates-icons-v2.js?v=540"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
     .smicon { display: inline-block; vertical-align: middle; }
@@ -4382,11 +4382,10 @@
     /* couleur PORTÉE PAR L'ICÔNE (1 par catégorie, claire pour ressortir sur le joyau uniforme) */
     [data-smicon="quest"]{--icc:#FFE08A}[data-smicon="games"]{--icc:#C9B0FF}[data-smicon="medal"]{--icc:#FFD15C}[data-smicon="coupon"]{--icc:#FFB3D1}[data-smicon="rank"]{--icc:#BFD0FF}[data-smicon="shop"]{--icc:#FFB3D1}[data-smicon="coffee"]{--icc:#FFD9A8}[data-smicon="eco"]{--icc:#8FE8C0}[data-smicon="near"]{--icc:#FFC48A}[data-smicon="rating"]{--icc:#FFE08A}[data-smicon="popular"]{--icc:#FF9E9E}[data-smicon="trip"]{--icc:#FFC9A0}[data-smicon="users"]{--icc:#C9B0FF}[data-smicon="shieldsafe"]{--icc:#8FE8D8}[data-smicon="usersolo"]{--icc:#FFD0A0}[data-smicon="crown"]{--icc:#C9B0FF}[data-smicon="phone"]{--icc:#8FE8D8}[data-smicon="signal"]{--icc:#FFD98A}[data-smicon="alert"]{--icc:#FFB0B0}[data-smicon="aid"]{--icc:#FFC9A0}[data-smicon="chat"]{--icc:#AEC0FF}[data-smicon="bell"]{--icc:#FFE08A}[data-smicon="search"]{--icc:#C9D0FF}[data-smicon="mail"]{--icc:#C9B0FF}[data-smicon="clock"]{--icc:#BFD0FF}[data-smicon="firstaid"]{--icc:#FFB0B0}[data-smicon="safetravel"]{--icc:#8FE8C0}[data-smicon="report"]{--icc:#FFC48A}[data-smicon="contact"]{--icc:#BFD0FF}[data-smicon="trend-up"]{--icc:#8FE8C0}[data-smicon="bar-chart"]{--icc:#BFD0FF}
 
-    /* polish des tuiles : reflet haut + lumière interne + ombre douce + liseré (DA vivante) */
-    .cic[data-smicon], .jo-ic[data-smicon], .smgem, .thumb { box-shadow: 0 8px 18px -6px rgba(45,28,18,.42), inset 0 2px 2px rgba(255,255,255,.55), inset 0 -10px 16px -8px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.24) !important; }
-    .smgem, .thumb { position: relative; overflow: hidden; isolation: isolate; }
-    .smgem::after, .thumb::after { content:""; position:absolute; left:8%; right:8%; top:6%; height:34%; border-radius:50% 50% 60% 60%/70% 70% 100% 100%; background:linear-gradient(180deg,rgba(255,255,255,.36),rgba(255,255,255,.02)); pointer-events:none; z-index:0; }
-    .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 1px 1px rgba(40,18,8,.4)); }
+    /* DA sticker : joyau SOBRE (ombre douce + léger reflet haut) + icône sticker en relief */
+    .cic[data-smicon], .jo-ic[data-smicon], .smgem, .thumb { box-shadow: 0 6px 14px -6px rgba(45,28,18,.38), inset 0 1px 1px rgba(255,255,255,.26) !important; position: relative; overflow: hidden; }
+    .cic[data-smicon]::after, .jo-ic[data-smicon]::after, .smgem::after, .thumb::after { content:""; position:absolute; left:0; right:0; top:0; height:44%; background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0)); pointer-events:none; z-index:0; }
+    .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
 </head>
 <body>
