@@ -1,10 +1,9 @@
 {
-  "candidate": "v470",
+  "candidate": "v471",
   "items": [
-    "🎨 Nouvelle banque d'icônes (Phosphor restylée maison) : des tuiles homogènes qui s'adaptent au mode (jour/nuit/saisons), plus un moteur d'emojis cohérent partout dans l'app.",
-    "😄 Emojis « fun » natifs remis à leur juste taille : proportions calées à 38px → fini les pictos écrasés ou géants, tout est aligné.",
-    "💎 Joyaux & badges plus lisibles : contraste éclairci sur les versions claires → les détails ressortent enfin sur fond doré.",
-    "🛠️ Correctif technique de fond (erreur « TDZ ») qui pouvait empêcher une partie de l'écran de s'afficher → app plus stable au démarrage.",
-    "♿ Accessibilité : balise « application web » mise à jour (fin de l'avertissement « obsolète ») → meilleure installation en PWA sur mobile."
+    "🎨 Icônes « sticker » : pictogrammes pleins recolorés avec un liséré net → plus lisibles et homogènes sur toutes les tuiles.",
+    "💎 Joyaux de mode assagis : moins de surcharge visuelle, l'info ressort mieux à l'écran.",
+    "😄 Emojis fun natifs calés à 38px et contraste des joyaux/badges éclairci (suite v470).",
+    "♿ Balise « application web » à jour (meilleure installation en PWA sur mobile)."
   ]
 }

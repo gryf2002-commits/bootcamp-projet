@@ -1,5 +1,11 @@
 [
   {
+    "v": "v471",
+    "date": "2026-06-14",
+    "note": "DA sticker : icônes pleines recolorées + liséré net, joyaux de mode assagis (suite v470 : emojis 38px, contraste joyaux éclairci)",
+    "file": "v471.html"
+  },
+  {
     "v": "v470",
     "date": "2026-06-14",
     "note": "Icônes v2 (banque Phosphor restylée + tuiles par mode + moteur emoji), emojis fun natifs calés à 38px, contraste joyaux/badges éclairci, fix TDZ (démarrage stable), meta PWA a11y",
