@@ -197,8 +197,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=487"></script>
-  <script src="sunmates-icons-v2.js?v=541"></script>
+  <script src="sunmates-badges.js?v=488"></script>
+  <script src="sunmates-icons-v2.js?v=542"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
     .smicon { display: inline-block; vertical-align: middle; }
@@ -582,9 +582,9 @@
     /* Chip « Dispo ? » : intention de rencontre. État actif = ambre/sunset (jamais vert vif, DA). */
     .avail-chip { flex-shrink: 0; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .3rem .6rem; font-size: .74rem; font-weight: 800; cursor: pointer; transition: .12s; }
     .avail-chip:active { transform: scale(.95); }
-    .avail-chip.on { background: linear-gradient(135deg, #FFC93C, #FF8A3D); color: #6b3d00; border-color: transparent; box-shadow: 0 2px 8px rgba(255,138,61,.35); }
+    .avail-chip.on { background: var(--accent-grad); color: #6b3d00; border-color: transparent; box-shadow: 0 2px 8px rgba(255,138,61,.35); }
     /* Pastille « Dispo maintenant » affichée sur la fiche d'un voyageur */
-    .avail-badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .72rem; font-weight: 800; color: #6b3d00; background: linear-gradient(135deg, #FFD15C, #FF9F1C); border-radius: 999px; padding: .15rem .5rem; }
+    .avail-badge { display: inline-flex; align-items: center; gap: .25rem; font-size: .72rem; font-weight: 800; color: #6b3d00; background: var(--accent-grad); border-radius: 999px; padding: .15rem .5rem; }
     /* Barre minuteur « Rentrée en sécurité » : sunset, fixée au-dessus de la nav, visible partout */
     #safeTimerBar { position: fixed; left: 0; right: 0; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); z-index: var(--z-safetimer); margin: 0 auto; max-width: 460px; width: calc(100% - 1.4rem); display: flex; align-items: center; gap: .55rem; padding: .55rem .7rem; border-radius: 14px; background: linear-gradient(135deg, #FF8A3D, #FF5A4D); color: #fff; box-shadow: 0 8px 22px rgba(45,38,52,.16); font-size: .85rem; font-weight: 700; }
     #safeTimerBar .stb-ic { font-size: 1.1rem; }
@@ -615,7 +615,7 @@
     .trip-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: .75rem .85rem; margin-bottom: .6rem; box-shadow: var(--shadow-sm); }
     .trip-top { display: flex; align-items: center; gap: .6rem; }
     .trip-city { flex: 1; font-weight: 800; color: var(--ink); font-size: .98rem; min-width: 0; }
-    .trip-dates { flex-shrink: 0; font-size: .74rem; font-weight: 800; color: #6b3d00; background: linear-gradient(135deg, #FFD15C, #FF9F1C); border-radius: 999px; padding: .18rem .55rem; }
+    .trip-dates { flex-shrink: 0; font-size: .74rem; font-weight: 800; color: #6b3d00; background: var(--accent-grad); border-radius: 999px; padding: .18rem .55rem; }
     .trip-del { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: .95rem; flex-shrink: 0; }
     .trip-note { font-size: .82rem; color: var(--muted); margin-top: .35rem; }
     .trip-matches { margin-top: .55rem; border-top: 1px dashed var(--line); padding-top: .5rem; }
@@ -663,7 +663,7 @@
     .pcard-eco { background: linear-gradient(135deg,#4ED8B8,#179E8C); color: #06352D; } /* DA : turquoise bijou (pas de vert émeraude vif) · texte teal foncé ≥4.8:1 (loi de contraste, ANNONCÉ) */
     /* « Sois le·la 1er·ère à checker ! » = vrai bouton (lance le check-in), plus un texte gris décoratif */
     .pcard-firstck { border: 0; background: none; padding: 0; font: inherit; font-weight: 800; color: var(--accent); cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
-    .pcard-top { background: linear-gradient(135deg,#FFC93C,#FF8A3D); color: #4A2A08; } /* texte ambre foncé ≥5:1 (avant : blanc ~1.6:1, échec AA) · ANNONCÉ */
+    .pcard-top { background: var(--accent-grad); color: #4A2A08; } /* texte ambre foncé ≥5:1 (avant : blanc ~1.6:1, échec AA) · ANNONCÉ */
     .pcard-rate { background: rgba(255,255,255,.96); color: #B5740E; }
     .pcard-rate b { opacity: .6; font-weight: 700; }
     .pcard-new { background: rgba(255,255,255,.92); color: var(--muted); }
@@ -1625,7 +1625,7 @@
     .gcard .gtag-done { background: rgba(255,177,60,.24); color: #6b4a00; }
     .gcard .gbody .gname { margin-top: .35rem; }
     .gcard .gplay { display: inline-flex; align-items: center; gap: .25rem; margin-top: .5rem; font-size: .76rem; font-weight: 800; color: #fff; background: var(--accent-grad); padding: .32rem .8rem; border-radius: 999px; box-shadow: 0 3px 9px rgba(45,38,52,.28); }
-    .gcard .gplay-xp { background: linear-gradient(135deg,#FFD15C,#F4A11E); color: #6b4a00; box-shadow: 0 3px 9px rgba(240,169,58,.3); }
+    .gcard .gplay-xp { background: var(--accent-grad); color: #6b4a00; box-shadow: 0 3px 9px rgba(240,169,58,.3); }
     body.theme-dusk .gcard .gtag-mini { background: rgba(255,255,255,.12); color: #d8cfe8; }
 
     /* Lignes de quêtes */
@@ -1689,7 +1689,7 @@
     .rate-chip { display: inline-flex; align-items: center; gap: .15rem; font-size: .76rem; font-weight: 800; color: #B5740E; background: rgba(255,177,60,.18); padding: .05rem .4rem; border-radius: 999px; white-space: nowrap; }
     .rate-chip.empty { color: var(--muted); background: var(--cream); font-weight: 600; }
     .rate-chip b { font-weight: 700; opacity: .7; }
-    .rate-top { display: inline-flex; align-items: center; font-size: .7rem; font-weight: 800; color: #4A2A08; background: linear-gradient(135deg,#FFC93C,#FF8A3D); padding: .05rem .4rem; border-radius: 999px; white-space: nowrap; } /* texte ambre foncé ≥5:1 (loi de contraste, ANNONCÉ) */
+    .rate-top { display: inline-flex; align-items: center; font-size: .7rem; font-weight: 800; color: #4A2A08; background: var(--accent-grad); padding: .05rem .4rem; border-radius: 999px; white-space: nowrap; } /* texte ambre foncé ≥5:1 (loi de contraste, ANNONCÉ) */
     .reviews-avg { text-align: center; padding: .3rem 0 .2rem; }
     .star-input { display: flex; gap: .25rem; font-size: 1.9rem; line-height: 1; cursor: pointer; }
     .star-input span { color: #d8d2cc; transition: color .1s, transform .1s; }
@@ -2073,7 +2073,7 @@
     .qm-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); } .qm-card:active{ transform:scale(.96); }
     .qm-ic{ width:42px; height:42px; display:grid; place-items:center; font-size:22px; border-radius:13px; color:#fff;
       box-shadow:inset 0 -6px 12px rgba(0,0,0,.14), inset 0 2px 3px rgba(255,255,255,.45), 0 5px 12px rgba(0,0,0,.12); }
-    .qm-coral .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), linear-gradient(135deg,#FF8A3D,#FF5A4D); }
+    .qm-coral .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), var(--accent-grad); }
     .qm-teal{ --c1:#34c98f; --c2:#1f9e8c; } .qm-gold{ --c1:#FFD15C; --c2:#E8961F; } .qm-violet{ --c1:#9b7bff; --c2:#7a5cff; }
     .qm-teal .qm-ic, .qm-gold .qm-ic, .qm-violet .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); }
     .qm-name{ font-weight:800; font-size:.8rem; line-height:1.15; color:var(--ink); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
@@ -8324,6 +8324,16 @@
     // DA PILOTÉE (console cowork) : récupère la config publiée (da_tokens/da_strings) et l'applique.
     // Appelée au login (render) ET au pull-to-refresh (refreshCurrentTab) → la roulette actualise AUSSI la DA.
     // Non bloquant ; respecte un brouillon local (« Tester en live ») ; repli silencieux si tables absentes.
+    let _daChannel = null;
+    function subscribeDA() {
+      try {
+        if (_daChannel || typeof db === "undefined" || !db) return;
+        _daChannel = db.channel("da-live")
+          .on("postgres_changes", { event: "*", schema: "public", table: "da_tokens" }, async () => { try { await applyPublishedDA(); } catch (e) {} })
+          .on("postgres_changes", { event: "*", schema: "public", table: "da_strings" }, async () => { try { await applyPublishedDA(); } catch (e) {} })
+          .subscribe();
+      } catch (e) {}
+    }
     async function applyPublishedDA() {
       try {
         if (typeof db === "undefined" || !db) return;
@@ -8338,6 +8348,7 @@
           try { SMDA.apply(window.SM_DA_TOKENS); } catch (e) {}
           try { SMDA.applyStrings(window.SM_DA_STRINGS); if (typeof applyI18n === "function") applyI18n(); } catch (e) {}
         }
+        try { subscribeDA(); } catch (e) {}
       } catch (e) {}
     }
     async function render(session) {
@@ -10365,9 +10376,31 @@
             const { error } = await db.from("da_tokens").upsert({ id: 1, tokens: t, updated_by: myUserId });
             if (error) { if (m) { m.style.color = "var(--danger)"; m.textContent = errFr(error); } return; }
             try { localStorage.removeItem("sm_da_live"); } catch (e) {} // publié → on efface le brouillon local (au reload : version publiée)
+            try { await db.from("da_history").insert({ tokens: t, updated_by: myUserId }); } catch (e) {}
             if (window.SMDA) { try { SMDA.apply(t); } catch (e) {} }
             if (m) { m.style.color = "var(--ok)"; m.textContent = "Publié ! Visible pour tous au prochain chargement ✨"; }
           })); }
+        { const host = $("daLiveMsg"); if (host && !host.dataset.verWired) { host.dataset.verWired = "1";
+          const vb = document.createElement("button"); vb.type = "button"; vb.textContent = "↩︎ Versions"; vb.style.cssText = "margin-top:.4rem;font-size:.78rem";
+          const vl = document.createElement("div"); vl.style.cssText = "margin-top:.4rem;display:none;flex-direction:column;gap:.3rem";
+          host.parentNode.insertBefore(vb, host.nextSibling); host.parentNode.insertBefore(vl, vb.nextSibling);
+          vb.addEventListener("click", async () => { try {
+            vl.style.display = (vl.style.display === "none") ? "flex" : "none"; if (vl.style.display === "none") return;
+            vl.innerHTML = "<span class='muted' style='font-size:.74rem'>Chargement…</span>";
+            const { data, error } = await db.from("da_history").select("id,tokens,created_at").order("id", { ascending: false }).limit(12);
+            if (error || !data) { vl.innerHTML = "<span class='muted' style='font-size:.74rem'>Historique indisponible (table da_history ?)</span>"; return; }
+            vl.innerHTML = ""; data.forEach((v) => { const r = document.createElement("button"); r.type = "button"; r.className = "da-sw"; r.style.justifyContent = "space-between";
+              r.innerHTML = "<span class='nm'>" + new Date(v.created_at).toLocaleString() + "</span><span class='vl'>restaurer</span>";
+              r.addEventListener("click", () => once("da-restore", async () => { const m = $("daLiveMsg"); if (m) { m.style.color = "var(--muted)"; m.textContent = "Restauration…"; }
+                const { error: e2 } = await db.from("da_tokens").upsert({ id: 1, tokens: v.tokens, updated_by: myUserId });
+                if (e2) { if (m) { m.style.color = "var(--danger)"; m.textContent = errFr(e2); } return; }
+                try { await db.from("da_history").insert({ tokens: v.tokens, updated_by: myUserId }); } catch (e) {}
+                if (window.SMDA) { try { SMDA.apply(v.tokens); } catch (e) {} }
+                if (m) { m.style.color = "var(--ok)"; m.textContent = "Version restaurée ✨"; }
+              })); vl.appendChild(r); });
+          } catch (e) { vl.innerHTML = "<span class='muted' style='font-size:.74rem'>Erreur.</span>"; } });
+        } }
+        if (!window.__smDaMsg) { window.__smDaMsg = 1; window.addEventListener("message", (ev) => { try { var dt = ev.data; if (dt && dt.type === "sm-da-tokens" && dt.tokens) { var ta = $("daLiveJson"); if (ta) ta.value = JSON.stringify(dt.tokens, null, 1); var m = $("daLiveMsg"); if (m) { m.style.color = "var(--ok)"; m.textContent = "Reçu de la console ✓ — clique Publier ou Tester."; } } } catch (e) {} }); }
       } }
       // Tokens du mode choisi
       const toks = _daReadTokens(_daMode);
@@ -12672,6 +12705,7 @@
       return PHOTO_POOLS.ville;
     }
     function flickrImg(keywords, seed) {
+      try { var _u = window.SMImg && window.SMImg(keywords, seed); if (_u) return _u; } catch (e) {}
       const POOL = _photoPool(keywords);
       const s = String(seed || "") + "|" + String(keywords || ""); let n = 0;
       for (let i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) >>> 0;
@@ -15423,7 +15457,7 @@
       const xmas = (new Date().getMonth() === 11) ? '<span class="epin-xmas">🎅</span>' : "";
       return L.divIcon({
         className: "epin-wrap",
-        html: `<div class="epin ${extra || ""}" style="background:${bg}"><span>${emoji}</span>${xmas}</div>`,
+        html: `<div class="epin ${extra || ""}" style="background:${bg}">${(window.SMIcon && SMIcon.has(emoji)) ? ('<span class="epin-ic" style="--icc:#fff;display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center">' + SMIcon(emoji, { size: 18 }) + '</span>') : ('<span>' + emoji + '</span>')}${xmas}</div>`,
         iconSize: [32, 32], iconAnchor: [16, 30], popupAnchor: [0, -28],
       });
     }
@@ -20365,6 +20399,6 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- DA pilotée (console cowork) : applique les tokens/strings publiés. APRÈS le script app (i18nT défini, SMDA exposé avant render). -->
-  <script src="sunmates-da-loader.js?v=4"></script>
+  <script src="sunmates-da-loader.js?v=5"></script>
 </body>
 </html>

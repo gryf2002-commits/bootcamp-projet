@@ -1,6 +1,8 @@
 {
-  "candidate": "v487",
+  "candidate": "v488",
   "items": [
-    "🔄 Fix : tirer pour rafraîchir (la roulette) met maintenant aussi à jour la DA pilotée (couleurs, polices, icônes publiées). Avant, seul un rechargement complet de la page la mettait à jour."
+    "🎨 DA pilotée VRAIMENT partout (cowork) : le fond, le texte, les accents, les CTA, les cartes suivent maintenant la DA publiée (variables-cœur dérivées des tokens). Avant, ~1% bougeait.",
+    "✨ Emojis « orphelins » remplacés par les emblèmes recolorables (titres, boutons, placeholders) — le contenu utilisateur (messages, bios) reste intact.",
+    "🧩 Vague 2 : recolor des marqueurs de carte, banque d'images, versions/rollback de la DA, live-push (sans recharger), et console qui alimente l'admin sans copier-coller. (Live-push + versions nécessitent 2 manips Supabase.)"
   ]
 }
