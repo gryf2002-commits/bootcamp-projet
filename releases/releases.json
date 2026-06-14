@@ -1,5 +1,11 @@
 [
   {
+    "v": "v485",
+    "date": "2026-06-14",
+    "note": "DA console : bouton « Recharger » dans l'admin + 3e levier (couleur emblèmes opt-in via sm-icc, rendu mono assumé ; joyaux multi-couleurs intacts par défaut) loader ?v=3 + mode d'emploi console à jour",
+    "file": "v485.html"
+  },
+  {
     "v": "v484",
     "date": "2026-06-14",
     "note": "DA pilotée — leviers 2/3 activés : bascules d'effets (sm-no-shadow/no-polish/mirror, additif) + chargement Google Fonts des polices choisies (loader ?v=2). Lever icônes currentColor non fait (emblèmes multi-couleurs → aplatissement) : attend une banque mono.",
