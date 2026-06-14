@@ -1,0 +1,128 @@
+{
+ "$meta": "SunMates — SOURCE DE VÉRITÉ de la DA. Édité via da-console.html. L'app lit ce fichier.",
+ "modes": {
+  "jour": {
+   "label": "Jour",
+   "class": "",
+   "j1": "#FF9A4D",
+   "j2": "#FF5A6E",
+   "page": "#fff7ef",
+   "ink": "#3a2418"
+  },
+  "nuit": {
+   "label": "Nuit",
+   "class": "theme-dusk",
+   "j1": "#6A3F94",
+   "j2": "#3A2456",
+   "page": "#160f29",
+   "ink": "#f3e9ff"
+  },
+  "hiver": {
+   "label": "Hiver",
+   "class": "theme-winter",
+   "j1": "#3E8FD4",
+   "j2": "#245F9E",
+   "page": "#eaf3ff",
+   "ink": "#15324f"
+  },
+  "hiver-nuit": {
+   "label": "Hiver · nuit",
+   "class": "theme-winter theme-dusk",
+   "j1": "#2E6BA0",
+   "j2": "#14304E",
+   "page": "#0e2036",
+   "ink": "#eaf6ff"
+  },
+  "tropiques": {
+   "label": "Tropiques",
+   "class": "theme-tropic",
+   "j1": "#13A079",
+   "j2": "#0A7355",
+   "page": "#e4fff6",
+   "ink": "#0c3b30"
+  },
+  "tropiques-nuit": {
+   "label": "Trop. · nuit",
+   "class": "theme-tropic theme-dusk",
+   "j1": "#0E7A5C",
+   "j2": "#073A2C",
+   "page": "#06231b",
+   "ink": "#dffaef"
+  }
+ },
+ "iconColors": {
+  "quest": "#FF6A3D",
+  "games": "#8A5CFF",
+  "medal": "#F0A91E",
+  "coupon": "#F0539A",
+  "rank": "#F0A91E",
+  "shop": "#F5A623",
+  "coffee": "#A86B38",
+  "eco": "#37B24D",
+  "near": "#F5A623",
+  "rating": "#F0A91E",
+  "popular": "#FF6A2C",
+  "trip": "#A86B38",
+  "users": "#8A5CFF",
+  "shieldsafe": "#1EAE84",
+  "usersolo": "#8A5CFF",
+  "crown": "#F0A91E",
+  "phone": "#3B82E0",
+  "signal": "#F5A623",
+  "alert": "#F0414B",
+  "aid": "#1EAE84",
+  "chat": "#3B82E0",
+  "bell": "#3B82E0",
+  "search": "#3B82E0",
+  "mail": "#3B82E0",
+  "clock": "#1EAE84",
+  "firstaid": "#1EAE84",
+  "safetravel": "#F5A623",
+  "report": "#F0414B",
+  "contact": "#3B82E0"
+ },
+ "iconMap": {
+  "quest": "target",
+  "games": "gamepad",
+  "medal": "medal",
+  "coupon": "ticket",
+  "rank": "trophy",
+  "shop": "shopping-bags",
+  "coffee": "coffee",
+  "eco": "seedling",
+  "near": "pin",
+  "rating": "star",
+  "popular": "fire",
+  "trip": "luggage",
+  "users": "people",
+  "shieldsafe": "shield",
+  "usersolo": "user",
+  "crown": "crown",
+  "phone": "phone",
+  "signal": "satellite",
+  "alert": "siren",
+  "aid": "lifebuoy",
+  "chat": "chat",
+  "bell": "bell",
+  "search": "search",
+  "mail": "email",
+  "clock": "clock-three",
+  "firstaid": "stethoscope",
+  "safetravel": "compass",
+  "report": "flag-red",
+  "contact": "id-card"
+ },
+ "sizes": {
+  "tile": 74,
+  "iconTile": 38,
+  "cat": 58,
+  "iconCat": 36,
+  "inline": 16
+ },
+ "effects": {
+  "radius": 22,
+  "keyline": 16,
+  "shadow": "0 6px 14px -6px rgba(45,28,18,.38)",
+  "sheen": 0.18
+ }
+}
