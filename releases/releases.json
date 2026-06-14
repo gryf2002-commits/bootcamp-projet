@@ -1,5 +1,11 @@
 [
   {
+    "v": "v496",
+    "date": "2026-06-15",
+    "note": "Traque automatisée des écarts DA (outil da-scan.cjs ajouté : login/reveal + double-apply + reflow, compare la couleur RENDUE — pas la variable — de chaque élément à l'accent/joyaux du preset sur 21 presets × 6 modes). Corrigé : (1) tuiles « soon »/Gold accueil (.thumb.gold-soon l.1126, .tile.soon l.3393) avaient un background EN DUR ignorant --ic1 → passées en var(--ic1,…) ; (2) nuit ne suivait pas le preset car body.theme-dusk:not(.theme-winter):not(.theme-tropic) (0,3,1) battait le loader (0,2,1) sur --bg/--card/--cream/--paper → le loader émet désormais le bloc variables-cœur via hsel = sel+:not(._smx):not(._smy) (+0,2,0) ; vérifié par sonde : --card nuit = #29223a (dérivé) au lieu de #271641 figé ; (3) --retro-teal (liens d'action, vert figé) dérivé de l'accent + AA ; (4) --muted/--accent-ink visent la surface la plus claire (page OU carte) ; (5) .bottom-nav button.active → accent-ink (était accent sur accent-soft = 2.66). loader ?v=12, badges ?v=496. NB : le scanner sur-rapporte encore 2 éléments (availChip/nav-lbl) contredits par l'inspection directe → artefact de mesure à affiner.",
+    "file": "v496.html"
+  },
+  {
     "v": "v495",
     "date": "2026-06-15",
     "note": "FIX RACINE « presets randomisés / tuiles figées » (captures Maxime, PAS du cache) : une couche en dur « DA v2 · ICÔNES » (index l.4452-4462) + 8 blocs theme-dusk/winter/tropic (l.3957-3970, 4054-4069) re-figeaient --ic1/--ic2 (tuiles) et --icc (emblèmes) PAR MODE/FAMILLE, battant le loader (vert/or/violet persistants : Lieux/Coupons/Mon cercle, heaume violet, listes TA PROGRESSION). FIX loader-only : le loader pose une classe `sm-da-on` sur body + `modeSelector` préfixe `body.sm-da-on.<mode>` (+1 spécificité) + émet --ic1/--ic2 en !important sur .cic/.jo-ic/.qm-ic/.sc-ic/.smgem/.thumb (élargi, sans exiger data-smicon). → quand un preset est publié, le loader pilote TOUTES les tuiles+emblèmes dans TOUS les modes (mesuré : 6/6 familles = j1 du preset sur 6 modes). +orphelins ALIAS 🌀/🧿/🎫. WCAG AA 0 échec 21×6. loader ?v=11, icons ?v=546, badges ?v=495.",

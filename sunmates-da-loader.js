@@ -100,13 +100,17 @@
         var grad = m.j3 ? ('linear-gradient(' + ang + 'deg,' + m.j1 + ',' + m.j3 + ',' + m.j2 + ')')
                         : ('linear-gradient(' + ang + 'deg,' + m.j1 + ',' + m.j2 + ')');
         var acc = _bestAccent(m.j1, m.j2, pg);          // accent garanti >=4.5:1 sur la page
-        var accInk = _toC(acc, pg, 4.6);                // texte d'accent lisible
-        var muted = _toC(_mix(ink, pg, 0.40), pg, 4.5); // texte secondaire WCAG
         var text = _mix(ink, pg, 0.16);
         var card = _card(pg);
+        var lite = _lum(card) >= _lum(pg) ? card : pg;  // surface la plus claire (page OU carte)
+        var accInk = _toC(acc, lite, 4.6);              // accent-texte lisible sur page ET carte
+        var muted = _toC(_mix(ink, pg, 0.42), lite, 4.6); // texte secondaire idem
         var sc = (T.scenes && T.scenes.accent) || acc;
         var btnTxt = _lum(_mix(m.j1, m.j2, 0.5)) > 0.62 ? '#2a1c10' : '#ffffff'; // texte CTA lisible sur le degrade
-        css += sel + '{';
+        // hsel = sel + 2 :not() factices (+0,2,0 de spécificité) → bat les blocs nuit/saison
+        // de l'app qui utilisent body.theme-dusk:not(.theme-winter):not(.theme-tropic) (0,3,1).
+        var hsel = sel + ':not(._smx):not(._smy)';
+        css += hsel + '{';
         css += '--bg:' + pg + ';';
         css += '--bg-grad:radial-gradient(135% 90% at 50% -10%,' + _mix(pg, acc, 0.10) + ' 0%,' + pg + ' 60%);';
         css += '--ink:' + ink + ';--ink-warm:' + ink + ';';
@@ -118,6 +122,7 @@
         css += '--dcard:' + _mix(pg, ink, 0.06) + ';--dcard2:' + _mix(pg, ink, 0.04) + ';--dcard3:' + _mix(pg, ink, 0.10) + ';--dcard4:' + _mix(pg, ink, 0.02) + ';--dcard5:' + pg + ';';
         css += '--cream:' + _mix(pg, acc, 0.06) + ';';
         css += '--accent:' + acc + ';--accent-ink:' + accInk + ';';
+        css += '--retro-teal:' + accInk + ';'; // liens d'action (.section-head a/.fcta) : suivent l'accent au lieu du vert figé
         css += '--accent-2:' + m.j1 + ';--accent-3:' + m.j2 + ';';
         css += '--accent-grad:' + grad + ';';
         css += '--accent-soft:' + _rgba(acc, 0.14) + ';';

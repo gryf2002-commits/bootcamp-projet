@@ -1,9 +1,10 @@
 {
-  "candidate": "v495",
+  "candidate": "v496",
   "items": [
-    "🎯 LE gros fix : TOUTES les tuiles suivent enfin le preset publié, dans TOUS les modes. Avant, une couche figée « par mode/famille » forçait des tuiles à rester vertes/or/violettes (Lieux, Coupons, Mon cercle, listes…) — neutralisée. Plus de tuiles « randomisées ».",
-    "💎 Les emblèmes (heaume, etc.) suivent aussi le preset (fini le violet figé sur fond bleu).",
-    "✨ Emojis 🌀/🧿/🎫 ajoutés aux emblèmes (zéro emoji brut orphelin).",
-    "♿ Contraste WCAG AA maintenu (21 presets × 6 modes, 0 échec)."
+    "🟡 La tuile « Gold » de l'accueil (et les tuiles « bientôt ») suivent enfin le preset : leur fond était écrit en dur, il est désormais piloté.",
+    "🌙 La nuit suit vraiment le preset : les surfaces (cartes, chips) ne restent plus figées prune — un bloc figé à forte priorité a été neutralisé.",
+    "🔗 Liens d'action (« Masquer », « + Ajouter »…) : fini le vert figé, ils suivent l'accent du preset + contraste AA.",
+    "♿ Labels de navigation + textes secondaires : contraste AA garanti sur page ET cartes.",
+    "🔍 Nouvel outil interne `da-scan.cjs` : scanne le pixel rendu de chaque preset × mode pour traquer tout écart DA (plus de chasse à l'aveugle)."
   ]
 }
