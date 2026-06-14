@@ -1,7 +1,7 @@
 {
-  "candidate": "v474",
+  "candidate": "v475",
   "items": [
-    "⌨️ Navigation 100% clavier : les tuiles, lignes et cartes cliquables (qui n'étaient pas de vrais boutons) deviennent atteignables au clavier (Tab) et s'activent avec Entrée ou Espace → gros gain d'accessibilité, et pratique sur clavier physique.",
-    "🛡️ Sûr par construction : les éléments qui contiennent déjà un bouton/lien ne sont pas modifiés (pas de double-sélection), et le suivi des contenus ajoutés est automatique (listes, fil, cartes générées après connexion)."
+    "💬 Tous les messages d'erreur passent en français rassurant : fini les messages techniques en anglais (ou le jargon base de données) quand une action échoue (enregistrer le profil, poster, accepter une connexion, acheter, etc.).",
+    "🧭 Erreurs actionnables : « Tu n'as pas les droits ou ta session a expiré, reconnecte-toi », « C'est déjà fait 🙂 », « Connexion impossible, vérifie ta connexion »… selon le cas, au lieu d'un code brut. Le détail technique reste en console pour le debug."
   ]
 }
