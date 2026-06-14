@@ -1,6 +1,7 @@
 {
-  "candidate": "v482",
+  "candidate": "v483",
   "items": [
-    "💬 Messages non lus enfin fiables : la pastille se vide CONVERSATION PAR CONVERSATION. Avant, ouvrir l'onglet Messages (ou une seule discussion) marquait tout le monde comme lu → on pouvait rater un message. Maintenant, chaque pastille ne disparaît qu'en ouvrant la discussion concernée."
+    "🎛️ Console DA pilotée (admin) : la DA (joyaux par mode, polices, tailles/effets, couleurs d'emblèmes, logos, textes) peut désormais être pilotée depuis Supabase et appliquée à l'app au chargement. Côté admin : conçois dans la console, colle le JSON, « teste » pour toi ou « publie » pour tout le monde.",
+    "🔌 Câblage technique (cowork) : loader runtime branché (récupération da_tokens/da_strings au démarrage + application à chaud), aucune incidence visible tant que rien n'est publié. ⚠️ nécessite de lancer sunmates-da-schema.sql côté Supabase pour activer."
   ]
 }

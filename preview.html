@@ -197,7 +197,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=482"></script>
+  <script src="sunmates-badges.js?v=483"></script>
   <script src="sunmates-icons-v2.js?v=540"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -6053,6 +6053,17 @@
               </div>
               <div id="daTokens" style="margin-top:.6rem"></div>
             </div>
+            <div class="card">
+              <h3 style="margin-top:0">🎛️ Console DA pilotée (live)</h3>
+              <p class="muted" style="font-size:.8rem;margin-top:0">Conçois ta DA dans la console (export JSON), colle-le ici, puis <b>teste</b> (toi seul·e) ou <b>publie</b> pour tout le monde.</p>
+              <button class="btn-ghost btn-block" id="daOpenConsole" style="margin-bottom:.5rem">🎨 Ouvrir la console DA</button>
+              <textarea id="daLiveJson" placeholder="Colle ici le JSON de tokens exporté…" style="width:100%;min-height:88px;font-family:monospace;font-size:.76rem;border:1px solid var(--line);border-radius:10px;padding:.5rem;color:var(--ink);background:var(--card)"></textarea>
+              <div style="display:flex;gap:.5rem;margin-top:.5rem">
+                <button class="btn-ghost" id="daTestLive" style="flex:1">🧪 Tester en live</button>
+                <button class="btn-primary" id="daPublish" style="flex:1">🚀 Publier pour tous</button>
+              </div>
+              <div class="msg" id="daLiveMsg" style="text-align:center"></div>
+            </div>
             <div class="card"><h3 style="margin-top:0">🌅 Dégradés signature</h3><div id="daGrads"></div></div>
             <div class="card">
               <h3 style="margin-top:0">🔤 Typographies</h3>
@@ -8312,6 +8323,23 @@
         myUserId = session.user.id;
         myEmail = session.user.email; // email géré dans Réglages, plus affiché sous le pseudo
         await ensureAuthedSession(); // attend que le jeton soit rattaché (course au rechargement)
+        // DA PILOTÉE (console cowork) : récupère la config publiée (da_tokens/da_strings) et l'applique.
+        // NON BLOQUANT (tokens = variables CSS → s'appliquent à chaud, sans flash) ; repli silencieux si les
+        // tables n'existent pas encore (⚠️ lancer sunmates-da-schema.sql côté Supabase pour activer).
+        (async () => {
+          try {
+            const [tk, st] = await Promise.all([
+              db.from("da_tokens").select("tokens").eq("id", 1).maybeSingle(),
+              db.from("da_strings").select("strings").eq("id", 1).maybeSingle(),
+            ]);
+            if (tk && tk.data && tk.data.tokens && Object.keys(tk.data.tokens).length) window.SM_DA_TOKENS = tk.data.tokens;
+            if (st && st.data && st.data.strings && Object.keys(st.data.strings).length) window.SM_DA_STRINGS = st.data.strings;
+            if (window.SMDA) {
+              try { SMDA.apply(window.SM_DA_TOKENS); } catch (e) {}
+              try { SMDA.applyStrings(window.SM_DA_STRINGS); if (typeof applyI18n === "function") applyI18n(); } catch (e) {} // re-render pour que les overrides de texte prennent
+            }
+          } catch (e) {}
+        })();
         // PERF (§17) : dès que le jeton est prêt, TOUT ce qui est indépendant part EN MÊME TEMPS
         // (avant : profil → ban → 4 listes → jeu → non-lus, en file indienne = somme des allers-retours).
         // Dépendances respectées : loadGameData attend connexions (travelerMap pour les noms des
@@ -10312,6 +10340,19 @@
           renderDaPanel();
         }));
       }
+      // Console DA pilotée (cowork) : ouvrir / tester / publier — branché une seule fois.
+      { const oc = $("daOpenConsole"); if (oc && !oc.dataset.wired) { oc.dataset.wired = "1";
+        const parse = () => { try { return JSON.parse((($("daLiveJson") || {}).value || "").trim()); } catch (e) { const m = $("daLiveMsg"); if (m) { m.style.color = "var(--danger)"; m.textContent = "JSON invalide."; } return null; } };
+        oc.addEventListener("click", () => { try { window.open("da-console.html", "_blank"); } catch (e) {} });
+        { const tl = $("daTestLive"); if (tl) tl.addEventListener("click", () => { const t = parse(); if (!t) return; if (window.SMDA) { try { SMDA.saveDraft(t, null); SMDA.apply(t); } catch (e) {} } const m = $("daLiveMsg"); if (m) { m.style.color = "var(--ok)"; m.textContent = "Aperçu live (toi seul·e). Recharge pour le voir partout dans l'app."; } }); }
+        { const pb = $("daPublish"); if (pb) pb.addEventListener("click", () => once("da-publish", async () => {
+            const t = parse(); if (!t) return; const m = $("daLiveMsg"); if (m) { m.style.color = "var(--muted)"; m.textContent = "Publication…"; }
+            const { error } = await db.from("da_tokens").upsert({ id: 1, tokens: t, updated_by: myUserId });
+            if (error) { if (m) { m.style.color = "var(--danger)"; m.textContent = errFr(error); } return; }
+            if (window.SMDA) { try { SMDA.apply(t); } catch (e) {} }
+            if (m) { m.style.color = "var(--ok)"; m.textContent = "Publié ! Visible pour tous au prochain chargement ✨"; }
+          })); }
+      } }
       // Tokens du mode choisi
       const toks = _daReadTokens(_daMode);
       $("daTokens").innerHTML = '<div class="da-grid">' + toks.map((t) =>
@@ -20306,5 +20347,7 @@
     // Au chargement : vérifie s'il y a déjà une session
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
+  <!-- DA pilotée (console cowork) : applique les tokens/strings publiés. APRÈS le script app (i18nT défini, SMDA exposé avant render). -->
+  <script src="sunmates-da-loader.js?v=1"></script>
 </body>
 </html>
