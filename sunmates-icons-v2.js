@@ -34,8 +34,9 @@
       var frag=document.createDocumentFragment(),last=0,mm;
       while((mm=_EMORE.exec(v))){
         if(mm.index>last)frag.appendChild(document.createTextNode(v.slice(last,mm.index)));
-        var nm=resolve(mm[1]), h=nm?SMIcon(nm,{size:'1em'}):null;
-        if(h){var sp=document.createElement('span');sp.className='smemo';sp.setAttribute('data-smicon-done','1');sp.style.cssText='display:inline-flex;vertical-align:-0.14em;line-height:1';sp.innerHTML=h;frag.appendChild(sp);}
+        var keep=(window.SM_EMOJI_KEEP&&window.SM_EMOJI_KEEP.has)?(window.SM_EMOJI_KEEP.has(mm[1])||window.SM_EMOJI_KEEP.has(mm[0])):false;
+        var nm=keep?null:resolve(mm[1]), h=nm?SMIcon(nm,{size:'1em'}):null;
+        if(h){var sp=document.createElement('span');sp.className='smemo';sp.setAttribute('data-smicon-done','1');sp.style.cssText='display:inline-flex;align-items:center;justify-content:center;vertical-align:-0.14em;line-height:1;width:1em;height:1em';sp.innerHTML=h;frag.appendChild(sp);}
         else frag.appendChild(document.createTextNode(mm[0]));
         last=mm.index+mm[0].length;
       }

@@ -83,6 +83,17 @@
         css += '}\n';
       }
     });
+    // Formes + tailles des tuiles + couleur des logos (consommation globale par le CSS)
+    var _shp = (T.effects && T.effects.shape) || 'squircle';
+    var _rad = _shp === 'circle' ? '50%' : (_shp === 'rounded' ? '16px' : '28%');
+    css += '.thumb,.cic,.smgem,.jo-ic{border-radius:' + _rad + ' !important;}\n';
+    if (T.sizes) {
+      var _t = T.sizes.tile || 74, _i = T.sizes.iconTile || 38;
+      css += '.tile .thumb{width:' + _t + 'px;height:' + _t + 'px;}\n';
+      css += '.tile .thumb svg,.tile .thumb .smicon svg{width:' + _i + 'px !important;height:' + _i + 'px !important;}\n';
+    }
+    css += '.brand .mark svg line,.brand .mark svg path,.brand .mark svg polyline{stroke:var(--sm-logo,#fff);}\n';
+    css += '.brand .mark svg circle,.brand .mark svg polygon{fill:var(--sm-logo,#fff);}\n';
     if (T.comp) {
       var ct = '';
       if (T.comp.btnText) ct += '.btn-primary,.fc-send,button.cta,.su-call{color:' + T.comp.btnText + ';}\n';
@@ -90,6 +101,11 @@
       inject('sm-da-comp', ct);
     }
     try { window.SM_IMGBANK = T.imgBank || null; } catch (e) {}
+    try {
+      window.SM_NO_EMOJIZE = !!(T.emoji && T.emoji.off);
+      window.SM_EMOJI_KEEP = new Set((T.emoji && T.emoji.keepNative) || []);
+      if (window.SMIconize) window.SMIconize(document.body);
+    } catch (e) {}
     if (T.iconColors) {
       Object.keys(T.iconColors).forEach(function (c) {
         css += '[data-smicon="' + c + '"]{--icc:' + T.iconColors[c] + ';}\n';
