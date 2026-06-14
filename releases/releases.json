@@ -1,5 +1,11 @@
 [
   {
+    "v": "v495",
+    "date": "2026-06-15",
+    "note": "FIX RACINE « presets randomisés / tuiles figées » (captures Maxime, PAS du cache) : une couche en dur « DA v2 · ICÔNES » (index l.4452-4462) + 8 blocs theme-dusk/winter/tropic (l.3957-3970, 4054-4069) re-figeaient --ic1/--ic2 (tuiles) et --icc (emblèmes) PAR MODE/FAMILLE, battant le loader (vert/or/violet persistants : Lieux/Coupons/Mon cercle, heaume violet, listes TA PROGRESSION). FIX loader-only : le loader pose une classe `sm-da-on` sur body + `modeSelector` préfixe `body.sm-da-on.<mode>` (+1 spécificité) + émet --ic1/--ic2 en !important sur .cic/.jo-ic/.qm-ic/.sc-ic/.smgem/.thumb (élargi, sans exiger data-smicon). → quand un preset est publié, le loader pilote TOUTES les tuiles+emblèmes dans TOUS les modes (mesuré : 6/6 familles = j1 du preset sur 6 modes). +orphelins ALIAS 🌀/🧿/🎫. WCAG AA 0 échec 21×6. loader ?v=11, icons ?v=546, badges ?v=495.",
+    "file": "v495.html"
+  },
+  {
     "v": "v494",
     "date": "2026-06-15",
     "note": "Finition uniformisation (retour Maxime « SMBadge aussi + presets pas à jour dans la console »). 3 chantiers : (1) APERÇU CONSOLE FIDÈLE — da-console.html charge le vrai loader et iconColor() dérive des joyaux comme l'app (le loader expose deriveIcc/iccRole/bestAccent via window.SMDA) → l'aperçu rend enfin comme le déployé (c'était LA cause du « pas à jour »). (2) SMBADGE pilotés — le loader applique hue-rotate(j1−38°) sur .smbadge-svg/.sm-badge svg par mode : art ciselé préservé, teinte suit la DA (Sunset −12°≈inchangé, Cobalt 178°). (3) 8 derniers dégradés or gameplay !important (tph-verif, mq-tag, onb-next, adPause, grad-1, sv-level, chip cl-quests) → var(--accent-grad/accent). Premium « Gold 👑 » + étoiles de note GARDÉS or (palier produit). WCAG AA 0 échec 21×6. loader ?v=10, badges ?v=494.",

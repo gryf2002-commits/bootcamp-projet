@@ -23,8 +23,10 @@
     s.textContent = css;
   }
   function modeSelector(m) {
-    if (!m.class) return 'body:not(.theme-dusk):not(.theme-winter):not(.theme-tropic)';
-    return 'body.' + m.class.trim().split(/\s+/).join('.');
+    // .sm-da-on = posé par le loader dès qu'un preset est actif → +1 de spécificité
+    // pour que TOUTES les règles du loader battent la couche figée "DA v2" de l'app.
+    if (!m.class) return 'body.sm-da-on:not(.theme-dusk):not(.theme-winter):not(.theme-tropic)';
+    return 'body.sm-da-on.' + m.class.trim().split(/\s+/).join('.');
   }
   // ---- Helpers couleur (dérivation des variables-cœur) ----
   function _hx(h){
@@ -81,11 +83,14 @@
 
   function applyTokens(T) {
     if (!T || !T.modes) return;
+    try { document.body.classList.add('sm-da-on'); } catch (e) {} // priorité loader > couche figée
     var css = '';
     Object.keys(T.modes).forEach(function (k) {
       var m = T.modes[k], sel = modeSelector(m);
-      ['.cic[data-smicon]', '.jo-ic[data-smicon]', '.smgem', '.thumb'].forEach(function (cl) {
-        css += sel + ' ' + cl + '{--ic1:' + m.j1 + ';--ic2:' + m.j2 + ';}\n';
+      // TOUTES les tuiles (cic/jo-ic/qm-ic/sc-ic/smgem/thumb, avec ou sans data-smicon) suivent
+      // les joyaux du preset, dans TOUS les modes. !important pour battre les blocs nuit/saison en dur.
+      ['.cic', '.jo-ic', '.qm-ic', '.sc-ic', '.smgem', '.thumb'].forEach(function (cl) {
+        css += sel + ' ' + cl + '{--ic1:' + m.j1 + ' !important;--ic2:' + m.j2 + ' !important;}\n';
       });
       if (T.logos && T.logos[k]) css += sel + '{--sm-logo:' + T.logos[k] + ';}\n';
       // Variables-coeur : font bouger fonds/textes/accents/CTA/cartes dans TOUTE l'app.

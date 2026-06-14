@@ -1,9 +1,9 @@
 {
-  "candidate": "v494",
+  "candidate": "v495",
   "items": [
-    "🏅 Les médaillons de badges (joaillerie) suivent ENFIN le preset : l'art ciselé est préservé, mais la teinte tourne vers la DA de chaque mode (Sunset ≈ inchangé, un thème bleu vire les badges au bleu).",
-    "🧰 Console DA fidèle : l'aperçu rend désormais EXACTEMENT comme l'app (mêmes couleurs dérivées des joyaux) — fini l'impression que « les presets ne sont pas à jour ».",
-    "🎨 Derniers dégradés or gameplay (badge vérifié, tag quête, bouton onboarding, filtre carte…) passés sur l'accent du preset.",
+    "🎯 LE gros fix : TOUTES les tuiles suivent enfin le preset publié, dans TOUS les modes. Avant, une couche figée « par mode/famille » forçait des tuiles à rester vertes/or/violettes (Lieux, Coupons, Mon cercle, listes…) — neutralisée. Plus de tuiles « randomisées ».",
+    "💎 Les emblèmes (heaume, etc.) suivent aussi le preset (fini le violet figé sur fond bleu).",
+    "✨ Emojis 🌀/🧿/🎫 ajoutés aux emblèmes (zéro emoji brut orphelin).",
     "♿ Contraste WCAG AA maintenu (21 presets × 6 modes, 0 échec)."
   ]
 }
