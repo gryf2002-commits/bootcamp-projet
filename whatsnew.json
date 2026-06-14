@@ -1,7 +1,8 @@
 {
-  "candidate": "v485",
+  "candidate": "v486",
   "items": [
-    "🔄 Console DA : bouton « Recharger la page » dans l'admin (après « Tester en live ») → indispensable pour voir le rendu complet (polices, textes) une fois le JSON collé.",
-    "🎨 3ᵉ levier activé (couleur des emblèmes) : si tu définis des couleurs d'emblèmes dans la console, les pictos prennent cette couleur (rendu monochrome assumé). Opt-in : tant que tu ne touches à rien, les joyaux multi-couleurs d'origine restent intacts."
+    "🎨 Console DA enrichie (cowork) : 21 presets prêts (calés sur les 6 modes), et la couleur de police (titres / corps / méta) est désormais pilotable et appliquée à l'app.",
+    "🌅 Nouvelle icône d'app / PWA / favicon (glyphe soleil, dégradé sunset) — visible après réinstallation/rafraîchissement de la PWA.",
+    "🔄 Rappel : après avoir collé un JSON dans l'admin DA, clique « Tester en live » puis « 🔄 Recharger » pour voir le rendu complet."
   ]
 }
