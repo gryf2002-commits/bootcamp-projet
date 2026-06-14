@@ -6071,6 +6071,7 @@
                 <button class="btn-primary" id="daPublish" style="flex:1">🚀 Publier pour tous</button>
               </div>
               <button class="btn-ghost btn-block" id="daReload" style="margin-top:.5rem">🔄 Recharger la page (voir le rendu)</button>
+              <button class="btn-ghost btn-block" id="daDiscard" style="margin-top:.4rem;font-size:.82rem">↩️ Annuler le test (revenir au publié)</button>
               <div class="msg" id="daLiveMsg" style="text-align:center"></div>
             </div>
             <div class="card"><h3 style="margin-top:0">🌅 Dégradés signature</h3><div id="daGrads"></div></div>
@@ -10358,6 +10359,7 @@
         oc.addEventListener("click", () => { try { window.open("da-console.html", "_blank"); } catch (e) {} });
         { const tl = $("daTestLive"); if (tl) tl.addEventListener("click", () => { const t = parse(); if (!t) return; if (window.SMDA) { try { SMDA.saveDraft(t, null); SMDA.apply(t); } catch (e) {} } const m = $("daLiveMsg"); if (m) { m.style.color = "var(--ok)"; m.textContent = "Brouillon enregistré (toi seul·e). Clique « 🔄 Recharger » pour le rendu complet (polices, textes…)."; } }); }
         { const rl = $("daReload"); if (rl) rl.addEventListener("click", () => { try { location.reload(); } catch (e) {} }); }
+        { const dc = $("daDiscard"); if (dc) dc.addEventListener("click", () => { try { localStorage.removeItem("sm_da_live"); localStorage.removeItem("sm_strings_live"); } catch (e) {} try { location.reload(); } catch (e) {} }); }
         { const pb = $("daPublish"); if (pb) pb.addEventListener("click", () => once("da-publish", async () => {
             const t = parse(); if (!t) return; const m = $("daLiveMsg"); if (m) { m.style.color = "var(--muted)"; m.textContent = "Publication…"; }
             const { error } = await db.from("da_tokens").upsert({ id: 1, tokens: t, updated_by: myUserId });
