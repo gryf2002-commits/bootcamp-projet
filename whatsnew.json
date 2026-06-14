@@ -1,7 +1,7 @@
 {
-  "candidate": "v483",
+  "candidate": "v484",
   "items": [
-    "🎛️ Console DA pilotée (admin) : la DA (joyaux par mode, polices, tailles/effets, couleurs d'emblèmes, logos, textes) peut désormais être pilotée depuis Supabase et appliquée à l'app au chargement. Côté admin : conçois dans la console, colle le JSON, « teste » pour toi ou « publie » pour tout le monde.",
-    "🔌 Câblage technique (cowork) : loader runtime branché (récupération da_tokens/da_strings au démarrage + application à chaud), aucune incidence visible tant que rien n'est publié. ⚠️ nécessite de lancer sunmates-da-schema.sql côté Supabase pour activer."
+    "🎛️ Console DA — leviers activés : les bascules d'effets (sans reflet / miroir / sans ombre) agissent maintenant sur l'app, et les polices choisies dans la console sont vraiment chargées (Google Fonts), avec repli système propre.",
+    "ℹ️ La recoloration des emblèmes par catégorie reste en attente d'une banque d'icônes en monochrome (les emblèmes actuels sont multi-couleurs « joaillerie » : les forcer en une seule couleur les aplatirait). À faire côté banque d'icônes."
   ]
 }

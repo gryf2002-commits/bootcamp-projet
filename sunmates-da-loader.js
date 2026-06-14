@@ -55,10 +55,19 @@
     inject('sm-da-vars', css);
     // 4) Polices
     if (T.fonts) {
-      var f = '';
-      if (T.fonts.body) f += "body{font-family:'" + T.fonts.body + "',system-ui,sans-serif;}\n";
-      if (T.fonts.heading) f += "h1,h2,h3,.brand b,.logo-text,.feature h2,.t-name{font-family:'" + T.fonts.heading + "',serif;}\n";
+      var f = '', fams = [];
+      if (T.fonts.body) { f += "body{font-family:'" + T.fonts.body + "',system-ui,sans-serif;}\n"; fams.push(T.fonts.body); }
+      if (T.fonts.heading) { f += "h1,h2,h3,.brand b,.logo-text,.feature h2,.t-name{font-family:'" + T.fonts.heading + "',serif;}\n"; fams.push(T.fonts.heading); }
       inject('sm-da-fonts', f);
+      // Charge réellement la police choisie depuis Google Fonts (sinon repli système). Idempotent.
+      fams.forEach(function (fam) {
+        if (!fam) return;
+        var id = 'sm-da-font-' + fam.replace(/[^a-z0-9]/gi, '');
+        if (document.getElementById(id)) return;
+        var l = document.createElement('link'); l.id = id; l.rel = 'stylesheet';
+        l.href = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(fam).replace(/%20/g, '+') + ':wght@400;500;600;700;800;900&display=swap';
+        document.head.appendChild(l);
+      });
     }
     // 5) Toggles d'effets (l'app peut styliser via ces classes)
     var e = T.effects || {};
