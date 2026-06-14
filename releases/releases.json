@@ -1,5 +1,11 @@
 [
   {
+    "v": "v479",
+    "date": "2026-06-14",
+    "note": "Écran Sécurité 100% bilingue hors-ligne : corps des modales du minuteur « Rentrée en sécurité » enveloppés dans i18nT (clé FR-avec-balises → EN, sans fragmentation)",
+    "file": "v479.html"
+  },
+  {
     "v": "v478",
     "date": "2026-06-14",
     "note": "A11y carte : badges de cluster (nombre blanc) contrastés AA sur tous les calques (orange/teal/ambre) via calque sombre + text-shadow, couleur-signal préservée",
