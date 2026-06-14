@@ -1,5 +1,11 @@
 [
   {
+    "v": "v492",
+    "date": "2026-06-14",
+    "note": "DA cohérence + câblage : emblèmes DÉRIVÉS des joyaux de chaque mode (palette harmonisée par rôle, alerte gardée chaude) → fini l'arc-en-ciel identique sur tous les presets (mesuré : 21/21 presets distincts, dispersion teinte ≤19° sur 20/21). Réglages 'aperçu seul' CÂBLÉS : effects.radius→--radius/-sm/-lg, effects.sheen→--sm-sheen (.cic::before), badges.*→.hex.grad-*, scenes.confetti/saison→gardes window.SM_SCENES. Console : bug onglets de catégories qui s'empilaient CORRIGÉ (enhanceLeft idempotent). WCAG AA maintenu (0 échec 21×6). loader ?v=9, badges ?v=492. Reste 'aperçu seul' : titleSize (risque rem), globalTexts/texts (routage i18n), rewards (éditorial), appIcon (build), logoChoice, keyline.",
+    "file": "v492.html"
+  },
+  {
     "v": "v491",
     "date": "2026-06-14",
     "note": "DA refonte profonde : le loader dérive enfin TOUTES les variables manquantes par preset (--accent-ink, --bg-grad, --dcard*, --lp-* login, --ink-warm) + accent/muted/CTA garantis WCAG AA (≥4.5:1) → mesuré 21 presets × 6 modes = 0 échec. Login + nuit + surfaces + carte suivent le preset (avant figés sunset). Carte : « feuille » dérivée de la DA (eau/verdure réalistes). Emblème play ▶ + alias 🆘/🆙 (0 orphelin critique). Console habillée sunset + mode icônes « Thémée ». loader ?v=8, icons ?v=544, badges ?v=491.",

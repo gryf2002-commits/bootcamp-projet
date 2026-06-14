@@ -54,6 +54,30 @@
   }
   function _bestAccent(j1,j2,page){var c=_ratio(j1,page)>=_ratio(j2,page)?j1:j2;return _toC(c,page,4.5);}
   function _card(page){return _lum(page)>0.4?_mix(page,'#ffffff',0.6):_mix(page,'#ffffff',0.08);}
+  // ---- HSL (pour DÉRIVER une palette d'emblèmes harmonisée avec les joyaux du preset) ----
+  function _rgb2hsl(hex){var a=_hx(hex);if(!a)return[0,0,0.5];var r=a[0]/255,g=a[1]/255,b=a[2]/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,h=0,s=0;if(mx!==mn){var d=mx-mn;s=l>0.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h/=6;}return[h*360,s,l];}
+  function _hsl2hex(h,s,l){h=(((h%360)+360)%360)/360;s=Math.max(0,Math.min(1,s));l=Math.max(0,Math.min(1,l));function f(p,q,t){if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;}var r,g,b;if(s===0){r=g=b=l;}else{var q=l<0.5?l*(1+s):l+s-l*s,p=2*l-q;r=f(p,q,h+1/3);g=f(p,q,h);b=f(p,q,h-1/3);}return _hex([r*255,g*255,b*255]);}
+  // rôle sémantique d'une catégorie d'emblème (pour faire varier L/S sans partir en arc-en-ciel)
+  function _iccRole(c){c=String(c||'').toLowerCase();
+    if(/alert|report|sos|danger|warn|aid|secu|urgent|shield|block|risk/.test(c))return 'alert';
+    if(/medal|crown|rank|trophy|coupon|badge|star|gift|premium|coin|reward|xp|level|prize/.test(c))return 'reward';
+    if(/quest|game|play|popular|trip|map|target|rocket|bolt|fire|explore|compass|pin|nav/.test(c))return 'action';
+    if(/eco|leaf|coffee|clock|moon|sleep|home|heart|calm|tea|plant|nature|water/.test(c))return 'calm';
+    return 'neutral';}
+  // palette d'emblèmes dérivée des joyaux du mode : 1 seule teinte-pilier + variation L/S par rôle
+  // (alerte gardée chaude/reconnaissable). Contraste assuré sur la tuile (fond ≈ mix j1/j2).
+  function _deriveIcc(j1,j2,page){
+    var base=_rgb2hsl(j1),dark=_lum(page)<0.4,tile=_mix(j1,j2,0.5);
+    function tone(dh,s,lL,lD){return _toC(_hsl2hex(base[0]+dh,s,dark?lD:lL),tile,2.6);}
+    return {
+      neutral:tone(0,0.26,0.40,0.82),
+      action:tone(0,0.70,0.46,0.76),
+      reward:tone(20,0.76,0.50,0.74),
+      calm:tone(-26,0.44,0.44,0.78),
+      alert:_toC(_hsl2hex(13,0.80,dark?0.66:0.50),tile,2.6)
+    };
+  }
+  var _ICC_CATS=['quest','games','popular','trip','map','explore','eco','coffee','clock','home','heart','chat','users','near','search','medal','crown','rank','coupon','badge','star','premium','coin','alert','report','aid','secu','shield','photo','music','gift','calendar','settings'];
 
   function applyTokens(T) {
     if (!T || !T.modes) return;
@@ -103,6 +127,11 @@
     var _shp = (T.effects && T.effects.shape) || 'squircle';
     var _rad = _shp === 'circle' ? '50%' : (_shp === 'rounded' ? '16px' : '28%');
     css += '.thumb,.cic,.smgem,.jo-ic{border-radius:' + _rad + ' !important;}\n';
+    // Arrondi GLOBAL (cartes/boutons/inputs) : --radius/-sm/-lg pilotés (≈32 consommateurs dans l'app)
+    var _er = (T.effects && T.effects.radius) || 22;
+    css += ':root{--radius:' + _er + 'px;--radius-sm:' + Math.round(_er * 0.64) + 'px;--radius-lg:' + Math.round(_er * 1.27) + 'px;}\n';
+    // Reflet des tuiles (sheen %) : consommé par .cic::before via var(--sm-sheen)
+    if (T.effects && T.effects.sheen != null) css += ':root{--sm-sheen:' + (Math.max(0, Math.min(100, +T.effects.sheen)) / 100) + ';}\n';
     if (T.sizes) {
       var _t = T.sizes.tile || 74, _i = T.sizes.iconTile || 38;
       css += '.tile .thumb{width:' + _t + 'px;height:' + _t + 'px;}\n';
@@ -119,6 +148,15 @@
       inject('sm-da-comp', ct);
     }
     try { window.SM_IMGBANK = T.imgBank || null; } catch (e) {}
+    try { window.SM_SCENES = T.scenes || null; } catch (e) {} // confettis / pluie de saison (toggles lus par l'app)
+    // Médaillons de badges (.hex) pilotés par famille — les vrais emblèmes SMBadge gardent leur DA propre
+    if (T.badges) {
+      var bd = T.badges, gp = function (x, i, d) { return (x && x[i]) || d; };
+      css += '.hex.grad-violet{--c1:' + gp(bd.social, 0, '#b9a6ff') + ';--c2:' + gp(bd.social, 1, '#7c5cff') + ';}\n';
+      css += '.hex.grad-teal{--c1:' + gp(bd.securite, 0, '#34d3c0') + ';--c2:' + gp(bd.securite, 1, '#0fa99b') + ';}\n';
+      css += '.hex.grad-gold{--c1:' + gp(bd.accomplissement, 0, '#ffd15c') + ';--c2:' + gp(bd.accomplissement, 1, '#e8961f') + ';}\n';
+      if (bd.exploration) css += '.hex:not(.grad-violet):not(.grad-gold):not(.grad-teal){--c1:' + gp(bd.exploration, 0, '#ff8a5c') + ';--c2:' + gp(bd.exploration, 1, '#ff5a4d') + ';background:linear-gradient(135deg,var(--c1),var(--c2));}\n';
+    }
     try {
       var _st = (T.icon && T.icon.style) || 'fill';
       window.SM_ICON_STYLE = _st;
@@ -133,9 +171,9 @@
     if (_styl !== 'native') {
       if (_cm === 'mono') {
         css += '[data-smicon]{--icc:' + ((T.icon && T.icon.mono) || '#FFF6E9') + ';}\n';
-      } else if (_cm === 'themed' && T.iconColors) {
+      } else if (_cm === 'themed' && T.iconColors && Object.keys(T.iconColors).length) {
+        // THÉMÉE : contrôle explicite par catégorie (couleurs éditées dans la console)
         Object.keys(T.iconColors).forEach(function (c) { css += '[data-smicon="' + c + '"]{--icc:' + T.iconColors[c] + ';}\n'; });
-        // variante par mode : couleurs d'emblemes propres a chaque mode (si perMode actif)
         if (T.icon && T.icon.perMode && T.iconColorsByMode) {
           Object.keys(T.iconColorsByMode).forEach(function (mk) {
             var mm = T.modes[mk]; if (!mm) return;
@@ -143,6 +181,15 @@
             Object.keys(byc).forEach(function (c) { css += msel + ' [data-smicon="' + c + '"]{--icc:' + byc[c] + ';}\n'; });
           });
         }
+      } else {
+        // NATURELLE / défaut : emblèmes HARMONISÉS avec les joyaux de CHAQUE mode -> fini
+        // l'arc-en-ciel figé identique sur tous les presets ; chaque preset a sa collection.
+        var cats = (T.iconColors && Object.keys(T.iconColors).length) ? Object.keys(T.iconColors) : _ICC_CATS;
+        Object.keys(T.modes).forEach(function (k) {
+          var m = T.modes[k]; if (!m || (!m.page && !m.ink)) return;
+          var msel = modeSelector(m), pal = _deriveIcc(m.j1, m.j2, m.page || '#ffffff');
+          cats.forEach(function (cat) { css += msel + ' [data-smicon="' + cat + '"]{--icc:' + (pal[_iccRole(cat)] || pal.neutral) + ';}\n'; });
+        });
       }
       css += '.cic[data-smicon] svg,[data-smicon] .smicon,[data-smicon] svg{color:var(--icc, currentColor);}\n';
     }

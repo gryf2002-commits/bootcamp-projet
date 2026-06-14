@@ -1,10 +1,9 @@
 {
-  "candidate": "v491",
+  "candidate": "v492",
   "items": [
-    "🎨 DA vraiment complète : chaque preset pilote enfin l'écran de connexion, la nuit, les surfaces et la carte (avant, tout ça restait figé en sunset).",
-    "♿ Contraste auto WCAG AA : sur les 21 presets × 6 modes, textes et accents toujours lisibles (même en pastel clair) — fini les accents quasi invisibles.",
-    "🗺️ La carte suit la DA publiée (fond/quartiers/bâtiments/texte), eau & verdure restent réalistes.",
-    "▶️ Emblèmes complétés (lecture ▶, secours 🆘…) — plus d'emoji orphelin au milieu des icônes.",
-    "🧰 Console DA habillée « sunset » + mode d'icônes « Thémée » (une couleur par catégorie, raccord DA)."
+    "🎨 Emblèmes enfin RACCORD avec chaque preset : leur couleur est dérivée des joyaux du thème (fini l'arc-en-ciel identique sur tous les presets). 21 presets = 21 ambiances distinctes et homogènes.",
+    "🛠️ Console DA : bug corrigé (les onglets de catégories ne s'empilent plus) et nouveaux réglages VRAIMENT pilotés : arrondi global, reflet des tuiles, couleurs de badges, confettis/pluie de saison on-off.",
+    "♿ Contraste auto WCAG AA maintenu sur les 21 presets × 6 modes (0 échec mesuré).",
+    "🌙 Rappel : login, nuit, surfaces et carte suivent chaque preset (depuis v491)."
   ]
 }

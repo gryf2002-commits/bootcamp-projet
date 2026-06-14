@@ -269,6 +269,7 @@ var ADV={"logos": {"day": "<g stroke='currentColor' stroke-width='3.4' stroke-li
  function enhanceLeft(){try{
   var L=document.getElementById('left');if(!L)return;
   var dets=[].slice.call(L.querySelectorAll('details'));if(!dets.length)return;
+  var _old=L.querySelector('#cBar');if(_old)_old.parentNode.removeChild(_old);
   var groups=['Couleurs','Icônes','Typo','Contenu','Avancé'];
   var bar=document.createElement('div');bar.id='cBar';
   bar.style.cssText='position:sticky;top:0;z-index:5;background:var(--card,#fff);border-bottom:1px solid var(--line,#eee);padding:6px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:6px';

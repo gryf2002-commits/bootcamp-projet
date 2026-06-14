@@ -197,7 +197,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=491"></script>
+  <script src="sunmates-badges.js?v=492"></script>
   <script src="sunmates-icons-v2.js?v=544"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -477,7 +477,7 @@
     .cat-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
     .cat-tile:active { transform: scale(.96); }
     .cat-tile .cic { position: relative; overflow: hidden; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 1.25rem; line-height: 1; margin: 0 auto .35rem; color: #fff; box-shadow: inset 0 -8px 16px rgba(0,0,0,.08); }
-    .cat-tile .cic::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(157deg, rgba(255,255,255,.34) 0%, rgba(255,255,255,.08) 26%, rgba(255,255,255,0) 54%); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); pointer-events: none; }
+    .cat-tile .cic::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(157deg, rgba(255,255,255,calc(var(--sm-sheen,.18) * 1.9)) 0%, rgba(255,255,255,calc(var(--sm-sheen,.18) * .44)) 26%, rgba(255,255,255,0) 54%); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); pointer-events: none; }
     /* P8 : le libellé peut REVENIR à la ligne au lieu de déborder (textes EN plus longs, petits écrans) */
     .cat-tile .clbl { font-size: .74rem; font-weight: 700; color: var(--ink); white-space: normal; overflow-wrap: anywhere; line-height: 1.15; }
     .cat-tile.active { border-color: var(--accent); box-shadow: 0 6px 16px rgba(45,38,52,.2); }
@@ -514,7 +514,7 @@
     .prog-row:active { background: rgba(255,138,61,.1); }
     .prog-row .cic { position: relative; overflow: hidden; flex: 0 0 auto; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font-size: 1.18rem; line-height: 1; color: #fff; box-shadow: inset 0 -8px 16px rgba(0,0,0,.08); }
     /* Même gloss émaillé que les tuiles de nav → une seule âme SunMates */
-    .prog-row .cic::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(157deg, rgba(255,255,255,.36) 0%, rgba(255,255,255,.1) 28%, rgba(255,255,255,0) 55%); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); pointer-events: none; }
+    .prog-row .cic::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(157deg, rgba(255,255,255,calc(var(--sm-sheen,.18) * 2)) 0%, rgba(255,255,255,calc(var(--sm-sheen,.18) * .55)) 28%, rgba(255,255,255,0) 55%); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); pointer-events: none; }
     .prog-row .pr-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .12rem; }
     .prog-row .pr-tx b { font-size: .86rem; font-weight: 700; color: var(--ink-warm, var(--ink)); }
     .prog-row .pr-sub { font-size: .74rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -17256,6 +17256,7 @@
 
     // ---- Confettis (déblocage de badge, moment de fête 🎉) ----
     function celebrate() {
+      if (window.SM_SCENES && window.SM_SCENES.confetti === false) return; // confettis désactivés par la DA
       if (window.SMSound) SMSound.play("unlock"); // petit jingle de déblocage
       // Confettis "maison" : soleils, cœurs et étoiles dans la DA coucher de soleil (clin d'œil).
       if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -19331,6 +19332,7 @@
     // feuilles (tropiques) ou étoiles/rayons (nuit/jour). Légère, 1,5 s, auto-nettoyée.
     function _seasonFx(kind) {
       try {
+        if (window.SM_SCENES && window.SM_SCENES.saison === false) return; // pluie de saison désactivée par la DA
         if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         // Retour Maxime : la pluie d'étoiles/flocons à CHAQUE bascule, c'est trop → l'effet ne
         // joue qu'UNE fois par jour (toutes bascules confondues).
@@ -20429,6 +20431,6 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- DA pilotée (console cowork) : applique les tokens/strings publiés. APRÈS le script app (i18nT défini, SMDA exposé avant render). -->
-  <script src="sunmates-da-loader.js?v=8"></script>
+  <script src="sunmates-da-loader.js?v=9"></script>
 </body>
 </html>
