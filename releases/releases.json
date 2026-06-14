@@ -1,5 +1,11 @@
 [
   {
+    "v": "v477",
+    "date": "2026-06-14",
+    "note": "Parité EN hors-ligne de l'écran Sécurité complétée (3 derniers libellés curés, 0 gap statique restant) ; conseils du jour + numéros d'urgence par pays déjà bilingues",
+    "file": "v477.html"
+  },
+  {
     "v": "v476",
     "date": "2026-06-14",
     "note": "Parité EN HORS-LIGNE sur les écrans critiques : auth, confirmation d'email et messages errFr/_authErr curés dans I18N_DICT (plus de dépendance à MyMemory en ligne, fini le flash FR)",
