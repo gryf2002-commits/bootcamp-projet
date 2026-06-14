@@ -1,5 +1,11 @@
 [
   {
+    "v": "v481",
+    "date": "2026-06-14",
+    "note": "Chasse aux bugs lot 1 : minuteur sécurité ré-armé au retour d'arrière-plan (P0), fix crash fiche profil (jaccard non-string), création de groupe robuste (créateur+mates individuels), export RGPD complet, positions cercle expirent à 1 h, durcissements (cache trad borné, retries réseau)",
+    "file": "v481.html"
+  },
+  {
     "v": "v480 🎉",
     "date": "2026-06-14",
     "note": "Jalon (multiple de 30) · a11y formulaires : 100% des champs ont un nom accessible (aria-label via placeholder / label voisin / explicite, synchronisé avec la langue). Clôt la grande passe debrief UX/DA/a11y/contenu (v472→v480)",
