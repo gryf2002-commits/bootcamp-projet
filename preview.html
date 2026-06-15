@@ -197,7 +197,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=523"></script>
+  <script src="sunmates-badges.js?v=524"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -1436,7 +1436,7 @@
     .tile .thumb { position: relative; overflow: hidden; filter: saturate(1.04) brightness(1.01); } /* néon coupé : la couleur émaillée DA suffit */
     .tile .thumb::before { content: ""; position: absolute; inset: 0; border-radius: inherit;
       background: linear-gradient(158deg, rgba(255,255,255,.62) 0%, rgba(255,255,255,.22) 15%, rgba(255,255,255,.03) 36%, rgba(255,255,255,0) 58%);
-      box-shadow: inset 0 1.5px 0 rgba(255,255,255,.65), inset 0 -16px 26px rgba(0,0,0,.12);
+      box-shadow: inset 0 1.5px 0 rgba(255,255,255,.5);
       pointer-events: none; }
     /* (Anciennes couleurs/ombres figées SUPPRIMÉES · retour Maxime : le « halo » sous les
        tuiles restait aux vieilles couleurs quel que soit le thème. Désormais l'ombre est
@@ -20362,6 +20362,6 @@
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->
-  <script src="da-console-overlay.js?v=20"></script>
+  <script src="da-console-overlay.js?v=21"></script>
 </body>
 </html>

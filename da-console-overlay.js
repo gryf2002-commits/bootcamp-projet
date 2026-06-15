@@ -96,13 +96,25 @@
     // overrides ciblés (clic)
     if(!T.overrides||typeof T.overrides!=='object')T.overrides={};
     Object.keys(T.overrides).forEach(function(key){var o=T.overrides[key],pa=key.split('||'),mk=pa[0],sel=pa[1];
-      var cls=(T.modes[mk]&&T.modes[mk].class||'').trim();var pre='html body'+(cls?'.'+cls.split(/\s+/).join('.'):'')+' ';
+      // Le préfixe DOIT (1) cibler le BON mode — comme les règles de mode plus haut : la classe du
+      // mode pour les modes à thème, et le `:not()` discipliné pour « jour » (sinon « jour » matchait
+      // TOUS les thèmes, et un override « nuit » ne matchait JAMAIS un body sans .theme-dusk → couleur
+      // invisible quand la console et le body se désynchronisaient) ; (2) battre le loader, qui pose
+      // `body.sm-da-on … .thumb.purp{--ic1 !important}` (spécificité ~0,6,1) sur --ic1/--ic2. On ajoute
+      // donc `.sm-da-on` ET on DOUBLE le sélecteur (`html body.x sel sel`) pour dépasser sa spécificité.
+      var cls=(T.modes[mk]&&T.modes[mk].class||'').trim();
+      var modeSel=cls?'.'+cls.split(/\s+/).join('.'):':not(.theme-dusk):not(.theme-winter):not(.theme-tropic)';
+      var pre='html body.sm-da-on'+modeSel+' ';
       var d='';
-      if(o.bg){var bd=mix(o.bg,'#000',0.18);d+='background:linear-gradient(160deg,'+o.bg+','+bd+') !important;--ic1:'+o.bg+' !important;--ic2:'+bd+' !important;';} // UNE couleur → fond visible sur tout (tuile, bouton, texte-conteneur)
-      else if(o.j1)d+='--ic1:'+o.j1+' !important;--ic2:'+(o.j2||o.j1)+' !important;background-image:linear-gradient(160deg,'+o.j1+','+(o.j2||o.j1)+') !important;';
+      if(o.bg){var bd=mix(o.bg,'#000',0.18);d+='background:linear-gradient(160deg,'+o.bg+','+bd+') !important;background-image:linear-gradient(160deg,'+o.bg+','+bd+') !important;--ic1:'+o.bg+' !important;--ic2:'+bd+' !important;';} // UNE couleur → fond visible sur tout (tuile, bouton, texte-conteneur)
+      else if(o.j1)d+='--ic1:'+o.j1+' !important;--ic2:'+(o.j2||o.j1)+' !important;background:linear-gradient(160deg,'+o.j1+','+(o.j2||o.j1)+') !important;background-image:linear-gradient(160deg,'+o.j1+','+(o.j2||o.j1)+') !important;';
       if(o.scale)d+='transform:scale('+o.scale+');'; // taille par élément (clic) — fond + emoji ensemble, pas de désync
       if(o.textColor)d+='color:'+o.textColor+' !important;';
-      if(d)css+=pre+sel+'{'+d+'}\n';});
+      // Spécificité GONFLÉE sur le MÊME élément (pas un descendant) : on répète la classe compound
+      // (`.thumb.purp` → `.thumb.purp.thumb.purp`) → +0,2,0 sur le loader pour que --ic1/--ic2 ET
+      // background gagnent dans tous les cas. (`html&&body` ne suffisaient pas pour --ic1.)
+      var selBoost=/^[.#][\w.#-]+$/.test(sel)?(sel+sel):sel; // ne double que des sélecteurs de classe/id simples
+      if(d)css+=pre+selBoost+'{'+d+'}\n';});
     st.textContent=css;}
 
   function apply(){try{if(window.SMDA&&window.SMDA.apply)window.SMDA.apply(T);}catch(e){}
@@ -114,6 +126,15 @@
     try{injectExtra();}catch(e){}try{apply();}catch(e){}return true;}
   function setMode(k){curMode=k;var b=document.body;b.classList.remove('theme-dusk','theme-winter','theme-tropic');
     var cls=(T.modes[k].class||'').trim();if(cls)cls.split(/\s+/).forEach(function(c){b.classList.add(c);});apply();build_panel();}
+  // DÉRIVE le mode RÉELLEMENT affiché à partir des classes de thème du <body>. Indispensable pour
+  // l'édition au clic : l'override est écrit pour le mode `mk`, dont le sélecteur embarque la classe
+  // de thème. Si la console croit être en « nuit » alors que le body est en « jour » (ou l'inverse),
+  // le sélecteur ne matche pas → la couleur ne change rien. On resynchronise donc `curMode` sur le
+  // thème réel AVANT d'éditer, pour que l'override soit toujours visible sur ce qu'on voit.
+  function _modeFromBody(){try{var b=document.body,dusk=b.classList.contains('theme-dusk');
+    if(b.classList.contains('theme-winter'))return dusk?'hiver-nuit':'hiver';
+    if(b.classList.contains('theme-tropic'))return dusk?'tropiques-nuit':'tropiques';
+    return dusk?'nuit':'jour';}catch(e){return curMode;}}
   function setScreen(s){try{if(window.goToTab)window.goToTab(s);}catch(e){}}
 
   // ---- clic-recolor ----
@@ -130,13 +151,19 @@
     var sel=selFor(ev.target);if(!sel)return;ev.preventDefault();ev.stopPropagation();try{popEdit(sel,ev,ev.target);}catch(e){console.warn('[SMDA popEdit]',e);}},true);
   function popEdit(sel,ev,el){closePop();if(!T.overrides||typeof T.overrides!=='object')T.overrides={};
     _snap(); // photo de l'état avant édition → bouton « Annuler »
+    curMode=_modeFromBody(); // resynchronise sur le thème réel → l'override couleur matche ce qu'on voit
     var key=curMode+'||'+sel,ov=T.overrides[key]||{},m=(T.modes&&T.modes[curMode])||{j1:'#FF8A3D',j2:'#FF5A4D'};
     _markSel(el); // surligne l'élément en cours d'édition
     // élément porteur d'emoji (l'élément cliqué ou un ancêtre proche), sinon l'élément cliqué (pour AJOUTER)
     var host=el,h=el;for(var i=0;i<6&&h;i++){if(h.textContent){_EMO.lastIndex=0;if(_EMO.test(h.textContent)){host=h;break;}}h=h.parentElement;}
     var curEmo='';if(host){_EMO.lastIndex=0;var mm=(host.textContent||'').match(_EMO);curEmo=mm?mm[0]:'';}
+    // CIBLE du LIBELLÉ : l'élément cliqué a-t-il un texte propre éditable ? Une ICÔNE (ex. .thumb d'une
+    // tuile) ne contient QUE l'emoji → son 1er nœud texte significatif est vide. Dans ce cas, on édite
+    // le libellé VISIBLE de la tuile (.t-name puis .t-meta, frères de l'icône), pour que cliquer
+    // n'importe où sur une tuile permette d'éditer SON texte. Sinon on édite l'élément cliqué lui-même.
+    var txtHost=_labelTarget(el),_tnH=txtHost||host;
     // texte actuel (1er nœud significatif), emoji retiré, pour pré-remplir le champ Texte
-    var _tn=_firstTextNode(host),curTxt=_tn?(_tn.nodeValue||'').replace(_EMO,'').replace(/\s+/g,' ').trim():'';
+    var _tn=_firstTextNode(_tnH),curTxt=_tn?(_tn.nodeValue||'').replace(_EMO,'').replace(/\s+/g,' ').trim():'';
     var curTxtA=curTxt.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     // PALETTE DU PRESET (couleurs dans le thème, pas du hasard) : les joyaux de tous les modes
     var pal=[];Object.keys(T.modes).forEach(function(k){[T.modes[k].j1,T.modes[k].j2].forEach(function(c){if(c&&pal.indexOf(c)<0)pal.push(c);});});
@@ -152,7 +179,7 @@
       +"<div style='margin:9px 0 4px;font-size:11px;color:#a99fbe'>Texte de CET élément</div>"
       +"<div style='display:flex;gap:6px;align-items:center'><input type=text id=dtxt value=\""+curTxtA+"\" placeholder='écris le texte…' style='flex:1;font-size:13px;background:#0d0a14;color:#fff;border:1px solid #333;border-radius:6px;padding:6px'><button id=dtxtOk style='padding:7px 10px'>OK</button></div>"
       +"<div style='margin:9px 0 4px;font-size:11px;color:#a99fbe'>Taille de CET élément (fond + emoji ensemble)</div><input type=range id=dsz min=50 max=170 value='"+Math.round((ov.scale||1)*100)+"' style='width:100%'>"
-      +"<div style='display:flex;gap:6px;margin-top:10px'><button id=dallmodes style='flex:1;padding:7px' title='Reproduire ces retouches sur tous les modes (jour, nuit, hiver…)'>↪ Tous les modes</button><button id=dundo style='flex:1;padding:7px' title='Annuler la dernière retouche'>↶ Annuler</button></div>"
+      +"<div style='display:flex;gap:6px;margin-top:10px'><button id=dundo style='flex:1;padding:7px' title='Annuler la dernière retouche'>↶ Annuler la dernière retouche</button></div>"
       +"<div style='display:flex;gap:6px;margin-top:6px'><button id=dok style='flex:1;padding:7px'>Fermer</button><button id=drm style='flex:1;padding:7px'>Tout retirer</button></div>";
     document.body.appendChild(p);
     function Q(s){return p.querySelector(s);}
@@ -164,7 +191,7 @@
     Array.prototype.forEach.call(p.querySelectorAll('.dasw'),function(b){b.onclick=function(){var c=b.getAttribute('data-c');if(_dbg)_dbg.value=c;sv();};});
     var _demoOk=Q('#demoOk');if(_demoOk)_demoOk.onclick=function(){var e=Q('#demo');if(e&&e.value.trim()&&host)_setEmoji(host,e.value.trim());};
     var _demoRm=Q('#demoRm');if(_demoRm)_demoRm.onclick=function(){if(host)_setEmoji(host,'');var e=Q('#demo');if(e)e.value='';};
-    var _dtxtOk=Q('#dtxtOk');if(_dtxtOk)_dtxtOk.onclick=function(){var t=Q('#dtxt');if(host&&t)_setText(host,t.value);};
+    var _dtxtOk=Q('#dtxtOk');if(_dtxtOk)_dtxtOk.onclick=function(){var t=Q('#dtxt');if(_tnH&&t)_setText(_tnH,t.value);};
     var _dsz=Q('#dsz');if(_dsz)_dsz.oninput=function(){ov_().scale=(+_dsz.value)/100;refresh();};
     var _dtc=Q('#dtc');if(_dtc)_dtc.oninput=function(){ov_().textColor=_dtc.value;refresh();};
     var _dtcRm=Q('#dtcRm');if(_dtcRm)_dtcRm.onclick=function(){if(T.overrides[key])delete T.overrides[key].textColor;refresh();};
@@ -172,10 +199,6 @@
       hdr.addEventListener('pointerdown',function(e){dn=true;var r=p.getBoundingClientRect();dx=e.clientX-r.left;dy=e.clientY-r.top;try{hdr.setPointerCapture(e.pointerId);}catch(x){}});
       hdr.addEventListener('pointermove',function(e){if(!dn)return;p.style.left=Math.max(2,Math.min(innerWidth-60,e.clientX-dx))+'px';p.style.top=Math.max(2,Math.min(innerHeight-40,e.clientY-dy))+'px';});
       hdr.addEventListener('pointerup',function(){dn=false;});})();
-    // Reproduire les retouches de CET élément (couleur/texte/taille) sur TOUS les modes → cohérence en 1 clic
-    var _dall=Q('#dallmodes');if(_dall)_dall.onclick=function(){var src=T.overrides[key];if(!src){_dall.textContent='Rien à copier';setTimeout(function(){_dall.textContent='↪ Tous les modes';},1100);return;}
-      MK.forEach(function(k){if(k===curMode)return;var tgt=k+'||'+sel;T.overrides[tgt]=Object.assign({},T.overrides[tgt]||{},JSON.parse(JSON.stringify(src)));});
-      refresh();_dall.textContent='Copié sur tous ✓';setTimeout(function(){_dall.textContent='↪ Tous les modes';},1300);};
     var _dundo=Q('#dundo');if(_dundo)_dundo.onclick=function(){if(_undoLast())closePop();};
     var _dok=Q('#dok');if(_dok)_dok.onclick=closePop;var _drm=Q('#drm');if(_drm)_drm.onclick=function(){delete T.overrides[key];refresh();closePop();};}
   function closePop(){var e=document.getElementById('smdaPop');if(e)e.remove();_clearSel();}
@@ -325,6 +348,24 @@
   // 1er nœud texte « significatif » (non vide, hors emoji seul) d'un élément → pour lire/éditer le libellé
   function _firstTextNode(host){if(!host)return null;var w=document.createTreeWalker(host,NodeFilter.SHOW_TEXT,null),n;
     while(n=w.nextNode()){var v=(n.nodeValue||'').replace(_EMO,'').replace(/\s/g,'');if(v)return n;}return null;}
+  // un élément a-t-il un texte PROPRE éditable (hors emoji) ? (true pour .t-name, false pour une icône
+  // .thumb qui ne contient qu'un emoji)
+  function _hasOwnText(host){var n=_firstTextNode(host);return !!n;}
+  // CIBLE du libellé à éditer pour l'élément cliqué : s'il a déjà son propre texte → lui-même ;
+  // sinon (icône/thumb sans libellé propre) → le libellé VISIBLE de la TUILE qui le contient
+  // (.t-name de préférence, sinon .t-meta, sinon le 1er frère/élément texté de la tuile). Ainsi un clic
+  // sur l'icône édite le même texte qu'un clic sur le libellé.
+  function _labelTarget(el){if(!el)return null;
+    if(_hasOwnText(el))return el; // l'élément cliqué porte déjà un libellé → on l'édite directement
+    // remonte jusqu'à un conteneur « tuile/carte » plausible
+    var tileSel='.tile,.cat-tile,.gp-tile,.pcard,.gcard,.tcard,.coupon,.feature',cont=el.closest&&el.closest(tileSel);
+    if(cont){var lab=cont.querySelector('.t-name')||cont.querySelector('.t-meta')||cont.querySelector('.t-name,.t-meta,h1,h2,h3,.section-head');
+      if(lab&&_hasOwnText(lab))return lab;
+      // sinon, 1er descendant qui a un texte propre (hors l'icône cliquée)
+      var cand=Array.prototype.slice.call(cont.querySelectorAll('*')).filter(function(x){return x!==el&&!el.contains(x)&&_hasOwnText(x);});
+      if(cand.length)return cand[0];
+      if(_hasOwnText(cont))return cont;}
+    return el;} // rien de mieux : on retombe sur l'élément cliqué (permet d'AJOUTER un texte)
   // remplace le texte VISIBLE de l'élément (1er nœud texte significatif) sans toucher aux enfants/emoji
   function _setText(host,txt){var n=_firstTextNode(host);if(n){_EMO.lastIndex=0;var emo=(n.nodeValue||'').match(_EMO1);
       n.nodeValue=(emo?emo[0]+' ':'')+txt;return true;}
