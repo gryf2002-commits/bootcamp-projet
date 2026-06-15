@@ -1,9 +1,9 @@
 {
-  "candidate": "v497",
+  "candidate": "v498",
   "items": [
-    "↩️ Retour à une base stable : la refonte de la direction artistique (presets/loader DA des versions v483→v496) est retirée — elle créait trop d'incohérences visuelles.",
-    "✅ On garde tous les correctifs récents : fix du chargement infini, minuteur de sécurité, export RGPD, accessibilité (contraste/clavier), erreurs en français et parité anglais hors-ligne.",
-    "🎨 L'app reprend son apparence éprouvée (emojis + emblèmes joaillerie), sans le système de presets qui posait problème.",
-    "🛠️ La refonte DA n'est pas perdue : elle reste archivée (versions v483 à v496) pour être reprise proprement plus tard."
+    "🙂 Retour aux emojis natifs partout : le moteur d'icônes SVG maison est désactivé — fini les pictos et tuiles « bizarres ».",
+    "🎮 Les tuiles de l'accueil, les pastilles et les boutons réaffichent leurs emojis d'origine (☕ 🌱 📍 ⭐ 🔥 🏆 🎯 …).",
+    "⚡ Bonus : le fichier d'icônes passe de ~150 Ko à quelques lignes → app plus légère.",
+    "✅ Base toujours stable (v482) : tous les correctifs récents sont conservés, seule la DA expérimentale reste en retrait (archivée)."
   ]
 }
