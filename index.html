@@ -197,7 +197,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=515"></script>
+  <script src="sunmates-badges.js?v=517"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -6199,6 +6199,8 @@
             <div><div class="st-lbl" data-i18n="set.beta">🧪 Fonctionnalités beta</div><div class="st-sub" data-i18n="set.betaSub">Active les nouveautés en test. Désactive pour une version épurée, centrée sur l'essentiel (sécurité, rencontres, lieux).</div></div>
             <label class="switch"><input type="checkbox" id="betaToggle"><span class="sl"></span></label>
           </div>
+          <button class="btn-ghost btn-block" id="openLiteBtn" data-beta style="margin-top:.5rem">🪶 Découvrir la version lite (grand public)</button>
+          <p class="muted" data-beta style="font-size:.76rem;margin:.35rem 0 0">Aperçu, réservé aux beta-testeurs, de l'app épurée que verra le grand public.</p>
 
           <!-- Application -->
           <div class="set-grouptitle">Application</div>
@@ -19959,6 +19961,7 @@
         else toast(v ? "🌍" : "🔒", v ? i18nT("Profil public, tu apparais dans le classement") : i18nT("Profil privé, tu n'apparais plus dans le classement"));
       });
       const bt = $("betaToggle"); if (bt) { bt.checked = betaOn(); bt.addEventListener("change", () => { setBeta(bt.checked); toast(bt.checked ? "🧪" : "✨", bt.checked ? i18nT("Fonctionnalités beta activées") : i18nT("Version épurée activée"), null, { low: true }); }); }
+      const olb = $("openLiteBtn"); if (olb && !olb.dataset.wired) { olb.dataset.wired = "1"; olb.addEventListener("click", () => { try { window.open("sunmates-app.html?fresh=" + Date.now(), "_blank"); } catch (e) {} }); }
     })();
 
     // -------------------- Initialisation à la connexion --------------------
@@ -20359,6 +20362,6 @@
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->
-  <script src="da-console-overlay.js?v=13"></script>
+  <script src="da-console-overlay.js?v=14"></script>
 </body>
 </html>
