@@ -226,7 +226,7 @@
     var pub=document.createElement('button');pub.textContent='🌍 Publier pour TOUS';
     pub.style.cssText='width:100%;margin-top:8px;border:0;border-radius:9px;padding:10px;font-weight:800;cursor:pointer;background:#1f9d6b;color:#fff';
     pub.onclick=function(){if(!confirm('Publier cette DA pour TOUS les utilisateurs ?'))return;pub.textContent='Publication…';
-      try{if(window.db&&window.db.from){window.db.from('da_tokens').upsert({id:'live',tokens:T,updated_at:new Date().toISOString()}).then(function(r){
+      try{if(window.db&&window.db.from){window.db.from('da_tokens').upsert({id:1,tokens:T,updated_at:new Date().toISOString()}).then(function(r){
         pub.textContent=(r&&r.error)?('Erreur : '+(r.error.message||'?')):'Publié pour tous ✓';setTimeout(function(){pub.textContent='🌍 Publier pour TOUS';},2600);});}
       else{pub.textContent='Base indisponible';alert('window.db absent — la publication nécessite la session admin connectée + la migration da_tokens.');setTimeout(function(){pub.textContent='🌍 Publier pour TOUS';},2600);}}catch(e){pub.textContent='Erreur';}};
     P.appendChild(pub);

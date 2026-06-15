@@ -286,8 +286,9 @@
     // en base (da_tokens id='live') et on l'applique → tous les utilisateurs reçoivent la DA publiée.
     try {
       if (!getTokens() && window.db && window.db.from) {
-        window.db.from('da_tokens').select('tokens').eq('id', 'live').maybeSingle()
-          .then(function (r) { if (r && r.data && r.data.tokens) { try { applyTokens(r.data.tokens); } catch (e) {} } })
+        // 1 seule ligne (id entier) → on prend la plus récente, schéma-agnostique.
+        window.db.from('da_tokens').select('tokens').order('updated_at', { ascending: false }).limit(1)
+          .then(function (r) { var row = r && r.data && r.data[0]; if (row && row.tokens) { try { applyTokens(row.tokens); } catch (e) {} } })
           .catch(function () {});
       }
     } catch (e) {}

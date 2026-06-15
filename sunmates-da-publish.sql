@@ -5,11 +5,12 @@
 -- au chargement pour TOUS les utilisateurs. Seuls les admins peuvent publier.
 -- ============================================================
 
+-- NB : la table existait déjà (ancienne session DA) avec id ENTIER + 1 ligne (id=1).
+-- Le code (loader + console) utilise id=1. Ce script garantit surtout la RLS ci-dessous.
 create table if not exists public.da_tokens (
-  id          text primary key default 'live',
+  id          smallint primary key default 1,
   tokens      jsonb not null,
-  updated_at  timestamptz not null default now(),
-  updated_by  uuid references auth.users(id)
+  updated_at  timestamptz not null default now()
 );
 
 alter table public.da_tokens enable row level security;
