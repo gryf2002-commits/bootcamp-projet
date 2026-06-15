@@ -50,7 +50,9 @@
     var css='';MK.forEach(function(k){var m=T.modes[k],cls=(m.class||'').trim();
       var pre='body'+(cls?'.'+cls.split(/\s+/).join('.'):':not(.theme-dusk):not(.theme-winter):not(.theme-tropic)');
       var ag='linear-gradient(135deg,'+m.j1+','+mix(m.j1,m.j2,.5)+','+m.j2+')';
-      css+=pre+'{--accent-grad:'+ag+' !important;--sunset-grad:'+ag+' !important;}\n';});
+      css+=pre+'{--accent-grad:'+ag+' !important;--sunset-grad:'+ag+' !important;}\n';
+      // pins carte génériques → couleur du mode (les pins « toi »/.me et « quête »/.quest gardent leur sémantique)
+      css+=pre+' .epin:not(.me):not(.quest){--epin:'+m.j2+' !important;}\n';});
     // badges familles (si .hex variantes présentes)
     var B=T.badges;function bg(a){return 'linear-gradient(160deg,'+a[0]+','+a[1]+')';}
     css+='.hex{background:'+bg(B.exploration)+'}\n.hex.grad-violet{background:'+bg(B.social)+'}\n.hex.grad-teal{background:'+bg(B.securite)+'}\n.hex.grad-gold{background:'+bg(B.accomplissement)+'}\n';
@@ -68,8 +70,14 @@
 
   // ---- clic-recolor ----
   function selFor(el){var known=SEL.split(',').map(function(s){return s.trim();}),cur=el;
-    for(var d=0;d<6&&cur;d++){for(var i=0;i<known.length;i++){try{if(cur.matches&&cur.matches(known[i])){
-      var cl=(cur.className||'').toString().trim().split(/\s+/).slice(0,2).join('.');return cl?'.'+cl:known[i];}}catch(e){}}cur=cur.parentElement;}return null;}
+    for(var d=0;d<7&&cur;d++){for(var i=0;i<known.length;i++){try{if(cur.matches&&cur.matches(known[i])){
+      var cl=(cur.className||'').toString().trim().split(/\s+/).slice(0,2).join('.');return cl?'.'+cl:known[i];}}catch(e){}}cur=cur.parentElement;}
+    // REPLI : aucun élément connu → on prend la 1re classe exploitable d'un ancêtre proche, pour que
+    // TOUT soit recolorable (bouton déconnexion, logo, boutons notifs, grandes tuiles/arrières…).
+    cur=el;for(var d2=0;d2<7&&cur;d2++){var cc=(cur.className||'');if(cc&&cc.toString){
+      var first=cc.toString().trim().split(/\s+/).filter(function(s){return s&&!/^(sm-da|smda)/.test(s);})[0];
+      if(first)return '.'+first;}cur=cur.parentElement;}
+    return null;}
   document.addEventListener('click',function(ev){if(!editMode)return;if(ev.target.closest&&ev.target.closest('#smdaPanel,#smdaBtn,.smda-pop'))return;
     var sel=selFor(ev.target);if(!sel)return;ev.preventDefault();ev.stopPropagation();popEdit(sel,ev);},true);
   function popEdit(sel,ev){closePop();var key=curMode+'||'+sel,ov=T.overrides[key]||{},m=T.modes[curMode];
