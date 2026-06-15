@@ -62,8 +62,26 @@
     badges:{exploration:['#FF8A3D','#FF5A4D'],social:['#9B7BFF','#6638D6'],securite:['#34C98F','#0E9E6B'],accomplissement:['#FFD15C','#E0901E']},
     logos:{},scenes:{accent:p[0],confetti:true},typo:{titleColor:'',bodyColor:'',metaColor:''},
     comp:{btnText:'#ffffff',chipText:'#ffffff'},emoji:{off:false},grads:{},iconColors:{},glyph:{},rewards:[],appIcon:{c1:p[0],c2:p[1],glyph:'sun'},imgBank:{},a11y:{fontScale:100},globalTexts:{},overrides:{}};}
+  // NORMALISE un état DA (chargé de localStorage / re-importé / publié-pour-tous / écrit par le
+  // loader via saveDraft) pour GARANTIR la présence de TOUTES les clés attendues. Sans ça, un état
+  // partiel (ex. sans `overrides`) faisait planter injectExtra (Object.keys(undefined)) ET popEdit
+  // (T.overrides[key] sur undefined) → « rien ne marche plus dans le popup ». Défensif et idempotent.
+  function _normT(o){var base=build((o&&o.preset&&PRESETS[o.preset])?o.preset:'🌅 Radiant Horizon');
+    if(!o||typeof o!=='object')return base;var T2={};
+    // on part du squelette complet, puis on écrase avec ce qui existe dans l'état chargé
+    Object.keys(base).forEach(function(k){T2[k]=base[k];});
+    Object.keys(o).forEach(function(k){if(o[k]!=null)T2[k]=o[k];});
+    // garde-fous fins sur les conteneurs critiques
+    if(!T2.overrides||typeof T2.overrides!=='object')T2.overrides={};
+    if(!T2.modes||typeof T2.modes!=='object')T2.modes=base.modes;
+    // tout mode manquant → on le dérive du squelette (popEdit/setMode/build_panel supposent les 6)
+    MK.forEach(function(k){if(!T2.modes[k]||typeof T2.modes[k]!=='object')T2.modes[k]=base.modes[k];});
+    ['icon','fonts','effects','sizes','badges','logos','scenes','typo','comp','emoji','iconColors','a11y','globalTexts'].forEach(function(k){
+      if(!T2[k]||typeof T2[k]!=='object')T2[k]=base[k];});
+    if(!Array.isArray(T2.rewards))T2.rewards=[];
+    return T2;}
   // On RECHARGE le dernier état (preset choisi + retouches) depuis localStorage → fini le retour à zéro.
-  var T=(function(){try{var d=localStorage.getItem('sm_da_live');if(d){var o=JSON.parse(d);if(o&&o.modes&&o.preset)return o;}}catch(e){}return build('🌅 Radiant Horizon');})(),curMode='jour',editMode=false,open=false;
+  var T=(function(){try{var d=localStorage.getItem('sm_da_live');if(d){var o=JSON.parse(d);if(o&&typeof o==='object')return _normT(o);}}catch(e){}return build('🌅 Radiant Horizon');})(),curMode='jour',editMode=false,open=false;
 
   var SEL='.thumb,.cic,.jo-ic,.qm-ic,.sc-ic,.smgem,.hex,.tile,.cat-tile,.pcard,.gcard,.ghead,.lb-row,.coupon,.tcard,.btn-primary,.chip,.brand .mark,.feature,.vchip,.mark-pro,.avail-badge,.rate-top';
   var SCREENS=[['accueil','Accueil'],['lieux','Lieux'],['jeux','Jeux'],['connexions','Mates'],['securite','Sécu'],['profil','Profil']];
@@ -79,6 +97,7 @@
     var B=T.badges;function bg(a){return 'linear-gradient(160deg,'+a[0]+','+a[1]+')';}
     css+='.hex{background:'+bg(B.exploration)+'}\n.hex.grad-violet{background:'+bg(B.social)+'}\n.hex.grad-teal{background:'+bg(B.securite)+'}\n.hex.grad-gold{background:'+bg(B.accomplissement)+'}\n';
     // overrides ciblés (clic)
+    if(!T.overrides||typeof T.overrides!=='object')T.overrides={};
     Object.keys(T.overrides).forEach(function(key){var o=T.overrides[key],pa=key.split('||'),mk=pa[0],sel=pa[1];
       var cls=(T.modes[mk]&&T.modes[mk].class||'').trim();var pre='html body'+(cls?'.'+cls.split(/\s+/).join('.'):'')+' ';
       var d='';
@@ -91,6 +110,11 @@
 
   function apply(){try{if(window.SMDA&&window.SMDA.apply)window.SMDA.apply(T);}catch(e){}
     try{localStorage.setItem('sm_da_live',JSON.stringify(T));}catch(e){}injectExtra();}
+  // ---- historique léger (annuler) des retouches clic ----
+  var _undo=[];
+  function _snap(){try{_undo.push(JSON.stringify(T.overrides||{}));if(_undo.length>40)_undo.shift();}catch(e){}}
+  function _undoLast(){if(!_undo.length)return false;try{T.overrides=JSON.parse(_undo.pop())||{};}catch(e){T.overrides=T.overrides||{};}
+    try{injectExtra();}catch(e){}try{apply();}catch(e){}return true;}
   function setMode(k){curMode=k;var b=document.body;b.classList.remove('theme-dusk','theme-winter','theme-tropic');
     var cls=(T.modes[k].class||'').trim();if(cls)cls.split(/\s+/).forEach(function(c){b.classList.add(c);});apply();build_panel();}
   function setScreen(s){try{if(window.goToTab)window.goToTab(s);}catch(e){}}
@@ -107,7 +131,10 @@
     return null;}
   document.addEventListener('click',function(ev){if(!editMode)return;if(ev.target.closest&&ev.target.closest('#smdaPanel,#smdaBtn,.smda-pop'))return;
     var sel=selFor(ev.target);if(!sel)return;ev.preventDefault();ev.stopPropagation();try{popEdit(sel,ev,ev.target);}catch(e){console.warn('[SMDA popEdit]',e);}},true);
-  function popEdit(sel,ev,el){closePop();var key=curMode+'||'+sel,ov=T.overrides[key]||{},m=(T.modes&&T.modes[curMode])||{j1:'#FF8A3D',j2:'#FF5A4D'};
+  function popEdit(sel,ev,el){closePop();if(!T.overrides||typeof T.overrides!=='object')T.overrides={};
+    _snap(); // photo de l'état avant édition → bouton « Annuler »
+    var key=curMode+'||'+sel,ov=T.overrides[key]||{},m=(T.modes&&T.modes[curMode])||{j1:'#FF8A3D',j2:'#FF5A4D'};
+    _markSel(el); // surligne l'élément en cours d'édition
     // élément porteur d'emoji (l'élément cliqué ou un ancêtre proche), sinon l'élément cliqué (pour AJOUTER)
     var host=el,h=el;for(var i=0;i<6&&h;i++){if(h.textContent){_EMO.lastIndex=0;if(_EMO.test(h.textContent)){host=h;break;}}h=h.parentElement;}
     var curEmo='';if(host){_EMO.lastIndex=0;var mm=(host.textContent||'').match(_EMO);curEmo=mm?mm[0]:'';}
@@ -128,7 +155,8 @@
       +"<div style='margin:9px 0 4px;font-size:11px;color:#a99fbe'>Texte de CET élément</div>"
       +"<div style='display:flex;gap:6px;align-items:center'><input type=text id=dtxt value=\""+curTxtA+"\" placeholder='écris le texte…' style='flex:1;font-size:13px;background:#0d0a14;color:#fff;border:1px solid #333;border-radius:6px;padding:6px'><button id=dtxtOk style='padding:7px 10px'>OK</button></div>"
       +"<div style='margin:9px 0 4px;font-size:11px;color:#a99fbe'>Taille de CET élément (fond + emoji ensemble)</div><input type=range id=dsz min=50 max=170 value='"+Math.round((ov.scale||1)*100)+"' style='width:100%'>"
-      +"<div style='display:flex;gap:6px;margin-top:10px'><button id=dok style='flex:1;padding:7px'>Fermer</button><button id=drm style='flex:1;padding:7px'>Tout retirer</button></div>";
+      +"<div style='display:flex;gap:6px;margin-top:10px'><button id=dallmodes style='flex:1;padding:7px' title='Reproduire ces retouches sur tous les modes (jour, nuit, hiver…)'>↪ Tous les modes</button><button id=dundo style='flex:1;padding:7px' title='Annuler la dernière retouche'>↶ Annuler</button></div>"
+      +"<div style='display:flex;gap:6px;margin-top:6px'><button id=dok style='flex:1;padding:7px'>Fermer</button><button id=drm style='flex:1;padding:7px'>Tout retirer</button></div>";
     document.body.appendChild(p);
     function Q(s){return p.querySelector(s);}
     function ov_(){return (T.overrides[key]=T.overrides[key]||{});}
@@ -147,8 +175,21 @@
       hdr.addEventListener('pointerdown',function(e){dn=true;var r=p.getBoundingClientRect();dx=e.clientX-r.left;dy=e.clientY-r.top;try{hdr.setPointerCapture(e.pointerId);}catch(x){}});
       hdr.addEventListener('pointermove',function(e){if(!dn)return;p.style.left=Math.max(2,Math.min(innerWidth-60,e.clientX-dx))+'px';p.style.top=Math.max(2,Math.min(innerHeight-40,e.clientY-dy))+'px';});
       hdr.addEventListener('pointerup',function(){dn=false;});})();
+    // Reproduire les retouches de CET élément (couleur/texte/taille) sur TOUS les modes → cohérence en 1 clic
+    var _dall=Q('#dallmodes');if(_dall)_dall.onclick=function(){var src=T.overrides[key];if(!src){_dall.textContent='Rien à copier';setTimeout(function(){_dall.textContent='↪ Tous les modes';},1100);return;}
+      MK.forEach(function(k){if(k===curMode)return;var tgt=k+'||'+sel;T.overrides[tgt]=Object.assign({},T.overrides[tgt]||{},JSON.parse(JSON.stringify(src)));});
+      refresh();_dall.textContent='Copié sur tous ✓';setTimeout(function(){_dall.textContent='↪ Tous les modes';},1300);};
+    var _dundo=Q('#dundo');if(_dundo)_dundo.onclick=function(){if(_undoLast())closePop();};
     var _dok=Q('#dok');if(_dok)_dok.onclick=closePop;var _drm=Q('#drm');if(_drm)_drm.onclick=function(){delete T.overrides[key];refresh();closePop();};}
-  function closePop(){var e=document.getElementById('smdaPop');if(e)e.remove();}
+  function closePop(){var e=document.getElementById('smdaPop');if(e)e.remove();_clearSel();}
+  // ---- surbrillance de l'élément en cours d'édition (feature : on voit ce qu'on retouche) ----
+  var _selEl=null;
+  function _markCss(){if(document.getElementById('sm-da-mark'))return;var s=document.createElement('style');s.id='sm-da-mark';
+    s.textContent='.sm-da-sel{outline:2px dashed #18E0C8 !important;outline-offset:2px !important;border-radius:6px;}\n'
+      +'.sm-da-flash{animation:smdaFlash .5s ease}@keyframes smdaFlash{0%{box-shadow:0 0 0 0 rgba(24,224,200,.6)}100%{box-shadow:0 0 0 14px rgba(24,224,200,0)}}';
+    document.head.appendChild(s);}
+  function _markSel(el){_markCss();_clearSel();if(el&&el.classList){try{el.classList.add('sm-da-sel');_selEl=el;}catch(e){}}}
+  function _clearSel(){if(_selEl&&_selEl.classList){try{_selEl.classList.remove('sm-da-sel');}catch(e){}}_selEl=null;}
 
   // ---- UI (launcher + panel) ----
   function el(h){var d=document.createElement('div');d.innerHTML=h;return d.firstElementChild;}
@@ -187,7 +228,7 @@
     P.appendChild(H('Presets'));var pb=document.createElement('div');pb.style.cssText='display:flex;flex-wrap:wrap;gap:4px';
     Object.keys(PRESETS).forEach(function(n){var b=document.createElement('button');b.textContent=n;
       b.style.cssText='border:1px solid #333;border-radius:999px;padding:4px 8px;font-size:11px;cursor:pointer;background:'+(n===T.preset?'#FF7A4D':'transparent')+';color:'+(n===T.preset?'#221':'#fff');
-      b.onclick=function(){var ov=T.overrides;T=build(n);T.overrides=ov;setMode(curMode);};pb.appendChild(b);});P.appendChild(pb);
+      b.onclick=function(){var ov=T.overrides||{};T=build(n);T.overrides=ov;setMode(curMode);};pb.appendChild(b);});P.appendChild(pb);
     P.appendChild(H('Palette · '+LAB[curMode]));
     P.appendChild(cr('Joyau 1',function(){return m.j1},function(v){m.j1=v;}));
     P.appendChild(cr('Joyau 2',function(){return m.j2},function(v){m.j2=v;}));
