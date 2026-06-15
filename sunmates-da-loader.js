@@ -145,6 +145,10 @@
         // tourne la teinte vers la DA du mode -> les médaillons suivent le preset (Sunset ≈ inchangé).
         var _bh = Math.round(_rgb2hsl(m.j1)[0] - 38); // 38 = teinte "sunset" native de l'art des badges
         css += sel + ' .smbadge-svg,' + sel + ' .sm-badge svg{filter:hue-rotate(' + _bh + 'deg);}\n';
+        // PINS CARTE : les marqueurs génériques suivent l'accent du preset (toi/.me + quête/.quest gardent leur sémantique)
+        css += sel + ' .epin:not(.me):not(.quest){--epin:' + acc + ';}\n';
+        // CARTE (fond vectoriel) : si la carte expose ces variables, l'eau/la terre suivent la DA
+        css += sel + ' .homemap-card,' + sel + ' .leaflet-container{--sm-map-bg:' + _mix(pg, acc, 0.06) + ';}\n';
       }
     });
     // Formes + tailles des tuiles + couleur des logos (consommation globale par le CSS)
@@ -158,7 +162,9 @@
     if (T.effects && T.effects.sheen != null) css += ':root{--sm-sheen:' + (Math.max(0, Math.min(100, +T.effects.sheen)) / 100) + ';}\n';
     if (T.sizes) {
       var _t = T.sizes.tile || 74, _i = T.sizes.iconTile || 38;
-      css += '.tile .thumb{width:' + _t + 'px;height:' + _t + 'px;}\n';
+      // l'emoji NATIF est du texte → on le dimensionne via font-size (et on centre) pour qu'il
+      // SUIVE la taille de la tuile (sinon le fond grossit mais l'emoji par-dessus reste petit).
+      css += '.tile .thumb{width:' + _t + 'px;height:' + _t + 'px;font-size:' + _i + 'px;line-height:1;display:grid;place-items:center;}\n';
       css += '.tile .thumb svg,.tile .thumb .smicon svg{width:' + _i + 'px !important;height:' + _i + 'px !important;}\n';
     }
     css += '.brand .mark svg line,.brand .mark svg path,.brand .mark svg polyline{stroke:var(--sm-logo,#fff);}\n';
