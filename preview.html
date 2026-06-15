@@ -197,7 +197,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=519"></script>
+  <script src="sunmates-badges.js?v=520"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -1872,7 +1872,7 @@
     .cic[data-smicon], .jo-ic[data-smicon] { position: relative; isolation: isolate; overflow: hidden; border: none;
       background: radial-gradient(120% 90% at 28% 22%, rgba(255,255,255,.42), rgba(255,255,255,0) 42%), linear-gradient(135deg, var(--ic1, var(--c1,#FF8A3D)), var(--ic2, var(--c2,#FF5A4D)));
       /* halo dérivé de la couleur réelle de la pastille (suit le thème) · fini l'ombre corail figée */
-      box-shadow: 0 7px 15px -4px color-mix(in oklab, var(--ic2, var(--c2, #FF5A4D)) 52%, transparent), 0 2px 4px rgba(60,28,14,.22), inset 0 1px 1px rgba(255,246,236,.85), inset 0 -2px 3px rgba(60,25,12,.26); }
+      box-shadow: 0 3px 8px rgba(60,28,14,.18), inset 0 1px 1px rgba(255,246,236,.85), inset 0 -2px 3px rgba(60,25,12,.26); }
     /* Reflet TOP plus léger (avant : blanc .5 sur 42% → givrait/floutait le glyphe). */
     .cic[data-smicon]::after, .jo-ic[data-smicon]::after { content:""; position:absolute; left:8%; right:8%; top:6%; height:34%; border-radius:50% 50% 60% 60%/70% 70% 100% 100%; background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.02)); pointer-events:none; z-index:0; }
     /* Les icônes joaillerie ont déjà leur propre reflet (::after + gloss interne au SVG) →
@@ -2646,7 +2646,7 @@
     .wish-chip.ntpick, .hm-visitor, .wg-goal[data-wggo] { transition: transform .1s ease; }
     .wish-chip.ntpick:active, .hm-visitor:active, .wg-goal[data-wggo]:active, .mode-switch button:active, .streak-chip:active { transform: scale(.97); }
     .search input { border: 1px solid rgba(255,90,77,.10); }
-    .tile .thumb { box-shadow: inset 0 -12px 26px rgba(0,0,0,.10); }
+    .tile .thumb { box-shadow: none; }
 
     /* --- Profil : compteurs dégradés, encarts doux --- */
     .stat-box { background: linear-gradient(160deg, #ffffff, #fdeee9); box-shadow: var(--shadow-sm); }
@@ -3211,9 +3211,9 @@
     .thumb.green, .thumb.blue, .thumb.purp, .thumb.coral, .thumb.lime, .thumb.indigo, .thumb.rose, .thumb.gold, .thumb.teal, .thumb.red {
       background: linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))) !important;
       /* halo DÉRIVÉ de la couleur réelle (suit le thème) + assise neutre douce */
-      box-shadow: 0 7px 16px color-mix(in oklab, var(--ic2, var(--c2, #C0392B)) 36%, transparent), 0 2px 5px rgba(40,18,8,.14) !important; }
+      box-shadow: 0 4px 12px rgba(40,18,8,.12) !important; }
     body.theme-dusk .thumb.green, body.theme-dusk .thumb.blue, body.theme-dusk .thumb.purp, body.theme-dusk .thumb.coral, body.theme-dusk .thumb.lime, body.theme-dusk .thumb.indigo, body.theme-dusk .thumb.rose, body.theme-dusk .thumb.gold, body.theme-dusk .thumb.teal, body.theme-dusk .thumb.red {
-      box-shadow: 0 7px 16px color-mix(in oklab, var(--ic2, var(--c2, #C0392B)) 30%, transparent), 0 3px 8px rgba(0,0,0,.35) !important; }
+      box-shadow: 0 4px 12px rgba(0,0,0,.26) !important; }
 
     /* Navigation : icônes vives */
     .bottom-nav { background: #fff7f2; box-shadow: 0 -8px 28px rgba(45,38,52,.10); }
@@ -20362,6 +20362,6 @@
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->
-  <script src="da-console-overlay.js?v=16"></script>
+  <script src="da-console-overlay.js?v=17"></script>
 </body>
 </html>

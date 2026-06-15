@@ -81,7 +81,9 @@
     // overrides ciblés (clic)
     Object.keys(T.overrides).forEach(function(key){var o=T.overrides[key],pa=key.split('||'),mk=pa[0],sel=pa[1];
       var cls=(T.modes[mk]&&T.modes[mk].class||'').trim();var pre='html body.sm-da-on'+(cls?'.'+cls.split(/\s+/).join('.'):'')+' ';
-      var d='';if(o.j1)d+='--ic1:'+o.j1+' !important;--ic2:'+(o.j2||o.j1)+' !important;background-image:linear-gradient(160deg,'+o.j1+','+(o.j2||o.j1)+') !important;';
+      var d='';
+      if(o.bg){var bd=mix(o.bg,'#000',0.18);d+='background:linear-gradient(160deg,'+o.bg+','+bd+') !important;--ic1:'+o.bg+' !important;--ic2:'+bd+' !important;';} // UNE couleur → fond visible sur tout (tuile, bouton, texte-conteneur)
+      else if(o.j1)d+='--ic1:'+o.j1+' !important;--ic2:'+(o.j2||o.j1)+' !important;background-image:linear-gradient(160deg,'+o.j1+','+(o.j2||o.j1)+') !important;';
       if(o.scale)d+='transform:scale('+o.scale+');'; // taille par élément (clic) — fond + emoji ensemble, pas de désync
       if(o.textColor)d+='color:'+o.textColor+' !important;';
       if(d)css+=pre+sel+'{'+d+'}\n';});
@@ -114,12 +116,13 @@
     var curTxtA=curTxt.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     // PALETTE DU PRESET (couleurs dans le thème, pas du hasard) : les joyaux de tous les modes
     var pal=[];Object.keys(T.modes).forEach(function(k){[T.modes[k].j1,T.modes[k].j2].forEach(function(c){if(c&&pal.indexOf(c)<0)pal.push(c);});});
-    var swh=pal.slice(0,10).map(function(c){return "<button class=dasw data-c='"+c+"' title='"+c+"' style='width:24px;height:24px;border-radius:6px;border:1px solid #0007;background:"+c+";cursor:pointer'></button>";}).join('');
+    var swh=pal.slice(0,6).map(function(c){return "<button class=dasw data-c='"+c+"' title='"+c+"' style='width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.25);background:"+c+";cursor:pointer'></button>";}).join('');
     var p=document.createElement('div');p.className='smda-pop';p.id='smdaPop';
     p.style.cssText='position:fixed;z-index:2147483647;left:'+Math.min(ev.clientX,innerWidth-262)+'px;top:'+Math.max(8,Math.min(ev.clientY,innerHeight-280))+'px;background:#1d1830;color:#f3ecf6;border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px;width:248px;font:13px Manrope,sans-serif;box-shadow:0 16px 40px -10px #000;touch-action:none';
     p.innerHTML="<b id=dphdr style='display:block;font-size:12px;word-break:break-all;cursor:move;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.15);margin-bottom:6px'>⠿ "+sel+" <span style='color:#a99fbe;font-weight:400'>(glisse-moi)</span></b>"
-      +"<div style='margin:9px 0 4px;font-size:11px;color:#a99fbe'>Palette du preset (1 clic)</div><div style='display:flex;flex-wrap:wrap;gap:5px'>"+swh+"</div>"
-      +"<div style='display:flex;align-items:center;gap:8px;margin:9px 0'>Fond J1 <input type=color id=dj1 value='"+(ov.j1||m.j1)+"' style='width:38px;height:30px'> J2 <input type=color id=dj2 value='"+(ov.j2||m.j2)+"' style='width:38px;height:30px'> Texte <input type=color id=dtc value='"+(ov.textColor||'#161b29')+"' style='width:38px;height:30px'><button id=dtcRm style='padding:5px 8px' title='Retirer couleur texte'>✕</button></div>"
+      +"<div style='margin:9px 0 5px;font-size:11px;color:#a99fbe'>Couleur de fond</div>"
+      +"<div style='display:flex;align-items:center;gap:7px;flex-wrap:wrap'><input type=color id=dbg value='"+(ov.bg||m.j1)+"' style='width:48px;height:34px;border-radius:9px;cursor:pointer'>"+swh+"<button id=dbgRm style='padding:6px 9px;margin-left:auto' title='Retirer le fond'>✕</button></div>"
+      +"<div style='display:flex;align-items:center;gap:8px;margin:10px 0 0'><span style='flex:1'>Couleur du texte</span><input type=color id=dtc value='"+(ov.textColor||'#161b29')+"' style='width:48px;height:34px;border-radius:9px;cursor:pointer'><button id=dtcRm style='padding:6px 9px' title='Retirer'>✕</button></div>"
       +"<div style='margin:9px 0 4px;font-size:11px;color:#a99fbe'>Emoji "+(curEmo?'(actuel '+curEmo+')':'(aucun — en ajouter)')+"</div>"
       +"<div style='display:flex;gap:6px;align-items:center'><input type=text id=demo value='"+curEmo+"' placeholder='colle/écris un emoji' style='flex:1;font-size:18px;text-align:center;background:#0d0a14;color:#fff;border:1px solid #333;border-radius:6px;padding:5px'><button id=demoOk style='padding:7px 10px'>Poser</button><button id=demoRm style='padding:7px 9px' title='Retirer emoji'>✕</button></div>"
       +"<div style='margin:9px 0 4px;font-size:11px;color:#a99fbe'>Texte de CET élément</div>"
@@ -127,9 +130,10 @@
       +"<div style='margin:9px 0 4px;font-size:11px;color:#a99fbe'>Taille de CET élément (fond + emoji ensemble)</div><input type=range id=dsz min=50 max=170 value='"+Math.round((ov.scale||1)*100)+"' style='width:100%'>"
       +"<div style='display:flex;gap:6px;margin-top:10px'><button id=dok style='flex:1;padding:7px'>Fermer</button><button id=drm style='flex:1;padding:7px'>Tout retirer</button></div>";
     document.body.appendChild(p);
-    function sv(){T.overrides[key]=Object.assign(T.overrides[key]||{},{j1:p.querySelector('#dj1').value,j2:p.querySelector('#dj2').value});injectExtra();apply();}
-    p.querySelector('#dj1').oninput=sv;p.querySelector('#dj2').oninput=sv;
-    Array.prototype.forEach.call(p.querySelectorAll('.dasw'),function(b){b.onclick=function(){var c=b.getAttribute('data-c');p.querySelector('#dj1').value=c;p.querySelector('#dj2').value=mix(c,'#000',0.22);sv();};});
+    function sv(){T.overrides[key]=Object.assign(T.overrides[key]||{},{bg:p.querySelector('#dbg').value});delete T.overrides[key].j1;delete T.overrides[key].j2;injectExtra();apply();}
+    p.querySelector('#dbg').oninput=sv;
+    p.querySelector('#dbgRm').onclick=function(){if(T.overrides[key]){delete T.overrides[key].bg;delete T.overrides[key].j1;delete T.overrides[key].j2;}injectExtra();apply();};
+    Array.prototype.forEach.call(p.querySelectorAll('.dasw'),function(b){b.onclick=function(){var c=b.getAttribute('data-c');p.querySelector('#dbg').value=c;sv();};});
     p.querySelector('#demoOk').onclick=function(){var e=p.querySelector('#demo').value.trim();if(e&&host)_setEmoji(host,e);};
     p.querySelector('#demoRm').onclick=function(){if(host)_setEmoji(host,'');p.querySelector('#demo').value='';};
     p.querySelector('#dtxtOk').onclick=function(){if(host)_setText(host,p.querySelector('#dtxt').value);};
