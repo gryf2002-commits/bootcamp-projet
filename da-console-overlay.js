@@ -35,7 +35,24 @@
     '🌴 Lagon':['#2BD4A8','#0E9E8C','Baloo 2','Nunito','squircle'],
     '🍊 Agrumes':['#FFC53D','#FF7A1F','Baloo 2','Nunito','squircle'],
     '✨ Cosmique':['#B15CFF','#5B2BD6','Fraunces','Poppins','squircle'],
-    '⚪ Lite / Neutre':['#E0563E','#E0563E','Manrope','Manrope','rounded']};
+    '⚪ Lite / Neutre':['#E0563E','#E0563E','Manrope','Manrope','rounded'],
+    // — presets ré-importés depuis l'ancienne console complète (builtins de da-console.html), base mode « jour » —
+    '💎 Joaillerie':['#E85CA8','#7A2FD0','Fraunces','Manrope','squircle'],
+    '🌸 Pastel doux':['#FFC2D6','#B5A8FF','Quicksand','Quicksand','rounded'],
+    '⚪ Minimal mono':['#9AA3AE','#5B636E','Manrope','Manrope','rounded'],
+    '📖 Duotone éditorial':['#6E7BE0','#34406E','Playfair Display','Manrope','rounded'],
+    '🌴 Lagon tropical':['#2BD4A8','#0E9E8C','Baloo 2','Nunito','squircle'],
+    '✨ Crépuscule cosmique':['#B15CFF','#5B2BD6','Fraunces','Poppins','squircle'],
+    '🌅 Aurore pêche':['#FFB36B','#FF6F91','Fraunces','Manrope','squircle'],
+    '🪸 Corail récif':['#FF7A59','#FF3D77','Fraunces','Manrope','squircle'],
+    '🍇 Cassis nuit':['#A65CFF','#5B2BD6','Fraunces','Poppins','squircle'],
+    '🌊 Bleu cobalt':['#4D8DF0','#2747C9','Poppins','Manrope','squircle'],
+    '🌿 Menthe fraîche':['#46D6A6','#1E9E78','Baloo 2','Nunito','squircle'],
+    '🔥 Braise ardente':['#FF8A3D','#E0322A','Fraunces','Manrope','squircle'],
+    '🌷 Rose poudré':['#FFADC7','#FF7FA8','Quicksand','Quicksand','rounded'],
+    '⚫ Encre & or':['#F0C36B','#B8862F','Fraunces','Manrope','squircle'],
+    '🍋 Citron givré':['#FFD84D','#F2A20C','Baloo 2','Nunito','squircle'],
+    '🌫️ Brume nordique':['#8FA8C9','#5A6E8C','Manrope','Manrope','rounded']};
   function build(n){var p=PRESETS[n];var lite=(n.indexOf('Lite')>=0);
     var M=modesFrom(p[0],p[1]);
     if(lite){Object.keys(M).forEach(function(k){M[k].page='#F4F5F7';M[k].ink='#16181D';M[k].j1='#E0563E';M[k].j2='#E0563E';});}
@@ -91,6 +108,9 @@
     // élément porteur d'emoji (l'élément cliqué ou un ancêtre proche), sinon l'élément cliqué (pour AJOUTER)
     var host=el,h=el;for(var i=0;i<6&&h;i++){if(h.textContent){_EMO.lastIndex=0;if(_EMO.test(h.textContent)){host=h;break;}}h=h.parentElement;}
     var curEmo='';if(host){_EMO.lastIndex=0;var mm=(host.textContent||'').match(_EMO);curEmo=mm?mm[0]:'';}
+    // texte actuel (1er nœud significatif), emoji retiré, pour pré-remplir le champ Texte
+    var _tn=_firstTextNode(host),curTxt=_tn?(_tn.nodeValue||'').replace(_EMO,'').replace(/\s+/g,' ').trim():'';
+    var curTxtA=curTxt.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     // PALETTE DU PRESET (couleurs dans le thème, pas du hasard) : les joyaux de tous les modes
     var pal=[];Object.keys(T.modes).forEach(function(k){[T.modes[k].j1,T.modes[k].j2].forEach(function(c){if(c&&pal.indexOf(c)<0)pal.push(c);});});
     var swh=pal.slice(0,10).map(function(c){return "<button class=dasw data-c='"+c+"' title='"+c+"' style='width:24px;height:24px;border-radius:6px;border:1px solid #0007;background:"+c+";cursor:pointer'></button>";}).join('');
@@ -101,6 +121,8 @@
       +"<div style='display:flex;align-items:center;gap:8px;margin:9px 0'>J1 <input type=color id=dj1 value='"+(ov.j1||m.j1)+"' style='width:42px;height:32px'> J2 <input type=color id=dj2 value='"+(ov.j2||m.j2)+"' style='width:42px;height:32px'></div>"
       +"<div style='margin:9px 0 4px;font-size:11px;color:#a99fbe'>Emoji "+(curEmo?'(actuel '+curEmo+')':'(aucun — en ajouter)')+"</div>"
       +"<div style='display:flex;gap:6px;align-items:center'><input type=text id=demo value='"+curEmo+"' placeholder='colle/écris un emoji' style='flex:1;font-size:18px;text-align:center;background:#0d0a14;color:#fff;border:1px solid #333;border-radius:6px;padding:5px'><button id=demoOk style='padding:7px 10px'>Poser</button><button id=demoRm style='padding:7px 9px' title='Retirer emoji'>✕</button></div>"
+      +"<div style='margin:9px 0 4px;font-size:11px;color:#a99fbe'>Texte de CET élément</div>"
+      +"<div style='display:flex;gap:6px;align-items:center'><input type=text id=dtxt value=\""+curTxtA+"\" placeholder='écris le texte…' style='flex:1;font-size:13px;background:#0d0a14;color:#fff;border:1px solid #333;border-radius:6px;padding:6px'><button id=dtxtOk style='padding:7px 10px'>OK</button></div>"
       +"<div style='margin:9px 0 4px;font-size:11px;color:#a99fbe'>Taille de CET élément (fond + emoji ensemble)</div><input type=range id=dsz min=50 max=170 value='"+Math.round((ov.scale||1)*100)+"' style='width:100%'>"
       +"<div style='display:flex;gap:6px;margin-top:10px'><button id=dok style='flex:1;padding:7px'>Fermer</button><button id=drm style='flex:1;padding:7px'>Tout retirer</button></div>";
     document.body.appendChild(p);
@@ -109,6 +131,7 @@
     Array.prototype.forEach.call(p.querySelectorAll('.dasw'),function(b){b.onclick=function(){var c=b.getAttribute('data-c');p.querySelector('#dj1').value=c;p.querySelector('#dj2').value=mix(c,'#000',0.22);sv();};});
     p.querySelector('#demoOk').onclick=function(){var e=p.querySelector('#demo').value.trim();if(e&&host)_setEmoji(host,e);};
     p.querySelector('#demoRm').onclick=function(){if(host)_setEmoji(host,'');p.querySelector('#demo').value='';};
+    p.querySelector('#dtxtOk').onclick=function(){if(host)_setText(host,p.querySelector('#dtxt').value);};
     p.querySelector('#dsz').oninput=function(){var s=(+p.querySelector('#dsz').value)/100;T.overrides[key]=T.overrides[key]||{};T.overrides[key].scale=s;injectExtra();apply();};
     p.querySelector('#dok').onclick=closePop;p.querySelector('#drm').onclick=function(){delete T.overrides[key];injectExtra();apply();closePop();};}
   function closePop(){var e=document.getElementById('smdaPop');if(e)e.remove();}
@@ -247,6 +270,13 @@
   function _setEmoji(host,emo){if(!host)return;var w=document.createTreeWalker(host,NodeFilter.SHOW_TEXT,null),n;
     while(n=w.nextNode()){_EMO.lastIndex=0;if(_EMO.test(n.nodeValue)){n.nodeValue=n.nodeValue.replace(_EMO1,emo);return;}}
     var f=host.firstChild;if(f&&f.nodeType===3)f.nodeValue=emo+' '+f.nodeValue;else host.insertBefore(document.createTextNode(emo+' '),host.firstChild||null);}
+  // 1er nœud texte « significatif » (non vide, hors emoji seul) d'un élément → pour lire/éditer le libellé
+  function _firstTextNode(host){if(!host)return null;var w=document.createTreeWalker(host,NodeFilter.SHOW_TEXT,null),n;
+    while(n=w.nextNode()){var v=(n.nodeValue||'').replace(_EMO,'').replace(/\s/g,'');if(v)return n;}return null;}
+  // remplace le texte VISIBLE de l'élément (1er nœud texte significatif) sans toucher aux enfants/emoji
+  function _setText(host,txt){var n=_firstTextNode(host);if(n){_EMO.lastIndex=0;var emo=(n.nodeValue||'').match(_EMO1);
+      n.nodeValue=(emo?emo[0]+' ':'')+txt;return true;}
+    if(host){var f=host.firstChild;if(f&&f.nodeType===3)f.nodeValue=txt;else host.insertBefore(document.createTextNode(txt),host.firstChild||null);return true;}return false;}
   function _txtCss(){if(document.getElementById('sm-da-textonly'))return;var s=document.createElement('style');s.id='sm-da-textonly';
     s.textContent='body.sm-text-only [data-smicon],body.sm-text-only .cic,body.sm-text-only .jo-ic,body.sm-text-only .qm-ic,body.sm-text-only .sc-ic,body.sm-text-only .smgem{display:none!important}'
       +'body.sm-text-only .tile,body.sm-text-only .cat-tile,body.sm-text-only .gp-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px}';
