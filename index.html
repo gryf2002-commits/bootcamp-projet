@@ -197,7 +197,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=498"></script>
+  <script src="sunmates-badges.js?v=509"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -884,6 +884,9 @@
     .set-toggle { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .7rem 0; }
     .set-toggle .st-lbl { font-weight: 600; color: var(--ink); }
     .set-toggle .st-sub { font-size: .76rem; color: var(--muted); }
+    /* Mode « lissé » (beta OFF) : on masque les fonctionnalités expérimentales (data-beta / .beta-only).
+       Les piliers (Accueil, Lieux, Sécurité, Mates, Profil) ne portent JAMAIS data-beta → toujours visibles. */
+    body.sm-lite [data-beta], body.sm-lite .beta-only { display: none !important; }
     .switch { position: relative; width: 46px; height: 27px; flex-shrink: 0; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .switch .sl { position: absolute; inset: 0; background: var(--line); border-radius: 999px; transition: background .2s; cursor: pointer; }
@@ -4458,6 +4461,8 @@
     .cic[data-smicon]::after, .jo-ic[data-smicon]::after, .smgem::after, .thumb::after { content:""; position:absolute; left:0; right:0; top:0; height:44%; background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0)); pointer-events:none; z-index:0; }
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
+  <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
+  <link rel="stylesheet" href="sunmates-lite.css">
 </head>
 <body>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
@@ -5088,13 +5093,13 @@
             <div class="hm-cities" id="hmCities"></div>
           </section>
 
-          <section class="solo-ch" id="soloChallenges" aria-label="Défis solo de ta ville">
+          <section class="solo-ch" id="soloChallenges" data-beta aria-label="Défis solo de ta ville">
             <div class="qm-head"><h3>Défis solo de <span id="scCity">ta ville</span> 🧭</h3><a class="qm-all" id="scReroll" role="button" tabindex="0">🎲 Mélanger</a></div>
             <p class="muted sc-sub">Redécouvre ton coin comme en voyage. Aucune rencontre, juste toi et ta ville.</p>
             <div class="sc-grid" id="scGrid"></div>
           </section>
 
-          <section class="solo-rit" id="soloRituals" aria-label="Rituels du jour">
+          <section class="solo-rit" id="soloRituals" data-beta aria-label="Rituels du jour">
             <div class="qm-head"><h3>Rituels du jour ☀️</h3><span class="rit-cnt" id="ritCnt">0/3</span></div>
             <div class="rit-list" id="ritList"></div>
           </section>
@@ -5478,7 +5483,7 @@
             <p class="muted" id="tpBio" style="line-height:1.5">—</p>
             <div class="hashtags" id="tpTags"></div>
           </div>
-          <div class="card vouch-card" id="tpVouchCard" style="display:none">
+          <div class="card vouch-card" id="tpVouchCard" data-beta style="display:none">
             <div class="vouch-head">
               <div style="min-width:0">
                 <div class="vouch-title"><span data-i18n="vouch.title">⭐ Recommandé par des Mates</span> <b id="tpVouchCount">0</b></div>
@@ -6114,6 +6119,7 @@
               <h3 style="margin-top:0">🧪 Préversion (bac à essai)</h3>
               <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Les grosses nouveautés sont d'abord déployées sur <b>preview.html</b> : tu y testes la PROCHAINE version en conditions réelles (même base, même compte), <b>sans toucher</b> à l'app de tout le monde ni à son cache. Quand tu valides, elle est promue en version officielle (1 commit). <b>Touche le ruban violet 🧪</b> dans la préversion : il affiche le récap de tout ce qui a changé.</p>
               <button class="btn-primary btn-block" id="sysOpenPreview">🧪 Ouvrir la préversion</button>
+              <p class="muted" style="font-size:.78rem;margin:.5rem 0 0">La console DA est <b>centralisée dans l'app</b> : le bouton flottant <b>✦ DA</b> (déplaçable) ouvre l'éditeur <b>live</b> sur la vraie app — presets, palette, emojis, clic-recolor.</p>
             </div>
             <!-- P14 : état des MIGRATIONS sondé EN DIRECT sur la base -->
             <div class="card">
@@ -6184,7 +6190,14 @@
           <div class="set-grouptitle">Aide &amp; support</div>
           <button class="btn-ghost btn-block help-cta" data-secu="aide"><span class="hc-ic">🎬</span><span class="hc-txt"><b>La visite guidée</b><span class="hc-sub">Perdu·e ? Laisse l'app te montrer tout ce qu'elle sait faire, à ton rythme ✨</span></span></button>
           <button class="btn-ghost btn-block help-cta" data-secu="contactus" style="margin-top:.5rem"><span class="hc-ic">✉️</span><span class="hc-txt"><b>Écris-nous</b><span class="hc-sub">Une question, un pépin ? On te lit et on te répond ici, dans l'app 💛</span></span></button>
-          <button class="btn-ghost btn-block help-cta" id="betaFeedbackBtn" style="margin-top:.5rem"><span class="hc-ic">🧪</span><span class="hc-txt"><b>Ton avis compte</b><span class="hc-sub">SunMates grandit avec toi : raconte-nous ce que tu changerais</span></span></button>
+          <button class="btn-ghost btn-block help-cta" id="betaFeedbackBtn" data-beta style="margin-top:.5rem"><span class="hc-ic">🧪</span><span class="hc-txt"><b>Ton avis compte</b><span class="hc-sub">SunMates grandit avec toi : raconte-nous ce que tu changerais</span></span></button>
+
+          <!-- Expérimental -->
+          <div class="set-grouptitle" data-i18n="set.expGroup">Expérimental</div>
+          <div class="set-toggle">
+            <div><div class="st-lbl" data-i18n="set.beta">🧪 Fonctionnalités beta</div><div class="st-sub" data-i18n="set.betaSub">Active les nouveautés en test. Désactive pour une version épurée, centrée sur l'essentiel (sécurité, rencontres, lieux).</div></div>
+            <label class="switch"><input type="checkbox" id="betaToggle"><span class="sl"></span></label>
+          </div>
 
           <!-- Application -->
           <div class="set-grouptitle">Application</div>
@@ -6265,7 +6278,7 @@
               <div class="cat-tile" data-jeuxnav="badges"><div class="cic c-gold" data-smicon="medal" data-smicon-size="36">🏅</div><div class="clbl">Badges</div></div>
               <div class="cat-tile" data-jeuxnav="coupons"><div class="cic c-green" data-smicon="coupon" data-smicon-size="36">🎟️</div><div class="clbl">Coupons</div></div>
               <div class="cat-tile" data-jeuxnav="rank"><div class="cic c-blue" data-smicon="rank" data-smicon-size="36">🏆</div><div class="clbl">Classement</div></div>
-              <div class="cat-tile" data-jeuxnav="shop"><div class="cic c-pink" data-smicon="shop" data-smicon-size="36">🛍️</div><div class="clbl">Boutique</div></div>
+              <div class="cat-tile" data-jeuxnav="shop" data-beta><div class="cic c-pink" data-smicon="shop" data-smicon-size="36">🛍️</div><div class="clbl">Boutique</div></div>
             </div>
           </div>
           <!-- (#40 « La valise folle » RETIRÉE · retour Maxime : mal programmée.) -->
@@ -6330,12 +6343,12 @@
           </div>
           <div class="xp-banner" id="xpBanner"></div>
 
-          <div class="card sugg-card" id="suggestionsSection" style="display:none">
+          <div class="card sugg-card" id="suggestionsSection" data-beta style="display:none">
             <h3 style="margin-top:0;display:flex;align-items:center;gap:.4rem">🎯 Défis reçus <span class="sugg-count" id="suggCount"></span></h3>
             <div id="suggestionsList"></div>
           </div>
 
-          <div class="card sugg-card" id="groupConfirmSection" style="display:none">
+          <div class="card sugg-card" id="groupConfirmSection" data-beta style="display:none">
             <h3 style="margin-top:0;display:flex;align-items:center;gap:.4rem">👥 Quêtes à confirmer <span class="sugg-count" id="groupCount"></span></h3>
             <p class="muted" style="font-size:.8rem;margin:.2rem 0 .5rem">Un Mate t'a inclus·e dans une quête de groupe. Confirme pour valider, vous gagnez tous les deux l'XP <b>+ bonus</b> ✨</p>
             <div id="groupConfirmList"></div>
@@ -6437,7 +6450,7 @@
         </div>
 
         <!-- Vue Boutique XP (cosmétiques débloqués par paliers d'XP, 100% local) -->
-        <div id="jeuxShop" class="jeux-view hidden">
+        <div id="jeuxShop" class="jeux-view hidden" data-beta>
           <button class="backbtn" data-back>‹ Retour</button>
           <h1>🛍️ Boutique</h1>
           <p class="muted" style="margin-top:0">Dépense tes <b>🪙 SunCoins</b> en <b>cosmétiques</b> pour personnaliser ton profil. Tu en gagnes en accomplissant des quêtes (+15) et chaque jour (+10). Ton <b>⭐ XP</b>, lui, reste ta progression (niveau & classement) et n'est jamais dépensé.</p>
@@ -6447,7 +6460,7 @@
           <div id="shopTitles" class="shop-grid"></div>
           <div class="section-head"><h3 style="margin:1rem 0 .2rem">🖼️ Cadres d'avatar</h3></div>
           <p class="muted" style="font-size:.78rem;margin:.1rem 0 .5rem">Encadre ta photo de profil.</p>
-          <div id="shopFrames" class="shop-grid"></div>
+          <div id="shopFrames" class="shop-grid" data-beta></div>
           <!-- #14 : boosts retirés (« pay to win » : profil mis en avant payant) · décision produit. -->
           <div id="shopBoosts" style="display:none"></div>
         </div>
@@ -8570,6 +8583,10 @@
     let   selStyle = null;          // (déprécié, gardé pour la compat des chips single)
     const selStyles = new Set();    // style de voyage = multi-choix
     let   myProfile = null; // mon profil complet (utilisé pour le matchmaking)
+    // PREVIEW UNIQUEMENT : sur le fichier preview.html, isAdmin() est toujours vrai → la console DA
+    // ✦ monte immédiatement. Une fois promu en index.html, le test sur le nom de fichier devient
+    // faux → gating admin normal restauré pour le public. (lecture live de myProfile sinon.)
+    try { window.isAdmin = function () { return /preview\.html/i.test(location.pathname) || !!(myProfile && myProfile.is_admin); }; } catch (e) {}
     let   myBffId = null;   // « BFF du moment » choisi
     let   iAmGold = true;   // tout débloqué par défaut (Gold = aperçu admin, ne pénalise personne)
 
@@ -9401,6 +9418,11 @@
       const data = main.data;
       if (main.error || !data) return;
       myProfile = data;
+      // PREVIEW UNIQUEMENT : accès TOTAL pour les tests (panneau Admin, aperçu Gold, console DA,
+      // espace Pro, beta…). Inerte une fois promu en index.html (nom de fichier ≠ preview.html).
+      try { if (/preview\.html/i.test(location.pathname)) myProfile.is_admin = true; } catch (e) {}
+      // Exposé pour la console DA overlay (da-console-overlay.js).
+      try { window.myProfile = myProfile; } catch (e) {}
       // Champs texte / select / date simples
       setV("pUsername", data.username); setV("pFirstName", data.first_name); setV("pLastName", data.last_name);
       setV("pPhone", priv?.data?.phone); setV("pCity", data.city); setV("pBio", data.bio);
@@ -15363,10 +15385,11 @@
     // Pastille emoji colorée comme marqueur (au lieu du marqueur bleu par défaut).
     function epinIcon(emoji, bg, extra) {
       // 🎅 Décembre : les pastilles mettent leur bonnet (clin d'œil saisonnier, zéro réglage).
-      const xmas = (new Date().getMonth() === 11) ? '<span class="epin-xmas">🎅</span>' : "";
+      const _betaFx = (function () { try { return localStorage.getItem("sm_beta") !== "0"; } catch (e) { return true; } })();
+      const xmas = (_betaFx && new Date().getMonth() === 11) ? '<span class="epin-xmas">🎅</span>' : ""; // scène saisonnière : beta only
       return L.divIcon({
         className: "epin-wrap",
-        html: `<div class="epin ${extra || ""}" style="background:${bg}"><span>${emoji}</span>${xmas}</div>`,
+        html: `<div class="epin ${extra || ""}" style="background:var(--epin, ${bg})"><span>${emoji}</span>${xmas}</div>`,
         iconSize: [32, 32], iconAnchor: [16, 30], popupAnchor: [0, -28],
       });
     }
@@ -18392,6 +18415,7 @@
     // dessiné main descend, TOURNE (décélère), un pin se plante sur un pays au hasard →
     // sa fiche s'ouvre : « Et si c'était ta prochaine destination ? » + badge « Tour du monde ».
     (function eggGlobe() {
+      try { if (localStorage.getItem("sm_beta") === "0") return; } catch (e) {} // beta OFF (lissée) → easter egg désactivé
       const brand = document.querySelector("#appView .brand"); if (!brand) return;
       let taps = 0, t0 = 0;
       brand.addEventListener("click", () => {
@@ -18439,6 +18463,7 @@
     // 🐋 LA BALEINE · zoomer au large (le centre de la carte est sur l'eau) : elle apparaît.
     let _whaleMk = null;
     function _eggWhaleCheck() {
+      try { if (localStorage.getItem("sm_beta") === "0") return; } catch (e) {} // beta OFF (lissée) → easter egg désactivé
       try {
         if (!homeLeaf || homeLeaf.getZoom() < 10) return;
         if (_whaleMk) return; // UNE seule baleine à la fois (avant : elles s'empilaient et la
@@ -18502,6 +18527,7 @@
 
     // ☀️ MOTS MAGIQUES · certains mots tapés dans la recherche de l'accueil réveillent des choses.
     (function eggMagicWords() {
+      try { if (localStorage.getItem("sm_beta") === "0") return; } catch (e) {} // beta OFF (lissée) → easter egg désactivé
       const inp = $("homeSearch"); if (!inp) return;
       inp.addEventListener("input", () => {
         try {
@@ -18595,6 +18621,7 @@
       } catch (e) {}
     }
     (function eggKonami() {
+      try { if (localStorage.getItem("sm_beta") === "0") return; } catch (e) {} // beta OFF (lissée) → easter egg désactivé
       const SEQ_K = ["arrowup", "arrowup", "arrowdown", "arrowdown", "arrowleft", "arrowright", "arrowleft", "arrowright", "b", "a"];
       const SEQ_S = ["u", "u", "d", "d", "l", "r", "l", "r"];
       // La même séquence À L'ENVERS = retour en 2026 (annule le mode rétro).
@@ -18681,6 +18708,7 @@
         + '<path d="M85 134 Q94 142 104 151" stroke="rgba(80,35,15,.6)" stroke-width="1.3" fill="none"/></svg>';
     }
     (function eggBalloons() {
+      try { if (localStorage.getItem("sm_beta") === "0") return; } catch (e) {} // beta OFF (lissée) → easter egg désactivé
       const btn = document.querySelector('#homeModeSwitch button[data-mode="home"]'); if (!btn) return;
       let taps = 0, t0 = 0;
       btn.addEventListener("click", () => {
@@ -18719,6 +18747,7 @@
     // un LOOPING en laissant une traînée pointillée qui court, et se pose sur l'onglet Jeux
     // où il dépose un petit bonus (+5 XP, 1×/jour) + badge « Première classe ».
     (function eggPlane() {
+      try { if (localStorage.getItem("sm_beta") === "0") return; } catch (e) {} // beta OFF (lissée) → easter egg désactivé
       const btn = document.querySelector('#homeModeSwitch button[data-mode="travel"]'); if (!btn) return;
       let taps = 0, t0 = 0;
       btn.addEventListener("click", () => {
@@ -18777,6 +18806,7 @@
 
     // 🚢 TITANIC · naviguer sur la carte jusqu'aux coordonnées du naufrage (41.73 N, 49.95 W).
     function _eggTitanicCheck() {
+      try { if (localStorage.getItem("sm_beta") === "0") return; } catch (e) {} // beta OFF (lissée) → easter egg désactivé
       try {
         if (!homeLeaf || homeLeaf.getZoom() < 8) return;
         if (window._titanicOn) return; // un seul paquebot à la fois
@@ -18860,6 +18890,7 @@
       } catch (e) {}
     }
     (function eggShake() {
+      try { if (localStorage.getItem("sm_beta") === "0") return; } catch (e) {} // beta OFF (lissée) → easter egg désactivé
       try {
         if (typeof DeviceMotionEvent === "undefined") return;
         if (typeof DeviceMotionEvent.requestPermission === "function") return; // iOS : on n'impose pas de pop-up permission
@@ -19386,7 +19417,7 @@
         "places.title": "Lieux sûrs", "places.intro": "Les meilleurs spots pour se retrouver ☕ Fais un check-in pour grimper au classement 🏆", "places.searchph": "Rechercher un lieu ou une ville…", "profile.title": "Mon profil", "safety.title": "Sécurité", "games.title": "Jeux & Quêtes",
         "prof.seg.edit": "Mon profil", "profile.replay": "🚀 Revoir la présentation",
         "filter.verified": "Vérifiés", "filter.active": "● En ligne", "filter.city": "Même ville", "filter.affinity": "Affinité 50%+",
-        "set.title": "⚙️ Paramètres du compte", "set.lang": "🌍 Langue / Language", "set.haptics": "Vibrations (haptique)", "set.hapticsSub": "Petit retour vibrant sur les actions clés", "set.sound": "🔊 Sons de l'interface", "set.soundSub": "Petits sons sur les clics, succès et déblocages",
+        "set.title": "⚙️ Paramètres du compte", "set.lang": "🌍 Langue / Language", "set.haptics": "Vibrations (haptique)", "set.hapticsSub": "Petit retour vibrant sur les actions clés", "set.sound": "🔊 Sons de l'interface", "set.soundSub": "Petits sons sur les clics, succès et déblocages", "set.expGroup": "Expérimental", "set.beta": "🧪 Fonctionnalités beta", "set.betaSub": "Active les nouveautés en test. Désactive pour une version épurée, centrée sur l'essentiel (sécurité, rencontres, lieux).",
         "set.presence": "Afficher ma présence", "set.presenceSub": "« En ligne » sur ton avatar", "set.myQr": "🪪 Mon QR", "set.scanQr": "📷 Scanner", "set.newEmail": "Nouvel email",
         "presence.active": "En ligne",
         "chat.translate": "Traduire", "chat.seeProfile": "Voir le profil ›", "tr.loading": "Traduction…", "tr.error": "Traduction indisponible", "tr.from": "Traduit",
@@ -19405,7 +19436,7 @@
         "places.title": "Safe places", "places.intro": "The best spots to meet up ☕ Check in to climb the leaderboard 🏆", "places.searchph": "Search a place or city…", "profile.title": "My profile", "safety.title": "Safety", "games.title": "Games & Quests",
         "prof.seg.edit": "My profile", "profile.replay": "🚀 Replay the intro",
         "filter.verified": "Verified", "filter.active": "● Online", "filter.city": "Same city", "filter.affinity": "Affinity 50%+",
-        "set.title": "⚙️ Account settings", "set.lang": "🌍 Language / Langue", "set.haptics": "Vibrations (haptics)", "set.hapticsSub": "A little buzz on key actions", "set.sound": "🔊 Interface sounds", "set.soundSub": "Little sounds on taps, wins and unlocks",
+        "set.title": "⚙️ Account settings", "set.lang": "🌍 Language / Langue", "set.haptics": "Vibrations (haptics)", "set.hapticsSub": "A little buzz on key actions", "set.sound": "🔊 Interface sounds", "set.soundSub": "Little sounds on taps, wins and unlocks", "set.expGroup": "Experimental", "set.beta": "🧪 Beta features", "set.betaSub": "Turn on features still in testing. Switch off for a streamlined version focused on the essentials (safety, meetups, places).",
         "set.presence": "Show my presence", "set.presenceSub": "“Online” on your avatar", "set.myQr": "🪪 My QR", "set.scanQr": "📷 Scan", "set.newEmail": "New email",
         "presence.active": "Online",
         "chat.translate": "Translate", "chat.seeProfile": "See profile ›", "tr.loading": "Translating…", "tr.error": "Translation unavailable", "tr.from": "Translated",
@@ -19882,6 +19913,18 @@
       toast("🪪", t("qr.found").replace("{name}", escapeHtml(p.username || "")));
     }
 
+    // -------------------- Mode beta / version « lissée » --------------------
+    // beta ON (défaut) = tout visible · beta OFF = body.sm-lite masque [data-beta]/.beta-only.
+    // Les piliers produit n'ont jamais data-beta → la version lissée reste complète sur l'essentiel.
+    function betaOn() { try { return localStorage.getItem("sm_beta") !== "0"; } catch (e) { return true; } }
+    function setBeta(on) {
+      try { localStorage.setItem("sm_beta", on ? "1" : "0"); } catch (e) {}
+      document.body.classList.toggle("sm-lite", !on);
+    }
+    window.setBeta = setBeta; window.betaOn = betaOn;
+    // Boot : ?lite=1 force la version lissée à la demande (aperçu) ; sinon on respecte le réglage (défaut ON).
+    try { setBeta(new URLSearchParams(location.search).has("lite") ? false : betaOn()); } catch (e) { setBeta(betaOn()); }
+
     // -------------------- Réglages : haptique + présence --------------------
     (function initToggles() {
       // #17 : si l'appareil NE SUPPORTE PAS la vibration (iPhone/desktop), on le DIT en DA et
@@ -19911,6 +19954,7 @@
         if (error) { toast("⚠️", errFr(error)); pub.checked = !v; if (myProfile) myProfile.is_public = !v; }
         else toast(v ? "🌍" : "🔒", v ? i18nT("Profil public, tu apparais dans le classement") : i18nT("Profil privé, tu n'apparais plus dans le classement"));
       });
+      const bt = $("betaToggle"); if (bt) { bt.checked = betaOn(); bt.addEventListener("change", () => { setBeta(bt.checked); toast(bt.checked ? "🧪" : "✨", bt.checked ? i18nT("Fonctionnalités beta activées") : i18nT("Version épurée activée"), null, { low: true }); }); }
     })();
 
     // -------------------- Initialisation à la connexion --------------------
@@ -20306,5 +20350,11 @@
     // Au chargement : vérifie s'il y a déjà une session
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
+  <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
+  <script src="sunmates-da-loader.js?v=7"></script>
+  <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
+       Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
+       décider si les admins prod la gardent, et retirer tout ?daforce. -->
+  <script src="da-console-overlay.js?v=8"></script>
 </body>
 </html>

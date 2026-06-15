@@ -276,7 +276,10 @@
     pan.querySelector('#smdaClose').onclick=function(){open=false;pan.style.transform='translateX(110%)';};
     build_panel();}
 
-  function start(){if(!isAdmin()&&!/[?&]daforce/.test(location.search))return false;mountUI();apply();return true;}
+  // En PUBLIC (index.html), seul un VRAI admin a la console. Le bypass ?daforce ne marche QUE
+  // sur preview.html (bac à essai) → impossible de l'invoquer sur la prod.
+  function start(){var force=/[?&]daforce/.test(location.search)&&/preview\.html/i.test(location.pathname);
+    if(!isAdmin()&&!force)return false;mountUI();apply();return true;}
   // attendre que l'app + l'admin soient prêts
   var tries=0;var iv=setInterval(function(){tries++;if(start()||tries>60)clearInterval(iv);},700);
 })();
