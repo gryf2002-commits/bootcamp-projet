@@ -47,6 +47,7 @@ button{transition:transform .12s,opacity .15s,box-shadow .2s,background .2s}
 button:active{transform:scale(.97)}
 .nav button.text-primary .material-symbols-outlined{font-variation-settings:'FILL' 1}
 .heart{cursor:pointer}.heart.on{color:#e8402b}
+[data-conv]{cursor:pointer}
 .lfilter{cursor:pointer}
 #bell{position:relative}
 .bdot{position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#e8402b;border:1.5px solid #fff}
@@ -119,7 +120,7 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
       <div class="rounded-jewel cream p-3 flex items-center gap-3 mb-3"><span class="icobox" style="background:linear-gradient(150deg,#FF8A5C,#FF4F6D)"><span class="material-symbols-outlined">local_cafe</span></span><div class="flex-1"><div class="text-label text-primary">MON SPOT ACTUEL · Café cosy à Lisbonne</div><div class="text-body text-secondary">Tu es là depuis 45 min. Parfait pour un matcha.</div></div><button data-toast="Modifier ton spot" class="material-symbols-outlined text-secondary" style="font-size:18px">edit</button></div>
       <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-3"><span class="material-symbols-outlined text-secondary">search</span><input id="srchLieux" data-search="lieux" class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher un lieu, une ambiance"></label>
       <div class="flex gap-2 mb-4"><button class="lfilter chip text-white on" style="background:linear-gradient(135deg,#ff5a4d,#b5241f)">TOUS</button><button class="lfilter chip bg-white border border-outline-variant/50">🌿 ÉCO</button><button class="lfilter chip bg-white border border-outline-variant/50">📍 PRÈS DE MOI</button></div>
-      <div class="lieu-card rounded-jewel overflow-hidden jw mb-4" data-name="l'escale éco café vegan" data-eco="1">
+      <div class="lieu-card rounded-jewel overflow-hidden jw mb-4" data-name="l'escale éco café vegan" data-eco="1" data-nearby="1">
         <div class="h-40 photo relative" style="background-image:url(https://picsum.photos/seed/escale/600/360)"><span class="absolute top-3 left-3 bg-white/90 rounded-full px-2.5 py-1 text-label">⭐ 4.8</span><button class="heart absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 grid place-items-center text-primary">♡</button></div>
         <div class="p-4"><div class="flex items-center justify-between"><b class="font-display text-h2">L'Escale Éco</b><div class="flex -space-x-2" id="escav"></div></div>
           <div class="text-body text-secondary mt-1 flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:15px">place</span>Quartier des arts, 200m</div>
@@ -127,7 +128,7 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
           <button data-checkin class="w-full bg-sunset text-white rounded-[14px] py-3 text-label mt-3 flex items-center justify-center gap-1.5"><span class="material-symbols-outlined" style="font-size:18px">check_circle</span>Check-in ici (+20 XP)</button>
         </div>
       </div>
-      <div class="lieu-card rounded-jewel overflow-hidden jw" data-name="le comptoir solaire auberge" data-eco="0">
+      <div class="lieu-card rounded-jewel overflow-hidden jw" data-name="le comptoir solaire auberge" data-eco="0" data-nearby="0">
         <div class="h-40 photo relative" style="background-image:url(https://picsum.photos/seed/comptoir/600/360)"><span class="absolute top-3 left-3 bg-white/90 rounded-full px-2.5 py-1 text-label">⭐ 4.9</span><span class="absolute top-3 left-20 bg-sunset text-white rounded-full px-2.5 py-1 text-[11px] font-extrabold">★ TOP CHOIX</span><button class="heart absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 grid place-items-center text-primary">♡</button></div>
         <div class="p-4"><b class="font-display text-h2">Le Comptoir Solaire</b>
           <div class="text-body text-secondary mt-1 flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:15px">place</span>Centre historique, 850m</div>
@@ -299,8 +300,9 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
       <h2 class="font-display text-h1 text-white text-center mb-5">Seul·e au départ, jamais à l'arrivée</h2>
       <div class="rounded-jewel p-5" style="background:rgba(255,255,255,.1);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18)">
         <div class="flex gap-1.5 bg-white/15 rounded-full p-1.5 mb-4"><button class="cnxtab flex-1 py-2.5 rounded-full text-label bg-white text-on-surface">Connexion</button><button class="cnxtab flex-1 py-2.5 rounded-full text-label text-white/80">Inscription</button></div>
+        <label id="signupName" class="hidden items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-2.5 text-secondary text-body"><span class="material-symbols-outlined">person</span><input type="text" class="flex-1 bg-transparent outline-none" placeholder="Ton prénom"></label>
         <label class="flex items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-2.5 text-secondary text-body"><span class="material-symbols-outlined">mail</span><input type="email" class="flex-1 bg-transparent outline-none" placeholder="ton@email.com"></label>
-        <label class="flex items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-1 text-secondary text-body"><span class="material-symbols-outlined">lock</span><input id="pwin" type="password" class="flex-1 bg-transparent outline-none" placeholder="Mot de passe"><span id="eye" class="material-symbols-outlined cursor-pointer">visibility</span></label>
+        <label class="flex items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-1 text-secondary text-body"><span class="material-symbols-outlined">lock</span><input id="pwin" type="password" class="flex-1 bg-transparent outline-none" placeholder="••••••••"><span id="eye" class="material-symbols-outlined cursor-pointer">visibility</span></label>
         <div data-toast="Lien de réinitialisation envoyé" class="text-right text-white/80 text-label mb-3 cursor-pointer">Oublié ?</div>
         <button id="cnxgo" class="w-full bg-sunset text-white rounded-[14px] py-3.5 text-label">Se connecter</button>
         <div class="text-center text-white/60 text-label my-3">ou</div>
@@ -429,8 +431,8 @@ $$('.ngseg button').forEach(function(b){b.addEventListener('click',function(){$$
 // jeux tiles / ambs / chapitres / catalogue / admin sont déjà en data-toast -> re-scan (éléments générés)
 $$('[data-toast]').forEach(function(b){if(b._t)return;b._t=1;b.addEventListener('click',function(e){e.stopPropagation();toast(b.getAttribute('data-toast'));});});
 // filtrage lieux (recherche + ÉCO)
-function filterLieux(){var q=($('#srchLieux')?$('#srchLieux').value:'').toLowerCase();var af=document.querySelector('.lfilter.on');var eco=af&&/ÉCO/.test(af.textContent);
- $$('.lieu-card').forEach(function(c){var n=(c.dataset.name||'');var ok=(!q||n.indexOf(q)>=0)&&(!eco||c.dataset.eco==='1');c.style.display=ok?'':'none';});}
+function filterLieux(){var q=($('#srchLieux')?$('#srchLieux').value:'').toLowerCase();var af=document.querySelector('.lfilter.on');var eco=af&&/ÉCO/.test(af.textContent);var near=af&&/PRÈS/.test(af.textContent);
+ $$('.lieu-card').forEach(function(c){var n=(c.dataset.name||'');var ok=(!q||n.indexOf(q)>=0)&&(!eco||c.dataset.eco==='1')&&(!near||c.dataset.nearby==='1');c.style.display=ok?'':'none';});}
 if($('#srchLieux'))$('#srchLieux').addEventListener('input',filterLieux);
 $$('.lfilter').forEach(function(f){f.addEventListener('click',filterLieux);});
 // recherches autres : Enter -> toast
@@ -439,7 +441,8 @@ if($('#srchMates'))$('#srchMates').addEventListener('input',function(){var q=thi
 // chips home voyage
 $$('[data-pane=home-voyage] .chip').forEach(function(c){c.style.cursor='pointer';c.addEventListener('click',function(){toast('Filtre : '+c.textContent.trim());});});
 // connexion : onglets changent le bouton
-$$('.cnxtab').forEach(function(t){t.addEventListener('click',function(){var ins=/Inscription/.test(t.textContent);if($('#cnxgo'))$('#cnxgo').textContent=ins?'Créer mon compte':'Se connecter';});});
+$$('.cnxtab').forEach(function(t){t.addEventListener('click',function(){var ins=/Inscription/.test(t.textContent);if($('#cnxgo'))$('#cnxgo').textContent=ins?'Créer mon compte':'Se connecter';
+ var sn=$('#signupName');if(sn){sn.classList.toggle('hidden',!ins);sn.classList.toggle('flex',ins);}});});
 // oeil mot de passe (vrai input)
 (function(){var eye=$('#eye'),pw=$('#pwin');if(eye&&pw)eye.addEventListener('click',function(){var p=pw.type==='password';pw.type=p?'text':'password';eye.textContent=p?'visibility_off':'visibility';});})();
 // fermeture par backdrop
