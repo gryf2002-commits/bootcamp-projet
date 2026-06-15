@@ -38,11 +38,8 @@
     '⚪ Lite / Neutre':['#E0563E','#E0563E','Manrope','Manrope','rounded'],
     // — presets ré-importés depuis l'ancienne console complète (builtins de da-console.html), base mode « jour » —
     '💎 Joaillerie':['#E85CA8','#7A2FD0','Fraunces','Manrope','squircle'],
-    '🌸 Pastel doux':['#FFC2D6','#B5A8FF','Quicksand','Quicksand','rounded'],
     '⚪ Minimal mono':['#9AA3AE','#5B636E','Manrope','Manrope','rounded'],
     '📖 Duotone éditorial':['#6E7BE0','#34406E','Playfair Display','Manrope','rounded'],
-    '🌴 Lagon tropical':['#2BD4A8','#0E9E8C','Baloo 2','Nunito','squircle'],
-    '✨ Crépuscule cosmique':['#B15CFF','#5B2BD6','Fraunces','Poppins','squircle'],
     '🌅 Aurore pêche':['#FFB36B','#FF6F91','Fraunces','Manrope','squircle'],
     '🪸 Corail récif':['#FF7A59','#FF3D77','Fraunces','Manrope','squircle'],
     '🍇 Cassis nuit':['#A65CFF','#5B2BD6','Fraunces','Poppins','squircle'],
@@ -83,7 +80,7 @@
   // On RECHARGE le dernier état (preset choisi + retouches) depuis localStorage → fini le retour à zéro.
   var T=(function(){try{var d=localStorage.getItem('sm_da_live');if(d){var o=JSON.parse(d);if(o&&typeof o==='object')return _normT(o);}}catch(e){}return build('🌅 Radiant Horizon');})(),curMode='jour',editMode=false,open=false;
 
-  var SEL='.thumb,.cic,.jo-ic,.qm-ic,.sc-ic,.smgem,.hex,.tile,.cat-tile,.pcard,.gcard,.ghead,.lb-row,.coupon,.tcard,.btn-primary,.chip,.brand .mark,.feature,.vchip,.mark-pro,.avail-badge,.rate-top';
+  var SEL='.thumb,.cic,.jo-ic,.qm-ic,.sc-ic,.smgem,.hex,.tile,.cat-tile,.pcard,.gcard,.ghead,.lb-row,.coupon,.tcard,.btn-primary,.btn-accent,.btn-ghost,.btn-danger,.su-call,.su-sos,.sos-logo,.iconbtn,.chip,.brand .mark,.feature,.vchip,.mark-pro,.avail-badge,.rate-top,.t-name,.t-meta,.section-head,h1,h2,h3';
   var SCREENS=[['accueil','Accueil'],['lieux','Lieux'],['jeux','Jeux'],['connexions','Mates'],['securite','Sécu'],['profil','Profil']];
 
   function injectExtra(){var d=document,st=d.getElementById('sm-da-extra');if(!st){st=d.createElement('style');st.id='sm-da-extra';d.head.appendChild(st);}

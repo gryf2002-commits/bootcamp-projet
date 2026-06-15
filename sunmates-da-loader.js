@@ -116,7 +116,10 @@
         var accInk = _toC(acc, lite, 4.6);              // accent-texte lisible sur page ET carte
         var muted = _toC(_mix(ink, pg, 0.42), lite, 4.6); // texte secondaire idem
         var sc = (T.scenes && T.scenes.accent) || acc;
-        var btnTxt = _lum(_mix(m.j1, m.j2, 0.5)) > 0.62 ? '#2a1c10' : '#ffffff'; // texte CTA lisible sur le degrade
+        // texte CTA : on prend la MEILLEURE encre (blanc vs sombre) vs le milieu du dégradé, et on
+        // l'assombrit jusqu'à WCAG → fini le blanc illisible sur les presets clairs/pastel (audit).
+        var _tmid = _mix(m.j1, m.j2, 0.5);
+        var btnTxt = _ratio('#ffffff', _tmid) >= _ratio('#2a1c10', _tmid) ? '#ffffff' : _toC('#2a1c10', _tmid, 4.5);
         // hsel = sel + 2 :not() factices (+0,2,0 de spécificité) → bat les blocs nuit/saison
         // de l'app qui utilisent body.theme-dusk:not(.theme-winter):not(.theme-tropic) (0,3,1).
         var hsel = sel + ':not(._smx):not(._smy)';
