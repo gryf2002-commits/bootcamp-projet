@@ -35,6 +35,23 @@ select.sm{font-size:.74rem;border:1px solid var(--line);border-radius:6px;paddin
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:none;align-items:center;justify-content:center}.overlay.on{display:flex}
 .ovbox{background:var(--card);border-radius:16px;padding:14px;max-width:560px;width:92%;max-height:80vh;overflow:auto}
 .ovgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;margin-top:8px}.ovgrid button{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:6px;cursor:pointer}
+/* === Optimisation TÉLÉPHONE : cibles tactiles + anti-zoom iOS (inputs >=16px) === */
+@media(max-width:860px){
+  header{padding:14px 14px 4px}h1{font-size:1.2rem}
+  .bar{padding:8px 12px;gap:5px}
+  .bar select,.bar button,.bar label.btn{font-size:.82rem;padding:9px 12px;min-height:42px}
+  .wrap{padding:12px 12px 96px;gap:12px}
+  summary{padding:14px 13px;font-size:.9rem}
+  .row{padding:6px 0;font-size:.86rem;gap:10px}
+  input[type=color]{width:42px;height:34px}
+  input.hex{width:90px;font-size:16px;padding:7px}
+  input.txt,input[type=number],select.sm{font-size:16px;padding:8px}
+  input[type=number]{width:64px}
+  .seg button{font-size:.84rem;padding:9px 12px;min-height:40px}
+  .btnf{padding:11px;font-size:.88rem;min-height:44px}
+  .phone{width:100%;max-width:300px;margin:0 auto}
+  .ovbox{width:94%;max-height:84vh}.ovgrid{grid-template-columns:repeat(auto-fill,minmax(54px,1fr))}
+}
 </style></head><body>
 <header><h1>🎨 Studio DA SunMates</h1><p class=sub>Tout est câblé et se reflète dans l'aperçu. Preview autonome — l'app n'est pas modifiée.</p></header>
 <details open style="margin:10px 14px;border:1px solid #e3d8cc;border-radius:12px;background:#fff8ef;color:#3a2a1f">
