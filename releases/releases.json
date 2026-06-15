@@ -1,5 +1,11 @@
 [
   {
+    "v": "v510 🎉",
+    "date": "2026-06-15",
+    "note": "Jalon (multiple de 30) · grand chantier preview : système beta + version lissée colorée, console DA LIVE in-app (✦ DA déplaçable, presets distincts-mais-DA, clic-recolor universel, emoji, tailles), mode « Texte seul », pins carte thémés. Promotion publique v509 faite. Base de la VERSION LITE grand public (sunmates-app.html) en préparation.",
+    "file": "v510.html"
+  },
+  {
     "v": "v498",
     "date": "2026-06-15",
     "note": "Retour à une base stable et légère : la grande refonte DA (v483→v496) a été remisée (trop instable en l'état, conservée dans git pour reprise au propre). v498 repart du contenu éprouvé de v482 en gardant les fix solides (chargement infini, P0 sécurité, RGPD, a11y, erreurs FR, landing) et passe les icônes en emojis natifs (sunmates-icons-v2.js réduit de 150 Ko à 2,4 Ko → app plus rapide).",

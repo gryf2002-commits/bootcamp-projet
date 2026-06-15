@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>SunMates — app lite</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script>
+tailwind.config={theme:{extend:{
+ colors:{background:"#faf8ff",surface:"#faf8ff","surface-container":"#eaedff","surface-container-low":"#f2f3ff",
+  "surface-container-lowest":"#ffffff","on-background":"#161b29","on-surface":"#161b29","on-surface-variant":"#5a403d",
+  secondary:"#585f69","primary":"#b5241f","primary-container":"#ff5a4d","outline":"#8e706c","outline-variant":"#e3beb9","ok":"#1f9d6b"},
+ fontFamily:{display:["Fraunces","serif"],body:["Manrope","sans-serif"]},
+ fontSize:{"display":["38px",{lineHeight:"42px",letterSpacing:"-0.02em",fontWeight:"900"}],"h1":["28px",{lineHeight:"32px",fontWeight:"800"}],
+  "h2":["20px",{lineHeight:"26px",fontWeight:"700"}],"title":["16px",{lineHeight:"22px",fontWeight:"700"}],"body":["14px",{lineHeight:"20px"}],"label":["13px",{lineHeight:"18px",fontWeight:"700"}]},
+ borderRadius:{jewel:"26px"},backgroundImage:{sunset:"linear-gradient(135deg,#ff5a4d 0%,#b5241f 100%)"}}}};
+</script>
+<style>
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400;font-size:22px;line-height:1}.fill{font-variation-settings:'FILL' 1}
+.leaflet-container{background:#e9eef0!important;font-family:Manrope}
+.stage::-webkit-scrollbar{width:6px}.stage::-webkit-scrollbar-thumb{background:#ff8a5c;border-radius:8px}
+.jw{background:#fff;border:1px solid rgba(227,190,185,.45);box-shadow:0 14px 38px rgba(45,38,52,.10),0 3px 9px rgba(120,60,40,.05)}
+.cream{background:#fff3ea;border:1px solid rgba(227,190,185,.5)}
+.icobox{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:#fff;flex:none;position:relative;overflow:hidden}
+.icobox::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.4),transparent 50%)}
+.icobox .material-symbols-outlined{position:relative;z-index:1}
+.seg button.on{background:linear-gradient(135deg,#ffce5a,#ff9a3d);color:#3a2410}
+.seg2 button.on{background:linear-gradient(135deg,#ff5a4d,#b5241f);color:#fff}
+.tsw{width:44px;height:25px;border-radius:99px;background:#e3e7fb;position:relative;cursor:pointer;flex:none;border:1px solid rgba(142,112,108,.3)}
+.tsw.on{background:linear-gradient(135deg,#ff5a4d,#b5241f)}
+.tsw::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.tsw.on::after{transform:translateX(19px)}
+.toast.show{opacity:1!important;transform:translateX(-50%) translateY(0)!important}
+.bub{max-width:80%;padding:12px 15px;border-radius:20px;font-size:14px;line-height:1.45}
+.bub.them{align-self:flex-start;background:#fff;border:1px solid rgba(227,190,185,.5);border-bottom-left-radius:7px}
+.bub.me{align-self:flex-end;background:linear-gradient(135deg,#ff5a4d,#b5241f);color:#fff;border-bottom-right-radius:7px;font-weight:600}
+.photo{background-size:cover;background-position:center}
+.cf{position:absolute;width:9px;height:14px;z-index:60;pointer-events:none;border-radius:2px}
+.chip{padding:8px 13px;border-radius:999px;font-size:13px;font-weight:700}
+
+.screen{animation:scrn .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes scrn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+button{transition:transform .12s,opacity .15s,box-shadow .2s,background .2s}
+button:active{transform:scale(.97)}
+.nav button.text-primary .material-symbols-outlined{font-variation-settings:'FILL' 1}
+.heart{cursor:pointer}.heart.on{color:#e8402b}
+.lfilter{cursor:pointer}
+#bell{position:relative}
+.bdot{position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#e8402b;border:1.5px solid #fff}
+.rounded-jewel.jw,.jw{transition:transform .14s,box-shadow .2s}
+input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
+</style>
+</head>
+<body class="bg-[#efe7f0] min-h-screen grid place-items-center p-4 font-body text-on-background">
+<div id="phone" class="relative w-[392px] max-w-full h-[812px] max-h-[96vh] bg-background rounded-[40px] overflow-hidden flex flex-col" style="box-shadow:0 50px 100px -40px rgba(80,40,60,.45),inset 0 0 0 1px rgba(0,0,0,.04)">
+  <div class="h-7 flex items-center justify-between px-6 text-[11px] font-bold text-secondary flex-none"><span>9:41</span><span>SunMates</span><span>●●● ▽</span></div>
+  <div class="flex items-center gap-2.5 px-4 pb-2 flex-none">
+    <b id="brand" class="flex-1 font-display text-[20px] flex items-center gap-1.5 bg-sunset bg-clip-text text-transparent">☀️ SunMates</b>
+    <button id="bell" class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary"><span class="material-symbols-outlined">notifications</span></button>
+    <button id="menuBtn" class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary"><span class="material-symbols-outlined">menu</span></button>
+  </div>
+
+  <div id="stage" class="stage flex-1 overflow-auto px-4 pb-6">
+    <!-- ACCUEIL -->
+    <section class="screen" data-s="home">
+      <div class="seg flex gap-1.5 bg-surface-container rounded-full p-1.5 mt-1 mb-4" data-seg="home">
+        <button class="flex-1 py-2.5 rounded-full text-label on flex items-center justify-center gap-1.5" data-v="maison"><span class="material-symbols-outlined" style="font-size:18px">home</span>À la maison</button>
+        <button class="flex-1 py-2.5 rounded-full text-label text-secondary flex items-center justify-center gap-1.5" data-v="voyage"><span class="material-symbols-outlined" style="font-size:18px">flight_takeoff</span>En voyage</button>
+      </div>
+      <!-- À LA MAISON -->
+      <div data-pane="home-maison">
+        <div class="text-center mb-4"><span class="material-symbols-outlined text-primary" style="font-size:34px">home</span>
+          <h1 class="font-display text-h1 mt-1">De retour chez toi</h1>
+          <p class="text-secondary text-body">Prends le temps de te ressourcer.</p></div>
+        <div class="rounded-jewel cream p-4">
+          <div class="flex items-center justify-between mb-3"><b class="font-display text-h2">Ta progression solo</b><span class="bg-white rounded-full px-2.5 py-1 text-label">🔥 1</span></div>
+          <div class="grid grid-cols-3 text-center">
+            <div><div class="font-display text-[22px] text-primary">12</div><div class="text-body text-secondary">Défis relevés</div></div>
+            <div><div class="font-display text-[22px] text-ok">3/5</div><div class="text-body text-secondary">Rituels du jour</div></div>
+            <div><div class="font-display text-[22px]" style="color:#E0901E">450</div><div class="text-body text-secondary">XP gagné</div></div>
+          </div>
+        </div>
+        <h2 class="font-display text-h2 mt-5 mb-2.5">Rituels du jour</h2>
+        <div class="rounded-jewel jw p-1.5" id="rituels">
+          <label class="flex items-center gap-3 p-3 border-b border-outline-variant/30 cursor-pointer"><input type="checkbox" checked class="w-5 h-5 rounded-md text-primary"><span class="text-title line-through text-secondary">Boire 1.5L d'eau</span></label>
+          <label class="flex items-center gap-3 p-3 border-b border-outline-variant/30 cursor-pointer"><input type="checkbox" checked class="w-5 h-5 rounded-md text-primary"><span class="text-title line-through text-secondary">Mouvement (15 min)</span></label>
+          <label class="flex items-center gap-3 p-3 cursor-pointer"><input type="checkbox" class="w-5 h-5 rounded-md text-primary"><span class="text-title">Appeler un proche</span></label>
+        </div>
+        <h2 class="font-display text-h2 mt-5 mb-2.5">Défis solo de ta ville</h2>
+        <div class="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4">
+          <div data-toast="Défi : Explorer un nouveau quartier · +50 XP" class="rounded-jewel overflow-hidden jw flex-none w-[230px] cursor-pointer"><div class="h-28 photo relative" style="background-image:url(https://picsum.photos/seed/quartier/500/300)"><span class="absolute top-2 right-2 bg-sunset text-white text-[10px] font-extrabold px-2 py-1 rounded-full">+50 XP</span></div><div class="p-3"><b class="text-title">Explorer un nouveau quartier</b><p class="text-body text-secondary mt-1">Prends le temps de te perdre dans des ruelles inconnues…</p></div></div>
+          <div data-toast="Défi : Détail photo" class="rounded-jewel overflow-hidden jw flex-none w-[230px] cursor-pointer"><div class="h-28 photo" style="background-image:url(https://picsum.photos/seed/photo/500/300)"></div><div class="p-3"><b class="text-title">Détail photo</b><p class="text-body text-secondary mt-1">Capture un détail, une scène de rue…</p></div></div>
+        </div>
+        <div class="rounded-jewel cream p-4 mt-5">
+          <b class="font-display text-h2 flex items-center gap-2">🌍 De passage chez toi</b>
+          <p class="text-body text-secondary mt-2">4 voyageurs explorent ta ville aujourd'hui. Prêt à faire découvrir tes coins secrets ?</p>
+          <div class="flex items-center gap-2 mt-3"><div class="flex -space-x-3" id="passav"></div><span class="text-label text-secondary">+1</span></div>
+          <button class="w-full bg-sunset text-white rounded-[14px] py-3 text-label mt-3" data-go="mates">Voir les profils</button>
+        </div>
+      </div>
+      <!-- EN VOYAGE -->
+      <div data-pane="home-voyage" class="hidden">
+        <h1 class="font-display text-display text-primary mb-1">Explore</h1>
+        <p class="text-secondary text-body mb-3">Repère qui et quoi est autour de toi 👀</p>
+        <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-3"><span class="material-symbols-outlined text-secondary">search</span><input id="srchHome"  class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher un lieu, un·e voyageur·se…"></label>
+        <div class="flex gap-2 mb-3"><span class="chip bg-white border border-outline-variant/50 flex items-center gap-1.5"><span class="material-symbols-outlined" style="font-size:16px">place</span>Lisbonne</span><span class="chip bg-white border border-outline-variant/50">À proximité</span><span class="chip bg-white border border-outline-variant/50">Filtres <b class="text-primary">6</b></span></div>
+        <div id="map" class="rounded-jewel jw overflow-hidden" style="height:300px"></div>
+        <div class="flex gap-2 mt-3"><button id="around" class="flex-1 bg-sunset text-white rounded-[14px] py-3 text-label flex items-center justify-center gap-1.5"><span class="material-symbols-outlined" style="font-size:18px">my_location</span>Autour de moi</button><button data-go="lieux" class="flex-1 bg-white border border-outline-variant/50 text-primary rounded-[14px] py-3 text-label">Tout voir</button></div>
+      </div>
+    </section>
+
+    <!-- LIEUX (jour) -->
+    <section class="screen hidden" data-s="lieux">
+      <h1 class="font-display text-display text-primary mt-2 mb-1">Lieux Sûrs</h1>
+      <p class="text-secondary text-body mb-3">Découvre des spots validés par la commu' pour chiller et rencontrer des Mates en toute sérénité.</p>
+      <div class="rounded-jewel cream p-3 flex items-center gap-3 mb-3"><span class="icobox" style="background:linear-gradient(150deg,#FF8A5C,#FF4F6D)"><span class="material-symbols-outlined">local_cafe</span></span><div class="flex-1"><div class="text-label text-primary">MON SPOT ACTUEL · Café cosy à Lisbonne</div><div class="text-body text-secondary">Tu es là depuis 45 min. Parfait pour un matcha.</div></div><button data-toast="Modifier ton spot" class="material-symbols-outlined text-secondary" style="font-size:18px">edit</button></div>
+      <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-3"><span class="material-symbols-outlined text-secondary">search</span><input id="srchLieux" data-search="lieux" class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher un lieu, une ambiance"></label>
+      <div class="flex gap-2 mb-4"><button class="lfilter chip text-white on" style="background:linear-gradient(135deg,#ff5a4d,#b5241f)">TOUS</button><button class="lfilter chip bg-white border border-outline-variant/50">🌿 ÉCO</button><button class="lfilter chip bg-white border border-outline-variant/50">📍 PRÈS DE MOI</button></div>
+      <div class="lieu-card rounded-jewel overflow-hidden jw mb-4" data-name="l'escale éco café vegan" data-eco="1">
+        <div class="h-40 photo relative" style="background-image:url(https://picsum.photos/seed/escale/600/360)"><span class="absolute top-3 left-3 bg-white/90 rounded-full px-2.5 py-1 text-label">⭐ 4.8</span><button class="heart absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 grid place-items-center text-primary">♡</button></div>
+        <div class="p-4"><div class="flex items-center justify-between"><b class="font-display text-h2">L'Escale Éco</b><div class="flex -space-x-2" id="escav"></div></div>
+          <div class="text-body text-secondary mt-1 flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:15px">place</span>Quartier des arts, 200m</div>
+          <div class="flex gap-2 mt-2.5 flex-wrap"><span class="chip bg-surface-container text-[11px] py-1">CAFÉ</span><span class="chip bg-surface-container text-[11px] py-1">VEGAN-FRIENDLY</span><span class="chip bg-surface-container text-[11px] py-1">WIFI FORT</span></div>
+          <button data-checkin class="w-full bg-sunset text-white rounded-[14px] py-3 text-label mt-3 flex items-center justify-center gap-1.5"><span class="material-symbols-outlined" style="font-size:18px">check_circle</span>Check-in ici (+20 XP)</button>
+        </div>
+      </div>
+      <div class="lieu-card rounded-jewel overflow-hidden jw" data-name="le comptoir solaire auberge" data-eco="0">
+        <div class="h-40 photo relative" style="background-image:url(https://picsum.photos/seed/comptoir/600/360)"><span class="absolute top-3 left-3 bg-white/90 rounded-full px-2.5 py-1 text-label">⭐ 4.9</span><span class="absolute top-3 left-20 bg-sunset text-white rounded-full px-2.5 py-1 text-[11px] font-extrabold">★ TOP CHOIX</span><button class="heart absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 grid place-items-center text-primary">♡</button></div>
+        <div class="p-4"><b class="font-display text-h2">Le Comptoir Solaire</b>
+          <div class="text-body text-secondary mt-1 flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:15px">place</span>Centre historique, 850m</div>
+          <div class="flex gap-2 mt-2.5"><span class="chip bg-surface-container text-[11px] py-1">AUBERGE</span><span class="chip bg-surface-container text-[11px] py-1">ESPACE CHILL</span></div>
+          <button data-toast="Détails du lieu" class="w-full bg-white border border-outline-variant/50 text-primary rounded-[14px] py-3 text-label mt-3">Voir les détails</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- JEUX (hub) -->
+    <section class="screen hidden" data-s="jeux">
+      <h1 class="font-display text-display text-primary mt-2 mb-3">Jeux &amp; Quêtes</h1>
+      <div class="rounded-jewel jw p-4 mb-3">
+        <div class="flex items-center gap-2.5"><b class="text-title">Max</b><span class="text-label px-2.5 py-1 rounded-full text-[#3a2410]" style="background:linear-gradient(150deg,#FFD15C,#FF8A3D)">NIV 3</span><span class="ml-auto text-label tabular-nums"><span id="xptxt">10/100</span> XP</span></div>
+        <div class="h-2.5 rounded-full bg-surface-container mt-2.5 overflow-hidden"><i id="xpbar" class="block h-full bg-sunset" style="width:10%"></i></div>
+        <div class="text-body text-secondary mt-1.5">Explorateur de l'Inconnu · 90 XP avant le niveau 4</div>
+      </div>
+      <div class="grid grid-cols-3 gap-3" id="jeuxtiles"></div>
+      <h2 class="text-label text-secondary uppercase tracking-wide mt-6 mb-3">Quête du jour</h2>
+      <div class="rounded-jewel overflow-hidden relative text-white" style="min-height:170px" >
+        <div class="absolute inset-0 photo" style="background-image:url(https://picsum.photos/seed/latin/600/400)"></div>
+        <div class="absolute inset-0" style="background:linear-gradient(0deg,rgba(20,8,20,.88),rgba(20,8,20,.1))"></div>
+        <span class="absolute top-3 left-3 bg-sunset text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full z-10">NOUVEAU</span>
+        <div class="absolute inset-0 flex flex-col justify-end p-4 z-10"><h3 class="font-display text-[20px] mb-1">Trésor du Quartier latin</h3><div class="text-body opacity-95 mb-2.5">⭐ +70 XP · 🏅 Badge Aventurier</div><div class="mb-2.5"><span class="bg-white/20 rounded-full px-3 py-1.5 text-label mr-2">👤 Solo</span><span class="bg-white/20 rounded-full px-3 py-1.5 text-label">👥 À deux</span></div><button data-checkin class="bg-sunset text-white rounded-[14px] py-3 text-label w-full">Jouer cette quête</button></div>
+      </div>
+      <h2 class="text-label text-secondary uppercase tracking-wide mt-6 mb-3">Ta progression</h2>
+      <div class="rounded-jewel jw p-1.5">
+        <div data-toast="Objectif de la semaine : 2/3" class="flex items-center gap-3 p-3 border-b border-outline-variant/30 cursor-pointer"><span class="icobox" style="background:linear-gradient(150deg,#FFD15C,#FF8A3D)"><span class="material-symbols-outlined">target</span></span><div class="flex-1"><div class="text-title">Objectif de la semaine</div><div class="text-body text-secondary">2/3 complétés</div></div><span class="text-secondary">›</span></div>
+        <div data-toast="Quête la plus proche : Le Louvre secret" class="flex items-center gap-3 p-3 cursor-pointer"><span class="icobox" style="background:linear-gradient(150deg,#FF8A5C,#FF4F6D)"><span class="material-symbols-outlined">map</span></span><div class="flex-1"><div class="text-title">Quête la plus proche</div><div class="text-body text-secondary">1.1 km · Le Louvre secret</div></div><span class="text-secondary">›</span></div>
+      </div>
+    </section>
+
+    <!-- MATES -->
+    <section class="screen hidden" data-s="mates">
+      <div class="seg2 flex gap-1.5 bg-surface-container rounded-full p-1.5 mt-2 mb-3" data-seg="mates">
+        <button class="flex-1 py-2.5 rounded-full text-label on" data-v="disc">👥 Découverte</button>
+        <button class="flex-1 py-2.5 rounded-full text-label text-secondary" data-v="msg">💬 Messages</button>
+      </div>
+      <div data-pane="mates-disc">
+        <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-3"><span class="material-symbols-outlined text-secondary">search</span><input id="srchMates"  class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher intérêts, Mates, Groupes…"></label>
+        <div class="seg2 ngseg flex gap-1.5 bg-surface-container rounded-full p-1.5 mb-4"><button class="flex-1 py-2 rounded-full text-label on">📍 Nearby</button><button class="flex-1 py-2 rounded-full text-label text-secondary">🌐 Global</button></div>
+        <h2 class="text-label text-secondary uppercase tracking-wide mb-2.5">Featured Mates ⭐</h2>
+        <div class="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4 mb-2" id="featured"></div>
+        <h2 class="text-label text-secondary uppercase tracking-wide mt-4 mb-2.5 flex justify-between">Discover 🌍 <span data-toast="Filtres de découverte" class="text-primary normal-case cursor-pointer">Filtres</span></h2>
+        <!-- mate card Elena -->
+        <div class="mate-card rounded-jewel overflow-hidden jw mb-4" data-name="elena hiking photography surfing bali">
+          <div class="h-44 photo relative" style="background-image:url(https://picsum.photos/seed/elena/600/420)">
+            <span class="absolute top-3 right-3 bg-white/90 rounded-full px-2.5 py-1 text-label text-primary">92% ♥</span>
+            <span class="absolute top-3 left-3 bg-ok/90 text-white rounded-full px-2.5 py-1 text-[11px] font-bold">Active now</span>
+            <div class="absolute bottom-0 inset-x-0 p-3" style="background:linear-gradient(0deg,rgba(20,8,20,.85),transparent)"><b class="font-display text-white text-[22px]">Elena</b><div class="text-white/90 text-body">Bali, Indonesia</div></div>
+          </div>
+          <div class="p-4"><p class="text-body text-on-surface-variant">Solo adventurer exploring the world, one beach at a time! Seeking travel buddies.</p>
+            <div class="flex gap-2 mt-2.5 flex-wrap"><span class="chip bg-surface-container text-[11px] py-1">🥾 Hiking</span><span class="chip bg-surface-container text-[11px] py-1">📷 Photography</span><span class="chip bg-surface-container text-[11px] py-1">🏄 Surfing</span></div>
+            <div class="flex items-center gap-3 mt-3"><button data-toast="Passé" class="w-11 h-11 rounded-full bg-white border border-outline-variant/50 text-secondary">✕</button><button data-conv="Elena" class="flex-1 bg-sunset text-white rounded-[14px] py-3 text-label flex items-center justify-center gap-1.5"><span class="material-symbols-outlined" style="font-size:18px">forum</span>Connect</button><button class="heart w-11 h-11 rounded-full bg-white border border-outline-variant/50 text-primary">♡</button></div>
+          </div>
+        </div>
+        <!-- event card -->
+        <div class="mate-card rounded-jewel overflow-hidden jw mb-4" data-name="sunset yoga meetup outdoors event">
+          <div class="h-32 photo relative" style="background-image:url(https://picsum.photos/seed/yoga/600/300)"><div class="absolute bottom-0 inset-x-0 p-3" style="background:linear-gradient(0deg,rgba(20,8,20,.8),transparent)"><b class="font-display text-white text-[20px]">Sunset Yoga Meetup</b></div></div>
+          <div class="p-4"><div class="flex items-center justify-between"><div class="text-body text-secondary">📅 Aujourd'hui · 18:30</div><span class="chip bg-surface-container text-[11px] py-1">Gratuit</span></div>
+            <p class="text-body text-on-surface-variant mt-2">Séance détente avec une vue magnifique. Tous niveaux bienvenus !</p>
+            <div class="flex gap-2 mt-2.5"><span class="chip bg-surface-container text-[11px] py-1">🧘 Yoga</span><span class="chip bg-surface-container text-[11px] py-1">🌳 Outdoors</span></div>
+            <div class="flex items-center gap-3 mt-3"><button data-toast="Détails de l'événement" class="flex-1 bg-white border border-outline-variant/50 text-primary rounded-[14px] py-3 text-label">Détails</button><button data-toast="Tu participes au Sunset Yoga 🧘" class="flex-1 bg-sunset text-white rounded-[14px] py-3 text-label">Rejoindre +</button></div>
+          </div>
+        </div>
+        <!-- mate David -->
+        <div class="mate-card rounded-jewel jw p-4 flex gap-3 mb-2" data-name="david foodie culture paris marché">
+          <div class="w-16 h-16 rounded-2xl photo flex-none" style="background-image:url(https://picsum.photos/seed/david/200/200)"></div>
+          <div class="flex-1"><div class="flex items-center justify-between"><b class="font-display text-h2">David</b><span class="text-label text-primary">78% ♥</span></div><div class="text-body text-secondary">Paris, France</div>
+            <p class="text-body text-on-surface-variant mt-1">Foodie cherchant à explorer les marchés locaux.</p>
+            <div class="flex items-center gap-3 mt-2.5"><button data-toast="Passé" class="w-9 h-9 rounded-full bg-white border border-outline-variant/50 text-secondary">✕</button><button data-conv="David" class="flex-1 bg-sunset text-white rounded-[12px] py-2.5 text-label">Connect</button><button class="heart w-9 h-9 rounded-full bg-white border border-outline-variant/50 text-primary">♡</button></div>
+          </div>
+        </div>
+      </div>
+      <div data-pane="mates-msg" class="hidden rounded-jewel jw p-1.5">
+        <div class="flex items-center gap-3 p-3 border-b border-outline-variant/30" data-conv="Lina"><span class="icobox" style="background:linear-gradient(150deg,#FF8A5C,#FF4F6D)">L</span><div class="flex-1"><div class="text-title">Lina <span class="text-label text-primary">🔥 8</span></div><div class="text-body text-secondary">On se voit au café demain ?</div></div><span class="w-2.5 h-2.5 rounded-full bg-ok"></span></div>
+        <div class="flex items-center gap-3 p-3 border-b border-outline-variant/30" data-conv="Elena"><span class="icobox" style="background:linear-gradient(150deg,#A07BFF,#6638D6)">E</span><div class="flex-1"><div class="text-title">Elena</div><div class="text-body text-secondary">Seeking travel buddies !</div></div></div>
+        <div class="flex items-center gap-3 p-3" data-conv="David"><span class="icobox" style="background:linear-gradient(150deg,#43D6A0,#0E9E6B)">D</span><div class="flex-1"><div class="text-title">David</div><div class="text-body text-secondary">On teste un marché ?</div></div></div>
+      </div>
+    </section>
+
+    <!-- CHAT -->
+    <section class="screen hidden" data-s="chat">
+      <div class="flex items-center gap-3 mt-2 mb-3"><button class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary" data-go="mates">‹</button>
+        <div class="relative"><span class="icobox" id="chatav" style="width:40px;height:40px;background:linear-gradient(150deg,#FF8A5C,#FF4F6D)">L</span><span class="absolute -right-0.5 -bottom-0.5 w-3 h-3 rounded-full bg-ok border-2 border-white"></span></div>
+        <div class="flex-1"><div class="text-title" id="chatname">Lina</div><div class="text-body text-secondary italic">typing…</div></div>
+        <span class="bg-surface-container rounded-full px-2.5 py-1 text-label">🔥 8</span></div>
+      <div class="text-center my-2"><span class="bg-surface-container text-secondary text-[11px] font-bold px-3 py-1 rounded-full">AUJOURD'HUI</span></div>
+      <div id="conv" class="flex flex-col gap-2.5 pb-2"></div>
+      <div class="flex gap-2 items-center mt-2.5"><input id="msgin" class="flex-1 bg-white border border-outline-variant/50 rounded-full px-4 py-3 text-body outline-none" placeholder="Envoyer un message…"><button data-toast="Message vocal · bientôt 🎤" class="w-10 h-10 rounded-full bg-white border border-outline-variant/50 text-secondary flex-none"><span class="material-symbols-outlined" style="font-size:20px">mic</span></button><button id="sendbtn" class="w-11 h-11 rounded-full bg-sunset text-white flex-none"><span class="material-symbols-outlined" style="font-size:20px">send</span></button></div>
+    </section>
+
+    <!-- SECURITE (alt circulaire) -->
+    <section class="screen hidden" data-s="secu">
+      <h1 class="font-display text-h1 text-center mt-3 mb-1">Sécurité</h1>
+      <p class="text-secondary text-body text-center mb-5">Nous sommes là pour vous.</p>
+      <div class="flex justify-center mb-6"><button id="sosBtn" class="w-44 h-44 rounded-full grid place-items-center text-white text-center" style="background:radial-gradient(circle at 35% 30%,#ff8a5c,#ff5a4d 55%,#e8402b);box-shadow:0 0 0 12px rgba(255,90,77,.12),0 20px 50px -16px rgba(232,64,43,.6)"><div><div class="text-3xl">✳</div><div class="font-display text-[15px] mt-1 leading-tight">J'AI BESOIN<br>D'AIDE</div></div></button></div>
+      <h2 class="font-display text-h2 mb-3">Cercle de confiance</h2>
+      <div class="flex gap-5 mb-6" id="cercle"></div>
+      <h2 class="font-display text-h2 mb-3">Accès rapides</h2>
+      <div class="grid grid-cols-2 gap-3" id="secutiles"></div>
+      <div class="rounded-jewel jw p-4 flex items-center gap-3 mt-4"><span class="icobox" style="background:linear-gradient(150deg,#FF5A4D,#D8281C)"><span class="material-symbols-outlined">emergency</span></span><div class="flex-1"><b class="text-title">Numéros d'urgence</b><div class="text-body text-secondary">112 · SAMU · Police</div></div><button data-toast="Appel d'urgence : 112" class="w-10 h-10 rounded-full bg-sunset text-white"><span class="material-symbols-outlined" style="font-size:18px">call</span></button></div>
+    </section>
+
+    <!-- PROFIL (alt) -->
+    <section class="screen hidden" data-s="profil">
+      <div class="text-center mt-3">
+        <div class="relative inline-block"><div class="w-24 h-24 rounded-full photo mx-auto" style="background-image:url(https://picsum.photos/seed/chloe/200/200)"></div><span class="absolute -top-2 left-1/2 -translate-x-1/2 text-2xl">👑</span></div>
+        <h1 class="font-display text-h1 mt-2">Chloé, 26</h1>
+        <span class="inline-flex items-center gap-1 mt-1 text-label px-3 py-1 rounded-full text-[#3a2410]" style="background:linear-gradient(150deg,#FFD15C,#FF8A3D)">✓ VÉRIFIÉ</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mt-5">
+        <div class="rounded-jewel jw p-4 text-center"><span class="material-symbols-outlined text-primary">favorite</span><div class="font-display text-[22px] mt-1">950</div><div class="text-body text-secondary">Confiance</div></div>
+        <div class="rounded-jewel jw p-4 text-center"><span class="material-symbols-outlined" style="color:#E0901E">military_tech</span><div class="font-display text-[22px] mt-1">1240</div><div class="text-body text-secondary">XP</div></div>
+        <div class="rounded-jewel jw p-4 text-center"><span class="material-symbols-outlined" style="color:#6638D6">group</span><div class="font-display text-[22px] mt-1">12</div><div class="text-body text-secondary">Mates</div></div>
+        <div class="rounded-jewel jw p-4 text-center"><span class="material-symbols-outlined text-primary">place</span><div class="font-display text-[22px] mt-1">8</div><div class="text-body text-secondary">Check-ins</div></div>
+      </div>
+      <div class="rounded-jewel jw p-4 mt-3">
+        <div class="flex items-center justify-between"><b class="font-display text-h2">Profil complété</b><b class="font-display text-[18px]" style="color:#E0901E">85%</b></div>
+        <p class="text-body text-secondary mt-1">Plus que quelques étapes pour briller !</p>
+        <div class="h-2.5 rounded-full bg-surface-container mt-3 overflow-hidden"><i class="block h-full bg-sunset" style="width:85%"></i></div>
+      </div>
+      <h2 class="font-display text-h2 mt-5 mb-3 flex justify-between items-center">Mon Parcours <button data-toast="Partager mon profil 🔗" class="text-label text-primary bg-white border border-outline-variant/50 rounded-full px-3 py-1.5">‹ Partager</button></h2>
+      <div class="flex justify-around" id="parcours"></div>
+      <button data-toast="Édition du profil ✎" class="w-full bg-white border border-outline-variant/50 text-on-surface rounded-[14px] py-3.5 text-label mt-5">MODIFIER MON PROFIL</button>
+      <button class="w-full bg-white border border-outline-variant/50 text-primary rounded-[14px] py-3 text-label mt-3" data-go="guide">🎨 Guide des ambiances</button>
+    </section>
+
+    <!-- GUIDE showcase -->
+    <section class="screen hidden" data-s="guide">
+      <h1 class="font-display text-display text-primary mt-2 mb-1">Ambiance Design System</h1>
+      <p class="text-on-surface-variant text-body mb-4">Les 6 mondes atmosphériques de SunMates — une identité, plusieurs lumières.</p>
+      <div class="flex flex-col gap-5" id="ambs"></div>
+    </section>
+  </div>
+
+  <nav id="nav" class="flex border-t border-outline-variant/40 bg-white/90 backdrop-blur flex-none"></nav>
+
+  <!-- LIVRE BLANC overlay -->
+  <section class="hidden absolute inset-x-0 top-0 bottom-0 overflow-auto bg-background z-10" data-livre>
+    <div class="flex items-center gap-2.5 px-4 pt-3 pb-2"><button class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary" data-go="home">‹</button><b class="font-display text-[18px] text-primary flex items-center gap-1.5">📖 Livre Blanc &amp; Démo</b></div>
+    <div class="px-4 pb-8">
+      <div class="rounded-jewel overflow-hidden relative text-white mb-4" style="min-height:150px"><div class="absolute inset-0 photo" style="background-image:url(https://picsum.photos/seed/visite/600/360)"></div><div class="absolute inset-0" style="background:linear-gradient(0deg,rgba(20,8,20,.85),rgba(20,8,20,.2))"></div><div class="absolute inset-0 flex flex-col justify-end p-4"><h2 class="font-display text-[22px] leading-tight">Visite guidée complète (A → Z)</h2><p class="text-body opacity-95 mt-1">Maîtrise chaque aspect de SunMates en 15 minutes.</p></div></div>
+      <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-4"><span class="material-symbols-outlined text-secondary">search</span><input id="srchLivre"  class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher une fonctionnalité…"></label>
+      <h2 class="font-display text-h2 mb-3">Chapitres de la visite</h2>
+      <div class="rounded-jewel jw p-1.5 mb-5" id="chapitres"></div>
+      <div class="flex items-center justify-between mb-3"><h2 class="font-display text-h2">Catalogue</h2><span class="chip text-white text-[11px]" style="background:linear-gradient(135deg,#ff5a4d,#b5241f)">🔴 FONCTIONS</span></div>
+      <div class="text-label text-secondary uppercase tracking-wide mb-2">Zone · Accueil &amp; flux</div>
+      <div class="grid gap-3 mb-4" id="cat1"></div>
+      <div class="text-label text-secondary uppercase tracking-wide mb-2">Zone · Lieux &amp; géofencing</div>
+      <div class="grid gap-3 mb-4" id="cat2"></div>
+      <div data-toast="Section réservée aux administrateurs 🔒" class="rounded-jewel p-4 text-white flex items-center gap-3 cursor-pointer" style="background:linear-gradient(135deg,#2a1336,#1a0f24)"><span class="material-symbols-outlined">lock</span><div class="flex-1"><b class="font-display text-[16px]">Section Réservée Admin</b><div class="text-body opacity-80">Outils de configuration avancée</div></div><span class="material-symbols-outlined">expand_more</span></div>
+    </div>
+  </section>
+
+  <!-- onboarding -->
+  <div id="onb" class="absolute inset-0 z-20 bg-background flex flex-col">
+    <div class="flex-1 flex flex-col justify-center items-center text-center px-8"><div id="obhero" class="text-7xl mb-6">🗺️</div></div>
+    <div class="rounded-t-[26px] cream px-7 pt-7 pb-3 text-center"><h2 id="obh" class="font-display text-h1 mb-2">Ta carte vivante</h2><p id="obp" class="text-secondary text-body max-w-[290px] mx-auto">Repère en un coup d'œil qui est autour, les spots sympas et les activités.</p>
+      <div id="obdots" class="flex gap-2 justify-center my-5"><i class="w-5 h-2 rounded-full bg-sunset"></i><i class="w-2 h-2 rounded-full bg-outline-variant"></i><i class="w-2 h-2 rounded-full bg-outline-variant"></i></div>
+      <button id="obnext" class="w-full bg-sunset text-white rounded-[14px] py-3.5 text-label">Suivant →</button>
+      <button id="obskip" class="text-secondary text-label py-3">Passer</button></div>
+  </div>
+  <!-- connexion -->
+  <div id="cnx" class="absolute inset-0 z-20 bg-background hidden flex-col justify-end">
+    <div class="absolute inset-0 photo" style="background-image:url(https://picsum.photos/seed/sunsetbg/500/900)"></div>
+    <div class="absolute inset-0" style="background:linear-gradient(0deg,rgba(20,8,20,.92),rgba(20,8,20,.55))"></div>
+    <div class="relative p-6 pb-8">
+      <h2 class="font-display text-h1 text-white text-center mb-5">Seul·e au départ, jamais à l'arrivée</h2>
+      <div class="rounded-jewel p-5" style="background:rgba(255,255,255,.1);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18)">
+        <div class="flex gap-1.5 bg-white/15 rounded-full p-1.5 mb-4"><button class="cnxtab flex-1 py-2.5 rounded-full text-label bg-white text-on-surface">Connexion</button><button class="cnxtab flex-1 py-2.5 rounded-full text-label text-white/80">Inscription</button></div>
+        <label class="flex items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-2.5 text-secondary text-body"><span class="material-symbols-outlined">mail</span><input type="email" class="flex-1 bg-transparent outline-none" placeholder="ton@email.com"></label>
+        <label class="flex items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-1 text-secondary text-body"><span class="material-symbols-outlined">lock</span><input id="pwin" type="password" class="flex-1 bg-transparent outline-none" placeholder="Mot de passe"><span id="eye" class="material-symbols-outlined cursor-pointer">visibility</span></label>
+        <div data-toast="Lien de réinitialisation envoyé" class="text-right text-white/80 text-label mb-3 cursor-pointer">Oublié ?</div>
+        <button id="cnxgo" class="w-full bg-sunset text-white rounded-[14px] py-3.5 text-label">Se connecter</button>
+        <div class="text-center text-white/60 text-label my-3">ou</div>
+        <button class="w-full bg-white text-on-surface rounded-[14px] py-3 text-label mb-2.5 cnxalt">G · Continuer avec Google</button>
+        <button class="w-full bg-white text-on-surface rounded-[14px] py-3 text-label cnxalt"> Continuer avec Apple</button>
+      </div>
+      <p class="text-white/60 text-[11px] text-center mt-4">En continuant, tu acceptes nos Conditions et notre Politique de confidentialité.</p>
+    </div>
+  </div>
+
+  <!-- sheet -->
+  <div id="sheet" class="absolute inset-0 z-30 hidden items-end" style="background:rgba(40,20,30,.4)">
+    <div class="w-full bg-white rounded-t-[26px] p-4 pb-6 border-t border-outline-variant/40">
+      <h3 class="font-display text-[17px] mb-3">Menu</h3>
+      <button class="w-full flex items-center gap-3 bg-surface-container-low rounded-[14px] px-3.5 py-3.5 text-title mb-2.5" data-go="guide"><span class="material-symbols-outlined text-primary">palette</span>Guide des ambiances</button>
+      <button class="w-full flex items-center gap-3 bg-surface-container-low rounded-[14px] px-3.5 py-3.5 text-title mb-2.5" data-go="livre"><span class="material-symbols-outlined text-primary">menu_book</span>Livre blanc &amp; démo</button>
+      <button class="w-full flex items-center gap-3 bg-surface-container-low rounded-[14px] px-3.5 py-3.5 text-title mb-2.5" id="reonb"><span class="material-symbols-outlined text-primary">waving_hand</span>Revoir l'onboarding</button>
+      <button class="w-full flex items-center gap-3 bg-surface-container-low rounded-[14px] px-3.5 py-3.5 text-title mb-2.5" id="logout"><span class="material-symbols-outlined text-primary">login</span>Se déconnecter</button>
+      <button id="closeSheet" class="w-full bg-white border border-outline-variant/50 rounded-[14px] py-3 text-label">Fermer</button>
+    </div>
+  </div>
+
+  <div id="sosModal" class="absolute inset-0 z-40 hidden items-center justify-center p-6" style="background:rgba(40,20,30,.45)"><div class="bg-white rounded-[24px] p-6 w-full max-w-[300px] text-center"><div class="w-16 h-16 rounded-full grid place-items-center mx-auto mb-3.5 text-white text-2xl" style="background:radial-gradient(circle at 35% 30%,#ff8a5c,#ff5a4d 55%,#e8402b)">✳</div><h3 class="font-display text-[18px] mb-1.5">Alerte envoyée</h3><p class="text-on-surface-variant text-body">Ta position a été partagée avec Camille, Léo et les contacts locaux. Reste en ligne.</p><button id="sosClose" class="w-full bg-white border border-outline-variant/50 rounded-[14px] py-3 text-label mt-3.5">Tout va bien, annuler</button></div></div>
+  <div id="toast" class="toast absolute left-1/2 bottom-[86px] -translate-x-1/2 translate-y-8 opacity-0 transition bg-on-background text-white px-4 py-3 rounded-[13px] text-label z-50 pointer-events-none"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+var $=function(s,r){return (r||document).querySelector(s);},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s));};
+function ms(n){return '<span class="material-symbols-outlined">'+n+'</span>';}
+function av(seed,sz){return '<div class="rounded-full photo" style="width:'+sz+'px;height:'+sz+'px;border:2px solid #fff;background-image:url(https://picsum.photos/seed/'+seed+'/120/120)"></div>';}
+/* avatars groups */
+$('#passav').innerHTML=['p1','p2','p3'].map(function(s){return av(s,30);}).join('');
+$('#escav').innerHTML=['e1','e2'].map(function(s){return av(s,24);}).join('');
+/* jeux tiles */
+var JX=[['target','Quêtes','linear-gradient(150deg,#FF8A5C,#FF4F6D)'],['sports_esports','Jeux','linear-gradient(150deg,#A07BFF,#6638D6)'],['military_tech','Badges','linear-gradient(150deg,#FFD15C,#FF8A3D)'],['confirmation_number','Coupons','linear-gradient(150deg,#56C2F5,#2D7FE0)'],['leaderboard','Classement','linear-gradient(150deg,#43D6A0,#0E9E6B)'],['shopping_bag','Boutique','linear-gradient(150deg,#FF7FB0,#E0407A)']];
+$('#jeuxtiles').innerHTML=JX.map(function(t){return '<button data-toast="Catégorie : '+t[1]+'" class="jw p-3 text-center flex flex-col items-center gap-2" style="border-radius:18px"><span class="icobox" style="background:'+t[2]+'">'+ms(t[0])+'</span><b class="text-label">'+t[1]+'</b></button>';}).join('');
+/* secu tiles + cercle */
+var SECU=[['call','Faux appel','linear-gradient(150deg,#A07BFF,#6638D6)'],['campaign','Signal d\'aide','linear-gradient(150deg,#FF8A3D,#FF5A4D)'],['share_location','Partager position','linear-gradient(150deg,#43D6A0,#0E9E6B)'],['storefront','Aide à proximité','linear-gradient(150deg,#FF7FB0,#E0407A)']];
+$('#secutiles').innerHTML=SECU.map(function(t){return '<button class="rounded-jewel p-4 text-white text-left flex flex-col gap-6" style="background:'+t[2]+';min-height:108px"><span class="material-symbols-outlined">'+t[0]+'</span><b class="text-title">'+t[1]+'</b></button>';}).join('');
+$('#cercle').innerHTML=['Camille','Léo'].map(function(n,i){return '<div class="text-center">'+av(i?'leo':'camille',56)+'<div class="text-body text-secondary mt-1">'+n+'</div></div>';}).join('')+'<div class="text-center"><div class="w-14 h-14 rounded-full border-2 border-dashed border-outline-variant grid place-items-center text-secondary">+</div><div class="text-body text-secondary mt-1">Ajouter</div></div>';
+/* featured mates */
+$('#featured').innerHTML=[['Leo','leo'],['Anya','anya'],['Mat','mat']].map(function(m){return '<div class="flex-none w-20 text-center">'+av(m[1],64)+'<div class="text-body font-bold mt-1">'+m[0]+'</div></div>';}).join('');
+/* parcours */
+$('#parcours').innerHTML=[['photo_camera','Photographe','#FF5A4D'],['explore','Exploratrice','#E0901E'],['translate','Polyglotte','#6638D6']].map(function(p){return '<div class="text-center"><div class="w-16 h-16 rounded-full grid place-items-center text-white mx-auto" style="background:'+p[2]+'">'+ms(p[0])+'</div><div class="text-body mt-1.5">'+p[1]+'</div></div>';}).join('');
+/* guide ambiances */
+var AMB=[['☀️ JOUR','Lumière du Jour','L\'ambiance chaleureuse par défaut, teintes dorées de fin d\'après-midi.','#ffffff','#161b29',['#FFC93C','#FF7A3D','#FF4F6D','#231425'],'Découvrir','linear-gradient(135deg,#ff5a4d,#b5241f)'],['🌙 NUIT','Crépuscule','Une nuit profonde teintée de prune, identité chaleureuse dans l\'obscurité.','#1a1525','#fff',['#FFD15C','#FF8A45','#FF5570','#190E2E'],'Rejoindre','linear-gradient(135deg,#FFD15C,#FF5570)'],['❄️ HIVER','Aube Glaciaire','Clarté cristalline et fraîcheur, sérénité hivernale.','#f0f7fa','#0f172a',['#A8D8F5','#6FB4E8','#3A8FD9','#1E3A52'],'Skier','linear-gradient(135deg,#6FB4E8,#3A8FD9)'],['🌴 TROPIQUES','Évasion Tropicale','Verts bijou et soleil, énergie d\'une escapade nature.','#f0fdf4','#14532d',['#FFC23D','#36C495','#0FA37C','#1C3D2E'],'Explorer','linear-gradient(135deg,#FFC23D,#0FA37C)']];
+$('#ambs').innerHTML=AMB.map(function(a){var dark=a[3]==='#1a1525';return '<div><div class="text-label text-secondary uppercase tracking-wide mb-2">'+a[0]+'</div><div class="rounded-jewel p-5 relative overflow-hidden" style="background:'+a[3]+';color:'+a[4]+';border:1px solid '+(dark?'rgba(255,255,255,.1)':'rgba(227,190,185,.4)')+';box-shadow:0 14px 38px rgba(45,38,52,.1)"><h3 class="font-display text-[20px] mb-1">'+a[1]+'</h3><p class="text-body mb-3" style="opacity:.85">'+a[2]+'</p><div class="flex gap-2 mb-3">'+a[5].map(function(c){return '<i class="w-7 h-7 rounded-full block" style="background:'+c+';border:2px solid rgba(255,255,255,.5)"></i>';}).join('')+'</div><button data-toast="Ambiance : '+a[1]+'" class="w-full py-3 rounded-[14px] text-white text-label" style="background:'+a[7]+'">'+a[6]+'</button></div></div>';}).join('');
+/* livre blanc */
+$('#chapitres').innerHTML=[['01','Introduction Globale','7 min · Vue d\'ensemble'],['02','Gestion des Lieux','6 min · Cartographie & POI'],['03','Interaction & Jeux','5 min · Mécaniques sociales'],['04','Sécurité & Alertes','4 min · Protocoles d\'urgence']].map(function(c,i){return '<div data-toast="Chapitre : '+c[1]+'" class="cursor-pointer flex items-center gap-3 p-3 '+(i<3?'border-b border-outline-variant/30':'')+'"><span class="w-9 h-9 rounded-xl bg-sunset text-white grid place-items-center font-display text-label">'+c[0]+'</span><div class="flex-1"><div class="text-title">'+c[1]+'</div><div class="text-body text-secondary">'+c[2]+'</div></div><span class="text-secondary">›</span></div>';}).join('');
+function feat(arr,t){return arr.map(function(f){return '<div class="rounded-jewel jw p-4"><div class="flex items-center gap-2.5"><span class="icobox" style="width:38px;height:38px;background:'+f[2]+'">'+ms(f[0])+'</span><b class="text-title">'+f[1]+'</b></div><p class="text-body text-secondary mt-2">'+f[3]+'</p><div data-toast="'+f[1]+'" class="text-label text-primary mt-2 cursor-pointer">DÉCOUVRIR ›</div></div>';}).join('');}
+$('#cat1').innerHTML=feat([['dashboard','Tableau de bord dynamique','linear-gradient(150deg,#FF8A5C,#FF4F6D)','Personnalise les widgets en temps réel pour une vue à 360°.'],['notifications','Centre de notifications','linear-gradient(150deg,#A07BFF,#6638D6)','Configuration des push granulaires et webhooks externes.']]);
+$('#cat2').innerHTML=feat([['edit_location','Moteur d\'édition de carte','linear-gradient(150deg,#43D6A0,#0E9E6B)','Ajoute des zones d\'intérêt et dessine des zones d\'exclusion.'],['qr_code_2','Générateur QR Physiques','linear-gradient(150deg,#56C2F5,#2D7FE0)','Lie des objets du monde réel à des expériences numériques.']]);
+/* nav */
+var NAV=[['home','Accueil','home'],['lieux','Lieux','place'],['jeux','Jeux','sports_esports'],['mates','Mates','group'],['secu','Sécurité','health_and_safety'],['profil','Profil','person']];
+$('#nav').innerHTML=NAV.map(function(n){return '<button data-k="'+n[0]+'" class="flex-1 py-2.5 flex flex-col items-center gap-1 text-secondary text-[10px] font-bold"><span class="material-symbols-outlined">'+n[2]+'</span>'+n[1]+'</button>';}).join('');
+function go(s){
+ if(s==='livre'){$('[data-livre]').classList.remove('hidden');return;}
+ $('[data-livre]').classList.add('hidden');
+ $$('.screen').forEach(function(e){e.classList.toggle('hidden',e.dataset.s!==s);});
+ var k={home:'home',lieux:'lieux',jeux:'jeux',mates:'mates',chat:'mates',secu:'secu',profil:'profil',guide:'profil'}[s];
+ $$('#nav button').forEach(function(b){var on=b.dataset.k===k;b.classList.toggle('text-primary',on);b.classList.toggle('text-secondary',!on);});
+ $('#stage').scrollTop=0;if(s==='home'&&homeV==='voyage')setTimeout(initMap,80);}
+$$('#nav button').forEach(function(b){b.onclick=function(){go(b.dataset.k);};});
+$$('[data-go]').forEach(function(el){el.onclick=function(){$('#sheet').classList.add('hidden');$('#sheet').classList.remove('flex');go(el.dataset.go);};});
+/* home seg */
+var homeV='maison';
+$$('[data-seg=home] button').forEach(function(b){b.onclick=function(){homeV=b.dataset.v;$$('[data-seg=home] button').forEach(function(x){x.classList.toggle('on',x===b);x.classList.toggle('text-secondary',x!==b);});
+ $('[data-pane=home-maison]').classList.toggle('hidden',homeV!=='maison');$('[data-pane=home-voyage]').classList.toggle('hidden',homeV!=='voyage');if(homeV==='voyage')setTimeout(initMap,80);};});
+/* mates seg */
+$$('[data-seg=mates]>button').forEach(function(b){b.onclick=function(){var v=b.dataset.v;$$('[data-seg=mates]>button').forEach(function(x){x.classList.toggle('on',x===b);x.classList.toggle('text-secondary',x!==b);});$('[data-pane=mates-disc]').classList.toggle('hidden',v!=='disc');$('[data-pane=mates-msg]').classList.toggle('hidden',v!=='msg');};});
+/* leaflet */
+var map;function tl(m){L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(m);}
+function pin(c){return L.divIcon({className:'',html:'<div style="width:26px;height:26px;border-radius:50% 50% 50% 0;background:'+c+';transform:rotate(-45deg);box-shadow:0 4px 8px rgba(0,0,0,.35);border:2px solid #fff"></div>',iconSize:[26,26],iconAnchor:[13,24]});}
+function initMap(){if(map||!window.L||!$('#map'))return;map=L.map('map',{zoomControl:false,attributionControl:false}).setView([38.7169,-9.139],13);tl(map);[[38.722,-9.139,'#b5241f','Café Copenhague'],[38.711,-9.136,'#9B7BFF','Maya'],[38.715,-9.129,'#FFC23D','Quête'],[38.708,-9.142,'#0FA37C','Jardim']].forEach(function(p){L.marker([p[0],p[1]],{icon:pin(p[2])}).addTo(map).bindPopup(p[3]);});}
+$('#around').onclick=function(){if(map)map.flyTo([38.7169,-9.139],15);toast('On recentre autour de toi 📍');};
+/* chat */
+var CH={Lina:[['them','Coucou ! Prête pour notre session d\'exploration ce soir ? 🌙 J\'ai repéré quelques spots sympas.'],['me','Grave ! On se retrouve à quel endroit sur la map ? 🗺️']],Elena:[['them','Seeking travel buddies ! 🏄']],David:[['them','On teste un marché demain ?']]};
+function conv(name){go('chat');$('#chatname').textContent=name;$('#chatav').textContent=name[0];var c=$('#conv');c.innerHTML='';(CH[name]||[['them','Salut 👋']]).forEach(function(b){var d=document.createElement('div');d.className='bub '+b[0];d.textContent=b[1];c.appendChild(d);});setTimeout(function(){$('#stage').scrollTop=$('#stage').scrollHeight;},80);}
+$$('[data-conv]').forEach(function(r){r.onclick=function(){conv(r.dataset.conv);};});
+$('#sendbtn').onclick=function(){var i=$('#msgin'),v=i.value.trim();if(!v)return;var d=document.createElement('div');d.className='bub me';d.textContent=v;$('#conv').appendChild(d);i.value='';$('#stage').scrollTop=$('#stage').scrollHeight;setTimeout(function(){var t=document.createElement('div');t.className='bub them';t.textContent='👍';$('#conv').appendChild(t);$('#stage').scrollTop=$('#stage').scrollHeight;},700);};
+$('#msgin').addEventListener('keydown',function(e){if(e.key==='Enter')$('#sendbtn').click();});
+/* checkin/toast/confetti */
+var tEl=$('#toast'),tT;function toast(m){tEl.textContent=m;tEl.classList.add('show');clearTimeout(tT);tT=setTimeout(function(){tEl.classList.remove('show');},2000);}
+function confetti(){var ph=$('#phone'),c=['#FFD15C','#FF8A45','#FF5570','#34C98F','#9B7BFF'];for(var i=0;i<22;i++){(function(j){var s=document.createElement('div');s.className='cf';s.style.background=c[j%c.length];s.style.left=(50+(Math.random()*40-20))+'%';s.style.top='45%';ph.appendChild(s);var dx=(Math.random()*2-1)*150,dy=200+Math.random()*200,rot=Math.random()*720;s.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) rotate('+rot+'deg)',opacity:0}],{duration:1100+Math.random()*400,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=function(){s.remove();};})(i);}}
+var xp=10;function checkin(){xp=Math.min(100,xp+20);if($('#xpbar')){$('#xpbar').style.width=xp+'%';$('#xptxt').textContent=xp+'/100';}confetti();toast('Bravo ! +20 XP 🎉');}
+$$('[data-checkin]').forEach(function(b){b.onclick=function(e){e.stopPropagation();checkin();};});
+$('#sosBtn').onclick=function(){var m=$('#sosModal');m.classList.remove('hidden');m.classList.add('flex');};
+$('#sosClose').onclick=function(){var m=$('#sosModal');m.classList.add('hidden');m.classList.remove('flex');toast('Alerte annulée');};
+$('#menuBtn').onclick=function(){var s=$('#sheet');s.classList.remove('hidden');s.classList.add('flex');};
+$('#closeSheet').onclick=function(){var s=$('#sheet');s.classList.add('hidden');s.classList.remove('flex');};
+
+$('#logout').onclick=function(){$('#sheet').classList.add('hidden');$('#sheet').classList.remove('flex');$('#cnx').classList.remove('hidden');$('#cnx').classList.add('flex');};
+/* onboarding */
+var OB=[['🗺️','Ta carte vivante','Repère en un coup d\'œil qui est autour, les spots sympas et les activités.'],['🛟','La sécurité d\'abord','SOS, partage de position et cercle de confiance — gratuits, pour tout le monde.'],['🤝','Des rencontres validées','Profils vérifiés, check-ins, connexions non ambiguës. En confiance.']];
+var obi=0;function rob(){var o=OB[obi];$('#obhero').textContent=o[0];$('#obh').textContent=o[1];$('#obp').textContent=o[2];$$('#obdots i').forEach(function(d,i){d.className=(i===obi?'w-5':'w-2')+' h-2 rounded-full '+(i===obi?'bg-sunset':'bg-outline-variant');});$('#obnext').textContent=obi<OB.length-1?'Suivant →':'Commencer';}
+function endOnb(){$('#onb').classList.add('hidden');$('#cnx').classList.remove('hidden');$('#cnx').classList.add('flex');}
+$('#obnext').onclick=function(){if(obi<OB.length-1){obi++;rob();}else endOnb();};
+$('#obskip').onclick=endOnb;
+$('#reonb').onclick=function(){$('#sheet').classList.add('hidden');$('#sheet').classList.remove('flex');obi=0;rob();$('#onb').classList.remove('hidden');$('#onb').classList.add('flex');};
+function enter(){$('#cnx').classList.add('hidden');$('#cnx').classList.remove('flex');go('home');}
+$('#cnxgo').onclick=enter;$$('.cnxalt').forEach(function(b){b.onclick=enter;});
+
+/* ---- polish interactions ---- */
+$('#bell').insertAdjacentHTML('beforeend','<span class="bdot"></span>');
+
+$$('.heart').forEach(function(h){h.addEventListener('click',function(e){e.stopPropagation();var on=h.classList.toggle('on');h.textContent=on?'♥':'♡';toast(on?'Ajouté aux favoris ♥':'Retiré des favoris');});});
+$$('.lfilter').forEach(function(f){f.addEventListener('click',function(){$$('.lfilter').forEach(function(x){x.classList.remove('on','text-white');x.style.background='';x.classList.add('bg-white','border','border-outline-variant/50');});f.classList.add('on','text-white');f.classList.remove('bg-white','border','border-outline-variant/50');f.style.background='linear-gradient(135deg,#ff5a4d,#b5241f)';toast('Filtre : '+f.textContent.trim());});});
+$$('.cnxtab').forEach(function(t){t.addEventListener('click',function(){$$('.cnxtab').forEach(function(x){x.classList.remove('bg-white','text-on-surface');x.classList.add('text-white/80');});t.classList.add('bg-white','text-on-surface');t.classList.remove('text-white/80');});});
+
+/* rituels réactifs */
+(function(){var rit=$('#rituels');if(!rit)return;rit.addEventListener('change',function(e){var c=e.target;if(c.type!=='checkbox')return;var l=c.nextElementSibling;l.classList.toggle('line-through',c.checked);l.classList.toggle('text-secondary',c.checked);if(c.checked)confetti();toast(c.checked?'Rituel validé · +5 XP 🌿':'Rituel décoché');});})();
+/* featured mates -> profil ; cercle ajouter ; parcours */
+$$('#featured > div').forEach(function(d){d.style.cursor='pointer';d.addEventListener('click',function(){toast('Profil de '+d.textContent.trim());});});
+$$('#cercle > div').forEach(function(d){d.style.cursor='pointer';d.addEventListener('click',function(){toast(/Ajouter/.test(d.textContent)?'Ajouter au cercle de confiance':d.textContent.trim()+' · membre du cercle');});});
+$$('#parcours > div').forEach(function(d){d.style.cursor='pointer';d.addEventListener('click',function(){toast('Badge : '+d.textContent.trim());});});
+/* secu tiles toast */
+$$('#secutiles button').forEach(function(b){b.addEventListener('click',function(){toast(b.textContent.trim()+' activé');});});
+/* search divs -> petit feedback */
+
+
+
+/* ---- passe fonctionnelle A→Z ---- */
+// Nearby / Global
+$$('.ngseg button').forEach(function(b){b.addEventListener('click',function(){$$('.ngseg button').forEach(function(x){x.classList.toggle('on',x===b);x.classList.toggle('text-secondary',x!==b);});toast(b.textContent.trim());});});
+// jeux tiles / ambs / chapitres / catalogue / admin sont déjà en data-toast -> re-scan (éléments générés)
+$$('[data-toast]').forEach(function(b){if(b._t)return;b._t=1;b.addEventListener('click',function(e){e.stopPropagation();toast(b.getAttribute('data-toast'));});});
+// filtrage lieux (recherche + ÉCO)
+function filterLieux(){var q=($('#srchLieux')?$('#srchLieux').value:'').toLowerCase();var af=document.querySelector('.lfilter.on');var eco=af&&/ÉCO/.test(af.textContent);
+ $$('.lieu-card').forEach(function(c){var n=(c.dataset.name||'');var ok=(!q||n.indexOf(q)>=0)&&(!eco||c.dataset.eco==='1');c.style.display=ok?'':'none';});}
+if($('#srchLieux'))$('#srchLieux').addEventListener('input',filterLieux);
+$$('.lfilter').forEach(function(f){f.addEventListener('click',filterLieux);});
+// recherches autres : Enter -> toast
+['srchHome','srchMates','srchLivre'].forEach(function(id){var el=$('#'+id);if(el)el.addEventListener('keydown',function(e){if(e.key==='Enter'&&el.value.trim())toast('Recherche : '+el.value.trim());});});
+if($('#srchMates'))$('#srchMates').addEventListener('input',function(){var q=this.value.toLowerCase();$$('.mate-card').forEach(function(c){c.style.display=(!q||(c.dataset.name||'').indexOf(q)>=0)?'':'none';});});
+// chips home voyage
+$$('[data-pane=home-voyage] .chip').forEach(function(c){c.style.cursor='pointer';c.addEventListener('click',function(){toast('Filtre : '+c.textContent.trim());});});
+// connexion : onglets changent le bouton
+$$('.cnxtab').forEach(function(t){t.addEventListener('click',function(){var ins=/Inscription/.test(t.textContent);if($('#cnxgo'))$('#cnxgo').textContent=ins?'Créer mon compte':'Se connecter';});});
+// oeil mot de passe (vrai input)
+(function(){var eye=$('#eye'),pw=$('#pwin');if(eye&&pw)eye.addEventListener('click',function(){var p=pw.type==='password';pw.type=p?'text':'password';eye.textContent=p?'visibility_off':'visibility';});})();
+// fermeture par backdrop
+$('#sheet').addEventListener('click',function(e){if(e.target===this){this.classList.add('hidden');this.classList.remove('flex');}});
+$('#sosModal').addEventListener('click',function(e){if(e.target===this){this.classList.add('hidden');this.classList.remove('flex');}});
+// brand -> home
+$('#brand').style.cursor='pointer';$('#brand').addEventListener('click',function(){go('home');});
+// cloche cohérente
+$('#bell').addEventListener('click',function(){toast('🔔 Lina t\'a envoyé un message');var b=$('.bdot');if(b)b.remove();});
+// livre blanc : reset scroll à l'ouverture
+var _go=go;go=function(s){_go(s);if(s==='livre'){var lv=$('[data-livre]');if(lv)lv.scrollTop=0;}};
+
+/* init */
+go('home');$('.screen[data-s=home]').classList.remove('hidden');rob();
+</script>
+</body>
+</html>
