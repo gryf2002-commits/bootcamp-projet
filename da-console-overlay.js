@@ -309,12 +309,12 @@
       ICATS.forEach(function(c){b.appendChild(cr(c,function(){return T.iconColors[c]||m.j2},function(v){T.iconColors[c]=v;T.icon.colorMode='themed';}));});}));
     P.appendChild(det('R\u00e9compenses (export / publi\u00e9)',function(b){
       (T.rewards||[]).forEach(function(rw,i){var r=el("<div style='border:1px solid #333;border-radius:8px;padding:6px;margin:4px 0'></div>");
-        var nm=el("<input type=text value='"+(rw.name||'')+"' placeholder='Nom' style='width:100%;background:#0d0a14;color:#fff;border:1px solid #333;border-radius:6px;padding:4px;margin-bottom:4px'>");nm.onchange=function(){rw.name=nm.value;};
-        var xp=el("<input type=number value='"+(rw.xp||0)+"' style='width:70px;background:#0d0a14;color:#fff;border:1px solid #333;border-radius:6px;padding:4px'>");xp.onchange=function(){rw.xp=+xp.value;};
-        var del=el("<button style='float:right;border:1px solid #333;background:transparent;color:#f88;border-radius:6px;cursor:pointer'>\u00d7</button>");del.onclick=function(){T.rewards.splice(i,1);build_panel();};
+        var nm=el("<input type=text value='"+(rw.name||'')+"' placeholder='Nom' style='width:100%;background:#0d0a14;color:#fff;border:1px solid #333;border-radius:6px;padding:4px;margin-bottom:4px'>");nm.onchange=function(){rw.name=nm.value;apply();};
+        var xp=el("<input type=number value='"+(rw.xp||0)+"' style='width:70px;background:#0d0a14;color:#fff;border:1px solid #333;border-radius:6px;padding:4px'>");xp.onchange=function(){rw.xp=+xp.value;apply();};
+        var del=el("<button style='float:right;border:1px solid #333;background:transparent;color:#f88;border-radius:6px;cursor:pointer'>\u00d7</button>");del.onclick=function(){T.rewards.splice(i,1);apply();build_panel();};
         r.appendChild(nm);r.appendChild(xp);r.appendChild(del);b.appendChild(r);});
       var add=el("<button style='border:1px solid #333;background:transparent;color:#fff;border-radius:8px;padding:5px;cursor:pointer'>+ Ajouter</button>");
-      add.onclick=function(){T.rewards.push({name:'Nouvelle',xp:50,state:'unlocked'});build_panel();};b.appendChild(add);}));
+      add.onclick=function(){T.rewards.push({name:'Nouvelle',xp:50,state:'unlocked'});apply();build_panel();};b.appendChild(add);}));
     P.appendChild(det('Ic\u00f4ne app / PWA (export / publi\u00e9)',function(b){
       b.appendChild(cr('D\u00e9grad\u00e9 haut',function(){return T.appIcon.c1},function(v){T.appIcon.c1=v;}));
       b.appendChild(cr('D\u00e9grad\u00e9 bas',function(){return T.appIcon.c2},function(v){T.appIcon.c2=v;}));
@@ -322,11 +322,11 @@
     P.appendChild(det('Banque d\u2019images (lieux)',function(b){
       ['caf\u00e9','co-living','nature','eau','nuit','culture','route','ville'].forEach(function(k){
         var r=el("<div style='display:flex;align-items:center;gap:8px;margin:4px 0;font-size:12px'><label style='flex:1;color:#a99fbe'>"+k+"</label><input type=text value='"+((T.imgBank&&T.imgBank[k])||'')+"' placeholder='URL ou mots-cl\u00e9s' style='width:130px;background:#0d0a14;color:#fff;border:1px solid #333;border-radius:6px;padding:4px'></div>");
-        r.querySelector('input').onchange=function(e){T.imgBank=T.imgBank||{};T.imgBank[k]=e.target.value;};b.appendChild(r);});}));
+        r.querySelector('input').onchange=function(e){T.imgBank=T.imgBank||{};T.imgBank[k]=e.target.value;apply();};b.appendChild(r);});}));
     P.appendChild(det('Textes globaux',function(b){
       [['app.tagline','Slogan'],['home.greeting','Salutation {prenom}'],['home.quick','Acc\u00e8s rapides'],['cta.continue','CTA continuer']].forEach(function(t){
         var r=el("<div style='margin:4px 0'><div style='font-size:11px;color:#a99fbe'>"+t[1]+"</div><input type=text value='"+((T.globalTexts&&T.globalTexts[t[0]])||'')+"' style='width:100%;background:#0d0a14;color:#fff;border:1px solid #333;border-radius:6px;padding:4px'></div>");
-        r.querySelector('input').onchange=function(e){T.globalTexts=T.globalTexts||{};T.globalTexts[t[0]]=e.target.value;};b.appendChild(r);});}));
+        r.querySelector('input').onchange=function(e){T.globalTexts=T.globalTexts||{};T.globalTexts[t[0]]=e.target.value;apply();};b.appendChild(r);});}));
     P.appendChild(H('Accessibilit\u00e9'));
     P.appendChild(rg('Taille police %',function(){return (T.a11y&&T.a11y.fontScale)||100},function(v){T.a11y=T.a11y||{};T.a11y.fontScale=v;},80,140));
     var acb=document.createElement('button');acb.textContent='\u2728 Auto-contraste texte';
