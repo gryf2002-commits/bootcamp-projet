@@ -66,6 +66,15 @@ button:active{transform:scale(.97)}
 .bdot{position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#e8402b;border:1.5px solid #fff}
 .rounded-jewel.jw,.jw{transition:transform .14s,box-shadow .2s}
 input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
+/* a11y : anneau de focus clavier net et cohérent DA (corail/primary) */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible,[role="button"]:focus-visible{outline:2.5px solid #b5241f;outline-offset:2px;border-radius:10px}
+/* le focus souris ne change pas le visuel (on garde le hover/active tel quel) */
+:focus:not(:focus-visible){outline:none}
+/* a11y : respecte la préférence "moins d'animations" (coupe le décoratif) */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .cf{display:none!important}
+}
 /* MOBILE : plein écran (fini le "téléphone dans un téléphone") */
 @media(max-width:480px){
   body{padding:0!important;display:block!important;background:#faf8ff!important}
@@ -78,8 +87,8 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
   <div class="h-7 flex items-center justify-between px-6 text-[11px] font-bold text-secondary flex-none"><span>9:41</span><span>SunMates</span><span>●●● ▽</span></div>
   <div class="flex items-center gap-2.5 px-4 pb-2 flex-none">
     <b id="brand" class="flex-1 font-display text-[20px] flex items-center gap-1.5 bg-sunset bg-clip-text text-transparent">☀️ SunMates</b>
-    <button id="bell" class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary"><span class="material-symbols-outlined">notifications</span></button>
-    <button id="menuBtn" class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary"><span class="material-symbols-outlined">menu</span></button>
+    <button id="bell" aria-label="Notifications" class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary"><span class="material-symbols-outlined" aria-hidden="true">notifications</span></button>
+    <button id="menuBtn" aria-label="Menu" class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary"><span class="material-symbols-outlined" aria-hidden="true">menu</span></button>
   </div>
 
   <div id="stage" class="stage flex-1 overflow-auto px-4 pb-6">
@@ -123,7 +132,7 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
       <div data-pane="home-voyage" class="hidden">
         <h1 class="font-display text-display text-primary mb-1">Explore</h1>
         <p class="text-secondary text-body mb-3">Repère qui et quoi est autour de toi 👀</p>
-        <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-3"><span class="material-symbols-outlined text-secondary">search</span><input id="srchHome"  class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher un lieu, un·e voyageur·se…"></label>
+        <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-3"><span class="material-symbols-outlined text-secondary">search</span><input id="srchHome" aria-label="Rechercher un lieu ou un·e voyageur·se" class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher un lieu, un·e voyageur·se…"></label>
         <div class="flex gap-2 mb-3"><span class="chip bg-white border border-outline-variant/50 flex items-center gap-1.5"><span class="material-symbols-outlined" style="font-size:16px">place</span>Lisbonne</span><span class="chip bg-white border border-outline-variant/50">À proximité</span><span class="chip bg-white border border-outline-variant/50">Filtres <b class="text-primary">6</b></span></div>
         <div id="map" class="rounded-jewel jw overflow-hidden" style="height:300px"></div>
         <div class="flex gap-2 mt-3"><button id="around" class="flex-1 bg-sunset text-white rounded-[14px] py-3 text-label flex items-center justify-center gap-1.5"><span class="material-symbols-outlined" style="font-size:18px">my_location</span>Autour de moi</button><button data-go="lieux" class="flex-1 bg-white border border-outline-variant/50 text-primary rounded-[14px] py-3 text-label">Tout voir</button></div>
@@ -141,12 +150,12 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
           <span class="hstat flex items-center gap-1.5 text-label"><span class="material-symbols-outlined" style="font-size:16px">near_me</span>3 proches</span>
         </div>
       </div>
-      <div class="rounded-jewel cream p-3 flex items-center gap-3 mb-3"><span class="icobox" style="background:linear-gradient(150deg,#FF8A5C,#FF4F6D)"><span class="material-symbols-outlined">local_cafe</span></span><div class="flex-1"><div class="text-label text-primary">MON SPOT ACTUEL · Café cosy à Lisbonne</div><div class="text-body text-secondary">Tu es là depuis 45 min. Parfait pour un matcha.</div></div><button data-toast="Modifier ton spot" class="material-symbols-outlined text-secondary" style="font-size:18px">edit</button></div>
-      <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-3"><span class="material-symbols-outlined text-secondary">search</span><input id="srchLieux" data-search="lieux" class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher un lieu, une ambiance"></label>
+      <div class="rounded-jewel cream p-3 flex items-center gap-3 mb-3"><span class="icobox" style="background:linear-gradient(150deg,#FF8A5C,#FF4F6D)"><span class="material-symbols-outlined">local_cafe</span></span><div class="flex-1"><div class="text-label text-primary">MON SPOT ACTUEL · Café cosy à Lisbonne</div><div class="text-body text-secondary">Tu es là depuis 45 min. Parfait pour un matcha.</div></div><button data-toast="Modifier ton spot" aria-label="Modifier ton spot" class="material-symbols-outlined text-secondary" style="font-size:18px">edit</button></div>
+      <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-3"><span class="material-symbols-outlined text-secondary">search</span><input id="srchLieux" data-search="lieux" aria-label="Rechercher un lieu ou une ambiance" class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher un lieu, une ambiance"></label>
       <div class="flex gap-2 mb-4"><button class="lfilter chip text-white on" style="background:linear-gradient(135deg,#ff5a4d,#b5241f)">TOUS</button><button class="lfilter chip bg-white border border-outline-variant/50">🌿 ÉCO</button><button class="lfilter chip bg-white border border-outline-variant/50">📍 PRÈS DE MOI</button></div>
       <div id="lieuxEmpty" class="hidden rounded-jewel cream p-5 text-center mb-4"><div class="text-3xl mb-1">🔍</div><b class="sect text-title">Aucun lieu trouvé</b><p class="text-body text-secondary mt-1">Essaie un autre mot-clé ou enlève les filtres.</p></div>
       <div class="lieu-card rounded-jewel overflow-hidden jw mb-4" data-name="l'escale éco café vegan" data-eco="1" data-nearby="1">
-        <div class="h-40 photo relative" style="background-image:url(https://picsum.photos/seed/escale/600/360)"><span class="absolute top-3 left-3 bg-white/90 rounded-full px-2.5 py-1 text-label">⭐ 4.8</span><button class="heart absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 grid place-items-center text-primary">♡</button></div>
+        <div class="h-40 photo relative" style="background-image:url(https://picsum.photos/seed/escale/600/360)"><span class="absolute top-3 left-3 bg-white/90 rounded-full px-2.5 py-1 text-label">⭐ 4.8</span><button class="heart absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 grid place-items-center text-primary" aria-label="Ajouter aux favoris" aria-pressed="false">♡</button></div>
         <div class="p-4"><div class="flex items-center justify-between"><b class="font-display text-h2">L'Escale Éco</b><div class="flex -space-x-2" id="escav"></div></div>
           <div class="text-body text-secondary mt-1 flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:15px">place</span>Quartier des arts, 200m</div>
           <div class="flex gap-2 mt-2.5 flex-wrap"><span class="chip bg-surface-container text-[11px] py-1">CAFÉ</span><span class="chip bg-surface-container text-[11px] py-1">VEGAN-FRIENDLY</span><span class="chip bg-surface-container text-[11px] py-1">WIFI FORT</span></div>
@@ -160,28 +169,28 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
         <div class="flex-1 min-w-0"><div class="flex items-center gap-2"><b class="font-display text-title truncate">Le Comptoir Solaire</b><span class="text-label flex-none">⭐ 4.9</span></div>
           <div class="text-body text-secondary flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined" style="font-size:14px">place</span>Centre historique · 850m</div>
           <div class="flex gap-1.5 mt-1.5"><span class="chip bg-surface-container text-[10px] py-0.5">AUBERGE</span><span class="chip bg-surface-container text-[10px] py-0.5">CHILL</span></div></div>
-        <button data-detail class="w-9 h-9 rounded-full bg-surface-container text-primary grid place-items-center flex-none"><span class="material-symbols-outlined" style="font-size:20px">chevron_right</span></button>
+        <button data-detail aria-label="Voir le détail du lieu" class="w-9 h-9 rounded-full bg-surface-container text-primary grid place-items-center flex-none"><span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">chevron_right</span></button>
       </div>
       <div class="lieu-card minicard flex gap-3 p-2.5 items-center" data-name="la ruche co-living coliving nomades wifi" data-eco="1" data-nearby="1" data-rating="4.7" data-dist="Bairro Alto, 400m" data-tags="CO-LIVING · ÉCO · NOMADES" data-desc="Co-living éco-responsable pour nomades digitaux. Panneaux solaires, potager partagé, espaces de coworking lumineux et une vraie communauté de voyageur·ses au long cours.">
         <div class="w-[72px] h-[72px] rounded-[16px] photo flex-none" style="background-image:url(https://picsum.photos/seed/ruche/300/300)"></div>
         <div class="flex-1 min-w-0"><div class="flex items-center gap-2"><b class="font-display text-title truncate">La Ruche Co-Living</b><span class="text-label flex-none">⭐ 4.7</span></div>
           <div class="text-body text-secondary flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined" style="font-size:14px">place</span>Bairro Alto · 400m</div>
           <div class="flex gap-1.5 mt-1.5"><span class="chip bg-surface-container text-[10px] py-0.5">CO-LIVING</span><span class="chip bg-surface-container text-[10px] py-0.5">🌿 ÉCO</span></div></div>
-        <button data-detail class="w-9 h-9 rounded-full bg-surface-container text-primary grid place-items-center flex-none"><span class="material-symbols-outlined" style="font-size:20px">chevron_right</span></button>
+        <button data-detail aria-label="Voir le détail du lieu" class="w-9 h-9 rounded-full bg-surface-container text-primary grid place-items-center flex-none"><span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">chevron_right</span></button>
       </div>
       <div class="lieu-card minicard flex gap-3 p-2.5 items-center" data-name="atelier matcha salon de thé thé calme" data-eco="1" data-nearby="0" data-rating="4.6" data-dist="Alfama, 1.2 km" data-tags="SALON DE THÉ · ÉCO · CALME" data-desc="Petit salon de thé bio niché dans les ruelles d'Alfama. Matcha cérémonie, pâtisseries véganes et coin lecture au calme. Le spot parfait pour souffler en solo.">
         <div class="w-[72px] h-[72px] rounded-[16px] photo flex-none" style="background-image:url(https://picsum.photos/seed/matcha/300/300)"></div>
         <div class="flex-1 min-w-0"><div class="flex items-center gap-2"><b class="font-display text-title truncate">L'Atelier Matcha</b><span class="text-label flex-none">⭐ 4.6</span></div>
           <div class="text-body text-secondary flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined" style="font-size:14px">place</span>Alfama · 1.2 km</div>
           <div class="flex gap-1.5 mt-1.5"><span class="chip bg-surface-container text-[10px] py-0.5">SALON DE THÉ</span><span class="chip bg-surface-container text-[10px] py-0.5">🌿 ÉCO</span></div></div>
-        <button data-detail class="w-9 h-9 rounded-full bg-surface-container text-primary grid place-items-center flex-none"><span class="material-symbols-outlined" style="font-size:20px">chevron_right</span></button>
+        <button data-detail aria-label="Voir le détail du lieu" class="w-9 h-9 rounded-full bg-surface-container text-primary grid place-items-center flex-none"><span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">chevron_right</span></button>
       </div>
       <div class="lieu-card minicard flex gap-3 p-2.5 items-center" data-name="hostel lumière auberge jeunesse rooftop social" data-eco="0" data-nearby="1" data-rating="4.5" data-dist="Cais do Sodré, 300m" data-tags="AUBERGE · ROOFTOP · SOCIAL" data-desc="Auberge animée à deux pas du fleuve. Rooftop avec vue coucher de soleil, apéros communautaires et tableau des sorties du jour. Parfait pour rencontrer d'autres Mates.">
         <div class="w-[72px] h-[72px] rounded-[16px] photo flex-none" style="background-image:url(https://picsum.photos/seed/lumiere/300/300)"></div>
         <div class="flex-1 min-w-0"><div class="flex items-center gap-2"><b class="font-display text-title truncate">Hostel Lumière</b><span class="text-label flex-none">⭐ 4.5</span></div>
           <div class="text-body text-secondary flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined" style="font-size:14px">place</span>Cais do Sodré · 300m</div>
           <div class="flex gap-1.5 mt-1.5"><span class="chip bg-surface-container text-[10px] py-0.5">AUBERGE</span><span class="chip bg-surface-container text-[10px] py-0.5">ROOFTOP</span></div></div>
-        <button data-detail class="w-9 h-9 rounded-full bg-surface-container text-primary grid place-items-center flex-none"><span class="material-symbols-outlined" style="font-size:20px">chevron_right</span></button>
+        <button data-detail aria-label="Voir le détail du lieu" class="w-9 h-9 rounded-full bg-surface-container text-primary grid place-items-center flex-none"><span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">chevron_right</span></button>
       </div>
       </div>
     </section>
@@ -217,7 +226,7 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
         <button class="flex-1 py-2.5 rounded-full text-label text-secondary" data-v="msg">💬 Messages</button>
       </div>
       <div data-pane="mates-disc">
-        <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-3"><span class="material-symbols-outlined text-secondary">search</span><input id="srchMates"  class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher intérêts, Mates, Groupes…"></label>
+        <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-3"><span class="material-symbols-outlined text-secondary">search</span><input id="srchMates" aria-label="Rechercher intérêts, Mates ou groupes" class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher intérêts, Mates, Groupes…"></label>
         <div class="seg2 ngseg flex gap-1.5 bg-surface-container rounded-full p-1.5 mb-4"><button class="flex-1 py-2 rounded-full text-label on">📍 Nearby</button><button class="flex-1 py-2 rounded-full text-label text-secondary">🌐 Global</button></div>
         <h2 class="text-label text-secondary uppercase tracking-wide mb-2.5">Featured Mates ⭐</h2>
         <div class="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4 mb-2" id="featured"></div>
@@ -231,7 +240,7 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
           </div>
           <div class="p-4"><p class="text-body text-on-surface-variant">Solo adventurer exploring the world, one beach at a time! Seeking travel buddies.</p>
             <div class="flex gap-2 mt-2.5 flex-wrap"><span class="chip bg-surface-container text-[11px] py-1">🥾 Hiking</span><span class="chip bg-surface-container text-[11px] py-1">📷 Photography</span><span class="chip bg-surface-container text-[11px] py-1">🏄 Surfing</span></div>
-            <div class="flex items-center gap-3 mt-3"><button data-toast="Passé" class="w-11 h-11 rounded-full bg-white border border-outline-variant/50 text-secondary">✕</button><button data-conv="Elena" class="flex-1 bg-sunset text-white rounded-[14px] py-3 text-label flex items-center justify-center gap-1.5"><span class="material-symbols-outlined" style="font-size:18px">forum</span>Connect</button><button class="heart w-11 h-11 rounded-full bg-white border border-outline-variant/50 text-primary">♡</button></div>
+            <div class="flex items-center gap-3 mt-3"><button data-toast="Passé" aria-label="Passer ce profil" class="w-11 h-11 rounded-full bg-white border border-outline-variant/50 text-secondary">✕</button><button data-conv="Elena" class="flex-1 bg-sunset text-white rounded-[14px] py-3 text-label flex items-center justify-center gap-1.5"><span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">forum</span>Connect</button><button class="heart w-11 h-11 rounded-full bg-white border border-outline-variant/50 text-primary" aria-label="Aimer ce profil" aria-pressed="false">♡</button></div>
           </div>
         </div>
         <!-- event card -->
@@ -248,7 +257,7 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
           <div class="w-16 h-16 rounded-2xl photo flex-none" style="background-image:url(https://picsum.photos/seed/david/200/200)"></div>
           <div class="flex-1"><div class="flex items-center justify-between"><b class="font-display text-h2">David</b><span class="text-label text-primary">78% ♥</span></div><div class="text-body text-secondary">Paris, France</div>
             <p class="text-body text-on-surface-variant mt-1">Foodie cherchant à explorer les marchés locaux.</p>
-            <div class="flex items-center gap-3 mt-2.5"><button data-toast="Passé" class="w-9 h-9 rounded-full bg-white border border-outline-variant/50 text-secondary">✕</button><button data-conv="David" class="flex-1 bg-sunset text-white rounded-[12px] py-2.5 text-label">Connect</button><button class="heart w-9 h-9 rounded-full bg-white border border-outline-variant/50 text-primary">♡</button></div>
+            <div class="flex items-center gap-3 mt-2.5"><button data-toast="Passé" aria-label="Passer ce profil" class="w-9 h-9 rounded-full bg-white border border-outline-variant/50 text-secondary">✕</button><button data-conv="David" class="flex-1 bg-sunset text-white rounded-[12px] py-2.5 text-label">Connect</button><button class="heart w-9 h-9 rounded-full bg-white border border-outline-variant/50 text-primary" aria-label="Aimer ce profil" aria-pressed="false">♡</button></div>
           </div>
         </div>
       </div>
@@ -261,13 +270,13 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
 
     <!-- CHAT -->
     <section class="screen hidden" data-s="chat">
-      <div class="flex items-center gap-3 mt-2 mb-3"><button class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary" data-go="mates">‹</button>
+      <div class="flex items-center gap-3 mt-2 mb-3"><button class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary" data-go="mates" aria-label="Retour aux Mates">‹</button>
         <div class="relative"><span class="icobox" id="chatav" style="width:40px;height:40px;background:linear-gradient(150deg,#FF8A5C,#FF4F6D)">L</span><span class="absolute -right-0.5 -bottom-0.5 w-3 h-3 rounded-full bg-ok border-2 border-white"></span></div>
         <div class="flex-1"><div class="text-title" id="chatname">Lina</div><div class="text-body text-secondary italic">typing…</div></div>
         <span class="bg-surface-container rounded-full px-2.5 py-1 text-label">🔥 8</span></div>
       <div class="text-center my-2"><span class="bg-surface-container text-secondary text-[11px] font-bold px-3 py-1 rounded-full">AUJOURD'HUI</span></div>
       <div id="conv" class="flex flex-col gap-2.5 pb-2"></div>
-      <div class="flex gap-2 items-center mt-2.5"><input id="msgin" class="flex-1 bg-white border border-outline-variant/50 rounded-full px-4 py-3 text-body outline-none" placeholder="Envoyer un message…"><button data-toast="Message vocal · bientôt 🎤" class="w-10 h-10 rounded-full bg-white border border-outline-variant/50 text-secondary flex-none"><span class="material-symbols-outlined" style="font-size:20px">mic</span></button><button id="sendbtn" class="w-11 h-11 rounded-full bg-sunset text-white flex-none"><span class="material-symbols-outlined" style="font-size:20px">send</span></button></div>
+      <div class="flex gap-2 items-center mt-2.5"><input id="msgin" aria-label="Écrire un message" class="flex-1 bg-white border border-outline-variant/50 rounded-full px-4 py-3 text-body outline-none" placeholder="Envoyer un message…"><button data-toast="Message vocal · bientôt 🎤" aria-label="Message vocal" class="w-10 h-10 rounded-full bg-white border border-outline-variant/50 text-secondary flex-none"><span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">mic</span></button><button id="sendbtn" aria-label="Envoyer le message" class="w-11 h-11 rounded-full bg-sunset text-white flex-none"><span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">send</span></button></div>
     </section>
 
     <!-- SECURITE (alt circulaire) -->
@@ -279,7 +288,7 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
       <div class="flex gap-5 mb-6" id="cercle"></div>
       <h2 class="font-display text-h2 mb-3">Accès rapides</h2>
       <div class="grid grid-cols-2 gap-3" id="secutiles"></div>
-      <div class="rounded-jewel jw p-4 flex items-center gap-3 mt-4"><span class="icobox" style="background:linear-gradient(150deg,#FF5A4D,#D8281C)"><span class="material-symbols-outlined">emergency</span></span><div class="flex-1"><b class="text-title">Numéros d'urgence</b><div class="text-body text-secondary">112 · SAMU · Police</div></div><button data-toast="Appel d'urgence : 112" class="w-10 h-10 rounded-full bg-sunset text-white"><span class="material-symbols-outlined" style="font-size:18px">call</span></button></div>
+      <div class="rounded-jewel jw p-4 flex items-center gap-3 mt-4"><span class="icobox" style="background:linear-gradient(150deg,#FF5A4D,#D8281C)"><span class="material-symbols-outlined">emergency</span></span><div class="flex-1"><b class="text-title">Numéros d'urgence</b><div class="text-body text-secondary">112 · SAMU · Police</div></div><button data-toast="Appel d'urgence : 112" aria-label="Appeler les urgences (112)" class="w-10 h-10 rounded-full bg-sunset text-white"><span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">call</span></button></div>
     </section>
 
     <!-- PROFIL (alt) -->
@@ -320,10 +329,10 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
 
   <!-- LIVRE BLANC overlay -->
   <section class="hidden absolute inset-x-0 top-0 bottom-0 overflow-auto bg-background z-10" data-livre>
-    <div class="flex items-center gap-2.5 px-4 pt-3 pb-2"><button class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary" data-go="home">‹</button><b class="font-display text-[18px] text-primary flex items-center gap-1.5">📖 Livre Blanc &amp; Démo</b></div>
+    <div class="flex items-center gap-2.5 px-4 pt-3 pb-2"><button class="w-9 h-9 rounded-xl border border-outline-variant/50 bg-white grid place-items-center text-primary" data-go="home" aria-label="Retour à l'accueil">‹</button><b class="font-display text-[18px] text-primary flex items-center gap-1.5">📖 Livre Blanc &amp; Démo</b></div>
     <div class="px-4 pb-8">
       <div class="rounded-jewel overflow-hidden relative text-white mb-4" style="min-height:150px"><div class="absolute inset-0 photo" style="background-image:url(https://picsum.photos/seed/visite/600/360)"></div><div class="absolute inset-0" style="background:linear-gradient(0deg,rgba(20,8,20,.85),rgba(20,8,20,.2))"></div><div class="absolute inset-0 flex flex-col justify-end p-4"><h2 class="font-display text-[22px] leading-tight">Visite guidée complète (A → Z)</h2><p class="text-body opacity-95 mt-1">Maîtrise chaque aspect de SunMates en 15 minutes.</p></div></div>
-      <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-4"><span class="material-symbols-outlined text-secondary">search</span><input id="srchLivre"  class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher une fonctionnalité…"></label>
+      <label class="flex items-center gap-2.5 bg-white border border-outline-variant/50 rounded-full px-4 py-3 mb-4"><span class="material-symbols-outlined text-secondary">search</span><input id="srchLivre" aria-label="Rechercher une fonctionnalité" class="flex-1 bg-transparent outline-none text-body" placeholder="Rechercher une fonctionnalité…"></label>
       <h2 class="font-display text-h2 mb-3">Chapitres de la visite</h2>
       <div class="rounded-jewel jw p-1.5 mb-5" id="chapitres"></div>
       <div class="flex items-center justify-between mb-3"><h2 class="font-display text-h2">Catalogue</h2><span class="chip text-white text-[11px]" style="background:linear-gradient(135deg,#ff5a4d,#b5241f)">🔴 FONCTIONS</span></div>
@@ -351,9 +360,9 @@ input:focus{outline:2px solid rgba(181,36,31,.35);outline-offset:1px}
       <h2 class="font-display text-h1 text-white text-center mb-5">Seul·e au départ, jamais à l'arrivée</h2>
       <div class="rounded-jewel p-5" style="background:rgba(255,255,255,.1);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18)">
         <div class="flex gap-1.5 bg-white/15 rounded-full p-1.5 mb-4"><button class="cnxtab flex-1 py-2.5 rounded-full text-label bg-white text-on-surface">Connexion</button><button class="cnxtab flex-1 py-2.5 rounded-full text-label text-white/80">Inscription</button></div>
-        <label id="signupName" class="hidden items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-2.5 text-secondary text-body"><span class="material-symbols-outlined">person</span><input type="text" class="flex-1 bg-transparent outline-none" placeholder="Ton prénom"></label>
-        <label class="flex items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-2.5 text-secondary text-body"><span class="material-symbols-outlined">mail</span><input type="email" class="flex-1 bg-transparent outline-none" placeholder="ton@email.com"></label>
-        <label class="flex items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-1 text-secondary text-body"><span class="material-symbols-outlined">lock</span><input id="pwin" type="password" class="flex-1 bg-transparent outline-none" placeholder="••••••••"><span id="eye" class="material-symbols-outlined cursor-pointer">visibility</span></label>
+        <label id="signupName" class="hidden items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-2.5 text-secondary text-body"><span class="material-symbols-outlined">person</span><input type="text" aria-label="Ton prénom" class="flex-1 bg-transparent outline-none" placeholder="Ton prénom"></label>
+        <label class="flex items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-2.5 text-secondary text-body"><span class="material-symbols-outlined">mail</span><input type="email" aria-label="Adresse e-mail" class="flex-1 bg-transparent outline-none" placeholder="ton@email.com"></label>
+        <label class="flex items-center gap-2.5 bg-white/90 rounded-[12px] px-4 py-3 mb-1 text-secondary text-body"><span class="material-symbols-outlined">lock</span><input id="pwin" type="password" aria-label="Mot de passe" class="flex-1 bg-transparent outline-none" placeholder="••••••••"><span id="eye" role="button" tabindex="0" aria-label="Afficher ou masquer le mot de passe" class="material-symbols-outlined cursor-pointer">visibility</span></label>
         <div data-toast="Lien de réinitialisation envoyé" class="text-right text-white/80 text-label mb-3 cursor-pointer">Oublié ?</div>
         <button id="cnxgo" class="w-full bg-sunset text-white rounded-[14px] py-3.5 text-label">Se connecter</button>
         <div class="text-center text-white/60 text-label my-3">ou</div>
@@ -452,7 +461,7 @@ $('#sendbtn').onclick=function(){var i=$('#msgin'),v=i.value.trim();if(!v)return
 $('#msgin').addEventListener('keydown',function(e){if(e.key==='Enter')$('#sendbtn').click();});
 /* checkin/toast/confetti */
 var tEl=$('#toast'),tT;function toast(m){tEl.textContent=m;tEl.classList.add('show');clearTimeout(tT);tT=setTimeout(function(){tEl.classList.remove('show');},2000);}
-function confetti(){var ph=$('#phone'),c=['#FFD15C','#FF8A45','#FF5570','#34C98F','#9B7BFF'];for(var i=0;i<22;i++){(function(j){var s=document.createElement('div');s.className='cf';s.style.background=c[j%c.length];s.style.left=(50+(Math.random()*40-20))+'%';s.style.top='45%';ph.appendChild(s);var dx=(Math.random()*2-1)*150,dy=200+Math.random()*200,rot=Math.random()*720;s.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) rotate('+rot+'deg)',opacity:0}],{duration:1100+Math.random()*400,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=function(){s.remove();};})(i);}}
+function confetti(){if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;var ph=$('#phone'),c=['#FFD15C','#FF8A45','#FF5570','#34C98F','#9B7BFF'];for(var i=0;i<22;i++){(function(j){var s=document.createElement('div');s.className='cf';s.style.background=c[j%c.length];s.style.left=(50+(Math.random()*40-20))+'%';s.style.top='45%';ph.appendChild(s);var dx=(Math.random()*2-1)*150,dy=200+Math.random()*200,rot=Math.random()*720;s.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) rotate('+rot+'deg)',opacity:0}],{duration:1100+Math.random()*400,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=function(){s.remove();};})(i);}}
 var xp=10;function checkin(){xp=Math.min(100,xp+20);if($('#xpbar')){$('#xpbar').style.width=xp+'%';$('#xptxt').textContent=xp+'/100';}confetti();toast('Bravo ! +20 XP 🎉');}
 $$('[data-checkin]').forEach(function(b){b.onclick=function(e){e.stopPropagation();checkin();};});
 $('#sosBtn').onclick=function(){var m=$('#sosModal');m.classList.remove('hidden');m.classList.add('flex');};
@@ -561,6 +570,30 @@ $('#brand').style.cursor='pointer';$('#brand').addEventListener('click',function
 $('#bell').addEventListener('click',function(){toast('🔔 Lina t\'a envoyé un message');var b=$('.bdot');if(b)b.remove();});
 // livre blanc : reset scroll à l'ouverture
 var _go=go;go=function(s){_go(s);if(s==='livre'){var lv=$('[data-livre]');if(lv)lv.scrollTop=0;}};
+
+/* ---- a11y : rendre les éléments cliquables non-natifs accessibles au clavier ----
+   Cible les <div>/<span> qui se comportent comme des boutons (clic JS) mais ne sont
+   ni <button>/<a>/<input>. Leur ajoute role="button" + tabindex + activation Entrée/Espace.
+   N'altère ni le visuel ni la logique : on rejoue simplement un vrai clic. */
+(function(){
+  var sel='[data-conv],[data-toast],[data-amb],.lfilter,#featured>div,#cercle>div,#parcours>div,[data-pane=home-voyage] .chip';
+  $$(sel).forEach(function(el){
+    var tag=el.tagName.toLowerCase();
+    if(tag==='button'||tag==='a'||tag==='input'||tag==='select'||tag==='textarea')return;
+    if(el.closest('label'))return; // déjà activable via le label
+    if(!el.hasAttribute('role'))el.setAttribute('role','button');
+    if(!el.hasAttribute('tabindex'))el.setAttribute('tabindex','0');
+    if(el._kbd)return;el._kbd=1;
+    el.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '||e.key==='Spacebar'){e.preventDefault();el.click();}
+    });
+  });
+  // l'œil mot de passe : déjà role/tabindex en HTML, on ajoute juste le clavier
+  var eye=$('#eye');
+  if(eye&&!eye._kbd){eye._kbd=1;eye.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();eye.click();}});}
+  // tient les aria-pressed des coeurs synchronisés
+  $$('.heart').forEach(function(h){h.addEventListener('click',function(){if(h.hasAttribute('aria-pressed'))h.setAttribute('aria-pressed',h.classList.contains('on')?'true':'false');});});
+})();
 
 /* init */
 go('home');$('.screen[data-s=home]').classList.remove('hidden');rob();

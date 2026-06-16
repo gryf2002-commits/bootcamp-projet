@@ -19,6 +19,9 @@
   tailwind.config = {
     theme: {
       extend: {
+        screens: {
+          xs: '420px',
+        },
         colors: {
           primary: '#b5241f',
           coral: '#ff5a4d',
@@ -133,9 +136,17 @@
 
   ::selection{ background:#ff5a4d; color:#fff; }
 
+  /* ===== Focus visible (a11y) — anneau sunset lisible sur fonds clairs ET sombres ===== */
+  a:focus-visible, button:focus-visible{
+    outline:3px solid var(--gold);
+    outline-offset:3px;
+    border-radius:9999px;
+  }
+
   @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
     *{ animation:none !important; transition:none !important; }
-    .reveal{ opacity:1; transform:none; }
+    .reveal{ opacity:1 !important; transform:none !important; }
   }
 </style>
 </head>
@@ -144,7 +155,7 @@
 
 <!-- ===================== NAV ===================== -->
 <header class="fixed top-0 inset-x-0 z-50">
-  <nav class="glass mx-auto mt-4 max-w-6xl flex items-center justify-between gap-4 rounded-full px-5 py-3 shadow-lg" style="box-shadow:0 12px 30px -16px rgba(181,36,31,.4)">
+  <nav class="glass mx-4 mt-4 flex items-center justify-between gap-4 rounded-full px-5 py-3 shadow-lg md:mx-auto md:max-w-6xl" style="box-shadow:0 12px 30px -16px rgba(181,36,31,.4)">
     <a href="#top" class="flex items-center gap-2.5">
       <span class="grid h-9 w-9 place-items-center rounded-xl text-white" style="background:var(--sunset)">
         <span class="material-symbols-rounded text-[20px]">wb_twilight</span>
@@ -164,13 +175,13 @@
 <!-- ===================== HERO ===================== -->
 <section id="top" class="relative min-h-screen overflow-hidden" style="background:linear-gradient(180deg,#1a0f14 0%,#3a1410 38%,#7a1e16 70%,#b5241f 100%)">
   <!-- soleil -->
-  <div class="sun-orb absolute left-1/2 top-[58%] h-[460px] w-[460px] -translate-x-1/2 rounded-full"></div>
+  <div class="sun-orb absolute left-1/2 top-[58%] h-[460px] w-[460px] -translate-x-1/2 rounded-full" aria-hidden="true"></div>
   <!-- halos -->
-  <div class="halo" style="width:380px;height:380px;background:#ff5a4d;left:-6%;top:30%"></div>
-  <div class="halo" style="width:320px;height:320px;background:#FFD15C;right:-4%;top:14%"></div>
+  <div class="halo" style="width:380px;height:380px;background:#ff5a4d;left:-6%;top:30%" aria-hidden="true"></div>
+  <div class="halo" style="width:320px;height:320px;background:#FFD15C;right:-4%;top:14%" aria-hidden="true"></div>
 
   <!-- horizon ondulant -->
-  <div class="absolute inset-x-0 bottom-0 z-10 overflow-hidden leading-[0]">
+  <div class="absolute inset-x-0 bottom-0 z-10 overflow-hidden leading-[0]" aria-hidden="true">
     <svg viewBox="0 0 1440 220" class="w-full" preserveAspectRatio="none" style="height:200px">
       <path fill="#faf8ff" fill-opacity=".95" d="M0,140 C240,80 480,200 720,150 C960,100 1200,180 1440,120 L1440,220 L0,220 Z"></path>
       <path fill="#faf8ff" d="M0,180 C300,130 560,220 820,180 C1080,140 1280,210 1440,175 L1440,220 L0,220 Z"></path>
@@ -183,7 +194,7 @@
       La sécurité, gratuite pour tou·te·s
     </span>
 
-    <h1 class="reveal font-display mt-7 text-5xl font-black leading-[0.98] text-white sm:text-7xl md:text-[5.5rem]" style="transition-delay:.1s; text-shadow:0 8px 40px rgba(0,0,0,.3)">
+    <h1 class="reveal font-display mt-7 text-[2.6rem] font-black leading-[0.98] text-white xs:text-5xl sm:text-7xl md:text-[5.5rem]" style="transition-delay:.1s; text-shadow:0 8px 40px rgba(0,0,0,.3)">
       Seul·e au départ,<br><span class="italic" style="color:var(--gold)">jamais à l'arrivée.</span>
     </h1>
 
@@ -234,7 +245,7 @@
         </div>
         <div class="flex items-start gap-4">
           <span class="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl text-white" style="background:var(--sunset)"><span class="material-symbols-rounded text-[20px]">share_location</span></span>
-          <p class="text-ink/80"><strong>Toujours reliée·e.</strong> Partage de position et bouton d'alerte vers votre cercle.</p>
+          <p class="text-ink/80"><strong>Toujours relié·e.</strong> Partage de position et bouton d'alerte vers votre cercle.</p>
         </div>
         <div class="flex items-start gap-4">
           <span class="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl text-white" style="background:var(--sunset)"><span class="material-symbols-rounded text-[20px]">handshake</span></span>
@@ -246,7 +257,7 @@
     <!-- carte persona Chloé -->
     <div class="reveal" style="transition-delay:.15s">
       <div class="jewel glass relative mx-auto max-w-sm p-8 shadow-2xl" style="box-shadow:0 40px 80px -28px rgba(181,36,31,.35)">
-        <div class="halo" style="width:200px;height:200px;background:#FFD15C;right:-30px;top:-30px;opacity:.4"></div>
+        <div class="halo" style="width:200px;height:200px;background:#FFD15C;right:-30px;top:-30px;opacity:.4" aria-hidden="true"></div>
         <div class="relative flex items-center gap-4">
           <div class="relative grid h-20 w-20 place-items-center rounded-full text-2xl font-black text-white" style="background:linear-gradient(135deg,#FF8A5C,#FF4F6D)">
             C
@@ -282,7 +293,7 @@
 
 <!-- ===================== FONCTIONNALITÉS (cartes joyau) ===================== -->
 <section id="features" class="relative bg-surface py-28">
-  <div class="halo" style="width:420px;height:420px;background:#ff5a4d;left:-8%;top:6%;opacity:.18"></div>
+  <div class="halo" style="width:420px;height:420px;background:#ff5a4d;left:-8%;top:6%;opacity:.18" aria-hidden="true"></div>
   <div class="relative mx-auto max-w-6xl px-6">
     <div class="reveal mx-auto max-w-2xl text-center">
       <span class="text-sm font-bold uppercase tracking-[0.2em] text-primary">Quatre piliers</span>
@@ -340,7 +351,7 @@
 
 <!-- ===================== APERÇU (mockups CSS) ===================== -->
 <section id="apercu" class="relative overflow-hidden py-28" style="background:linear-gradient(180deg,#faf8ff,#fff3ec)">
-  <div class="halo" style="width:380px;height:380px;background:#FFD15C;right:-6%;top:20%;opacity:.3"></div>
+  <div class="halo" style="width:380px;height:380px;background:#FFD15C;right:-6%;top:20%;opacity:.3" aria-hidden="true"></div>
   <div class="relative mx-auto max-w-6xl px-6">
     <div class="reveal mx-auto max-w-2xl text-center">
       <span class="text-sm font-bold uppercase tracking-[0.2em] text-primary">Dans la poche</span>
@@ -351,8 +362,8 @@
     <div class="mt-20 flex flex-wrap items-center justify-center gap-10 lg:gap-6">
 
       <!-- Phone 1 : Accueil -->
-      <div class="phone float-a reveal">
-        <div class="phone-screen">
+      <div class="phone float-a reveal" role="img" aria-label="Écran d'accueil de l'app SunMates : score de confiance, quête du jour et café offert à proximité.">
+        <div class="phone-screen" aria-hidden="true">
           <div class="notch"></div>
           <div class="h-full" style="background:linear-gradient(180deg,#fff6ee,#ffe6dd)">
             <div class="px-5 pt-12">
@@ -406,8 +417,8 @@
       </div>
 
       <!-- Phone 2 : Carte (mis en avant) -->
-      <div class="phone float-b reveal lg:scale-110" style="transition-delay:.12s">
-        <div class="phone-screen">
+      <div class="phone float-b reveal lg:scale-110" style="transition-delay:.12s" role="img" aria-label="Carte des lieux sûrs de SunMates : épingles vérifiées autour de soi et fiche du Café Aurora avec check-in.">
+        <div class="phone-screen" aria-hidden="true">
           <div class="notch"></div>
           <div class="map-bg relative h-full">
             <div class="map-grid absolute inset-0"></div>
@@ -449,8 +460,8 @@
       </div>
 
       <!-- Phone 3 : Sécurité -->
-      <div class="phone float-c reveal" style="transition-delay:.24s">
-        <div class="phone-screen">
+      <div class="phone float-c reveal" style="transition-delay:.24s" role="img" aria-label="Écran sécurité de SunMates : grand bouton SOS, partage de position à trois proches et cercle de confiance actif.">
+        <div class="phone-screen" aria-hidden="true">
           <div class="notch"></div>
           <div class="h-full" style="background:linear-gradient(180deg,#1a0f14,#3a1410)">
             <div class="px-5 pt-12 text-white">
@@ -557,8 +568,8 @@
 
 <!-- ===================== CTA FINAL ===================== -->
 <section id="cta" class="relative overflow-hidden py-32" style="background:linear-gradient(180deg,#b5241f 0%,#7a1e16 50%,#1a0f14 100%)">
-  <div class="sun-orb absolute left-1/2 top-[-160px] h-[400px] w-[400px] -translate-x-1/2 rounded-full" style="opacity:.85"></div>
-  <div class="halo" style="width:340px;height:340px;background:#FFD15C;left:5%;bottom:0;opacity:.3"></div>
+  <div class="sun-orb absolute left-1/2 top-[-160px] h-[400px] w-[400px] -translate-x-1/2 rounded-full" style="opacity:.85" aria-hidden="true"></div>
+  <div class="halo" style="width:340px;height:340px;background:#FFD15C;left:5%;bottom:0;opacity:.3" aria-hidden="true"></div>
 
   <div class="relative z-10 mx-auto max-w-3xl px-6 text-center">
     <h2 class="reveal font-display text-4xl font-black leading-tight text-white sm:text-6xl">
