@@ -197,7 +197,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=524"></script>
+  <script src="sunmates-badges.js?v=529"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -4178,6 +4178,176 @@
     .set-toggle > :first-child { min-width: 0; }                                                      /* le libellé rétrécit, l'interrupteur reste à droite */
     .set-toggle .st-lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .trav-tags span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* tags de voyageur */
+
+    /* ===================================================================
+       PASSE REFONTE VISUELLE 2026 · rythme & respiration (CSS PUR, ADDITIF)
+       Objectif : « moins de scroll à l'arrache », plus impactant mais
+       reposant. Aucune nouvelle couleur (variables DA réutilisées), aucun
+       changement de structure/JS. Tout est scopé aux 6 onglets de contenu
+       (.tab-panel / .secu-view / .jeux-view / .mates-view) pour ne PAS
+       toucher la carte Leaflet, l'auth, l'onboarding ni les modales.
+       Sûr en mode nuit/saisons : on n'utilise que --accent, --ink, --muted,
+       --line, --card, --radius… qui se ré-thématisent déjà par mode.
+       =================================================================== */
+
+    /* 1) HÉROS DE PAGE : chaque onglet s'ouvre sur un vrai titre + sous-titre
+          aéré (au lieu d'un h1 collé à un mur de contenu). On renforce la
+          hiérarchie typo sans changer les tailles existantes. */
+    .tab-panel > h1, .secu-view > h1, .jeux-view > h1, .mates-view > h1 { margin-bottom: .15rem; }
+    .tab-panel > h1 + .muted, .secu-view > h1 + .muted,
+    .jeux-view > h1 + .muted, .mates-view > h1 + .muted {
+      max-width: 34ch; margin-left: auto; margin-right: auto;
+      line-height: 1.4; margin-bottom: 1.15rem;
+    }
+
+    /* 2) RYTHME DES SECTIONS : les légendes de section (.jnav-cap) et les
+          en-têtes (.section-head h3) gagnent un petit repère sunset à gauche
+          → les sections se lisent comme des « chapitres » distincts, l'œil
+          se repère et le scroll paraît structuré (moins lassant). */
+    .tab-panel .jnav-cap, .jeux-view .jnav-cap, .secu-view .jnav-cap {
+      display: flex; align-items: center; gap: .5rem; margin-top: 1.25rem;
+    }
+    .tab-panel .jnav-cap::before, .jeux-view .jnav-cap::before, .secu-view .jnav-cap::before {
+      content: ""; width: 3px; height: .82em; border-radius: 999px;
+      background: var(--accent-grad); flex: 0 0 auto; opacity: .9;
+    }
+    .secu-view .section-head > h3, .tab-panel .section-head > h3 {
+      position: relative; padding-left: .72rem;
+    }
+    .secu-view .section-head > h3::before, .tab-panel .section-head > h3::before {
+      content: ""; position: absolute; left: 0; top: .14em; bottom: .14em;
+      width: 3px; border-radius: 999px; background: var(--accent-grad); opacity: .85;
+    }
+    /* Un peu plus d'air avant chaque bloc « Accès rapides / Trouver de l'aide »
+       en Sécurité → la longue page respire et se segmente visuellement. */
+    .secu-view .section-head { margin-top: 1.5rem; margin-bottom: .55rem; }
+
+    /* 3) CARTES : respiration cohérente entre cartes empilées sur les onglets
+          de contenu + lift de survol homogène (déjà présent sur .card via
+          .card transition ; ici on harmonise juste l'amplitude, doux). */
+    .secu-view > .card, .jeux-view > .card { margin-bottom: 1.05rem; }
+    .tab-panel .card:hover, .secu-view .card:hover, .jeux-view .card:hover {
+      transform: translateY(-2px);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tab-panel .card:hover, .secu-view .card:hover, .jeux-view .card:hover { transform: none; }
+    }
+
+    /* 4) GRILLES DE TUILES : la grille doit sembler VOULUE, pas tassée.
+          Libellés sur 2 lignes max proprement (fini les hauteurs inégales /
+          débordements), petit gain de présence verticale, méta lisible. */
+    .secu-view .grid2 .tile, .tab-panel[data-panel="accueil"] .grid2 .tile {
+      display: flex; flex-direction: column;
+    }
+    .secu-view .grid2 .tile .t-name, .tab-panel[data-panel="accueil"] .grid2 .tile .t-name {
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; line-height: 1.22; min-height: 2.2em;
+    }
+    .secu-view .grid2 .tile .t-meta, .tab-panel[data-panel="accueil"] .grid2 .tile .t-meta {
+      margin-top: auto;
+    }
+
+    /* 5) CARTES « TUILE » de catégories (Lieux/Jeux) : transition de survol
+          douce pour cohérence avec le reste (sans toucher au câblage actif). */
+    #lieuxCats .cat-tile, .jeux-view .cat-tile { transition: transform .12s ease; }
+    #lieuxCats .cat-tile:hover, .jeux-view .cat-tile:hover { transform: translateY(-2px); }
+    @media (prefers-reduced-motion: reduce) {
+      #lieuxCats .cat-tile:hover, .jeux-view .cat-tile:hover { transform: none; }
+    }
+    /* Fin passe refonte visuelle 2026 */
+
+    /* ===================================================================
+       POLISH ONGLETS v2 · Lieux / Mates / Profil / Sécurité (CSS PUR, ADDITIF)
+       Suite de la passe ci-dessus, ciblée sur les 4 onglets pas encore
+       traités en profondeur. Objectif : moins de « scroll à l'arrache »,
+       plus d'impact, hiérarchie/densité plus lisibles, sans lasser l'œil.
+       RÈGLES : zéro JS/structure/classe/id touché ; aucune couleur nouvelle
+       (uniquement --accent, --accent-grad, --accent-soft, --card, --ink,
+       --muted, --line, --radius… déjà thématisés nuit/saisons) ; rouge
+       réservé au danger/SOS. Tout est scopé par onglet → ne déborde pas.
+       =================================================================== */
+
+    /* ---- LIEUX ---------------------------------------------------------- */
+    /* Repères « ambiance / top du coin » : déjà des .jnav-cap, on leur donne
+       le même filet sunset que les autres onglets (cohérence de lecture). */
+    .tab-panel[data-panel="lieux"] .jnav-cap {
+      display: flex; align-items: center; gap: .5rem; margin-top: 1.15rem;
+    }
+    .tab-panel[data-panel="lieux"] .jnav-cap::before {
+      content: ""; width: 3px; height: .82em; border-radius: 999px;
+      background: var(--accent-grad); flex: 0 0 auto; opacity: .9;
+    }
+    /* Le compteur de résultats + la note Gold se lisent comme une ligne de
+       contexte aérée juste avant la liste (au lieu de se coller aux cartes). */
+    .tab-panel[data-panel="lieux"] #cafesCount { margin-top: .35rem; }
+    .tab-panel[data-panel="lieux"] .gold-only-note { margin-top: .1rem; }
+    /* La liste de lieux (.pcard photo-cards) : rythme un peu plus généreux
+       entre cartes pour qu'on sente des « unités » distinctes sans pavé
+       interminable (l'amplitude reste douce, ~1 cran au-dessus de .85rem). */
+    .tab-panel[data-panel="lieux"] #cafesList .pcard { margin-bottom: 1rem; }
+    .tab-panel[data-panel="lieux"] #cafesList .pcard:last-child { margin-bottom: .2rem; }
+    /* La barre de recherche gagne un filet net (s'aligne au reste de la DA). */
+    .tab-panel[data-panel="lieux"] .search { margin-top: .35rem; }
+
+    /* ---- MATES (data-panel="connexions") -------------------------------- */
+    /* Stat « Mates de confiance » : un peu plus de présence, centrée, comme
+       un chapeau du sous-onglet (sans changer sa pilule existante). */
+    .tab-panel[data-panel="connexions"] .mates-stat { margin-bottom: 1rem; }
+    /* Listes (conversations + découverte) : séparateurs DOUX entre items.
+       .person porte déjà un border-bottom var(--line) ; on s'assure juste que
+       le DERNIER d'une carte ne laisse pas de filet orphelin → liste nette. */
+    .tab-panel[data-panel="connexions"] #convList .person:last-child,
+    .tab-panel[data-panel="connexions"] #travelersList .trav-open:last-child {
+      border-bottom: 0;
+    }
+    /* Découverte : les voyageurs (.trav-open) respirent d'un cran de plus,
+       avatars/cartes mieux séparés → densité agréable, pas tassée. */
+    .tab-panel[data-panel="connexions"] #travelersList .trav-open { margin-bottom: .65rem; }
+    .tab-panel[data-panel="connexions"] #travelersList .trav-open:last-child { margin-bottom: .1rem; }
+    /* Compteur de voyageurs : ligne de contexte un peu détachée de la liste. */
+    .tab-panel[data-panel="connexions"] .trav-count { margin-top: .15rem; }
+    /* Vue profil voyageur détaillé : les 3 stats (.dstats) gagnent de l'air
+       avant les actions, et chaque carte d'info un rythme homogène. */
+    .tab-panel[data-panel="connexions"] #matesProfile .card { margin-bottom: .9rem; }
+    .tab-panel[data-panel="connexions"] #matesProfile .card:last-child { margin-bottom: .2rem; }
+
+    /* ---- PROFIL --------------------------------------------------------- */
+    /* Hiérarchie : la carte d'en-tête (photo + nom + confiance) est le héros ;
+       on lui donne un filet d'air en-dessous et on harmonise l'espacement
+       des cartes empilées (en-tête → stats → parcours) → moins « pavé ». */
+    .tab-panel[data-panel="profil"] #profMain > .card { margin-bottom: .9rem; }
+    .tab-panel[data-panel="profil"] #profMain > .card:last-child { margin-bottom: .2rem; }
+    /* Grille de stats secondaires : repère visuel homogène, chiffres bien
+       posés. On renforce juste l'air autour de la barre de complétion pour
+       qu'elle se lise comme une section à part (et pas collée aux stats). */
+    .tab-panel[data-panel="profil"] .completion { margin-top: 1.15rem; }
+    /* Les 3 stat-box : lift de survol cohérent avec le reste de l'app (les
+       .stat-click ont déjà un :active ; on ajoute un hover doux, gardé). */
+    .tab-panel[data-panel="profil"] .stat-box.stat-click { transition: transform .12s ease, box-shadow .12s ease; }
+    .tab-panel[data-panel="profil"] .stat-box.stat-click:hover { transform: translateY(-2px); }
+    @media (prefers-reduced-motion: reduce) {
+      .tab-panel[data-panel="profil"] .stat-box.stat-click:hover { transform: none; }
+    }
+
+    /* ---- SÉCURITÉ (data-panel="securite" / .secu-view) ------------------ */
+    /* Le bloc SOS est LE point focal de l'onglet : on renforce son impact
+       sans toucher au rouge danger du bouton (qui doit rester fort). On
+       ajoute juste un cadre sunset très léger + un peu plus de présence
+       verticale → l'œil se pose dessus en premier. */
+    .secu-view #secuHome > .card:first-of-type {
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-sm);
+    }
+    .secu-view #secuHome > .card:first-of-type .sos-logo { font-size: 3rem; }
+    /* Ordre visuel des accès rapides : la grille de tuiles « Accès rapides »
+       respire un cran de plus et se détache de l'en-tête de section. */
+    .secu-view #secuHome .section-head { margin-top: 1.6rem; }
+    .secu-view #secuHome > .grid2 { margin-top: .55rem; }
+    /* Le bloc « En cas d'urgence » de la vue Aide (.secu-urgent) reste le plus
+       saillant : on conserve son liseré rouge danger et on lui donne juste un
+       peu plus d'air en-dessous pour bien le distinguer du reste. */
+    .secu-view #secuHelp .secu-urgent { margin-bottom: 1.1rem; }
+    /* Fin polish onglets v2 */
   </style>
 
   <!-- ============================================================
@@ -6120,6 +6290,7 @@
               <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Les grosses nouveautés sont d'abord déployées sur <b>preview.html</b> : tu y testes la PROCHAINE version en conditions réelles (même base, même compte), <b>sans toucher</b> à l'app de tout le monde ni à son cache. Quand tu valides, elle est promue en version officielle (1 commit). <b>Touche le ruban violet 🧪</b> dans la préversion : il affiche le récap de tout ce qui a changé.</p>
               <button class="btn-primary btn-block" id="sysOpenPreview">🧪 Ouvrir la préversion</button>
               <button class="btn-ghost btn-block" id="sysOpenLite" style="margin-top:.5rem">🪶 Version lite (aperçu grand public)</button>
+              <button class="btn-ghost btn-block" id="sysOpenPlaquette" style="margin-top:.5rem">📣 Plaquette marketing</button>
               <p class="muted" style="font-size:.78rem;margin:.5rem 0 0">La console DA est <b>centralisée dans l'app</b> : le bouton flottant <b>✦ DA</b> (déplaçable) ouvre l'éditeur <b>live</b> sur la vraie app — presets, palette, emojis, clic-recolor.</p>
             </div>
             <!-- P14 : état des MIGRATIONS sondé EN DIRECT sur la base -->
@@ -10486,6 +10657,8 @@
       if (op && !op.dataset.wired) { op.dataset.wired = "1"; op.addEventListener("click", () => { try { window.open("preview.html?fresh=" + Date.now(), "_blank"); } catch (e) {} }); }
       const ol = $("sysOpenLite");
       if (ol && !ol.dataset.wired) { ol.dataset.wired = "1"; ol.addEventListener("click", () => { try { window.open("sunmates-app.html?fresh=" + Date.now(), "_blank"); } catch (e) {} }); }
+      const opq = $("sysOpenPlaquette");
+      if (opq && !opq.dataset.wired) { opq.dataset.wired = "1"; opq.addEventListener("click", () => { try { window.open("sunmates-plaquette.html?fresh=" + Date.now(), "_blank"); } catch (e) {} }); }
       // Rafraîchit aussi le tableau de bord en mémoire pour le rapport copiable
       try { const { data } = await db.rpc("admin_stats"); if (data && data.ok) _lastAdminStats = data; } catch (e) {}
     }
@@ -20362,6 +20535,6 @@
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->
-  <script src="da-console-overlay.js?v=21"></script>
+  <script src="da-console-overlay.js?v=23"></script>
 </body>
 </html>
