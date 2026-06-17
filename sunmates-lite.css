@@ -626,5 +626,28 @@ body.sm-lite .btn-block,
 body.sm-lite .auth-play button,
 body.sm-lite #authPlay { background-color: var(--accent) !important; background-image: none !important; box-shadow: none !important; }
 
+/* Profil : FUSIONNER visuellement les 2 cartes en UN bloc centré propre (décision Maxime v539).
+   La carte tête (avatar/nom/confiance) se colle à la carte stats (stats/complétion/Modifier). */
+body.sm-lite .tab-panel[data-panel="profil"] .prof-head {
+  margin-bottom: 0 !important; border-bottom: 0 !important;
+  border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important;
+  padding-bottom: .5rem !important; box-shadow: none !important;
+}
+body.sm-lite .tab-panel[data-panel="profil"] .prof-head + .card {
+  margin-top: 0 !important; border-top: 0 !important;
+  border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;
+  padding-top: .2rem !important;
+}
+
+/* Sécurité CONDENSÉE (Lite, décision Maxime) : moins de scroll + urgences EN PREMIER.
+   ⚠️ Le flux SOS (secuHelp : 112/Alerte/ICE/cercle) reste INTACT (danger) — on ne fait que
+   déclutter la page d'accueil Sécurité et remonter les actions critiques. */
+body.sm-lite #secuHome #safetyTip { display: none !important; }                 /* « Conseil du jour » retiré (déclutter) */
+body.sm-lite #secuHome > .card:first-of-type { padding: 1.3rem 1.2rem !important; }  /* hero plus compact */
+body.sm-lite #secuHome .grid2 { display: grid !important; grid-template-columns: 1fr 1fr; gap: .6rem; }
+body.sm-lite #secuHome .grid2 .tile[data-secuquick="emergency"] { order: -3; }  /* Alerte d'urgence en 1er */
+body.sm-lite #secuHome .grid2 .tile[data-secuquick="numbers"]   { order: -2; }  /* Numéros (112) ensuite */
+body.sm-lite #secuHome .grid2 .tile[data-secuquick="position"]  { order: -1; }  /* Partager position */
+
 /* (Intro Lieux : reformulation « sans classement » reportée à une passe JS propre —
    le swap CSS ::after cassait la mise en page. Le texte original reste pour l'instant.) */
