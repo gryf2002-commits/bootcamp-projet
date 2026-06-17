@@ -1,13 +1,16 @@
 /* ============================================================
    SunMates — calque « Lite » (version épurée / grand public) — body.sm-lite
-   PAS un thème gris : on GARDE toute la DA sunset (couleurs, joyaux,
-   dégradés). On rend juste l'app plus SIMPLE & CALME.
+   Virage 17/06 (Maxime) : la Lite est voulue LÉGÈRE, NEUTRE & BASIQUE —
+   l'inverse du look « joaillerie sunset » riche. Donc : zéro dégradé, zéro
+   glass/blur, zéro halo/glow, zéro tuile « joyau ». UN seul accent = le CORAIL.
+   Tout le reste en neutre (surface/encre/ligne via tokens) → s'adapte au thème
+   (jour clair / nuit prune) tout seul.
    Inerte tant que <body> n'a pas la classe sm-lite.
    Lié dans index.html / preview.html.
 
-   ⚠️ DEUX responsabilités, volontairement séparées (cf. AUDIT_APP_v529.md) :
+   ⚠️ TROIS responsabilités, volontairement séparées (cf. AUDIT_APP_v529.md) :
      A) FEATURES masquées en Lite (ce que le public ne voit pas)
-     B) DA CALME (mêmes couleurs, moins de mouvement / d'effets)
+     B) DA CALME (moins de mouvement / d'effets)
      C) GARDE-FOUS sémantiques (le danger/SOS n'est JAMAIS neutralisé)
    ============================================================ */
 
@@ -24,7 +27,7 @@ body.sm-lite .easter,
 body.sm-lite .retro-fx { display: none !important; }
 
 /* ============================================================
-   B) DA CALME (DA sunset CONSERVÉE — on calme le mouvement et les effets)
+   B) DA CALME (on calme le mouvement et les effets)
    ============================================================ */
 /* 1) Couper le mouvement décoratif et raccourcir les transitions (sobre & accessible). */
 body.sm-lite .float,
@@ -70,15 +73,16 @@ body.sm-lite #navSecu,
 body.sm-lite #navSecuLite { filter: none !important; animation-play-state: running !important; }
 
 /* ============================================================
-   FONDATIONS — design-system Lite (SUNSET), scopé body.sm-lite
-   Transposé du proto éditorial (sunmates-app.html + galerie Stitch « nuit tropicale »)
-   à NOTRE DA sunset (corail #FF5A4D · or #FFD15C · prune-nuit #190E2E · Fraunces+Manrope).
-   Classes préfixées .sml-* = briques Lite à composer dans les écrans. Aucune collision avec
-   l'app complète, inertes tant qu'aucun markup Lite ne les utilise (mode complet jamais touché).
-   Réf : LITE_DESIGN_INSIGHTS.md
+   FONDATIONS — design-system Lite PLAT / NEUTRE, scopé body.sm-lite
+   Virage esthétique 17/06 : zéro dégradé / glass / halo / glow / tuile-joyau.
+   UN seul accent = le CORAIL (var(--accent), qui reste corail ET lisible en jour
+   comme en nuit prune). Tout le reste en neutre (surface/encre/ligne via tokens)
+   → s'adapte au thème sans jamais toucher le mode complet.
+   Classes préfixées .sml-* = briques Lite à composer dans les écrans.
+   Réf : LITE_DESIGN_INSIGHTS.md · project-sunmates-mission-tout (virage esthétique)
    ============================================================ */
 
-/* F1/F2 — Échelles nommées (typo + espacement + tokens), portées par body.sm-lite */
+/* F1/F2 — Échelles nommées + tokens APLATIS (le dégradé devient l'accent plat) */
 body.sm-lite {
   --fs-display: 2.375rem;  /* 38 */
   --fs-h1: 1.75rem;        /* 28 */
@@ -87,124 +91,119 @@ body.sm-lite {
   --fs-body: .9375rem;     /* 15 */
   --fs-label: .8125rem;    /* 13 */
   --stack-sm: 8px; --stack-md: 16px; --stack-lg: 32px;
-  --r-jewel: 26px;
-  --grad-sunset: linear-gradient(135deg, #FFD15C 0%, #FF8A45 45%, #FF5570 100%);
-  --grad-hero: linear-gradient(135deg, #FF5A4D 0%, #190E2E 125%);
+  --r-jewel: 18px;                 /* arrondi BASIQUE (était 26px « joyau ») */
+  --accent: #FF5A4D !important;    /* CORAIL VIF FIXE = SEUL accent de la Lite (décision Maxime 17/06).
+                                      !important pour battre l'inline du loader DA (sm-da-on) qui dérive
+                                      l'accent. Fixé en Lite quel que soit le preset. --accent-ink (texte
+                                      accent accessible) reste géré par le thème → lisibilité préservée. */
+  --grad-sunset: var(--accent);    /* APLATI : corail #FF5A4D solide (boutons, actifs, liens) */
+  --grad-hero: var(--card);        /* APLATI : plus de hero coloré → simple surface neutre */
 }
 
-/* F3a — Kicker : sous-titre de section en petites capitales (la clarté éditoriale qui manquait) */
+/* F3a — Kicker : libellé de section en petites capitales (neutre) */
 .sml-kicker { display:inline-flex; align-items:center; gap:.4rem; font-family:Manrope,system-ui,sans-serif;
-  font-size:var(--fs-label); font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 .55rem; }
+  font-size:var(--fs-label); font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:0 0 .55rem; }
 
-/* F3b — Grand titre serif en dégradé sunset clippé (signature de marque, RÉSERVÉ aux gros titres) */
+/* F3b — Grand titre serif en ENCRE PLEINE (plus de texte en dégradé — banni + neutralisé) */
 .sml-title-grad { font-family:Fraunces,Georgia,serif; font-weight:900; line-height:1.1; font-size:var(--fs-display);
-  background:var(--grad-sunset); -webkit-background-clip:text; background-clip:text; color:transparent; margin:0; }
+  color:var(--ink); margin:0; }
 
-/* F3c — Carte vitrée « joyau » prune translucide (premium, signature joaillerie) */
-.sml-glass { background:rgba(25,14,46,.42); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
-  border:1px solid rgba(255,255,255,.10); border-radius:var(--r-jewel);
-  box-shadow:0 14px 38px rgba(10,6,18,.34), 0 3px 9px rgba(0,0,0,.22); }
+/* F3c — Panneau : surface plate + filet (plus de verre / blur / ombre portée) */
+.sml-glass { background:var(--card); border:1px solid var(--line); border-radius:var(--r-jewel); box-shadow:none; }
 
-/* F3d — Hero d'écran : bandeau corail→prune + overglow doré + eyebrow + mini-stats */
-.sml-hero { position:relative; overflow:hidden; border-radius:var(--r-jewel); padding:1.4rem 1.25rem;
-  background:var(--grad-hero); color:#fff; box-shadow:0 14px 38px rgba(255,90,77,.22); }
-.sml-hero::before { content:""; position:absolute; inset:0; pointer-events:none;
-  background:radial-gradient(120% 120% at 85% 8%, rgba(255,209,92,.45), transparent 55%); }
+/* F3d — En-tête d'écran : surface NEUTRE plate (plus de bandeau corail, halo doré ni glow) */
+.sml-hero { position:relative; border-radius:var(--r-jewel); padding:1.4rem 1.25rem;
+  background:var(--card); border:1px solid var(--line); color:var(--ink); box-shadow:none; }
+.sml-hero::before { content:none; }                        /* halo doré retiré */
 .sml-hero > * { position:relative; z-index:1; }
-.sml-hero .sml-eyebrow { font-size:var(--fs-label); font-weight:800; letter-spacing:.12em; text-transform:uppercase; opacity:.92; }
-.sml-hero .sml-hero-title { font-family:Fraunces,Georgia,serif; font-weight:900; font-size:var(--fs-h1); margin:.15rem 0 .3rem; color:#fff; }
+.sml-hero .sml-eyebrow { font-size:var(--fs-label); font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+.sml-hero .sml-hero-title { font-family:Fraunces,Georgia,serif; font-weight:900; font-size:var(--fs-h1); margin:.15rem 0 .3rem; color:var(--ink); }
 .sml-hstats { display:flex; gap:.5rem; margin-top:.75rem; }
-.sml-hstat { flex:1; background:rgba(255,255,255,.16); border-radius:14px; padding:.5rem .6rem; text-align:center; }
-.sml-hstat b { display:block; font-family:Fraunces,serif; font-size:1.1rem; font-variant-numeric:tabular-nums; }
-.sml-hstat span { font-size:.7rem; opacity:.92; font-weight:700; }
+.sml-hstat { flex:1; background:var(--cream); border:1px solid var(--line); border-radius:12px; padding:.5rem .6rem; text-align:center; }
+.sml-hstat b { display:block; font-family:Fraunces,serif; font-size:1.1rem; font-variant-numeric:tabular-nums; color:var(--ink); }
+.sml-hstat span { font-size:.7rem; color:var(--muted); font-weight:700; }
 
-/* F3e — Carte liste compacte (réduit la fatigue de scroll vs grandes cartes) */
+/* F3e — Carte liste compacte (déjà neutre) */
 .sml-minicard { display:flex; align-items:center; gap:.8rem; background:var(--card); border:1px solid var(--line);
-  border-radius:18px; padding:.7rem .8rem; transition:transform .12s ease; }
+  border-radius:var(--r-jewel); padding:.7rem .8rem; transition:transform .12s ease; }
 .sml-minicard:active { transform:scale(.985); }
-.sml-mc-media { width:56px; height:56px; border-radius:14px; flex:0 0 auto; object-fit:cover; background:var(--cream); }
+.sml-mc-media { width:56px; height:56px; border-radius:12px; flex:0 0 auto; object-fit:cover; background:var(--cream); }
 .sml-mc-body { flex:1; min-width:0; }
-.sml-mc-title { font-weight:800; font-size:var(--fs-title); }
+.sml-mc-title { font-weight:800; font-size:var(--fs-title); color:var(--ink); }
 .sml-mc-meta { color:var(--muted); font-size:.78rem; }
 .sml-mc-arrow { color:var(--muted); font-size:1.1rem; flex:0 0 auto; }
 
-/* F3f — Bouton primaire sunset (UN seul, réutilisé : CTA, Connect, Check-in…) */
+/* F3f — Bouton primaire : CORAIL PLEIN (plus d'inset-highlight ni de glow) */
 .sml-btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; width:100%; border:0; cursor:pointer;
   font-family:Manrope,system-ui,sans-serif; font-weight:800; font-size:var(--fs-title); color:#fff;
-  padding:.9rem 1.1rem; border-radius:999px; background:var(--grad-sunset);
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.25), 0 8px 20px rgba(255,85,112,.28); transition:transform .12s ease; }
+  padding:.9rem 1.1rem; border-radius:999px; background:var(--accent); box-shadow:none; transition:transform .12s ease; }
 .sml-btn:active { transform:scale(.96); }
 .sml-btn.sml-btn-ghost { background:transparent; color:var(--accent); box-shadow:none; border:1.5px solid var(--line); }
 
-/* F3g — Pastille icône à dégradé + sheen */
-.sml-icobox { width:44px; height:44px; border-radius:14px; display:grid; place-items:center; font-size:1.3rem;
-  position:relative; overflow:hidden; background:var(--grad-sunset); }
-.sml-icobox::after { content:""; position:absolute; inset:0; pointer-events:none;
-  background:linear-gradient(150deg, rgba(255,255,255,.5), transparent 42%); }
+/* F3g — Pastille icône : NEUTRE monochrome (plus de dégradé ni de sheen) */
+.sml-icobox { width:44px; height:44px; border-radius:12px; display:grid; place-items:center; font-size:1.3rem;
+  background:var(--cream); border:1px solid var(--line); color:var(--ink); }
+.sml-icobox::after { content:none; }
 
-/* F3h — Chip uniforme (filtres, segments) */
+/* F3h — Chip uniforme (actif = corail plein) */
 .sml-chip { display:inline-flex; align-items:center; gap:.35rem; padding:.45rem .8rem; border-radius:999px;
   font-weight:700; font-size:.8rem; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
-.sml-chip.on { background:var(--grad-sunset); color:#fff; border-color:transparent; }
+.sml-chip.on { background:var(--accent); color:#fff; border-color:transparent; }
 
-/* F3i — État vide éditorial (icône + titre + phrase d'action) */
+/* F3i — État vide éditorial (neutre) */
 .sml-empty { text-align:center; padding:2rem 1rem; color:var(--muted); }
 .sml-empty-ic { font-size:2rem; }
 .sml-empty-t { font-weight:800; color:var(--ink); margin:.4rem 0 .2rem; }
 
-/* F5 — Statut « en ligne / vérifié / dispo » en OR (jamais de vert criard) */
-.sml-dot-on { display:inline-block; width:8px; height:8px; border-radius:50%; background:#FFD15C; box-shadow:0 0 0 3px rgba(255,209,92,.25); }
+/* F5 — Statut « en ligne / dispo » : point CORAIL plat (plus d'or ni de halo) */
+.sml-dot-on { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--accent); }
 
 /* Section Lite : pile verticale aérée (rythme éditorial) */
 .sml-section + .sml-section { margin-top:var(--stack-lg); }
 
 /* ============================================================
-   ÉCRAN SÉCURITÉ — habillage Lite (body.sm-lite)
+   ÉCRAN SÉCURITÉ — habillage Lite PLAT (body.sm-lite)
    Markup + IDs + handlers INCHANGÉS (SOS/partage/ICE fonctionnent à l'identique →
    contrat anti-régression). On ne fait que ré-habiller via CSS scopé. Complet jamais touché.
    ============================================================ */
 
-/* Titre d'écran en grand serif sunset */
-body.sm-lite #secuHome > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; margin:0 0 .15rem; }
+/* Titre d'écran en grand serif, encre pleine */
+body.sm-lite #secuHome > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; color:var(--ink); margin:0 0 .15rem; }
 
-/* Carte principale « Besoin d'aide ? » → HERO chaleureux (rassure, jamais alarmant) */
+/* Carte principale « Besoin d'aide ? » → surface NEUTRE plate (rassure sans bandeau coloré ni halo) */
 body.sm-lite #secuHome > .card:first-of-type {
-  background:var(--grad-hero) !important; color:#fff; border:0 !important; position:relative; overflow:hidden;
-  border-radius:var(--r-jewel) !important; box-shadow:0 16px 40px rgba(255,90,77,.24) !important;
+  background:var(--card) !important; color:var(--ink); border:1px solid var(--line) !important; position:relative;
+  border-radius:var(--r-jewel) !important; box-shadow:none !important;
 }
-body.sm-lite #secuHome > .card:first-of-type::before {
-  content:""; position:absolute; inset:0; pointer-events:none;
-  background:radial-gradient(120% 120% at 85% 6%, rgba(255,209,92,.42), transparent 55%);
-}
-body.sm-lite #secuHome > .card:first-of-type > * { position:relative; z-index:1; }
-body.sm-lite #secuHome > .card:first-of-type h2 { color:#fff !important; font-family:Fraunces,Georgia,serif; }
-body.sm-lite #secuHome > .card:first-of-type .muted { color:rgba(255,243,230,.9) !important; }
-/* CTA d'entrée : bouton blanc net sur le hero (le VRAI SOS rouge reste dans « Besoin d'aide ») */
+body.sm-lite #secuHome > .card:first-of-type::before { content:none !important; }   /* halo doré retiré */
+body.sm-lite #secuHome > .card:first-of-type h2 { color:var(--ink) !important; font-family:Fraunces,Georgia,serif; }
+body.sm-lite #secuHome > .card:first-of-type .muted { color:var(--muted) !important; }
+/* CTA d'entrée : bouton CORAIL plein (le VRAI SOS rouge reste dans « Besoin d'aide ») */
 body.sm-lite #secuHome #needHelpBtn {
-  background:#fff !important; color:var(--accent) !important; font-weight:800;
-  box-shadow:0 8px 20px rgba(16,8,25,.22) !important;
+  background:var(--accent) !important; color:#fff !important; font-weight:800; box-shadow:none !important;
 }
 
-/* Cartes secondaires : arrondi joyau homogène */
+/* Cartes secondaires : arrondi homogène */
 body.sm-lite #secuHome #safetyTip,
 body.sm-lite #secuHome #safetyCheckCard { border-radius:var(--r-jewel) !important; }
 
 /* En-tête « Accès rapides » → kicker petites capitales */
 body.sm-lite #secuHome .section-head h3 {
-  font-size:var(--fs-label); font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+  font-size:var(--fs-label); font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);
 }
 
 /* Tuiles d'accès rapide → finition nette + retour tactile */
-body.sm-lite #secuHome .grid2 .tile { border-radius:18px; transition:transform .12s ease; }
+body.sm-lite #secuHome .grid2 .tile { border-radius:14px; transition:transform .12s ease; }
 body.sm-lite #secuHome .grid2 .tile:active { transform:scale(.97); }
 
-/* ----- Sous-vue « Besoin d'aide » (#secuHelp) : même habillage éditorial ----- */
-body.sm-lite #secuHelp > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-h1); font-weight:900; margin:.2rem 0 .6rem; }
+/* ----- Sous-vue « Besoin d'aide » (#secuHelp) : même habillage plat ----- */
+body.sm-lite #secuHelp > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-h1); font-weight:900; color:var(--ink); margin:.2rem 0 .6rem; }
 
-/* Cartes en arrondi joyau homogène */
+/* Cartes en arrondi homogène */
 body.sm-lite #secuHelp .card { border-radius:var(--r-jewel) !important; }
 
-/* Carte d'urgence : « 112 » en gros chiffres tabulaires + halo doux sur l'Alerte (présent, rassurant — rouge = danger conservé) */
+/* Carte d'urgence : « 112 » en gros chiffres tabulaires.
+   ⚠️ DANGER CONSERVÉ : le halo ROUGE d'alerte du SOS reste (garde-fou sémantique, jamais neutralisé). */
 body.sm-lite #secuHelp .su-call b { font-size:1.18em; font-variant-numeric:tabular-nums; letter-spacing:.02em; }
 body.sm-lite #secuHelp .su-sos { box-shadow:0 0 0 5px rgba(240,56,78,.14), 0 10px 24px rgba(240,56,78,.26); }
 body.sm-lite #secuHelp .su-btn { transition:transform .12s ease; }
@@ -214,7 +213,7 @@ body.sm-lite #secuHelp .su-btn:active { transform:scale(.97); }
 body.sm-lite #secuHelp .section-head h3 { font-size:var(--fs-label); font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
 
 /* Tuiles « aide autour de moi » → retour tactile + arrondi */
-body.sm-lite #secuHelp .grid2 .tile { border-radius:18px; transition:transform .12s ease; }
+body.sm-lite #secuHelp .grid2 .tile { border-radius:14px; transition:transform .12s ease; }
 body.sm-lite #secuHelp .grid2 .tile:active { transform:scale(.97); }
 
 /* Lignes d'accès (qrow) → retour tactile + arrondi */
@@ -222,71 +221,71 @@ body.sm-lite #secuHelp .qrow { transition:transform .12s ease; border-radius:12p
 body.sm-lite #secuHelp .qrow:active { transform:scale(.99); }
 
 /* ============================================================
-   ÉCRAN ACCUEIL — habillage Lite (body.sm-lite). Markup/handlers inchangés.
+   ÉCRAN ACCUEIL — habillage Lite PLAT (body.sm-lite). Markup/handlers inchangés.
    ============================================================ */
-/* Titre « Bonjour » en grand serif sunset */
-body.sm-lite #homeHello { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; line-height:1.04; }
+/* Titre « Bonjour » en grand serif, encre pleine */
+body.sm-lite #homeHello { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; line-height:1.04; color:var(--ink); }
 
-/* Segmented control Voyage / Maison → pilule, actif en dégradé sunset */
+/* Segmented control Voyage / Maison → pilule, actif corail plein (masqué en MVP, gardé au cas où) */
 body.sm-lite #homeModeSwitch { background:var(--cream); border-radius:999px; padding:4px; }
 body.sm-lite #homeModeSwitch button { border-radius:999px; font-weight:800; transition:transform .12s ease; }
 body.sm-lite #homeModeSwitch button:active { transform:scale(.97); }
-body.sm-lite #homeModeSwitch button.active { background:var(--grad-sunset); color:#fff; box-shadow:0 6px 16px rgba(255,85,112,.26); }
+body.sm-lite #homeModeSwitch button.active { background:var(--accent); color:#fff; box-shadow:none; }
 
-/* Recherche : champ arrondi + chips de portée uniformes (actif en dégradé) */
-body.sm-lite .tab-panel[data-panel="accueil"] .search { border-radius:16px; }
+/* Recherche : champ arrondi + chips de portée uniformes (actif corail plein) */
+body.sm-lite .tab-panel[data-panel="accueil"] .search { border-radius:14px; }
 body.sm-lite #searchScopes .sscope { border-radius:999px; font-weight:700; border:1px solid var(--line); }
-body.sm-lite #searchScopes .sscope.on { background:var(--grad-sunset); color:#fff; border-color:transparent; }
+body.sm-lite #searchScopes .sscope.on { background:var(--accent); color:#fff; border-color:transparent; }
 
-/* Hero Maison « De retour chez toi » → hero sunset éditorial */
-body.sm-lite #homeHomeMode .hm-hero { background:var(--grad-hero) !important; color:#fff; border:0 !important;
-  border-radius:var(--r-jewel) !important; box-shadow:0 14px 38px rgba(255,90,77,.22) !important; }
-body.sm-lite #homeHomeMode .hm-hero .hm-hero-title { color:#fff; }
-body.sm-lite #homeHomeMode .hm-hero .muted { color:rgba(255,243,230,.9) !important; }
+/* Hero Maison « De retour chez toi » (masqué en MVP) → surface neutre plate si jamais affiché */
+body.sm-lite #homeHomeMode .hm-hero { background:var(--card) !important; color:var(--ink); border:1px solid var(--line) !important;
+  border-radius:var(--r-jewel) !important; box-shadow:none !important; }
+body.sm-lite #homeHomeMode .hm-hero .hm-hero-title { color:var(--ink); }
+body.sm-lite #homeHomeMode .hm-hero .muted { color:var(--muted) !important; }
 
-/* Cartes accueil : arrondi joyau + en-têtes de section en kickers petites capitales */
+/* Cartes accueil : arrondi homogène + en-têtes de section en kickers petites capitales */
 body.sm-lite .tab-panel[data-panel="accueil"] .card { border-radius:var(--r-jewel) !important; }
 body.sm-lite .tab-panel[data-panel="accueil"] .qm-head h3,
 body.sm-lite .tab-panel[data-panel="accueil"] .section-head h3 {
   font-size:var(--fs-label); font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
 
-/* « Ta progression solo » : carte joyau + libellé « XP gagné » → « Progression » (ton grand public, décision Maxime).
+/* « Ta progression solo » : libellé « XP gagné » → « Progression » (ton grand public, décision Maxime).
    Swap 100% CSS, scopé Lite : le mode complet garde « XP gagné ». */
 body.sm-lite #soloProgress { border-radius:var(--r-jewel) !important; }
 body.sm-lite #soloProgress .sp-stat[data-spstat="xp"] span { font-size:0; }
 body.sm-lite #soloProgress .sp-stat[data-spstat="xp"] span::after { content:"Progression"; font-size:.7rem; font-weight:700; }
 
 /* ============================================================
-   ÉCRAN LIEUX — habillage Lite (body.sm-lite). Markup/handlers inchangés.
+   ÉCRAN LIEUX — habillage Lite PLAT (body.sm-lite). Markup/handlers inchangés.
    ============================================================ */
-/* Titre « Lieux sûrs » en grand serif sunset */
-body.sm-lite .tab-panel[data-panel="lieux"] > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; line-height:1.04; }
+/* Titre « Lieux sûrs » en grand serif, encre pleine */
+body.sm-lite .tab-panel[data-panel="lieux"] > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; line-height:1.04; color:var(--ink); }
 
 /* Légendes de catégorie (« Ton ambiance » / « Le top du coin ») → kickers petites capitales */
 body.sm-lite .tab-panel[data-panel="lieux"] .jnav-cap {
   font-size:var(--fs-label); font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
 
 /* Recherche arrondie */
-body.sm-lite .tab-panel[data-panel="lieux"] .search { border-radius:16px; }
+body.sm-lite .tab-panel[data-panel="lieux"] .search { border-radius:14px; }
 
-/* Tuiles de filtre d'ambiance : retour tactile + libellé de l'actif en accent */
+/* Tuiles de filtre d'ambiance : retour tactile + libellé de l'actif en accent corail */
 body.sm-lite .tab-panel[data-panel="lieux"] .cat-tile { transition:transform .12s ease; }
 body.sm-lite .tab-panel[data-panel="lieux"] .cat-tile:active { transform:scale(.96); }
 body.sm-lite .tab-panel[data-panel="lieux"] .cat-tile.active .clbl { color:var(--accent); font-weight:800; }
 
-/* Cartes lieu : arrondi joyau, retour tactile, badges (Éco/Top/note) en pastille vitrée nette */
+/* Cartes lieu : arrondi homogène, retour tactile, pastilles NETTES (plus de blur) */
 body.sm-lite #cafesList .pcard { border-radius:var(--r-jewel) !important; overflow:hidden; transition:transform .12s ease; }
 body.sm-lite #cafesList .pcard:active { transform:scale(.99); }
-body.sm-lite #cafesList .pcard-chip { -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+body.sm-lite #cafesList .pcard-chip { -webkit-backdrop-filter:none; backdrop-filter:none; }
 
-/* Carte « Mon spot du jour » : arrondi joyau */
+/* Carte « Mon spot du jour » : arrondi homogène */
 body.sm-lite #spotCard { border-radius:var(--r-jewel) !important; }
 
 /* ============================================================
-   BASE COMMUNE — tous les écrans Lite (cohésion Jeux/Mates/Profil/…)
+   BASE COMMUNE — tous les écrans Lite (cohésion Jeux/Mates/Profil/…). Plat & neutre.
    Markup/handlers inchangés ; couvre les panneaux pas encore traités spécifiquement.
    ============================================================ */
-body.sm-lite .tab-panel > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; line-height:1.04; }
+body.sm-lite .tab-panel > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; line-height:1.04; color:var(--ink); }
 body.sm-lite .tab-panel .card { border-radius:var(--r-jewel) !important; }
 body.sm-lite .tab-panel .qm-head h3,
 body.sm-lite .tab-panel .section-head h3 {
@@ -295,40 +294,68 @@ body.sm-lite .tab-panel .tile { transition:transform .12s ease; }
 body.sm-lite .tab-panel .tile:active { transform:scale(.97); }
 
 /* ============================================================
-   CONNEXION (#authView) — habillage Lite (pré-login : visible en Lite via ?lite=1 / futur défaut MVP)
+   CONNEXION (#authView) — habillage Lite PLAT (pré-login : visible en Lite via ?lite=1 / futur défaut MVP)
    ============================================================ */
-body.sm-lite #authCore .auth-title h1 { font-family:Fraunces,Georgia,serif; font-weight:900; }
-body.sm-lite #authCore .seg button.active { background:var(--grad-sunset) !important; color:#fff !important; }
-body.sm-lite #authCore #authPlay { background:var(--grad-sunset) !important; }
+body.sm-lite #authCore .auth-title h1 { font-family:Fraunces,Georgia,serif; font-weight:900; color:var(--ink); }
+body.sm-lite #authCore .seg button.active { background:var(--accent) !important; color:#fff !important; box-shadow:none !important; }
+body.sm-lite #authCore #authPlay { background:var(--accent) !important; box-shadow:none !important; }
 
 /* ============================================================
-   ONBOARDING (#onboarding) — habillage Lite
+   ONBOARDING (#onboarding) — habillage Lite PLAT
    ============================================================ */
 body.sm-lite #onboarding .onb-card { border-radius:var(--r-jewel); }
-body.sm-lite #onboarding .onb-next { background:var(--grad-sunset) !important; }
+body.sm-lite #onboarding .onb-next { background:var(--accent) !important; box-shadow:none !important; }
 
 /* ============================================================
-   MATES (#connexions) + CHAT — habillage Lite (body.sm-lite). Markup/handlers inchangés.
+   MATES (#connexions) + CHAT — habillage Lite PLAT (body.sm-lite). Markup/handlers inchangés.
    ============================================================ */
-/* Segmented Messages / Découvrir / Demandes → actif en dégradé sunset */
+/* Segmented Messages / Découvrir / Demandes → actif corail plein */
 body.sm-lite .tab-panel[data-panel="connexions"] .mseg button.active {
-  background:var(--grad-sunset) !important; color:#fff !important; box-shadow:0 6px 16px rgba(255,85,112,.26); }
-/* Chips de filtre & tri uniformes (actif sunset) + recherche arrondie */
+  background:var(--accent) !important; color:#fff !important; box-shadow:none; }
+/* Chips de filtre & tri uniformes (actif corail plein) + recherche arrondie */
 body.sm-lite .tab-panel[data-panel="connexions"] .chip.active {
-  background:var(--grad-sunset) !important; color:#fff !important; border-color:transparent !important; }
-body.sm-lite .tab-panel[data-panel="connexions"] .search { border-radius:16px; }
+  background:var(--accent) !important; color:#fff !important; border-color:transparent !important; }
+body.sm-lite .tab-panel[data-panel="connexions"] .search { border-radius:14px; }
 /* Cartes mate (liste Découvrir) : retour tactile */
 body.sm-lite .tab-panel[data-panel="connexions"] .trav-open { transition:transform .12s ease; }
 body.sm-lite .tab-panel[data-panel="connexions"] .trav-open:active { transform:scale(.99); }
-/* Hero du profil mate détaillé → arrondi joyau */
+/* Hero du profil mate détaillé → arrondi homogène */
 body.sm-lite #matesProfile .detail-hero { border-radius:var(--r-jewel) !important; }
-/* Bannière d'invitation → arrondi joyau */
+/* Bannière d'invitation → arrondi homogène */
 body.sm-lite #matesHome .invite-banner { border-radius:var(--r-jewel) !important; }
 
-/* CHAT : bulles à coin coupé, « moi » en dégradé sunset, « eux » en surface nette */
-body.sm-lite #matesChat .bubble { border-radius:18px; }
-body.sm-lite #matesChat .bubble.me { background:var(--grad-sunset) !important; color:#fff; border-bottom-right-radius:5px; }
+/* CHAT : bulles à coin coupé, « moi » en corail plein, « eux » en surface nette */
+body.sm-lite #matesChat .bubble { border-radius:16px; }
+body.sm-lite #matesChat .bubble.me { background:var(--accent) !important; color:#fff; border-bottom-right-radius:5px; }
 body.sm-lite #matesChat .bubble.them { border-bottom-left-radius:5px; }
+
+/* ============================================================
+   FLATTEN APP-NATIVE — neutralise les composants natifs encore « riches » en Lite
+   (révélés à la capture connectée). Scopé body.sm-lite → le mode complet garde
+   ses dégradés / joyaux colorés à l'identique. Spécificité (0,2,1) + !important
+   pour battre les variantes colorées (.thumb.green, etc.) et l'inline JS.
+   ============================================================ */
+
+/* Pastilles d'icônes (.thumb + variantes .green/.red/.purp/…) → surface NEUTRE,
+   icône en encre (plus de dégradé « joyau » ni de sheen). Le SOS rouge réel
+   reste géré ailleurs (su-sos, section C) — ces .thumb sont de la navigation. */
+body.sm-lite .thumb {
+  background: var(--cream) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line);
+  box-shadow: none !important;
+  filter: none !important;
+}
+body.sm-lite .thumb::before,
+body.sm-lite .thumb::after { content: none !important; display: none !important; }
+
+/* Prénom en dégradé clippé (onboarding « Salut … ! ») → encre pleine (texte en dégradé = banni) */
+body.sm-lite .onb-step h2 .grad-name {
+  background: none !important; -webkit-background-clip: border-box; background-clip: border-box; color: var(--ink) !important;
+}
+
+/* Bannière de consentement : bouton « D'accord » (dégradé inline) → corail plat */
+body.sm-lite #consentYes { background: var(--accent) !important; }
 
 /* ============================================================
    MVP LITE — DÉGRAISSAGE (body.sm-lite). Focalise sur SÉCURITÉ + RENCONTRES + LIEUX.
@@ -352,3 +379,101 @@ body.sm-lite #goldTile { display:none !important; }                             
 
 /* Mates : on retire les 18 filtres avancés (on garde recherche + chips rapides + tri). */
 body.sm-lite #advFilters { display:none !important; }
+
+/* ============================================================
+   AUDIT NEUTRE — VAGUES A/B/C (17/06, audit multi-agents → AUDIT_LITE_NEUTRE.md)
+   Objectif : Lite vraiment plate/neutre/quasi-monochrome. Tout scopé body.sm-lite,
+   mode complet jamais touché. Danger/SOS jamais neutralisé.
+   ============================================================ */
+
+/* ---- VAGUE A : gros levier (cause racine) ----
+   --accent-grad = le VRAI dégradé sunset des composants natifs (boutons/chips/avatars/
+   héros/logo/badges…). L'aplatir = corail plein partout d'un coup. + fonds neutres. */
+body.sm-lite {
+  --accent-grad: var(--accent) !important;   /* tout l'accent natif → corail #FF5A4D plein */
+  --bg-grad: var(--bg) !important;           /* fond de page → surface unie neutre (plus de radial sunset) */
+}
+/* Garde-fou : le bouton DANGER reste rouge (ne pas le laisser virer corail via accent-grad) */
+body.sm-lite .btn-danger { background: var(--danger) !important; }
+/* Coquille : retirer le halo soleil radial + la texture de grain globale */
+body.sm-lite .app-shell { background: var(--bg) !important; }
+body.sm-lite::after { content: none !important; }
+/* Halos/glow des CTA génériques (corail diffus) → off */
+body.sm-lite .btn-primary,
+body.sm-lite .auth-play button,
+body.sm-lite #authView .lp-cta { box-shadow: none !important; }
+/* Pastille d'icône de l'onglet actif (nav basse) : corail plein, sans ombre */
+body.sm-lite .bottom-nav button.active svg { box-shadow: none !important; }
+
+/* ---- VAGUE B : dégradés codés en dur + blur + textes-dégradés + glow résiduels ---- */
+
+/* Tuiles de catégorie « joyau » multicolores (Lieux) → neutre comme .thumb */
+body.sm-lite .cic { background: var(--cream) !important; color: var(--ink) !important; box-shadow: none !important; }
+body.sm-lite .cic::before, body.sm-lite .cic::after { content: none !important; }
+
+/* Badges de cartes lieu (éco turquoise / top ambre) → chip neutre. L'overlay photo .pcard-grad
+   (voile noir de lisibilité) est fonctionnel → conservé. */
+body.sm-lite .pcard-eco,
+body.sm-lite .pcard-top { background: var(--card) !important; color: var(--ink) !important; box-shadow: none !important; }
+
+/* Chips/pilules ambrées → corail plein ou surface neutre */
+body.sm-lite .avail-chip.on { background: var(--accent) !important; color: #fff !important; box-shadow: none !important; }
+body.sm-lite .spot-quick button { background: var(--cream) !important; box-shadow: none !important; }
+body.sm-lite .spot-emoji-pick button.active { box-shadow: none !important; transform: none !important; }
+body.sm-lite .streak-chip { background: var(--cream) !important; color: var(--accent) !important; border-color: var(--line) !important; }
+body.sm-lite .tip-card { background: var(--card) !important; }
+
+/* Statuts « en ligne » dorés → point corail / neutre (un seul accent = corail) */
+body.sm-lite .presence-pill { background: var(--cream) !important; color: var(--muted) !important; }
+body.sm-lite .presence-pill::before { background: var(--accent) !important; }
+body.sm-lite .tph-online { background: var(--accent) !important; color: #fff !important; box-shadow: none !important; }
+body.sm-lite .tcard-vedette { background: var(--cream) !important; color: var(--muted) !important; }
+
+/* Chat : bulle « eux » (rose en dur) → surface neutre */
+body.sm-lite #matesChat .bubble.them { background: var(--cream) !important; color: var(--text) !important; border: 1px solid var(--line); }
+/* Flammes (gaming) dans le chat → retirées en Lite */
+body.sm-lite .chat-flame, body.sm-lite .chat-poc { display: none !important; }
+
+/* Textes en dégradé (bannis) → encre pleine */
+body.sm-lite .match-card h3,
+body.sm-lite .stat,
+body.sm-lite #authView .lp-grad {
+  background: none !important; -webkit-background-clip: border-box !important; background-clip: border-box !important;
+  -webkit-text-fill-color: var(--ink) !important; color: var(--ink) !important;
+}
+
+/* Logo SUNMATES : soleil tricolore → corail plein (monochrome) + ombre du titre retirée */
+body.sm-lite .logo-badge [fill^="url(#sun"] { fill: var(--accent) !important; }
+body.sm-lite .logo-text { text-shadow: none !important; }
+
+/* Bandeau d'installation PWA : icône + CTA → corail plat */
+body.sm-lite .pwa-ic, body.sm-lite .pwa-cta { background: var(--accent) !important; box-shadow: none !important; }
+
+/* Onboarding : orbes radiaux animés retirés + emoji sans ombre/animation */
+body.sm-lite .onb-bg .orb { display: none !important; }
+body.sm-lite .onb-emoji { filter: none !important; animation: none !important; }
+
+/* Blur / glass résiduels (modales, feuilles, topbar, nav landing) → off */
+body.sm-lite .popinfo-ov,
+body.sm-lite .sm-selsheet-ov,
+body.sm-lite .topbar,
+body.sm-lite #authView .lp-nav { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+
+/* Glow / ombres colorées résiduels → off */
+body.sm-lite .search input { box-shadow: none !important; border-color: var(--line) !important; }
+body.sm-lite .completion-bar span { box-shadow: none !important; }
+/* Sheen émaillé : on aplatit vraiment (au lieu d'opacity .5) */
+body.sm-lite .smgem::after,
+body.sm-lite .cic::after,
+body.sm-lite [class*="sheen"] { content: none !important; opacity: 0 !important; }
+/* Filtre « relief » sur les emojis décoratifs (hors danger) → off */
+body.sm-lite .tip-ic,
+body.sm-lite .su-ic,
+body.sm-lite .su-e,
+body.sm-lite .dh-emoji,
+body.sm-lite .onb-emoji { filter: none !important; }
+
+/* ---- VAGUE C : périmètre MVP — masquer le HUB JEUX entier (décision Maxime :
+   garder badges/collection + stats profil ; on retire seulement Jeux). Le bouton de nav
+   était déjà masqué (l.366) mais le panneau restait atteignable (deep-link/visite guidée). */
+body.sm-lite .tab-panel[data-panel="jeux"] { display: none !important; }
