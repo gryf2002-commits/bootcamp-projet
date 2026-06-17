@@ -1,35 +1,354 @@
 /* ============================================================
-   SunMates — version LISSÉE (beta OFF) — body.sm-lite
-   PAS un thème gris : on GARDE toute la DA sunset (couleurs,
-   joyaux, dégradés). On rend juste l'app plus SIMPLE & calme :
-   - masque les blocs beta (déjà géré par data-beta + betaOn)
-   - réduit les effets décoratifs lourds (anims, gros sheen)
-   - aère un peu (lisibilité), arrondis cohérents
-   Le rouge danger/SOS est conservé.
-   Inclure : <link rel="stylesheet" href="sunmates-lite.css">
-   (inerte tant que <body> n'a pas la classe sm-lite)
+   SunMates — calque « Lite » (version épurée / grand public) — body.sm-lite
+   PAS un thème gris : on GARDE toute la DA sunset (couleurs, joyaux,
+   dégradés). On rend juste l'app plus SIMPLE & CALME.
+   Inerte tant que <body> n'a pas la classe sm-lite.
+   Lié dans index.html / preview.html.
+
+   ⚠️ DEUX responsabilités, volontairement séparées (cf. AUDIT_APP_v529.md) :
+     A) FEATURES masquées en Lite (ce que le public ne voit pas)
+     B) DA CALME (mêmes couleurs, moins de mouvement / d'effets)
+     C) GARDE-FOUS sémantiques (le danger/SOS n'est JAMAIS neutralisé)
    ============================================================ */
 
-/* 1) calmer le mouvement (sobre & accessible) — sans tout figer */
-body.sm-lite .float,body.sm-lite .pulse,body.sm-lite .shine,
-body.sm-lite [class*="anim-"],body.sm-lite .confetti{animation:none !important;}
-body.sm-lite *{transition-duration:.16s !important;}
+/* ============================================================
+   A) FEATURES MASQUÉES EN LITE
+   ============================================================ */
+/* Tout ce qui est expérimental (double-sécurité du gating CSS, en plus du JS betaOn). */
+body.sm-lite [data-beta],
+body.sm-lite .beta-only { display: none !important; }
+/* Surfaces « jeu vidéo » non marquées data-beta mais hors périmètre public :
+   badges secrets, easter eggs, effets rétro. (À recenser comme « caché en Lite ».) */
+body.sm-lite .badge.secret,
+body.sm-lite .easter,
+body.sm-lite .retro-fx { display: none !important; }
 
-/* 2) alléger les effets « jeu vidéo » trop chargés (on garde les couleurs !) */
-body.sm-lite .smgem::after,body.sm-lite .cic::after,body.sm-lite [class*="sheen"]{opacity:.5 !important;}
-body.sm-lite .badge.secret,body.sm-lite .easter,body.sm-lite .retro-fx{display:none !important;}
+/* ============================================================
+   B) DA CALME (DA sunset CONSERVÉE — on calme le mouvement et les effets)
+   ============================================================ */
+/* 1) Couper le mouvement décoratif et raccourcir les transitions (sobre & accessible). */
+body.sm-lite .float,
+body.sm-lite .pulse,
+body.sm-lite .shine,
+body.sm-lite [class*="anim-"],
+body.sm-lite .confetti { animation: none !important; }
+body.sm-lite * { transition-duration: .16s !important; }
 
-/* 3) masquer tout ce qui est expérimental (sécurité : double de data-beta) */
-body.sm-lite [data-beta]{display:none !important;}
+/* 1bis) Boucles décoratives nommées encore actives au repos (cf. audit perf) :
+   flottement du logo-badge, pulsation de l'emblème de quête. ON LES CALME.
+   ⚠️ On ne touche PAS : les skeletons de chargement (feedback légitime),
+   ni #navSecu / .su-sos (pulsation SÉCURITÉ, voir section C). */
+body.sm-lite .logo-badge,
+body.sm-lite .nq-emblem { animation: none !important; }
 
-/* 4) lisibilité : un peu plus d'air + arrondis homogènes (DA conservée) */
-body.sm-lite .card,body.sm-lite .pcard,body.sm-lite .gcard,body.sm-lite .tile{
-  border-radius:20px !important;}
-body.sm-lite .section,body.sm-lite .stack > * + *{margin-top:14px;}
+/* 2) Alléger les effets « émaillés » trop chargés (on GARDE les couleurs). */
+body.sm-lite .smgem::after,
+body.sm-lite .cic::after,
+body.sm-lite [class*="sheen"] { opacity: .5 !important; }
 
-/* 5) navigation simplifiée : libellés toujours visibles sous les icônes */
-body.sm-lite .tabbar .lbl,body.sm-lite .bottomnav .lbl{display:block !important;font-weight:700;}
+/* 3) Lisibilité : un peu plus d'air + arrondis homogènes (DA conservée). */
+body.sm-lite .card,
+body.sm-lite .pcard,
+body.sm-lite .gcard,
+body.sm-lite .tile { border-radius: 20px !important; }
+body.sm-lite .section,
+body.sm-lite .stack > * + * { margin-top: 14px; }
 
-/* 6) garde-fous sémantiques (ne jamais neutraliser le danger) */
-body.sm-lite .su-call,body.sm-lite .su-sos,body.sm-lite .act-block,body.sm-lite .danger{
-  filter:none !important;}
+/* 4) Navigation simplifiée : libellés toujours visibles sous les icônes. */
+body.sm-lite .tabbar .lbl,
+body.sm-lite .bottomnav .lbl { display: block !important; font-weight: 700; }
+
+/* ============================================================
+   C) GARDE-FOUS SÉMANTIQUES — ne JAMAIS neutraliser le danger
+   ============================================================ */
+/* Le rouge danger/SOS et la pulsation d'alerte restent intacts, même en Lite. */
+body.sm-lite .su-call,
+body.sm-lite .su-sos,
+body.sm-lite .act-block,
+body.sm-lite .danger,
+body.sm-lite #navSecu,
+body.sm-lite #navSecuLite { filter: none !important; animation-play-state: running !important; }
+
+/* ============================================================
+   FONDATIONS — design-system Lite (SUNSET), scopé body.sm-lite
+   Transposé du proto éditorial (sunmates-app.html + galerie Stitch « nuit tropicale »)
+   à NOTRE DA sunset (corail #FF5A4D · or #FFD15C · prune-nuit #190E2E · Fraunces+Manrope).
+   Classes préfixées .sml-* = briques Lite à composer dans les écrans. Aucune collision avec
+   l'app complète, inertes tant qu'aucun markup Lite ne les utilise (mode complet jamais touché).
+   Réf : LITE_DESIGN_INSIGHTS.md
+   ============================================================ */
+
+/* F1/F2 — Échelles nommées (typo + espacement + tokens), portées par body.sm-lite */
+body.sm-lite {
+  --fs-display: 2.375rem;  /* 38 */
+  --fs-h1: 1.75rem;        /* 28 */
+  --fs-h2: 1.25rem;        /* 20 */
+  --fs-title: 1rem;        /* 16 */
+  --fs-body: .9375rem;     /* 15 */
+  --fs-label: .8125rem;    /* 13 */
+  --stack-sm: 8px; --stack-md: 16px; --stack-lg: 32px;
+  --r-jewel: 26px;
+  --grad-sunset: linear-gradient(135deg, #FFD15C 0%, #FF8A45 45%, #FF5570 100%);
+  --grad-hero: linear-gradient(135deg, #FF5A4D 0%, #190E2E 125%);
+}
+
+/* F3a — Kicker : sous-titre de section en petites capitales (la clarté éditoriale qui manquait) */
+.sml-kicker { display:inline-flex; align-items:center; gap:.4rem; font-family:Manrope,system-ui,sans-serif;
+  font-size:var(--fs-label); font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 .55rem; }
+
+/* F3b — Grand titre serif en dégradé sunset clippé (signature de marque, RÉSERVÉ aux gros titres) */
+.sml-title-grad { font-family:Fraunces,Georgia,serif; font-weight:900; line-height:1.1; font-size:var(--fs-display);
+  background:var(--grad-sunset); -webkit-background-clip:text; background-clip:text; color:transparent; margin:0; }
+
+/* F3c — Carte vitrée « joyau » prune translucide (premium, signature joaillerie) */
+.sml-glass { background:rgba(25,14,46,.42); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.10); border-radius:var(--r-jewel);
+  box-shadow:0 14px 38px rgba(10,6,18,.34), 0 3px 9px rgba(0,0,0,.22); }
+
+/* F3d — Hero d'écran : bandeau corail→prune + overglow doré + eyebrow + mini-stats */
+.sml-hero { position:relative; overflow:hidden; border-radius:var(--r-jewel); padding:1.4rem 1.25rem;
+  background:var(--grad-hero); color:#fff; box-shadow:0 14px 38px rgba(255,90,77,.22); }
+.sml-hero::before { content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(120% 120% at 85% 8%, rgba(255,209,92,.45), transparent 55%); }
+.sml-hero > * { position:relative; z-index:1; }
+.sml-hero .sml-eyebrow { font-size:var(--fs-label); font-weight:800; letter-spacing:.12em; text-transform:uppercase; opacity:.92; }
+.sml-hero .sml-hero-title { font-family:Fraunces,Georgia,serif; font-weight:900; font-size:var(--fs-h1); margin:.15rem 0 .3rem; color:#fff; }
+.sml-hstats { display:flex; gap:.5rem; margin-top:.75rem; }
+.sml-hstat { flex:1; background:rgba(255,255,255,.16); border-radius:14px; padding:.5rem .6rem; text-align:center; }
+.sml-hstat b { display:block; font-family:Fraunces,serif; font-size:1.1rem; font-variant-numeric:tabular-nums; }
+.sml-hstat span { font-size:.7rem; opacity:.92; font-weight:700; }
+
+/* F3e — Carte liste compacte (réduit la fatigue de scroll vs grandes cartes) */
+.sml-minicard { display:flex; align-items:center; gap:.8rem; background:var(--card); border:1px solid var(--line);
+  border-radius:18px; padding:.7rem .8rem; transition:transform .12s ease; }
+.sml-minicard:active { transform:scale(.985); }
+.sml-mc-media { width:56px; height:56px; border-radius:14px; flex:0 0 auto; object-fit:cover; background:var(--cream); }
+.sml-mc-body { flex:1; min-width:0; }
+.sml-mc-title { font-weight:800; font-size:var(--fs-title); }
+.sml-mc-meta { color:var(--muted); font-size:.78rem; }
+.sml-mc-arrow { color:var(--muted); font-size:1.1rem; flex:0 0 auto; }
+
+/* F3f — Bouton primaire sunset (UN seul, réutilisé : CTA, Connect, Check-in…) */
+.sml-btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; width:100%; border:0; cursor:pointer;
+  font-family:Manrope,system-ui,sans-serif; font-weight:800; font-size:var(--fs-title); color:#fff;
+  padding:.9rem 1.1rem; border-radius:999px; background:var(--grad-sunset);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.25), 0 8px 20px rgba(255,85,112,.28); transition:transform .12s ease; }
+.sml-btn:active { transform:scale(.96); }
+.sml-btn.sml-btn-ghost { background:transparent; color:var(--accent); box-shadow:none; border:1.5px solid var(--line); }
+
+/* F3g — Pastille icône à dégradé + sheen */
+.sml-icobox { width:44px; height:44px; border-radius:14px; display:grid; place-items:center; font-size:1.3rem;
+  position:relative; overflow:hidden; background:var(--grad-sunset); }
+.sml-icobox::after { content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(150deg, rgba(255,255,255,.5), transparent 42%); }
+
+/* F3h — Chip uniforme (filtres, segments) */
+.sml-chip { display:inline-flex; align-items:center; gap:.35rem; padding:.45rem .8rem; border-radius:999px;
+  font-weight:700; font-size:.8rem; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
+.sml-chip.on { background:var(--grad-sunset); color:#fff; border-color:transparent; }
+
+/* F3i — État vide éditorial (icône + titre + phrase d'action) */
+.sml-empty { text-align:center; padding:2rem 1rem; color:var(--muted); }
+.sml-empty-ic { font-size:2rem; }
+.sml-empty-t { font-weight:800; color:var(--ink); margin:.4rem 0 .2rem; }
+
+/* F5 — Statut « en ligne / vérifié / dispo » en OR (jamais de vert criard) */
+.sml-dot-on { display:inline-block; width:8px; height:8px; border-radius:50%; background:#FFD15C; box-shadow:0 0 0 3px rgba(255,209,92,.25); }
+
+/* Section Lite : pile verticale aérée (rythme éditorial) */
+.sml-section + .sml-section { margin-top:var(--stack-lg); }
+
+/* ============================================================
+   ÉCRAN SÉCURITÉ — habillage Lite (body.sm-lite)
+   Markup + IDs + handlers INCHANGÉS (SOS/partage/ICE fonctionnent à l'identique →
+   contrat anti-régression). On ne fait que ré-habiller via CSS scopé. Complet jamais touché.
+   ============================================================ */
+
+/* Titre d'écran en grand serif sunset */
+body.sm-lite #secuHome > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; margin:0 0 .15rem; }
+
+/* Carte principale « Besoin d'aide ? » → HERO chaleureux (rassure, jamais alarmant) */
+body.sm-lite #secuHome > .card:first-of-type {
+  background:var(--grad-hero) !important; color:#fff; border:0 !important; position:relative; overflow:hidden;
+  border-radius:var(--r-jewel) !important; box-shadow:0 16px 40px rgba(255,90,77,.24) !important;
+}
+body.sm-lite #secuHome > .card:first-of-type::before {
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(120% 120% at 85% 6%, rgba(255,209,92,.42), transparent 55%);
+}
+body.sm-lite #secuHome > .card:first-of-type > * { position:relative; z-index:1; }
+body.sm-lite #secuHome > .card:first-of-type h2 { color:#fff !important; font-family:Fraunces,Georgia,serif; }
+body.sm-lite #secuHome > .card:first-of-type .muted { color:rgba(255,243,230,.9) !important; }
+/* CTA d'entrée : bouton blanc net sur le hero (le VRAI SOS rouge reste dans « Besoin d'aide ») */
+body.sm-lite #secuHome #needHelpBtn {
+  background:#fff !important; color:var(--accent) !important; font-weight:800;
+  box-shadow:0 8px 20px rgba(16,8,25,.22) !important;
+}
+
+/* Cartes secondaires : arrondi joyau homogène */
+body.sm-lite #secuHome #safetyTip,
+body.sm-lite #secuHome #safetyCheckCard { border-radius:var(--r-jewel) !important; }
+
+/* En-tête « Accès rapides » → kicker petites capitales */
+body.sm-lite #secuHome .section-head h3 {
+  font-size:var(--fs-label); font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+}
+
+/* Tuiles d'accès rapide → finition nette + retour tactile */
+body.sm-lite #secuHome .grid2 .tile { border-radius:18px; transition:transform .12s ease; }
+body.sm-lite #secuHome .grid2 .tile:active { transform:scale(.97); }
+
+/* ----- Sous-vue « Besoin d'aide » (#secuHelp) : même habillage éditorial ----- */
+body.sm-lite #secuHelp > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-h1); font-weight:900; margin:.2rem 0 .6rem; }
+
+/* Cartes en arrondi joyau homogène */
+body.sm-lite #secuHelp .card { border-radius:var(--r-jewel) !important; }
+
+/* Carte d'urgence : « 112 » en gros chiffres tabulaires + halo doux sur l'Alerte (présent, rassurant — rouge = danger conservé) */
+body.sm-lite #secuHelp .su-call b { font-size:1.18em; font-variant-numeric:tabular-nums; letter-spacing:.02em; }
+body.sm-lite #secuHelp .su-sos { box-shadow:0 0 0 5px rgba(240,56,78,.14), 0 10px 24px rgba(240,56,78,.26); }
+body.sm-lite #secuHelp .su-btn { transition:transform .12s ease; }
+body.sm-lite #secuHelp .su-btn:active { transform:scale(.97); }
+
+/* En-têtes de SECTION → kickers petites capitales (clarté éditoriale) */
+body.sm-lite #secuHelp .section-head h3 { font-size:var(--fs-label); font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+
+/* Tuiles « aide autour de moi » → retour tactile + arrondi */
+body.sm-lite #secuHelp .grid2 .tile { border-radius:18px; transition:transform .12s ease; }
+body.sm-lite #secuHelp .grid2 .tile:active { transform:scale(.97); }
+
+/* Lignes d'accès (qrow) → retour tactile + arrondi */
+body.sm-lite #secuHelp .qrow { transition:transform .12s ease; border-radius:12px; }
+body.sm-lite #secuHelp .qrow:active { transform:scale(.99); }
+
+/* ============================================================
+   ÉCRAN ACCUEIL — habillage Lite (body.sm-lite). Markup/handlers inchangés.
+   ============================================================ */
+/* Titre « Bonjour » en grand serif sunset */
+body.sm-lite #homeHello { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; line-height:1.04; }
+
+/* Segmented control Voyage / Maison → pilule, actif en dégradé sunset */
+body.sm-lite #homeModeSwitch { background:var(--cream); border-radius:999px; padding:4px; }
+body.sm-lite #homeModeSwitch button { border-radius:999px; font-weight:800; transition:transform .12s ease; }
+body.sm-lite #homeModeSwitch button:active { transform:scale(.97); }
+body.sm-lite #homeModeSwitch button.active { background:var(--grad-sunset); color:#fff; box-shadow:0 6px 16px rgba(255,85,112,.26); }
+
+/* Recherche : champ arrondi + chips de portée uniformes (actif en dégradé) */
+body.sm-lite .tab-panel[data-panel="accueil"] .search { border-radius:16px; }
+body.sm-lite #searchScopes .sscope { border-radius:999px; font-weight:700; border:1px solid var(--line); }
+body.sm-lite #searchScopes .sscope.on { background:var(--grad-sunset); color:#fff; border-color:transparent; }
+
+/* Hero Maison « De retour chez toi » → hero sunset éditorial */
+body.sm-lite #homeHomeMode .hm-hero { background:var(--grad-hero) !important; color:#fff; border:0 !important;
+  border-radius:var(--r-jewel) !important; box-shadow:0 14px 38px rgba(255,90,77,.22) !important; }
+body.sm-lite #homeHomeMode .hm-hero .hm-hero-title { color:#fff; }
+body.sm-lite #homeHomeMode .hm-hero .muted { color:rgba(255,243,230,.9) !important; }
+
+/* Cartes accueil : arrondi joyau + en-têtes de section en kickers petites capitales */
+body.sm-lite .tab-panel[data-panel="accueil"] .card { border-radius:var(--r-jewel) !important; }
+body.sm-lite .tab-panel[data-panel="accueil"] .qm-head h3,
+body.sm-lite .tab-panel[data-panel="accueil"] .section-head h3 {
+  font-size:var(--fs-label); font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+
+/* « Ta progression solo » : carte joyau + libellé « XP gagné » → « Progression » (ton grand public, décision Maxime).
+   Swap 100% CSS, scopé Lite : le mode complet garde « XP gagné ». */
+body.sm-lite #soloProgress { border-radius:var(--r-jewel) !important; }
+body.sm-lite #soloProgress .sp-stat[data-spstat="xp"] span { font-size:0; }
+body.sm-lite #soloProgress .sp-stat[data-spstat="xp"] span::after { content:"Progression"; font-size:.7rem; font-weight:700; }
+
+/* ============================================================
+   ÉCRAN LIEUX — habillage Lite (body.sm-lite). Markup/handlers inchangés.
+   ============================================================ */
+/* Titre « Lieux sûrs » en grand serif sunset */
+body.sm-lite .tab-panel[data-panel="lieux"] > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; line-height:1.04; }
+
+/* Légendes de catégorie (« Ton ambiance » / « Le top du coin ») → kickers petites capitales */
+body.sm-lite .tab-panel[data-panel="lieux"] .jnav-cap {
+  font-size:var(--fs-label); font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+
+/* Recherche arrondie */
+body.sm-lite .tab-panel[data-panel="lieux"] .search { border-radius:16px; }
+
+/* Tuiles de filtre d'ambiance : retour tactile + libellé de l'actif en accent */
+body.sm-lite .tab-panel[data-panel="lieux"] .cat-tile { transition:transform .12s ease; }
+body.sm-lite .tab-panel[data-panel="lieux"] .cat-tile:active { transform:scale(.96); }
+body.sm-lite .tab-panel[data-panel="lieux"] .cat-tile.active .clbl { color:var(--accent); font-weight:800; }
+
+/* Cartes lieu : arrondi joyau, retour tactile, badges (Éco/Top/note) en pastille vitrée nette */
+body.sm-lite #cafesList .pcard { border-radius:var(--r-jewel) !important; overflow:hidden; transition:transform .12s ease; }
+body.sm-lite #cafesList .pcard:active { transform:scale(.99); }
+body.sm-lite #cafesList .pcard-chip { -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+
+/* Carte « Mon spot du jour » : arrondi joyau */
+body.sm-lite #spotCard { border-radius:var(--r-jewel) !important; }
+
+/* ============================================================
+   BASE COMMUNE — tous les écrans Lite (cohésion Jeux/Mates/Profil/…)
+   Markup/handlers inchangés ; couvre les panneaux pas encore traités spécifiquement.
+   ============================================================ */
+body.sm-lite .tab-panel > h1 { font-family:Fraunces,Georgia,serif; font-size:var(--fs-display); font-weight:900; line-height:1.04; }
+body.sm-lite .tab-panel .card { border-radius:var(--r-jewel) !important; }
+body.sm-lite .tab-panel .qm-head h3,
+body.sm-lite .tab-panel .section-head h3 {
+  font-size:var(--fs-label); font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+body.sm-lite .tab-panel .tile { transition:transform .12s ease; }
+body.sm-lite .tab-panel .tile:active { transform:scale(.97); }
+
+/* ============================================================
+   CONNEXION (#authView) — habillage Lite (pré-login : visible en Lite via ?lite=1 / futur défaut MVP)
+   ============================================================ */
+body.sm-lite #authCore .auth-title h1 { font-family:Fraunces,Georgia,serif; font-weight:900; }
+body.sm-lite #authCore .seg button.active { background:var(--grad-sunset) !important; color:#fff !important; }
+body.sm-lite #authCore #authPlay { background:var(--grad-sunset) !important; }
+
+/* ============================================================
+   ONBOARDING (#onboarding) — habillage Lite
+   ============================================================ */
+body.sm-lite #onboarding .onb-card { border-radius:var(--r-jewel); }
+body.sm-lite #onboarding .onb-next { background:var(--grad-sunset) !important; }
+
+/* ============================================================
+   MATES (#connexions) + CHAT — habillage Lite (body.sm-lite). Markup/handlers inchangés.
+   ============================================================ */
+/* Segmented Messages / Découvrir / Demandes → actif en dégradé sunset */
+body.sm-lite .tab-panel[data-panel="connexions"] .mseg button.active {
+  background:var(--grad-sunset) !important; color:#fff !important; box-shadow:0 6px 16px rgba(255,85,112,.26); }
+/* Chips de filtre & tri uniformes (actif sunset) + recherche arrondie */
+body.sm-lite .tab-panel[data-panel="connexions"] .chip.active {
+  background:var(--grad-sunset) !important; color:#fff !important; border-color:transparent !important; }
+body.sm-lite .tab-panel[data-panel="connexions"] .search { border-radius:16px; }
+/* Cartes mate (liste Découvrir) : retour tactile */
+body.sm-lite .tab-panel[data-panel="connexions"] .trav-open { transition:transform .12s ease; }
+body.sm-lite .tab-panel[data-panel="connexions"] .trav-open:active { transform:scale(.99); }
+/* Hero du profil mate détaillé → arrondi joyau */
+body.sm-lite #matesProfile .detail-hero { border-radius:var(--r-jewel) !important; }
+/* Bannière d'invitation → arrondi joyau */
+body.sm-lite #matesHome .invite-banner { border-radius:var(--r-jewel) !important; }
+
+/* CHAT : bulles à coin coupé, « moi » en dégradé sunset, « eux » en surface nette */
+body.sm-lite #matesChat .bubble { border-radius:18px; }
+body.sm-lite #matesChat .bubble.me { background:var(--grad-sunset) !important; color:#fff; border-bottom-right-radius:5px; }
+body.sm-lite #matesChat .bubble.them { border-bottom-left-radius:5px; }
+
+/* ============================================================
+   MVP LITE — DÉGRAISSAGE (body.sm-lite). Focalise sur SÉCURITÉ + RENCONTRES + LIEUX.
+   On MASQUE le hors-MVP (le complet n'est jamais touché). Markup/handlers intacts ;
+   tout reste réversible et réapparaît en mode complet. (`:has()` déjà utilisé l.1290.)
+   ============================================================ */
+/* Onglet « Jeux » retiré de la nav → 4 onglets : Accueil · Lieux · Mates · Profil (+ Sécurité haut-droite). */
+body.sm-lite .bottom-nav button[data-tab="jeux"] { display:none !important; }
+
+/* Accueil SIMPLE : carte + qui est autour. On masque le mode Maison, le fil, « Mes voyages », les accès jeu. */
+body.sm-lite #homeModeSwitch { display:none !important; }                          /* plus de bascule Voyage/Maison */
+body.sm-lite #homeHomeMode { display:none !important; }                            /* hub Maison entier (progression solo, inspiration, préparatifs, wishlist, hôte…) */
+body.sm-lite .tab-panel[data-panel="accueil"] .section-head:has(#feedToggle),
+body.sm-lite #feedComposer,
+body.sm-lite #homeFeed { display:none !important; }                                /* le fil communautaire */
+body.sm-lite .tab-panel[data-panel="accueil"] .section-head:has(#tripAddLink),
+body.sm-lite #tripMatchBanner,
+body.sm-lite #myTrips { display:none !important; }                                 /* « Mes voyages » */
+body.sm-lite .tab-panel[data-panel="accueil"] .tile[data-goto="jeux"],
+body.sm-lite #goldTile { display:none !important; }                               /* accès rapides liés au jeu / Gold */
+
+/* Mates : on retire les 18 filtres avancés (on garde recherche + chips rapides + tri). */
+body.sm-lite #advFilters { display:none !important; }

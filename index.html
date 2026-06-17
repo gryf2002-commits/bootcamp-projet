@@ -114,6 +114,17 @@
           if (ph) { el.setAttribute("aria-label", ph); el.dataset.lbl = "ph"; return; }
           if (sibLbl) { el.setAttribute("aria-label", sibLbl); el.dataset.lbl = "sib"; }          // <label>Genre</label><select> non associé
         });
+        // V0.4 — boutons « glyphe seul » (✕, ‹, ›…) sans nom accessible → aria-label. LITE UNIQUEMENT (ne modifie pas le mode complet).
+        if (document.body && document.body.classList.contains("sm-lite")) {
+          var GLYPH_LBL = { "✕": "Fermer", "×": "Fermer", "✖": "Fermer", "╳": "Fermer", "‹": "Précédent", "❮": "Précédent", "⟨": "Précédent", "›": "Suivant", "❯": "Suivant", "⟩": "Suivant" };
+          var btns = (root.matches && root.matches("button")) ? [root] : [];
+          var bb = root.querySelectorAll("button"); for (var k = 0; k < bb.length; k++) btns.push(bb[k]);
+          btns.forEach(function (b) {
+            if (b.dataset.glyphlbl || b.getAttribute("aria-label") || b.getAttribute("aria-labelledby")) return;
+            var txt = (b.textContent || "").replace(/\s/g, "");
+            if (txt && txt.length <= 2 && GLYPH_LBL[txt[0]]) { b.setAttribute("aria-label", GLYPH_LBL[txt[0]]); b.dataset.glyphlbl = "1"; }
+          });
+        }
       }
       window._smSyncLabels = function () { try { lblEnhance(document); } catch (e) {} };
       // Entrée/Espace sur un élément qu'on a équipé → clic (et on empêche le scroll de la barre d'espace).
@@ -197,7 +208,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=529"></script>
+  <script src="sunmates-badges.js?v=532"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -1183,6 +1194,17 @@
     .secu-explain { margin-top: .8rem; background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .85rem; font-size: .78rem; line-height: 1.5; color: var(--muted); }
     /* Pastille sur l'onglet Sécurité (check-in en attente) : petit point ambre pulsant */
     #navSecu { background: #F5A623; box-shadow: 0 0 0 0 rgba(245,166,35,.6); animation: sosPulse 1.9s ease-out infinite; min-width: 10px; width: 10px; height: 10px; padding: 0; font-size: 0; right: calc(50% - 16px); }
+    /* Accès Sécurité permanent en haut à droite — LITE UNIQUEMENT (le mode complet garde Sécurité dans la barre du bas, inchangé). */
+    #topSecuBtn { display: none; }                                              /* caché par défaut = mode complet INTACT */
+    body.sm-lite #topSecuBtn { display: inline-grid; }                          /* visible seulement en Lite */
+    body.sm-lite .bottom-nav button[data-tab="securite"] { display: none !important; } /* en Lite : Sécurité quitte la barre du bas → 5 onglets */
+    .secu-top { position: relative; color: var(--ok, #11B5A0); }                /* bouclier teal = sécurité, pas rouge (rouge réservé au danger) */
+    .secu-top svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: block; }
+    .secu-top.active { background: var(--accent-soft); color: var(--accent); }
+    .secu-top #navSecuLite { position: absolute; top: 2px; right: 2px; left: auto; }
+    /* Utilitaire inverse de .beta-only : visible UNIQUEMENT en Lite. */
+    .lite-only { display: none; }
+    body.sm-lite .lite-only { display: revert; }
 
     /* --------------------- Carte tout-en-un (accueil) -------------------- */
     .homemap-card { padding: .55rem; background: #ffffff !important; } /* blanc pur (pas le blanc chaud #FFFCF6 = le 'bandeau jaune') */
@@ -5157,6 +5179,8 @@
         <svg class="logo-tropic-n" viewBox="0 0 64 64" width="22" height="22"><path d="M30 54c1.5-12 .5-22-4-30" stroke="#fff" stroke-width="3.4" stroke-linecap="round" fill="none"/><g fill="#fff"><path d="M26 24C18 16 9 15 3 19c8 0 14 2 23 5z"/><path d="M26 24c-3-10 0-17 8-21-4 7-6 13-8 21z"/><path d="M26 24c8-7 17-8 24-3-9 0-16 1-24 3z"/><path d="M26 24c10-2 18 3 21 10-8-5-14-7-21-10z"/></g><path d="M52 6a12 12 0 1 0 9 20 13.5 13.5 0 0 1-9-20z" fill="#fff" opacity=".95"/><g fill="#fff"><circle cx="42" cy="28" r="1.5"/><circle cx="56" cy="34" r="1.2"/></g><path d="M6 55q7-5 13 0t13 0 13 0 13 0" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".8"/></svg>
       </span><b><span class="sun">Sun</span>Mates</b></div>
       <div class="topbar-actions hidden" id="userBox">
+        <!-- LITE UNIQUEMENT (masqué en CSS hors body.sm-lite) — accès Sécurité permanent, toujours à portée. data-tab="securite" → câblé par le listener générique goToTab. -->
+        <button class="iconbtn secu-top" id="topSecuBtn" data-tab="securite" title="Sécurité" aria-label="Sécurité — SOS, partage de position et contacts d'urgence"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3 5.5 5.7v6.1c0 4 2.8 7 6.5 8.4 3.7-1.4 6.5-4.4 6.5-8.4V5.7L12 3z"/><path d="M9.3 12.2l1.9 1.9 3.6-3.8"/></svg><span class="navbadge hidden" id="navSecuLite">●</span></button>
         <button class="iconbtn" id="themeToggle" title="Changer de thème" aria-label="Changer de thème jour / nuit">🌙</button>
         <button class="iconbtn" id="notifBell" aria-label="Notifications"><span data-smicon="bell" data-smicon-size="22">🔔</span><span class="nbadge hidden" id="notifBellCount">0</span></button>
         <button class="btn-ghost" id="logoutBtn" style="padding:.5rem .8rem;font-size:.82rem">Déconnexion</button>
@@ -5175,6 +5199,8 @@
           <button id="availChip" class="avail-chip" type="button" title="Signale que tu es dispo pour une rencontre">☕ Dispo ?</button>
           <button id="homeStreak" class="streak-chip hidden" title="Ta série de jours sur SunMates"></button>
         </div>
+        <!-- LITE uniquement (.lite-only) : orientation chaleureuse pour une première impression calme. -->
+        <p class="muted lite-only" style="margin:.35rem 0 0;font-size:.82rem;line-height:1.45">✨ Prends ton temps : découvre les lieux sûrs autour de toi et les voyageur·ses du coin.</p>
 
         <!-- Bascule Voyage / Maison : l'app s'adapte à ta situation -->
         <div class="mode-switch" id="homeModeSwitch">
@@ -5716,13 +5742,14 @@
         <!-- Vue principale : SOS bien visible + quelques accès rapides -->
         <div id="secuHome" class="secu-view">
           <h1 data-i18n="safety.title">Sécurité</h1>
-          <p class="muted" style="margin-top:0">En cas de besoin, un seul geste. On est là pour toi.</p>
+          <p class="muted" style="margin-top:0">En cas de besoin, un seul geste. On est là pour toi — où que tu sois.</p>
 
           <div class="card" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:2rem 1.2rem">
             <button id="sosLogo" class="sos-logo" aria-label="Ouvrir les actions d'urgence" title="Actions d'urgence">🆘</button>
             <h2 style="margin:.5rem 0 .2rem;color:var(--accent)">Besoin d'aide ?</h2>
             <p class="muted" style="font-size:.85rem;margin:0 0 1.2rem;max-width:300px">Partage de position, alerte d'urgence, cercle de confiance et plus.</p>
             <button class="btn-danger" id="needHelpBtn" style="font-size:1.15rem;padding:1.1rem 1rem;width:100%;max-width:320px">J'ai besoin d'aide</button>
+            <p class="muted lite-only" style="font-size:.76rem;margin:.85rem 0 0;line-height:1.45">🆓 Gratuit, pour tout le monde, toujours · 🛡️ toujours à portée en haut à droite</p>
           </div>
 
           <!-- « Tout va bien » : masqué par défaut, n'apparaît qu'APRÈS une alerte d'urgence
@@ -6289,7 +6316,7 @@
               <h3 style="margin-top:0">🧪 Préversion (bac à essai)</h3>
               <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Les grosses nouveautés sont d'abord déployées sur <b>preview.html</b> : tu y testes la PROCHAINE version en conditions réelles (même base, même compte), <b>sans toucher</b> à l'app de tout le monde ni à son cache. Quand tu valides, elle est promue en version officielle (1 commit). <b>Touche le ruban violet 🧪</b> dans la préversion : il affiche le récap de tout ce qui a changé.</p>
               <button class="btn-primary btn-block" id="sysOpenPreview">🧪 Ouvrir la préversion</button>
-              <button class="btn-ghost btn-block" id="sysOpenLite" style="margin-top:.5rem">🪶 Version lite (aperçu grand public)</button>
+              <!-- (16/06 : bouton « Version lite » RETIRÉ → il ouvrait sunmates-app.html, une 2e Lite divergente. UNE seule Lite = le mode body.sm-lite via le toggle « Fonctionnalités beta ».) -->
               <button class="btn-ghost btn-block" id="sysOpenPlaquette" style="margin-top:.5rem">📣 Plaquette marketing</button>
               <p class="muted" style="font-size:.78rem;margin:.5rem 0 0">La console DA est <b>centralisée dans l'app</b> : le bouton flottant <b>✦ DA</b> (déplaçable) ouvre l'éditeur <b>live</b> sur la vraie app — presets, palette, emojis, clic-recolor.</p>
             </div>
@@ -6370,8 +6397,7 @@
             <div><div class="st-lbl" data-i18n="set.beta">🧪 Fonctionnalités beta</div><div class="st-sub" data-i18n="set.betaSub">Active les nouveautés en test. Désactive pour une version épurée, centrée sur l'essentiel (sécurité, rencontres, lieux).</div></div>
             <label class="switch"><input type="checkbox" id="betaToggle"><span class="sl"></span></label>
           </div>
-          <button class="btn-ghost btn-block" id="openLiteBtn" data-beta style="margin-top:.5rem">🪶 Découvrir la version lite (grand public)</button>
-          <p class="muted" data-beta style="font-size:.76rem;margin:.35rem 0 0">Aperçu, réservé aux beta-testeurs, de l'app épurée que verra le grand public.</p>
+          <!-- (16/06 : bouton « Découvrir la version lite » RETIRÉ → il ouvrait sunmates-app.html, 2e Lite divergente. Désormais : désactive le toggle ci-dessus pour voir la version épurée — UNE seule Lite = body.sm-lite.) -->
 
           <!-- Application -->
           <div class="set-grouptitle">Application</div>
@@ -6648,6 +6674,7 @@
       <button data-tab="lieux"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5.8-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.2 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.4"/></svg></span><span class="nav-lbl" data-i18n="nav.places">Lieux</span></button>
       <button data-tab="jeux"><span class="ni"><svg viewBox="0 0 24 24"><rect x="2.5" y="6.5" width="19" height="11" rx="4"/><path d="M6.5 11h4M8.5 9v4"/><circle cx="16" cy="10.7" r="1.1"/><circle cx="18.3" cy="13.3" r="1.1"/></svg></span><span class="nav-lbl" data-i18n="nav.games">Jeux</span><span class="navbadge hidden" id="navJeux"></span></button>
       <button data-tab="connexions"><span class="ni"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.3a3 3 0 0 1 0 5.6"/><path d="M17.6 13.7A5.5 5.5 0 0 1 20.5 19"/></svg></span><span class="nav-lbl" data-i18n="nav.mates">Mates</span><span class="navbadge hidden" id="navMates"></span></button>
+      <!-- Mode complet (beta) = 6 onglets, INCHANGÉ. En Lite (body.sm-lite), ce bouton est masqué en CSS et l'accès Sécurité passe en haut à droite (#topSecuBtn). -->
       <button data-tab="securite"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 3 5.5 5.7v6.1c0 4 2.8 7 6.5 8.4 3.7-1.4 6.5-4.4 6.5-8.4V5.7L12 3z"/><path d="M9.3 12.2l1.9 1.9 3.6-3.8"/></svg></span><span class="nav-lbl" data-i18n="nav.safety">Sécurité</span><span class="navbadge hidden" id="navSecu">●</span></button>
       <button data-tab="profil"><span class="ni"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span><span class="nav-lbl" data-i18n="nav.profile">Profil</span></button>
     </nav>
@@ -6715,7 +6742,7 @@
   <!-- ====================================================== -->
   <!-- SUPABASE (client chargé via CDN, pas de serveur Node) -->
   <!-- ====================================================== -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.108.2"></script>
   <script>
     // La clé "anon / publishable" est PUBLIQUE par conception : la sécurité repose
     // sur les règles RLS côté Supabase. Ne JAMAIS mettre la clé "service_role" ici.
@@ -10655,8 +10682,7 @@
       // P12 : paramètre anti-cache → la préversion ouverte est TOUJOURS la dernière poussée
       // (sans lui, le cache HTTP GitHub Pages pouvait servir une copie périmée ~10 min).
       if (op && !op.dataset.wired) { op.dataset.wired = "1"; op.addEventListener("click", () => { try { window.open("preview.html?fresh=" + Date.now(), "_blank"); } catch (e) {} }); }
-      const ol = $("sysOpenLite");
-      if (ol && !ol.dataset.wired) { ol.dataset.wired = "1"; ol.addEventListener("click", () => { try { window.open("sunmates-app.html?fresh=" + Date.now(), "_blank"); } catch (e) {} }); }
+      // (16/06 : sysOpenLite retiré — plus de chemin vers sunmates-app.html ; la Lite = le mode body.sm-lite via le toggle.)
       const opq = $("sysOpenPlaquette");
       if (opq && !opq.dataset.wired) { opq.dataset.wired = "1"; opq.addEventListener("click", () => { try { window.open("sunmates-plaquette.html?fresh=" + Date.now(), "_blank"); } catch (e) {} }); }
       // Rafraîchit aussi le tableau de bord en mémoire pour le rapport copiable
@@ -10701,7 +10727,7 @@
     function renderDemoScript(q) {
       const box = $("demoSteps"); if (!box || typeof AUTO_DEMO === "undefined") return;
       q = (q || "").trim().toLowerCase();
-      const rows = AUTO_DEMO.map((s, i) => ({ s, i })).filter(({ s }) => !q || (s.title + " " + s.text).toLowerCase().includes(q));
+      const rows = AUTO_DEMO.map((s, i) => ({ s, i })).filter(({ s }) => (betaOn() || typeof _stepIsBeta !== "function" || !_stepIsBeta(s)) && (!q || (s.title + " " + s.text).toLowerCase().includes(q))); // V0.2 — masque les chapitres beta de la liste publique
       box.innerHTML = rows.length ? rows.map(({ s, i }) => `
         <div class="demo-step">
           <div class="ds-num">${i + 1}</div>
@@ -11136,6 +11162,8 @@
       clearTimeout(adHideTimer);
       adHideTimer = setTimeout(() => { const b = $("autoDemo"); if (b && !b.classList.contains("hidden")) b.classList.add("dim"); }, 3800);
     }
+    // V0.2 — un chapitre de démo qui cible une section beta (masquée en Lite) : détecté via la source de son run.
+    function _stepIsBeta(s) { try { return /soloChallenges|soloRituals|scReroll|editCustomRitual|jeuxShop|tpVouchCard/.test(String(s && s.run)); } catch (e) { return false; } }
     function adSchedule() {
       clearTimeout(adTimer);
       if (adPaused) return;
@@ -11145,7 +11173,9 @@
     function adPlay(i) {
       clearTimeout(adTimer);
       if (i >= AUTO_DEMO.length) { endAutoDemo(); return; }
-      adIdx = i; const s = AUTO_DEMO[i];
+      const s = AUTO_DEMO[i];
+      if (!betaOn() && _stepIsBeta(s)) { adPlay(i + 1); return; } // V0.2 — saute les chapitres beta en mode Lite (cibles masquées)
+      adIdx = i;
       adCleanup();                 // referme toute pop-up/état de la scène précédente
       A(() => s.run && s.run());
       $("adTitle").textContent = s.title;
@@ -11874,6 +11904,7 @@
     function updateSafetyBadge() {
       const active = isAlertActive();
       const b = $("navSecu"); if (b) show(b, active);
+      const bl = $("navSecuLite"); if (bl) show(bl, active);   // badge sur l'accès Sécurité du mode Lite (haut-droite)
       const card = $("safetyCheckCard"); if (card) card.style.display = active ? "flex" : "none";
     }
     function setAlertActive(on) { try { localStorage.setItem("sm_alert_active", on ? "1" : "0"); } catch (e) {} updateSafetyBadge(); }
@@ -13396,6 +13427,7 @@
       box.querySelectorAll("[data-boost]").forEach((el) => el.addEventListener("click", () => { if (!el.disabled) buyBoost(el.dataset.boost); }));
     }
     function renderShop() {
+      if (!betaOn()) return;        // V0.2 — boutique SunCoins = beta only (pas de chargement en Lite)
       renderBoosts();
       const coins = myCoins();
       const xb = $("shopXpBanner");
@@ -18175,6 +18207,7 @@
       const nl = $("spNextLbl"); if (nl) nl.textContent = i18nT("Niv. {n} · encore {x} XP", { n: lvl, x: 100 - inLvl });
     }
     function renderSoloChallenges() {
+      if (!betaOn()) return;        // V0.2 — défis solo = beta only
       const grid = $("scGrid"); if (!grid) return;
       const city = (myProfile && myProfile.city) || "ta ville"; const sc = $("scCity"); if (sc) sc.textContent = city;
       const s = _soloState(), done = s.ch || {};
@@ -18238,6 +18271,7 @@
       }, 50);
     }
     function renderRituals() {
+      if (!betaOn()) return;        // V0.2 — rituels du jour = beta only
       const list = $("ritList"); if (!list) return;
       const s = _soloState(), done = s.rit || {};
       const rits = _allRituals();
@@ -19849,6 +19883,7 @@
       const hero = $("tpHero"); if (hero) hero.classList.toggle("spot-ring", isSpotActive(p));
       // Vouch
       const card = $("tpVouchCard"); if (!card) return;
+      if (!betaOn()) { card.style.display = "none"; return; }   // V0.2 — vouch = beta only
       if (String(p.id).startsWith("ia-")) { card.style.display = "none"; return; }
       card.style.display = "";
       const btn = $("tpVouchBtn"), msgEl = $("tpVouchMsg");
@@ -20092,16 +20127,17 @@
       toast("🪪", t("qr.found").replace("{name}", escapeHtml(p.username || "")));
     }
 
-    // -------------------- Mode beta / version « lissée » --------------------
-    // beta ON (défaut) = tout visible · beta OFF = body.sm-lite masque [data-beta]/.beta-only.
-    // Les piliers produit n'ont jamais data-beta → la version lissée reste complète sur l'essentiel.
+    // -------------------- Mode beta / version « lissée » (Lite) --------------------
+    // MVP PAS encore lancé → DÉFAUT = mode complet (beta ON). La Lite ne s'active QUE par le toggle
+    // (Réglages → sm_beta="0") ou ?lite=1 (aperçu). Les beta-testeurs testent la Lite en basculant le toggle.
+    // beta OFF = body.sm-lite masque [data-beta]/.beta-only. Les piliers n'ont jamais data-beta → Lite reste complète sur l'essentiel.
     function betaOn() { try { return localStorage.getItem("sm_beta") !== "0"; } catch (e) { return true; } }
     function setBeta(on) {
       try { localStorage.setItem("sm_beta", on ? "1" : "0"); } catch (e) {}
       document.body.classList.toggle("sm-lite", !on);
     }
     window.setBeta = setBeta; window.betaOn = betaOn;
-    // Boot : ?lite=1 force la version lissée à la demande (aperçu) ; sinon on respecte le réglage (défaut ON).
+    // Boot : ?lite=1 force la version lissée à la demande (aperçu) ; sinon on respecte le réglage (défaut ON = complet).
     try { setBeta(new URLSearchParams(location.search).has("lite") ? false : betaOn()); } catch (e) { setBeta(betaOn()); }
 
     // -------------------- Réglages : haptique + présence --------------------
@@ -20133,9 +20169,44 @@
         if (error) { toast("⚠️", errFr(error)); pub.checked = !v; if (myProfile) myProfile.is_public = !v; }
         else toast(v ? "🌍" : "🔒", v ? i18nT("Profil public, tu apparais dans le classement") : i18nT("Profil privé, tu n'apparais plus dans le classement"));
       });
-      const bt = $("betaToggle"); if (bt) { bt.checked = betaOn(); bt.addEventListener("change", () => { setBeta(bt.checked); toast(bt.checked ? "🧪" : "✨", bt.checked ? i18nT("Fonctionnalités beta activées") : i18nT("Version épurée activée"), null, { low: true }); }); }
-      const olb = $("openLiteBtn"); if (olb && !olb.dataset.wired) { olb.dataset.wired = "1"; olb.addEventListener("click", () => { try { window.open("sunmates-app.html?fresh=" + Date.now(), "_blank"); } catch (e) {} }); }
+      const bt = $("betaToggle"); if (bt) { bt.checked = betaOn(); bt.addEventListener("change", () => { setBeta(bt.checked); toast(bt.checked ? "🧪" : "✨", bt.checked ? i18nT("Fonctionnalités beta activées") : i18nT("Version épurée activée"), null, { low: true }); setTimeout(() => location.reload(), 700); }); } // V0.2 — reload pour (dé)charger proprement les sections gatées
+      // (16/06 : openLiteBtn retiré — plus de chemin vers sunmates-app.html ; la Lite = le mode body.sm-lite.)
     })();
+
+    // -------------------- Lite : « XP » → « Progression » dans l'onglet Jeux --------------------
+    // Décision Maxime : en version Lite (grand public), on n'affiche pas le jargon « XP ». « XP » est tissé
+    // dans des dizaines de chaînes dynamiques → on relabelle le TEXTE rendu (lite uniquement, jamais le complet).
+    // « Progression » est valable en FR et EN ; quelques corrections de grammaire FR pour la prose.
+    // Gaté à !betaOn() AU BOOT (le toggle recharge la page), donc l'observer ne tourne JAMAIS en mode complet.
+    if (typeof betaOn === "function" && !betaOn()) {
+      (function liteProgression() {
+        const root = document.getElementById("appView");        // toute l'app connectée (Jeux, Profil, partout) → aucun « XP » en Lite
+        if (!root) return;
+        let busy = false, scheduled = false;
+        function relabel() {
+          busy = true;
+          try {
+            const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+            const list = []; let n;
+            while ((n = w.nextNode())) { if (/\bXP\b/.test(n.nodeValue)) list.push(n); }
+            list.forEach((t) => {
+              t.nodeValue = t.nodeValue
+                .replace(/(\d)\s*XP\b/g, "$1 pts")                                   // unité chiffrée : « +50 XP » → « +50 pts », « 0/100 XP » → « 0/100 pts »
+                .replace(/\bl['’]XP\b/g, "la progression").replace(/\bL['’]XP\b/g, "La progression")
+                .replace(/\bton XP\b/g, "ta progression").replace(/\bd['’]XP\b/g, "de progression")
+                .replace(/\bXP\b/g, "Progression");                                  // libellé restant : « ⭐ XP » → « ⭐ Progression »
+            });
+          } catch (e) {}
+          busy = false;
+        }
+        function schedule() { if (scheduled) return; scheduled = true; requestAnimationFrame(() => { scheduled = false; relabel(); }); } // débounce (perf)
+        try {
+          const mo = new MutationObserver(() => { if (!busy) schedule(); });
+          mo.observe(root, { childList: true, subtree: true, characterData: true });
+        } catch (e) {}
+        relabel();
+      })();
+    }
 
     // -------------------- Initialisation à la connexion --------------------
     let _smSessUid = null;
