@@ -596,5 +596,35 @@ body.sm-lite .t-meta { text-transform: none !important; letter-spacing: normal !
 /* Avatar de profil (placeholder) : surface nette + filet + petite ombre (plus de carré crème plat). */
 body.sm-lite .prof-photo { border: 1px solid var(--line); box-shadow: 0 1px 3px rgba(20,18,40,.07) !important; }
 
+/* ============================================================
+   PEAUFINAGE v539 — épuration (retour Maxime) : double texte, carte, profil, tuiles.
+   ============================================================ */
+
+/* Accueil : UN seul sous-titre (fini le double « Regarde qui traîne 👀 » + « Prends ton temps »). */
+body.sm-lite #homeSubtitle { display: none !important; }
+body.sm-lite .tab-panel[data-panel="accueil"] > .lite-only { font-size: .92rem !important; line-height: 1.4 !important; margin: .25rem 0 .2rem !important; }
+
+/* Carte d'accueil PLUS GRANDE (la star ; moins de scroll au-dessus). */
+body.sm-lite .homemap { height: 400px !important; }
+
+/* Tuiles d'icônes catégorie : neutralisation PROPRE (le color:#fff + sheen + inset créaient une
+   superposition floue sur fond clair). Override explicite (0,3,1) pour battre .cat-tile .cic. */
+body.sm-lite .cat-tile .cic,
+body.sm-lite .prog-row .cic { background: var(--cream) !important; color: var(--ink) !important; box-shadow: none !important; }
+body.sm-lite .cat-tile .cic::before,
+body.sm-lite .cat-tile .cic::after,
+body.sm-lite .prog-row .cic::before { content: none !important; }
+
+/* Profil — retirer les tuiles FANTÔMES laissées par le masquage gaming. */
+body.sm-lite .tab-panel[data-panel="profil"] .card:has(#parcoursCard) { display: none !important; }  /* carte blanche vide (parcours masqué) */
+body.sm-lite #profSegNav { display: none !important; }                                                /* segment Premium/Pro/Admin entièrement masqué = vide */
+
+/* Boutons primaires : CORAIL PLAT garanti (bave résiduelle = .btn-primary l.3201 en var(--accent-grad)
+   !important rendait encore un dégradé). On force background-image:none. */
+body.sm-lite .btn-primary,
+body.sm-lite .btn-block,
+body.sm-lite .auth-play button,
+body.sm-lite #authPlay { background-color: var(--accent) !important; background-image: none !important; box-shadow: none !important; }
+
 /* (Intro Lieux : reformulation « sans classement » reportée à une passe JS propre —
    le swap CSS ::after cassait la mise en page. Le texte original reste pour l'instant.) */
