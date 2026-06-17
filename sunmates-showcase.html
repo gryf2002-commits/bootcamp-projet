@@ -66,7 +66,8 @@
     ::selection { background: var(--accent); color: #2a0d12; }
     .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
     section { position: relative; }
-    body::after { content: ""; position: fixed; inset: 0; z-index: var(--z-grain); pointer-events: none; opacity: .045; mix-blend-mode: overlay; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    /* grain STATIQUE léger (sans mix-blend-mode : évite la recomposition GPU permanente avec la vidéo). */
+    body::after { content: ""; position: fixed; inset: 0; z-index: var(--z-grain); pointer-events: none; opacity: .03; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
     .skip { position: fixed; top: -120px; left: 16px; z-index: var(--z-skip); background: var(--accent); color: #2a0d12; font-weight: 800; padding: .7rem 1.1rem; border-radius: 12px; transition: top .15s ease; }
     .skip:focus { top: 16px; }
@@ -280,7 +281,7 @@
   <header class="nav">
     <div class="wrap nav-in">
       <a href="#main" class="brand" aria-label="SunMates, accueil"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="5" fill="#fff"/><g stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2v3M12 21v1M3 13H1M23 13h-2M5 6 3.5 4.5M19 6l1.5-1.5"/></g></svg></span>Sun<b>Mates</b></a>
-      <nav class="nav-links" aria-label="Navigation principale"><a href="#rencontres">Rencontres</a><a href="#fonctions">Fonctions</a><a href="#temoignages">Témoignages</a><a href="#apercu">L'app</a></nav>
+      <nav class="nav-links" aria-label="Navigation principale"><a href="#rencontres">Rencontres</a><a href="#fonctions">Fonctions</a><a href="#temoignages">Témoignages</a><a href="#apercu">L'app</a><a href="#contact">À propos</a></nav>
       <div class="nav-cta"><button id="langBtn" class="lang-btn" type="button" aria-label="Switch to English">EN</button><a href="app.html" class="btn btn-primary btn-sm nav-start"><span class="lbl-full">Embarque</span><span class="lbl-short">Embarque</span></a></div>
     </div>
   </header>
@@ -289,7 +290,7 @@
 
     <!-- HERO vidéo -->
     <section class="hero">
-      <div class="hero-media"><video id="heroVid" autoplay muted loop playsinline preload="metadata" poster="sm-hero.jpg"><source src="https://videos.pexels.com/video-files/7147268/7147268-sd_960_540_30fps.mp4" type="video/mp4" /></video></div>
+      <div class="hero-media"><video id="heroVid" autoplay muted loop playsinline preload="metadata" poster="sm-hero.jpg"><source src="https://videos.pexels.com/video-files/7147268/7147268-sd_640_360_30fps.mp4" type="video/mp4" /></video></div>
       <div class="hero-scrim" aria-hidden="true"></div>
       <div class="seal reveal" aria-hidden="true">
         <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255,209,92,.9)" stroke-width="2" stroke-dasharray="3 4"/><circle cx="50" cy="50" r="40" fill="url(#sg)"/><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD15C"/><stop offset="1" stop-color="#FF5570"/></linearGradient></defs></svg>
@@ -337,7 +338,7 @@
 
     <!-- BANDE VIDÉO -->
     <section class="photoband">
-      <div class="pb-media"><video class="bandVid" muted loop playsinline preload="none" poster="sm-joie.jpg"><source data-src="https://videos.pexels.com/video-files/3252985/3252985-sd_960_540_25fps.mp4" type="video/mp4" /></video></div>
+      <div class="pb-media"><video class="bandVid" muted loop playsinline preload="none" poster="sm-joie.jpg"><source data-src="https://videos.pexels.com/video-files/3252985/3252985-sd_640_360_25fps.mp4" type="video/mp4" /></video></div>
       <div class="pb-scrim" aria-hidden="true"></div>
       <div class="wrap"><div class="pb-in reveal"><h2>Ça continue après le check-out.</h2><p>Les soirées finissent, les groupes restent. La prochaine escale aussi se prépare à plusieurs.</p></div></div>
     </section>
@@ -390,7 +391,7 @@
     <section class="moments">
       <div class="wrap mhead reveal"><span class="seclabel">Vos moments</span><h2 class="h2">Le voyage, à hauteur d'amitié.</h2></div>
       <div class="moments-track" id="moments">
-        <div class="moment"><span class="mtag">POV</span><video class="momVid" muted loop playsinline preload="none" poster="sm-rencontre.jpg"><source data-src="https://videos.pexels.com/video-files/12879703/12879703-sd_540_960_24fps.mp4" type="video/mp4" /></video></div>
+        <div class="moment"><span class="mtag">POV</span><video class="momVid" muted loop playsinline preload="none" poster="sm-rencontre.jpg"><source data-src="https://videos.pexels.com/video-files/12879703/12879703-sd_360_640_24fps.mp4" type="video/mp4" /></video></div>
         <div class="moment"><img src="sm-moment1.jpg" alt="Deux amis bras levés sur la plage, pleins de joie." loading="lazy" width="600" height="750" /></div>
         <div class="moment"><img src="sm-friends.jpg" alt="Un groupe d'amis qui rit ensemble au soleil." loading="lazy" width="600" height="750" /></div>
         <div class="moment"><img src="sm-moment2.jpg" alt="Trois amis qui font un selfie en voyage dans une ville." loading="lazy" width="600" height="750" /></div>
@@ -420,7 +421,7 @@
     </section>
 
     <!-- À PROPOS / CONTACT -->
-    <section id="contact" class="band" style="padding-top:0">
+    <section id="contact" class="band">
       <div class="wrap contact">
         <span class="seclabel reveal">À propos</span>
         <h2 class="h2 reveal">Une bande de voyageurs, pas une multinationale.</h2>
@@ -437,7 +438,7 @@
     <div class="wrap">
       <div class="foot-grid">
         <a href="#main" class="brand" aria-label="SunMates"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="5" fill="#fff"/><g stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2v3M12 21v1M3 13H1M23 13h-2M5 6 3.5 4.5M19 6l1.5-1.5"/></g></svg></span>Sun<b>Mates</b></a>
-        <nav class="foot-links" aria-label="Liens de pied de page"><a href="#rencontres">Rencontres</a><a href="#fonctions">Fonctions</a><a href="#temoignages">Témoignages</a><a href="app.html">Ouvrir l'app</a></nav>
+        <nav class="foot-links" aria-label="Liens de pied de page"><a href="#rencontres">Rencontres</a><a href="#fonctions">Fonctions</a><a href="#temoignages">Témoignages</a><a href="#contact">À propos</a><a href="app.html">Ouvrir l'app</a></nav>
       </div>
       <p class="foot-note">SunMates, c'est le département des belles rencontres imprévues. On te montre qui traîne dans le coin ; la suite t'appartient.</p>
       <p class="foot-postcard">Allez, fais-toi un coin. <span aria-hidden="true">☀️</span></p>
@@ -523,15 +524,15 @@
     (function () {
       var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce || !("IntersectionObserver" in window)) return;
+      // Charge à l'approche + JOUE seulement quand visible, PAUSE hors-écran (1 vidéo décode à la fois = fluide).
       var vio = new IntersectionObserver(function (ents) {
         ents.forEach(function (e) {
-          if (!e.isIntersecting) return;
-          var v = e.target, s = v.querySelector("source[data-src]");
-          if (s && !s.src) { s.src = s.getAttribute("data-src"); v.load(); v.play().catch(function () {}); }
-          vio.unobserve(v);
+          var v = e.target;
+          if (e.isIntersecting) { var s = v.querySelector("source[data-src]"); if (s && !s.src) { s.src = s.getAttribute("data-src"); v.load(); } v.play().catch(function () {}); }
+          else { try { v.pause(); } catch (_) {} }
         });
-      }, { rootMargin: "400px 0px" });
-      document.querySelectorAll("video.bandVid").forEach(function (v) { vio.observe(v); });
+      }, { rootMargin: "150px 0px", threshold: 0.01 });
+      document.querySelectorAll("video").forEach(function (v) { vio.observe(v); });
     })();
 
     // ---------- NAV : fond au scroll (transparente sur le hero, pas de bande sombre) ----------
