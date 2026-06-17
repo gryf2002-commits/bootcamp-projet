@@ -208,7 +208,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=540"></script>
+  <script src="sunmates-badges.js?v=541"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -4654,7 +4654,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=540">
+  <link rel="stylesheet" href="sunmates-lite.css?v=541">
 </head>
 <body>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
@@ -5183,7 +5183,7 @@
         <button class="iconbtn secu-top" id="topSecuBtn" data-tab="securite" title="Sécurité" aria-label="Sécurité — SOS, partage de position et contacts d'urgence"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3 5.5 5.7v6.1c0 4 2.8 7 6.5 8.4 3.7-1.4 6.5-4.4 6.5-8.4V5.7L12 3z"/><path d="M9.3 12.2l1.9 1.9 3.6-3.8"/></svg><span class="navbadge hidden" id="navSecuLite">●</span></button>
         <button class="iconbtn" id="themeToggle" title="Changer de thème" aria-label="Changer de thème jour / nuit">🌙</button>
         <button class="iconbtn" id="notifBell" aria-label="Notifications"><span data-smicon="bell" data-smicon-size="22">🔔</span><span class="nbadge hidden" id="notifBellCount">0</span></button>
-        <button class="btn-ghost" id="logoutBtn" style="padding:.5rem .8rem;font-size:.82rem">Déconnexion</button>
+        <!-- Déconnexion déplacée dans Réglages (compte) -->
       </div>
     </header>
     <div id="goldPreviewBanner">👁️ Aperçu « mode Gratuit » : les fonctions 👑 Gold sont grisées</div>
@@ -5749,7 +5749,7 @@
             <h2 style="margin:.5rem 0 .2rem;color:var(--accent)">Besoin d'aide ?</h2>
             <p class="muted" style="font-size:.85rem;margin:0 0 1.2rem;max-width:300px">Partage de position, alerte d'urgence, cercle de confiance et plus.</p>
             <button class="btn-danger" id="needHelpBtn" style="font-size:1.15rem;padding:1.1rem 1rem;width:100%;max-width:320px">J'ai besoin d'aide</button>
-            <p class="muted lite-only" style="font-size:.76rem;margin:.85rem 0 0;line-height:1.45">🆓 Gratuit, pour tout le monde, toujours · 🛡️ toujours à portée en haut à droite</p>
+            <!-- note 'sécurité gratuite' retirée (note back-office, jamais affichée) -->
           </div>
 
           <!-- « Tout va bien » : masqué par défaut, n'apparaît qu'APRÈS une alerte d'urgence
@@ -6116,7 +6116,7 @@
                  arrivent un jour, les bêta-testeurs ne paieront rien · dit noir sur blanc, no stress. -->
             <p class="muted" style="font-size:.76rem;margin:.7rem 0 0;background:var(--accent-soft);border-radius:12px;padding:.55rem .7rem">🧪 <b>Tu fais partie de la bêta ?</b> Alors tout est déjà débloqué pour toi. Et si certaines fonctions deviennent un jour réservées à Gold, no stress : <b>rien ne sera jamais facturé à nos bêta-testeurs préférés</b> 💛</p>
           </div>
-          <p class="muted" style="font-size:.78rem;text-align:center;margin:.6rem 0 0">🛡️ <b>Notre promesse :</b> tout ce qui te protège (SOS, cercle de confiance, partage de position, minuteur, faux appel) est gratuit, pour toujours, pour tout le monde.</p>
+          <!-- promesse 'sécurité gratuite' retirée (note back-office) -->
         </div><!-- /prof-seg premium -->
 
         <!-- P14 : ESPACE PRO partenaires (bar, auberge, café…) · rempli par renderProPanel -->
@@ -6403,6 +6403,8 @@
           <div class="set-grouptitle">Application</div>
           <button class="btn-ghost btn-block" id="installAppBtn">📲 Installer l'app sur mon téléphone</button>
           <button class="btn-ghost btn-block" id="replayOnbBtn" style="margin-top:.5rem" data-i18n="profile.replay">🚀 Revoir la présentation</button>
+          <div class="set-grouptitle">Compte</div>
+          <button class="btn-ghost btn-block" id="logoutBtn" style="margin-top:.2rem">Se déconnecter</button>
 
           <!-- Compte -->
           <div class="set-grouptitle">Compte</div>
@@ -20232,7 +20234,7 @@
         } catch (e) {}
         // 3) Emoji retirés du CHROME uniquement (boutons/titres/tuiles) — JAMAIS le contenu (chat/bios/noms conservés)
         const EMOJI_RE = /[\u2300-\u27BF\u2B00-\u2BFF\u2600-\u26FF\u{1F000}-\u{1FAFF}\u{FE00}-\u{FE0F}\u{1F1E6}-\u{1F1FF}\u200D\u20E3]/gu;
-        const SEL = ".btn-primary,.btn-accent,.btn-ghost,.onb-next,.onb-skip,.onb-step h2,.auth-title h1,.section-head>h3,.qm-head>h3,.jnav-cap,.t-name,.t-meta,.tpa-btn,.empty-t,.etitle,.avail-chip,.qm-all,.clbl,.onb-step p,.inv-txt";
+        const SEL = ".btn-primary,.btn-accent,.btn-ghost,.onb-next,.onb-skip,.onb-step h2,.auth-title h1,.section-head>h3,.qm-head>h3,.jnav-cap,.t-name,.t-meta,.tpa-btn,.empty-t,.etitle,.avail-chip,.qm-all,.clbl,.onb-step p,.inv-txt,.mseg button,.seg button";
         let busy = false, scheduled = false;
         function strip() {
           busy = true;

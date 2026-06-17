@@ -649,5 +649,37 @@ body.sm-lite #secuHome .grid2 .tile[data-secuquick="emergency"] { order: -3; }  
 body.sm-lite #secuHome .grid2 .tile[data-secuquick="numbers"]   { order: -2; }  /* Numéros (112) ensuite */
 body.sm-lite #secuHome .grid2 .tile[data-secuquick="position"]  { order: -1; }  /* Partager position */
 
+/* ============================================================
+   PEAUFINAGE v541 — superposition tuiles + layout (retour Maxime).
+   ============================================================ */
+/* SUPERPOSITION « carré sur carré » : les .thumb d'accueil/sécurité ont un drop-shadow (= 2e carré
+   en arrière-plan, l.2376) + un ::after gloss (l.2378, spécificité 0,3,1). On les TUE en Lite. */
+body.sm-lite .tab-panel[data-panel="accueil"] .tile .thumb,
+body.sm-lite .tab-panel[data-panel="securite"] .tile .thumb,
+body.sm-lite .tile .thumb { filter: none !important; }
+body.sm-lite .tab-panel[data-panel="accueil"] .tile .thumb::after,
+body.sm-lite .tab-panel[data-panel="securite"] .tile .thumb::after,
+body.sm-lite .tile .thumb::before,
+body.sm-lite .tile .thumb::after { content: none !important; display: none !important; background: none !important; }
+
+/* Profondeur des tuiles (dont rouges sécurité) : ombre douce nette sur la TUILE elle-même. */
+body.sm-lite .tile { box-shadow: 0 1px 2px rgba(20,18,40,.05), 0 5px 14px rgba(20,18,40,.06) !important; }
+
+/* Accès rapides Accueil (les 3 actions « Que faire maintenant ») : rangée de 3 propre. */
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 { grid-template-columns: repeat(3, 1fr) !important; gap: .55rem; }
+
+/* PROFIL — refonte « moins vide » (décision Maxime) : on joue les tailles pour remplir l'écran,
+   carte fusionnée plus généreuse, avatar/nom/stats plus présents. */
+body.sm-lite .tab-panel[data-panel="profil"] .prof-head { padding-top: 1.6rem !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .prof-photo { width: 128px !important; height: 128px !important; font-size: 3.2rem !important; border-radius: 26px !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .prof-name { font-size: 1.5rem !important; margin-top: .2rem; }
+body.sm-lite .tab-panel[data-panel="profil"] .prof-trust { font-size: 1rem !important; padding: .5rem 1rem !important; margin-top: .4rem !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .stat-row { gap: .7rem !important; margin-top: 1rem !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .stat-row .stat-box { padding: 1rem .6rem !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .stat-row .stat { font-size: 2rem !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .completion { margin-top: 1.1rem !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .prof-head + .card { padding-bottom: 1.4rem !important; }
+body.sm-lite .tab-panel[data-panel="profil"] #editProfileBtn { margin-top: 1.1rem !important; padding: 1rem !important; font-size: 1.02rem !important; }
+
 /* (Intro Lieux : reformulation « sans classement » reportée à une passe JS propre —
    le swap CSS ::after cassait la mise en page. Le texte original reste pour l'instant.) */
