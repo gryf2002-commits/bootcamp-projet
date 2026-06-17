@@ -691,5 +691,43 @@ body.sm-lite .tab-panel[data-panel="profil"] .prof-shortcuts .qrow:active { tran
 body.sm-lite #weatherChip.weather-chip { display: inline-flex !important; margin: 0 auto .6rem !important; width: auto !important; max-width: max-content; }
 body.sm-lite .tab-panel[data-panel="accueil"] #weatherChip { align-self: center; }
 
+/* ============================================================
+   PEAUFINAGE v543 — bave (logo/avatar), double-carré, lisibilité, typo, sécurité 1 page.
+   ============================================================ */
+
+/* BAVE : logo soleil + avatars rendaient encore un dégradé (brouillon DA en localStorage) malgré
+   l'aplatissement du token → on FORCE le corail plat (background-image:none), comme les boutons. */
+body.sm-lite .brand .mark,
+body.sm-lite .avatar,
+body.sm-lite .hm-mate .avatar { background-image: none !important; background-color: var(--accent) !important; box-shadow: none !important; }
+
+/* DOUBLE-CARRÉ : la boîte d'icône (.thumb) crée un 2e carré derrière l'emoji → on la rend
+   TRANSPARENTE (l'emoji posé directement dans la tuile = un seul carré). */
+body.sm-lite .tile .thumb { background: transparent !important; border: 0 !important; box-shadow: none !important; filter: none !important; }
+body.sm-lite .tile .thumb::before, body.sm-lite .tile .thumb::after { content: none !important; display: none !important; }
+
+/* ACCÈS RAPIDES accueil : LISTE lisible (la grille de 3 tassait le texte → illisible). */
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 { grid-template-columns: 1fr !important; gap: .5rem; }
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile { display: flex !important; align-items: center; gap: .75rem; text-align: left; padding: .85rem .9rem; }
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .thumb { margin: 0 !important; width: 40px; height: 40px; flex: 0 0 auto; }
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .t-name { font-size: .98rem !important; }
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .t-meta { font-size: .78rem !important; }
+
+/* TYPO HOMOGÈNE profil (retour Maxime : tantôt énorme tantôt petit). Échelle nette et cohérente. */
+body.sm-lite .tab-panel[data-panel="profil"] .prof-photo { width: 112px !important; height: 112px !important; font-size: 2.6rem !important; border-radius: 24px !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .prof-name { font-size: 1.35rem !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .prof-trust { font-size: .92rem !important; padding: .45rem .9rem !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .stat-row .stat { font-size: 1.6rem !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .stat-row .lbl { font-size: .78rem !important; }
+body.sm-lite .tab-panel[data-panel="profil"] .prof-shortcuts .qname { font-size: .95rem !important; }
+
+/* SÉCURITÉ — TOUT SUR UNE PAGE (décision Maxime : ne rien retirer, tout afficher).
+   On affiche secuHelp (112/Alerte/ICE/cercle/aide/conseils) SOUS secuHome, et on retire la
+   navigation entre les 2 (plus de bouton « J'ai besoin d'aide » ni de Retour). SOS intact. */
+body.sm-lite #secuHelp { display: block !important; margin-top: var(--stack-md); }
+body.sm-lite #secuHelp > .backbtn,
+body.sm-lite #secuHelp > h1,
+body.sm-lite #secuHome #needHelpBtn { display: none !important; }
+
 /* (Intro Lieux : reformulation « sans classement » reportée à une passe JS propre —
    le swap CSS ::after cassait la mise en page. Le texte original reste pour l'instant.) */
