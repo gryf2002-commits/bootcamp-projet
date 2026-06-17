@@ -208,7 +208,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=556"></script>
+  <script src="sunmates-badges.js?v=557"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -4654,7 +4654,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=556">
+  <link rel="stylesheet" href="sunmates-lite.css?v=557">
 </head>
 <body>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
@@ -15106,7 +15106,10 @@
         const chev = document.createElement("span"); chev.className = "coll-chev"; chev.setAttribute("aria-hidden", "true");
         (h3 || head).appendChild(chev);
         const apply = (closed) => { card.classList.toggle("coll-closed", closed); chev.textContent = closed ? " ▸" : " ▾"; };
-        let closed = false; try { closed = localStorage.getItem(key) === "1"; } catch (e) {}
+        // LITE : le Cercle de confiance démarre REPLIÉ via le format NATIF (comme iceCard/conseils…),
+        // pas un collapse maison. La préférence utilisateur (localStorage) reste prioritaire.
+        let closed = (card.dataset.coll === "circle" && typeof betaOn === "function" && !betaOn());
+        try { const _v = localStorage.getItem(key); if (_v !== null) closed = (_v === "1"); } catch (e) {}
         apply(closed);
         head.style.cursor = "pointer";
         head.addEventListener("click", (e) => {
@@ -20244,6 +20247,16 @@
             relab("lieux", "Faire un check-in");
             relab("securite", "Ma sécurité");
             const sh = Array.prototype.slice.call(acc.querySelectorAll(".section-head h3")).find(function (h) { return /Acc[eè]s rapides/i.test(h.textContent); }); if (sh) sh.textContent = "Que faire maintenant ?";
+            // v557 — tuiles « Que faire » → BANDES (format .qrow existant) : icône + (nom+sous-titre) + chevron.
+            acc.querySelectorAll(".grid2 .tile").forEach(function (t) {
+              if (t.querySelector(".lite-tilebody")) return;
+              const name = t.querySelector(".t-name"), meta = t.querySelector(".t-meta");
+              if (!name) return;
+              const body = document.createElement("div"); body.className = "lite-tilebody";
+              body.appendChild(name); if (meta) body.appendChild(meta);
+              t.appendChild(body);
+              const c = document.createElement("div"); c.className = "lite-chev"; c.textContent = "›"; t.appendChild(c);
+            });
           }
         } catch (e) {}
         // 3) Emoji retirés du CHROME uniquement (boutons/titres/tuiles) — JAMAIS le contenu (chat/bios/noms conservés)
@@ -20263,15 +20276,8 @@
         }
         function sched() { if (scheduled) return; scheduled = true; requestAnimationFrame(function () { scheduled = false; strip(); }); }
         try { const mo = new MutationObserver(function () { if (!busy) sched(); }); mo.observe(root, { childList: true, subtree: true, characterData: true }); } catch (e) {}
-        // #3 : Cercle de confiance REPLIABLE (fermé par défaut ; « Rafraîchir » visible seulement ouvert)
-        try {
-          const cc = document.getElementById("circleCard");
-          if (cc) cc.classList.add("lite-collapsed");
-          document.addEventListener("click", function (e) {
-            const head = e.target.closest && e.target.closest("#circleCard .section-head");
-            if (head && !(e.target.closest && e.target.closest("#refreshCircleBtn"))) { const c = document.getElementById("circleCard"); if (c) c.classList.toggle("lite-collapsed"); }
-          });
-        } catch (e) {}
+        // #3 : Cercle de confiance REPLIABLE → géré par le système NATIF data-coll (collapsibleCards),
+        // qui le démarre replié en Lite (cf. collapsibleCards). Plus de collapse maison (formats unifiés).
         // #4 : tuiles sécurité qui redirigent direct (Mate / Lieux) → ouvrent un MENU de sous-choix
         try {
           document.addEventListener("click", function (e) {
@@ -20343,16 +20349,17 @@
           const sh = document.getElementById("secuHome");
           if (sh) { const h = Array.prototype.slice.call(sh.querySelectorAll(".section-head h3")).find(function (x) { return /Acc[eè]s rapides/i.test(x.textContent); }); if (h) h.textContent = "Outils de sécurité"; }
         } catch (e) {}
-        // v555 — Sécurité : Faux appel / Signal / Rentrée → UNE tuile combinée « Outils de sécurité » (sous-menu).
+        // v557 — Sécurité : Outils de sécurité = BANDE (.qrow) AJOUTÉE dans « Conseils & secours »
+        // (format existant) ; ouvre le sous-menu faux appel/signal/rentrée. La section « Outils de
+        // sécurité » du bas est masquée en CSS.
         try {
-          const sh = document.getElementById("secuHome");
-          const grid = sh && sh.querySelector(".grid2");
-          if (grid && !grid.querySelector("[data-litesecu-tile]")) {
-            const tile = document.createElement("div");
-            tile.className = "tile"; tile.setAttribute("data-litesecu-tile", "1");
-            tile.innerHTML = '<div class="thumb purp">🛡️</div><div class="t-name">Outils de sécurité</div><div class="t-meta">Faux appel, signal, rentrée</div>';
-            grid.insertBefore(tile, grid.firstChild);
-            tile.addEventListener("click", function () {
+          const conseils = document.querySelector('[data-coll="conseils"]');
+          if (conseils && !conseils.querySelector("[data-litesecu-row]")) {
+            const row = document.createElement("div");
+            row.className = "qrow"; row.setAttribute("data-litesecu-row", "1");
+            row.innerHTML = '<div class="qico">🛡️</div><div class="qname">Outils de sécurité<div class="qrow-sub">Faux appel, signal, rentrée</div></div><div class="qarrow">›</div>';
+            conseils.appendChild(row);
+            row.addEventListener("click", function () {
               if (typeof popInfo !== "function") return;
               popInfo("🛡️", "Outils de sécurité", '<div class="sml-menu"><button class="btn-ghost btn-block" data-litesecu="fakecall">📞 Faux appel</button><button class="btn-ghost btn-block" data-litesecu="signal" style="margin-top:.5rem">🔦 Signal d\'aide</button><button class="btn-ghost btn-block" data-litesecu="safearrival" style="margin-top:.5rem">⏱️ Rentrée en sécurité</button></div>');
             });
@@ -20365,6 +20372,15 @@
             const orig = document.querySelector('[data-secuquick="' + k + '"]');
             if (orig) setTimeout(function () { orig.click(); }, 90);
           });
+        } catch (e) {}
+        // v557 — Cercle de confiance : fallback repli au 1er chargement Lite (si betaOn n'était pas encore
+        // résolu quand collapsibleCards a tourné). Repli via le head NATIF, sans son ni persistance.
+        try {
+          const cc = document.getElementById("circleCard");
+          if (cc && !cc.classList.contains("coll-closed") && localStorage.getItem("sm_coll_circle") === null) {
+            const head = cc.querySelector(".section-head") || cc.querySelector("h3");
+            if (head) { const _s = window.SMSound; window.SMSound = null; head.click(); window.SMSound = _s; try { localStorage.removeItem("sm_coll_circle"); } catch (e2) {} }
+          }
         } catch (e) {}
         strip();
       })();

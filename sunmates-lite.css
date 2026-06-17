@@ -839,15 +839,9 @@ body.sm-lite .tab-panel[data-panel="accueil"] .grid2 #goldTile { display: none !
 /* ============================================================
    PEAUFINAGE v553 — #3 Cercle de confiance REPLIABLE + #4 tuiles → sous-choix.
    ============================================================ */
-/* Cercle : tuile FERMÉE par défaut, s'ouvre au clic ; « ↻ Rafraîchir » visible seulement ouverte. */
-body.sm-lite #circleCard { cursor: pointer; }
-body.sm-lite #circleCard .section-head h3 { font-size: var(--fs-title); }
-body.sm-lite #circleCard .section-head h3::after { content: "›"; display: inline-block; margin-left: .45rem; color: var(--muted); font-weight: 900; transition: transform .2s ease; }
-body.sm-lite #circleCard:not(.lite-collapsed) .section-head h3::after { transform: rotate(90deg); }
-body.sm-lite #circleCard.lite-collapsed > p,
-body.sm-lite #circleCard.lite-collapsed > #circleLocList,
-body.sm-lite #circleCard.lite-collapsed #refreshCircleBtn { display: none !important; }
-body.sm-lite #circleCard.lite-collapsed { padding-bottom: .6rem !important; }
+/* Cercle de confiance : repli géré par le système NATIF data-coll (chevron ▸/▾ comme iceCard/
+   conseils), démarré replié en Lite via collapsibleCards. Plus de collapse maison « .lite-collapsed »
+   (le chevron « › » custom doublonnait le natif et le format différait). */
 
 /* « Bonjour » : un peu d'air en dessous (était trop collé à la suite). */
 body.sm-lite #homeHello { margin-bottom: .55rem !important; }
@@ -939,20 +933,27 @@ body.sm-lite #secuHome .grid2 .tile[data-secuquick="safearrival"] { display: non
    cercle compact, déconnexion visible, page messages propre.
    ============================================================ */
 
-/* ACCUEIL « Que faire maintenant » : tuiles PREMIUM (carte douce, pastille d'icône corail,
-   bien alignées) — Maxime : « pas beau / pas centré ». Lignes propres facon liste d'actions. */
-body.sm-lite .tab-panel[data-panel="accueil"] .grid2 { gap: .55rem !important; }
+/* ACCUEIL « Que faire maintenant » : BANDES façon .qrow (le format EXISTANT de « Conseils & secours »
+   que Maxime veut réutiliser) — une carte unique, rangées icône + (nom+sous-titre) + chevron, filet. */
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 {
+  display: block !important; background: var(--card) !important; border: 1px solid var(--line) !important;
+  border-radius: 16px !important; padding: 0 1rem !important; box-shadow: 0 1px 4px rgba(45,38,52,.05) !important;
+}
 body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile {
-  background: var(--card) !important; border: 1px solid var(--line) !important; border-radius: 15px !important;
-  padding: .85rem 1rem !important; gap: .85rem !important; box-shadow: 0 1px 4px rgba(45,38,52,.05) !important;
+  display: flex !important; flex-direction: row !important; align-items: center !important; gap: .8rem !important;
+  background: transparent !important; border: 0 !important; border-bottom: 1px solid var(--line) !important;
+  border-radius: 0 !important; box-shadow: none !important; padding: .85rem 0 !important; text-align: left !important; min-height: 0 !important;
 }
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile:last-child { border-bottom: 0 !important; }
 body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .thumb {
-  width: 42px !important; height: 42px !important; border-radius: 12px !important; font-size: 1.3rem !important;
-  display: flex !important; align-items: center; justify-content: center;
-  background: color-mix(in oklab, var(--accent) 12%, transparent) !important;
+  width: 42px !important; height: 42px !important; border-radius: 12px !important; font-size: 1.25rem !important;
+  display: flex !important; align-items: center; justify-content: center; flex: 0 0 auto; margin: 0 !important;
+  background: var(--accent-soft) !important;
 }
-body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .t-name { font-size: .98rem !important; font-weight: 700; }
-body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .t-meta { font-size: .76rem !important; color: var(--muted); }
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .lite-tilebody { flex: 1; min-width: 0; }
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .t-name { font-size: .98rem !important; font-weight: 600; color: var(--ink); }
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .t-meta { font-size: .75rem !important; color: var(--muted); margin-top: .1rem; }
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .lite-chev { color: var(--accent); font-weight: 800; font-size: 1.15rem; flex: 0 0 auto; }
 
 /* MATES : la ligne « compteur + Partager » plus QUALITATIVE (deux blocs équilibrés, même hauteur). */
 body.sm-lite #matesHome .lite-materow { gap: .6rem !important; align-items: stretch; }
@@ -966,10 +967,20 @@ body.sm-lite #matesHome .lite-materow .invite-banner {
 
 /* CERCLE de confiance : carte repliée VRAIMENT compacte (une ligne, même gabarit que les autres
    cartes sécurité) — Maxime : « énorme, doit être au format de Mes contacts d'urgence ». */
-body.sm-lite #circleCard.lite-collapsed { padding: .9rem 1rem !important; }
-body.sm-lite #circleCard.lite-collapsed .section-head { margin: 0 !important; }
 body.sm-lite #circleCard .section-head h3 { font-size: 1.02rem !important; }
 
 /* MESSAGES (raccourci 💬) : quand on est sur la vue messages, la barre de segments (Découvrir/
    Demandes) est masquée → page messages DÉDIÉE et propre (plus de segments fantômes). */
 body.sm-lite #matesHome:has([data-msegpanel="messages"]:not(.hidden)) .mseg { display: none !important; }
+
+/* ============================================================
+   PEAUFINAGE v557 — bandes (.qrow), Outils sécu déplacés, toggles smooth.
+   ============================================================ */
+/* SÉCURITÉ : la section « Outils de sécurité » du bas est RETIRÉE (déplacée en bande dans
+   « Conseils & secours »). On masque la grille + son titre ; le conseil du jour (safetyTip) reste. */
+body.sm-lite #secuHome > .section-head,
+body.sm-lite #secuHome > .grid2 { display: none !important; }
+
+/* TOGGLES (interrupteurs réglages) : bascule la PLUS douce possible (pastille + fond animés). */
+body.sm-lite .switch .sl,
+body.sm-lite .switch .sl::before { transition: background-color .28s cubic-bezier(.22,1,.36,1), transform .28s cubic-bezier(.22,1,.36,1) !important; }
