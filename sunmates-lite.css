@@ -793,8 +793,8 @@ body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .thumb { width: 34px 
 body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .t-name { font-size: .92rem !important; }
 body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .t-meta { font-size: .74rem !important; }
 
-/* Mates : retirer la petite phrase du haut (redondante avec le titre). */
-body.sm-lite .tab-panel[data-panel="connexions"] > .muted { display: none !important; }
+/* Mates : retirer la petite phrase du haut (redondante avec le titre). Elle est DANS #matesHome. */
+body.sm-lite #matesHome > .muted { display: none !important; }
 
 /* Sécurité : « En cas d'urgence » TOUT EN HAUT (secuHelp avant secuHome), titre/sous-titre redondants retirés. */
 body.sm-lite .tab-panel[data-panel="securite"] { display: flex; flex-direction: column; }
@@ -810,6 +810,23 @@ body.sm-lite .tile,
 body.sm-lite .topbar,
 body.sm-lite .bottom-nav,
 body.sm-lite .search input { transition: background-color .35s ease, color .35s ease, border-color .35s ease !important; }
+
+/* ============================================================
+   PEAUFINAGE v551 — Mates invite compacte, SOS en texte, démo filtrée, réglages.
+   ============================================================ */
+/* MATES : bandeau « Invite tes amis » compact, SUR LA MÊME LIGNE que « Mates de confiance ». */
+body.sm-lite #matesHome .mates-stat { display: inline-flex !important; width: auto !important; vertical-align: middle; }
+body.sm-lite #matesHome .invite-banner { display: inline-flex !important; width: auto !important; padding: .42rem .75rem !important; margin: .35rem 0 0 .5rem !important; vertical-align: middle; }
+body.sm-lite #matesHome .invite-banner .inv-txt { display: none !important; }
+body.sm-lite #matesHome .invite-banner .inv-go { background: rgba(255,255,255,.22); }
+
+/* SÉCURITÉ : SOS en TEXTE stylisé (badge rouge « SOS ») au lieu de l'emoji 🆘. */
+body.sm-lite .secu-urgent .su-ic { font-size: 0 !important; width: auto !important; height: auto !important; background: none !important; }
+body.sm-lite .secu-urgent .su-ic::after { content: "SOS"; font-size: .9rem; font-weight: 900; letter-spacing: .06em; color: #fff; background: var(--danger); padding: .25rem .55rem; border-radius: 9px; }
+
+/* RÉGLAGES : segment langue + QR/Scanner centrés (alignement propre). */
+body.sm-lite #settingsCard .lang-seg,
+body.sm-lite #settingsCard .row { justify-content: center; }
 
 /* (Intro Lieux : reformulation « sans classement » reportée à une passe JS propre —
    le swap CSS ::after cassait la mise en page. Le texte original reste pour l'instant.) */
