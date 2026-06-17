@@ -681,5 +681,15 @@ body.sm-lite .tab-panel[data-panel="profil"] .completion { margin-top: 1.1rem !i
 body.sm-lite .tab-panel[data-panel="profil"] .prof-head + .card { padding-bottom: 1.4rem !important; }
 body.sm-lite .tab-panel[data-panel="profil"] #editProfileBtn { margin-top: 1.1rem !important; padding: 1rem !important; font-size: 1.02rem !important; }
 
+/* Profil : carte de raccourcis utiles (.lite-only, ajoutée en markup) → remplit l'écran avec du
+   contenu réel non-gaming (cercle de confiance, lieux, mates). */
+body.sm-lite .tab-panel[data-panel="profil"] .prof-shortcuts { margin-top: var(--stack-md); }
+body.sm-lite .tab-panel[data-panel="profil"] .prof-shortcuts .qrow { transition: transform .12s ease; border-radius: 12px; }
+body.sm-lite .tab-panel[data-panel="profil"] .prof-shortcuts .qrow:active { transform: scale(.99); }
+
+/* Météo : pilule propre et CENTRÉE (ne s'étale plus sur toute la largeur). */
+body.sm-lite #weatherChip.weather-chip { display: inline-flex !important; margin: 0 auto .6rem !important; width: auto !important; max-width: max-content; }
+body.sm-lite .tab-panel[data-panel="accueil"] #weatherChip { align-self: center; }
+
 /* (Intro Lieux : reformulation « sans classement » reportée à une passe JS propre —
    le swap CSS ::after cassait la mise en page. Le texte original reste pour l'instant.) */
