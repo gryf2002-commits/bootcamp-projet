@@ -575,5 +575,18 @@ body.sm-lite #onboarding .onb-skip { color: var(--muted) !important; }
 body.sm-lite #onboarding .onb-dots i { background: var(--line) !important; }
 body.sm-lite #onboarding .onb-dots i.on { background: var(--accent) !important; }
 
+/* ============================================================
+   PEAUFINAGE v537 — profondeur cartes (ombre prioritaire) + respiration + Gold masqué.
+   ============================================================ */
+/* Profondeur : .tab-panel .card (0,3,1) bat le box-shadow:none global ; le hero Sécurité (#id) reste plat. */
+body.sm-lite .tab-panel .card,
+body.sm-lite #cafesList .pcard { box-shadow: 0 1px 2px rgba(20,18,40,.05), 0 6px 16px rgba(20,18,40,.06) !important; }
+/* Respiration entre sections de Lieux (étaient empilées sans air). */
+body.sm-lite .tab-panel[data-panel="lieux"] > section,
+body.sm-lite .tab-panel[data-panel="lieux"] > .card,
+body.sm-lite .tab-panel[data-panel="lieux"] > details { margin-top: 1.3rem; }
+/* Lieu Gold (premium/gaming) : masqué en Lite (le bloc est aussi coupé en JS, double sécurité). */
+body.sm-lite .gold-place { display: none !important; }
+
 /* (Intro Lieux : reformulation « sans classement » reportée à une passe JS propre —
    le swap CSS ::after cassait la mise en page. Le texte original reste pour l'instant.) */
