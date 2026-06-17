@@ -208,7 +208,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=543"></script>
+  <script src="sunmates-badges.js?v=544"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -4654,7 +4654,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=543">
+  <link rel="stylesheet" href="sunmates-lite.css?v=544">
 </head>
 <body>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
@@ -16235,11 +16235,12 @@
       const go = () => {
         const c = (allCafes || []).find((x) => x.id === cafeId);
         if (!homeLeaf || !c || c.lat == null) return;
-        if (typeof toggleHomeFull === "function") toggleHomeFull(true); // ouvre vraiment la carte en grand (plein écran CSS fiable)
+        if (!(typeof betaOn === "function" && !betaOn()) && typeof toggleHomeFull === "function") toggleHomeFull(true); // (pas de plein écran en Lite : rendu moins brusque)
         homeLeaf.invalidateSize();
         const open = () => { const mk = homeCafeMarkerById[cafeId]; if (mk) { homeLeaf.setView(mk.getLatLng(), 17, { animate: true }); mk.openPopup(); } else { homeLeaf.setView([c.lat, c.lng], 17, { animate: true }); } };
         const mk = homeCafeMarkerById[cafeId];
-        if (mk && homeCluster && typeof homeCluster.zoomToShowLayer === "function" && homeCluster.hasLayer(mk)) homeCluster.zoomToShowLayer(mk, open);
+        if (typeof betaOn === "function" && !betaOn()) { open(); } // Lite : ouverture DIRECTE (plus de zoom/dézoom des clusters = fini le rendu infâme)
+        else if (mk && homeCluster && typeof homeCluster.zoomToShowLayer === "function" && homeCluster.hasLayer(mk)) homeCluster.zoomToShowLayer(mk, open);
         else open();
       };
       // délai large pour passer APRÈS le rendu déclenché par goToTab (sinon la bulle se referme)
