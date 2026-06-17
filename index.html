@@ -208,7 +208,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=555"></script>
+  <script src="sunmates-badges.js?v=556"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -4654,7 +4654,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=555">
+  <link rel="stylesheet" href="sunmates-lite.css?v=556">
 </head>
 <body>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
@@ -6406,7 +6406,7 @@
           <button class="btn-ghost btn-block" id="installAppBtn">📲 Installer l'app sur mon téléphone</button>
           <button class="btn-ghost btn-block" id="replayOnbBtn" style="margin-top:.5rem" data-i18n="profile.replay">🚀 Revoir la présentation</button>
           <div class="set-grouptitle">Compte</div>
-          <button class="btn-ghost btn-block" id="logoutBtn" style="margin-top:.2rem">Se déconnecter</button>
+          <button class="btn-block" id="logoutBtn" style="margin-top:.4rem;border:1.6px solid var(--danger);background:color-mix(in oklab, var(--danger) 8%, transparent);color:var(--danger);font-weight:800;border-radius:12px;padding:.85rem">🚪 Se déconnecter</button>
 
           <!-- Compte -->
           <div class="set-grouptitle">Compte</div>
@@ -11167,7 +11167,7 @@
       adHideTimer = setTimeout(() => { const b = $("autoDemo"); if (b && !b.classList.contains("hidden")) b.classList.add("dim"); }, 3800);
     }
     // V0.2 — un chapitre de démo qui cible une section beta (masquée en Lite) : détecté via la source de son run.
-    function _stepIsBeta(s) { try { return /soloChallenges|soloRituals|scReroll|editCustomRitual|jeuxShop|tpVouchCard|jeux|openJeux|showJeux|showLevel|showCollection|questSpotlight/.test(String(s && s.run)); } catch (e) { return false; } }
+    function _stepIsBeta(s) { try { return /soloChallenges|soloRituals|scReroll|editCustomRitual|jeuxShop|tpVouchCard|jeux|openJeux|showJeux|showLevel|showCollection|questSpotlight|premium|openB2B|openDetail|jeuxBadges|jeuxCoupons/.test(String(s && s.run)); } catch (e) { return false; } }
     function adSchedule() {
       clearTimeout(adTimer);
       if (adPaused) return;
@@ -16179,7 +16179,10 @@
       const allQuestPts = (dbGeoQuests.length || dbCityQuests.length) ? dbGeoQuests.concat(dbCityQuests)
         : (typeof PARIS_QUEST_POINTS !== "undefined" ? PARIS_QUEST_POINTS.map((q) => Object.assign({ city: "Paris, France" }, q)) : []);
       // Menu des villes = TOUTE la carte (quêtes + lieux sûrs), pas seulement les quêtes.
-      _homeCityPts = allQuestPts.map((q) => ({ lat: q.lat, lng: q.lng, city: q.city || "" }))
+      // LITE : les quêtes n'existent pas → on EXCLUT les villes de quêtes (sinon des villes « fantômes »
+      // sans contenu apparaissent dans « Toutes les villes »). On ne garde que les villes des lieux sûrs.
+      const _liteCity = (typeof betaOn === "function" && !betaOn());
+      _homeCityPts = (_liteCity ? [] : allQuestPts.map((q) => ({ lat: q.lat, lng: q.lng, city: q.city || "" })))
         .concat(places.filter((c) => c.lat != null && c.lng != null && c.city).map((c) => ({ lat: c.lat, lng: c.lng, city: c.city })));
       // + activités posées librement (pas de champ ville) : rattachées à la ville du lieu
       //   connu le plus proche (<10 km) → le cadrage « ville » les inclut aussi.
@@ -20316,7 +20319,7 @@
             const b = document.createElement("button");
             b.className = "iconbtn"; b.id = "liteMsgBtn"; b.title = "Messages"; b.setAttribute("aria-label", "Mes messages");
             b.innerHTML = '<span data-smicon="chat" data-smicon-size="22">💬</span>';
-            bell.parentNode.insertBefore(b, bell);
+            bell.parentNode.insertBefore(b, bell.nextSibling);
             b.addEventListener("click", function () {
               goToTab("connexions");
               setTimeout(function () { if (typeof showMatesSegment === "function") showMatesSegment("messages"); }, 120);

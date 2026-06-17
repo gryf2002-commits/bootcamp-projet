@@ -877,9 +877,10 @@ body.sm-lite #settingsCard .row { justify-content: center; }
    profil (édition ouverte), Mates (Partager collé, segment Messages → raccourci header).
    ============================================================ */
 
-/* LOGO header : DÉGRADÉ coucher de soleil (identité de marque) — plus de corail PLAT.
-   Le forçage v543 l'avait aplati → « le logo a perdu sa couleur ». Ici on lui rend son sunset. */
-body.sm-lite .brand .mark { background-image: linear-gradient(135deg,#FF7A4D 0%,#FF5A4D 48%,#FFB347 100%) !important; background-color: #FF5A4D !important; box-shadow: 0 4px 12px rgba(255,90,77,.25) !important; }
+/* LOGO header : on rend le dégradé sunset ORIGINAL EXACT (or→orange→corail, `--accent-grad` natif
+   l.275) que Maxime trouvait « magnifique » — la v554 avait inventé un autre mélange (« moche »),
+   et le forçage v543 l'avait aplati. Lite aplatit `--accent-grad` → on le RECODE en dur ici. */
+body.sm-lite .brand .mark { background: linear-gradient(135deg, #FFC93C 0%, #FF8A3D 45%, #FF5A4D 100%) !important; box-shadow: 0 5px 14px rgba(255,138,61,.3) !important; }
 
 /* ACCUEIL « Que faire maintenant » : LIGNES compactes horizontales (fini les énormes pavés
    verticaux que la v552 avait recréés en centrant la vignette). Décisif (dernier en source). */
@@ -932,3 +933,43 @@ body.sm-lite #bgFx { display: none !important; }
 body.sm-lite #secuHome .grid2 .tile[data-secuquick="fakecall"],
 body.sm-lite #secuHome .grid2 .tile[data-secuquick="signal"],
 body.sm-lite #secuHome .grid2 .tile[data-secuquick="safearrival"] { display: none !important; }
+
+/* ============================================================
+   PEAUFINAGE v556 — logo original, ordre header, tuiles accueil + Mates qualitatives,
+   cercle compact, déconnexion visible, page messages propre.
+   ============================================================ */
+
+/* ACCUEIL « Que faire maintenant » : tuiles PREMIUM (carte douce, pastille d'icône corail,
+   bien alignées) — Maxime : « pas beau / pas centré ». Lignes propres facon liste d'actions. */
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 { gap: .55rem !important; }
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile {
+  background: var(--card) !important; border: 1px solid var(--line) !important; border-radius: 15px !important;
+  padding: .85rem 1rem !important; gap: .85rem !important; box-shadow: 0 1px 4px rgba(45,38,52,.05) !important;
+}
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .thumb {
+  width: 42px !important; height: 42px !important; border-radius: 12px !important; font-size: 1.3rem !important;
+  display: flex !important; align-items: center; justify-content: center;
+  background: color-mix(in oklab, var(--accent) 12%, transparent) !important;
+}
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .t-name { font-size: .98rem !important; font-weight: 700; }
+body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile .t-meta { font-size: .76rem !important; color: var(--muted); }
+
+/* MATES : la ligne « compteur + Partager » plus QUALITATIVE (deux blocs équilibrés, même hauteur). */
+body.sm-lite #matesHome .lite-materow { gap: .6rem !important; align-items: stretch; }
+body.sm-lite #matesHome .lite-materow .mates-stat {
+  flex: 1 1 auto; justify-content: center; background: var(--card) !important; border: 1px solid var(--line) !important;
+  border-radius: 13px !important; padding: .7rem .9rem !important; font-weight: 700;
+}
+body.sm-lite #matesHome .lite-materow .invite-banner {
+  border-radius: 13px !important; padding: .7rem 1rem !important; align-items: center;
+}
+
+/* CERCLE de confiance : carte repliée VRAIMENT compacte (une ligne, même gabarit que les autres
+   cartes sécurité) — Maxime : « énorme, doit être au format de Mes contacts d'urgence ». */
+body.sm-lite #circleCard.lite-collapsed { padding: .9rem 1rem !important; }
+body.sm-lite #circleCard.lite-collapsed .section-head { margin: 0 !important; }
+body.sm-lite #circleCard .section-head h3 { font-size: 1.02rem !important; }
+
+/* MESSAGES (raccourci 💬) : quand on est sur la vue messages, la barre de segments (Découvrir/
+   Demandes) est masquée → page messages DÉDIÉE et propre (plus de segments fantômes). */
+body.sm-lite #matesHome:has([data-msegpanel="messages"]:not(.hidden)) .mseg { display: none !important; }
