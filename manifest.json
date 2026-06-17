@@ -25,6 +25,6 @@
   "screenshots": [
     { "src": "shot_accueil.jpg", "sizes": "780x1688", "type": "image/jpeg", "form_factor": "narrow", "label": "La carte vivante : repère les lieux et les voyageurs autour de toi" },
     { "src": "shot_jeux.jpg", "sizes": "780x1688", "type": "image/jpeg", "form_factor": "narrow", "label": "Quêtes, badges et coupons : voyager devient un jeu" },
-    { "src": "shot_profil.jpg", "sizes": "780x1688", "type": "image/jpeg", "form_factor": "narrow", "label": "Ton aventure en chiffres : XP, Mates et check-ins" }
+    { "src": "shot_securite.jpg", "sizes": "780x1688", "type": "image/jpeg", "form_factor": "narrow", "label": "Sécurité d'abord : SOS, partage de position et cercle de confiance" }
   ]
 }
