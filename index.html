@@ -208,7 +208,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=548"></script>
+  <script src="sunmates-badges.js?v=549"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -4654,7 +4654,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=548">
+  <link rel="stylesheet" href="sunmates-lite.css?v=549">
 </head>
 <body>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
@@ -15485,6 +15485,7 @@
     function smBaseLayer() {
       const glOk = (() => {
         try {
+          if (typeof betaOn === "function" && !betaOn()) return false; // Lite : fond RASTER (marqueurs parfaitement synchros + plus fluide que le GL vectoriel)
           if (typeof maplibregl === "undefined" || typeof L.maplibreGL !== "function") return false;
           const c = document.createElement("canvas");
           return !!(c.getContext("webgl2") || c.getContext("webgl") || c.getContext("experimental-webgl"));
