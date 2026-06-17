@@ -208,7 +208,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=552"></script>
+  <script src="sunmates-badges.js?v=553"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -4654,7 +4654,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=552">
+  <link rel="stylesheet" href="sunmates-lite.css?v=553">
 </head>
 <body>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
@@ -20254,6 +20254,40 @@
         }
         function sched() { if (scheduled) return; scheduled = true; requestAnimationFrame(function () { scheduled = false; strip(); }); }
         try { const mo = new MutationObserver(function () { if (!busy) sched(); }); mo.observe(root, { childList: true, subtree: true, characterData: true }); } catch (e) {}
+        // #3 : Cercle de confiance REPLIABLE (fermé par défaut ; « Rafraîchir » visible seulement ouvert)
+        try {
+          const cc = document.getElementById("circleCard");
+          if (cc) cc.classList.add("lite-collapsed");
+          document.addEventListener("click", function (e) {
+            const head = e.target.closest && e.target.closest("#circleCard .section-head");
+            if (head && !(e.target.closest && e.target.closest("#refreshCircleBtn"))) { const c = document.getElementById("circleCard"); if (c) c.classList.toggle("lite-collapsed"); }
+          });
+        } catch (e) {}
+        // #4 : tuiles sécurité qui redirigent direct (Mate / Lieux) → ouvrent un MENU de sous-choix
+        try {
+          document.addEventListener("click", function (e) {
+            const t = e.target.closest && e.target.closest("[data-help]");
+            if (!t || typeof popInfo !== "function") return;
+            const a2 = t.dataset.help;
+            if (a2 === "mate") {
+              e.preventDefault(); e.stopImmediatePropagation();
+              popInfo("🤝", "Trouver un Mate sûr", '<div class="sml-menu"><button class="btn-ghost btn-block" data-litego="msg">💬 Mes conversations</button><button class="btn-ghost btn-block" data-litego="disc" style="margin-top:.5rem">🔎 Découvrir des voyageurs proches</button></div>');
+            } else if (a2 === "lieux") {
+              e.preventDefault(); e.stopImmediatePropagation();
+              popInfo("🛟", "Lieux publics sûrs", '<div class="sml-menu"><button class="btn-ghost btn-block" data-litego="lieux">🛟 Voir les lieux sûrs autour</button><button class="btn-ghost btn-block" data-litego="spot" style="margin-top:.5rem">☀️ Mon spot du jour</button></div>');
+            }
+          }, true);
+          document.addEventListener("click", function (e) {
+            const g = e.target.closest && e.target.closest("[data-litego]");
+            if (!g) return;
+            const k = g.dataset.litego;
+            try { if (typeof closePicker === "function") closePicker(); } catch (e2) {}
+            if (k === "msg") { goToTab("connexions"); }
+            else if (k === "disc") { goToTab("connexions"); setTimeout(function () { if (typeof showMatesSegment === "function") showMatesSegment("discover"); }, 120); }
+            else if (k === "lieux") { goToTab("lieux"); }
+            else if (k === "spot") { goToTab("lieux"); setTimeout(function () { const sc = document.getElementById("spotCard"); if (sc) sc.open = true; }, 150); }
+          });
+        } catch (e) {}
         strip();
       })();
     }

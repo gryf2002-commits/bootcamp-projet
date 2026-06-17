@@ -836,6 +836,19 @@ body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile[data-goto="jeux"],
 body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile[data-goto="profil"],
 body.sm-lite .tab-panel[data-panel="accueil"] .grid2 #goldTile { display: none !important; }
 
+/* ============================================================
+   PEAUFINAGE v553 — #3 Cercle de confiance REPLIABLE + #4 tuiles → sous-choix.
+   ============================================================ */
+/* Cercle : tuile FERMÉE par défaut, s'ouvre au clic ; « ↻ Rafraîchir » visible seulement ouverte. */
+body.sm-lite #circleCard { cursor: pointer; }
+body.sm-lite #circleCard .section-head h3 { font-size: var(--fs-title); }
+body.sm-lite #circleCard .section-head h3::after { content: "›"; display: inline-block; margin-left: .45rem; color: var(--muted); font-weight: 900; transition: transform .2s ease; }
+body.sm-lite #circleCard:not(.lite-collapsed) .section-head h3::after { transform: rotate(90deg); }
+body.sm-lite #circleCard.lite-collapsed > p,
+body.sm-lite #circleCard.lite-collapsed > #circleLocList,
+body.sm-lite #circleCard.lite-collapsed #refreshCircleBtn { display: none !important; }
+body.sm-lite #circleCard.lite-collapsed { padding-bottom: .6rem !important; }
+
 /* « Bonjour » : un peu d'air en dessous (était trop collé à la suite). */
 body.sm-lite #homeHello { margin-bottom: .55rem !important; }
 
