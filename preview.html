@@ -208,7 +208,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=563"></script>
+  <script src="sunmates-badges.js?v=564"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -4654,7 +4654,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=563">
+  <link rel="stylesheet" href="sunmates-lite.css?v=564">
 </head>
 <body>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
@@ -8670,7 +8670,7 @@
     const QA_FEATURES = {
       connexions: { e: "🤝", t: "Mes Mates", rows: [["💬", "Mes conversations", () => { goToTab("connexions"); }], ["🔎", "Découvrir des voyageurs", () => { goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); }], ["📨", "Demandes reçues", () => { goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("requests"); }], ["🪪", "Mon QR à faire scanner", () => { if (typeof openQr === "function") openQr(); }]] },
       securite: { e: "🛟", t: "Sécurité", rows: [["📞", "Faux appel (sortie de secours)", () => { goToTab("securite"); setTimeout(() => { const b = document.querySelector('[data-secuquick="fakecall"]'); if (b) b.click(); }, 250); }], ["📍", "Partager ma position", () => { goToTab("securite"); setTimeout(() => { const b = document.querySelector('[data-secuquick="position"]'); if (b) b.click(); }, 250); }], ["⏱️", "Minuteur « bien arrivé·e »", () => { goToTab("securite"); setTimeout(() => { const b = document.querySelector('[data-secuquick="safearrival"]'); if (b) b.click(); }, 250); }], ["☎️", "Numéros d'urgence du pays", () => { goToTab("securite"); setTimeout(() => { const b = document.querySelector('[data-secuquick="numbers"]'); if (b) b.click(); }, 250); }]] },
-      lieux: { e: "📍", t: "Lieux sûrs", rows: [["☕", "Explorer les lieux validés", () => { goToTab("lieux"); }], ["📡", "Près de moi", () => { goToTab("lieux"); setTimeout(() => { const c = document.querySelector('#lieuxCats .cat-tile[data-catfilter="near"], #lieuxCats [data-cf="near"]'); if (c) c.click(); }, 300); }], ["🌅", "Mon spot du jour", () => { goToTab("lieux"); setTimeout(() => { const s = document.querySelector(".spot-card"); if (s) s.scrollIntoView({ block: "center" }); }, 300); }], ["🏆", "Top notés", () => { goToTab("lieux"); setTimeout(() => { const c = document.querySelector('#lieuxCats [data-catsort="rating"]'); if (c) c.click(); }, 300); }]] },
+      lieux: { e: "📍", t: "Lieux sûrs", rows: [["☕", "Explorer les lieux validés", () => { goToTab("lieux"); }], ["📡", "Près de moi", () => { goToTab("lieux"); setTimeout(() => { const c = document.querySelector('[data-catcf="near"]') || document.querySelector('[data-cf="near"]'); if (c) { c.click(); c.scrollIntoView({ block: "center", behavior: "smooth" }); } }, 320); }], ["🌅", "Mon spot du jour", () => { goToTab("lieux"); setTimeout(() => { const s = document.getElementById("spotCard"); if (s) { try { s.open = true; } catch (e) {} s.scrollIntoView({ block: "center", behavior: "smooth" }); } }, 320); }], ["🏆", "Top notés", () => { goToTab("lieux"); setTimeout(() => { const c = document.querySelector('[data-catsort="rating"]'); if (c) c.click(); }, 320); }]] },
       jeux: { e: "🎮", t: "Jeux & Quêtes", rows: [["🎯", "Les quêtes du jour", () => { goToTab("jeux"); }], ["🎲", "Mini-jeux instantanés", () => { goToTab("jeux"); setTimeout(() => { if (typeof openJeuxSheet === "function") openJeuxSheet("games"); }, 300); }], ["🏅", "Ma collection de badges", () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); }], ["🛍️", "La boutique SunCoins", () => { goToTab("jeux"); if (typeof showJeuxView === "function") { showJeuxView("jeuxShop"); if (typeof renderShop === "function") renderShop(); } }]] },
     };
     document.querySelectorAll('[data-goto]').forEach((el) => {

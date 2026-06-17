@@ -1016,6 +1016,13 @@ body.sm-lite #tpBadgesCard { display: none !important; }
 /* MODE MAISON : le hub « Ta progression solo » (défis/rituels/XP/niveau) = 100 % gaming → retiré en Lite. */
 body.sm-lite #soloProgress { display: none !important; }
 
+/* TITRES d'onglet : TAILLE NORMALISÉE sur TOUS les onglets (accueil « Bonjour », Profil, Mates,
+   Sécurité, Lieux avaient des tailles incohérentes). Une seule échelle = rendu propre et constant. */
+body.sm-lite .tab-panel > h1,
+body.sm-lite .mates-view > h1,
+body.sm-lite .secu-view > h1,
+body.sm-lite #homeHello { font-size: 1.55rem !important; font-weight: 800 !important; line-height: 1.18 !important; }
+
 /* ============================================================
    PEAUFINAGE v560 — overlay messages plein écran (raccourci 💬).
    ============================================================ */
