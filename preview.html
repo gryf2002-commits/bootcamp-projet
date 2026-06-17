@@ -283,7 +283,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=566"></script>
+  <script src="sunmates-badges.js?v=568"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -296,7 +296,7 @@
     // P2.10/P2.11 : le service worker ne s'enregistre QUE sur la page principale · jamais depuis
     // la préversion (preview.html) ni une version archivée (releases/…) : elles se testent
     // « à nu », sans toucher au cache de l'app installée.
-    var SM_IS_MAIN_PAGE = /(\/|\/index\.html)$/.test(location.pathname);
+    var SM_IS_MAIN_PAGE = /(\/|\/index\.html|\/app\.html)$/.test(location.pathname);
     if (!SM_IS_MAIN_PAGE) { try { window.SM_PREVIEW = true; } catch (e) {} }
     if ("serviceWorker" in navigator && SM_IS_MAIN_PAGE) {
       // ===== Mise à jour FORCÉE pour TOUS, au plus vite =====
