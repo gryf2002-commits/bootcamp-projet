@@ -208,7 +208,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=533"></script>
+  <script src="sunmates-badges.js?v=534"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -1196,8 +1196,8 @@
     #navSecu { background: #F5A623; box-shadow: 0 0 0 0 rgba(245,166,35,.6); animation: sosPulse 1.9s ease-out infinite; min-width: 10px; width: 10px; height: 10px; padding: 0; font-size: 0; right: calc(50% - 16px); }
     /* Accès Sécurité permanent en haut à droite — LITE UNIQUEMENT (le mode complet garde Sécurité dans la barre du bas, inchangé). */
     #topSecuBtn { display: none; }                                              /* caché par défaut = mode complet INTACT */
-    body.sm-lite #topSecuBtn { display: inline-grid; }                          /* visible seulement en Lite */
-    body.sm-lite .bottom-nav button[data-tab="securite"] { display: none !important; } /* en Lite : Sécurité quitte la barre du bas → 5 onglets */
+    body.sm-lite #topSecuBtn { display: none; }                                 /* 17/06 : Sécurité redescend dans la barre du bas → plus de bouclier en haut */
+    /* 17/06 : Sécurité RESTE dans la barre du bas en Lite (5 onglets : Accueil·Lieux·Sécurité·Mates·Profil ; Jeux masqué). Ancienne règle de masquage retirée. */
     .secu-top { position: relative; color: var(--ok, #11B5A0); }                /* bouclier teal = sécurité, pas rouge (rouge réservé au danger) */
     .secu-top svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: block; }
     .secu-top.active { background: var(--accent-soft); color: var(--accent); }
@@ -4654,7 +4654,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=533">
+  <link rel="stylesheet" href="sunmates-lite.css?v=534">
 </head>
 <body>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
@@ -16651,7 +16651,7 @@
 
     function startTour() {
       const t = $("tour"); if (!t) { finishOnboarding(); return; }
-      _activeTour = TOUR_STEPS; _tourOnEnd = _onboardingTourEnd;
+      _activeTour = (typeof betaOn === "function" && !betaOn()) ? TOUR_STEPS.filter(s => s.tab !== "jeux") : TOUR_STEPS; _tourOnEnd = _onboardingTourEnd; // Lite : pas d'étape Jeux (onglet masqué → plus de bulle dans le vide)
       tourIdx = 0; t.classList.remove("hidden");
       showTourStep(0);
     }
@@ -19492,6 +19492,7 @@
       }
     }
     function applySeason(s, manual) {
+      try { if (typeof betaOn === "function" && !betaOn()) s = ""; } catch (e) {} // Lite = 2 DA seulement (Jour clair + Nuit prune) : jamais de saison hiver/tropiques
       document.body.classList.toggle("theme-winter", s === "winter");
       document.body.classList.toggle("theme-tropic", s === "tropic");
       // #9 : la saison ne REMPLACE plus jour/nuit · les deux coexistent (nuit d'hiver,

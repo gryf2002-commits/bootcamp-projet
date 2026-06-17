@@ -49,11 +49,11 @@ body.sm-lite .smgem::after,
 body.sm-lite .cic::after,
 body.sm-lite [class*="sheen"] { opacity: .5 !important; }
 
-/* 3) Lisibilité : un peu plus d'air + arrondis homogènes (DA conservée). */
+/* 3) Lisibilité : arrondis HOMOGÈNES (v534) — cartes = --r-jewel (18px), tuiles = 14px (exception assumée). */
 body.sm-lite .card,
 body.sm-lite .pcard,
-body.sm-lite .gcard,
-body.sm-lite .tile { border-radius: 20px !important; }
+body.sm-lite .gcard { border-radius: var(--r-jewel) !important; }
+body.sm-lite .tile { border-radius: 14px !important; }
 body.sm-lite .section,
 body.sm-lite .stack > * + * { margin-top: 14px; }
 
@@ -477,3 +477,57 @@ body.sm-lite .onb-emoji { filter: none !important; }
    garder badges/collection + stats profil ; on retire seulement Jeux). Le bouton de nav
    était déjà masqué (l.366) mais le panneau restait atteignable (deep-link/visite guidée). */
 body.sm-lite .tab-panel[data-panel="jeux"] { display: none !important; }
+
+/* ============================================================
+   PEAUFINAGE v534 — homogénéisation + parcours (audit multi-agents).
+   Décisions Maxime : emoji retirés des CTA/titres · Premium masqué · CTA arrondi 14px ·
+   Accès rapides recomposés. Tout scopé body.sm-lite, complet jamais touché.
+   ============================================================ */
+
+/* — Cartes : neutralisation GLOBALE (au lieu d'écran par écran) : surface plate + filet, zéro ombre. */
+body.sm-lite .card { box-shadow: none !important; border: 1px solid var(--line) !important; }
+
+/* — En-têtes de section : retirer le TRAIT corail décoratif à gauche (kicker = texte seul). */
+body.sm-lite .section-head > h3::before,
+body.sm-lite .jnav-cap::before { content: none !important; display: none !important; }
+body.sm-lite .section-head > h3 { padding-left: 0 !important; }
+
+/* — États ACTIFS de TOUS les segments : corail plein, sans ombre (uniformisation complète). */
+body.sm-lite .lb-segs button.active,
+body.sm-lite .mode-switch button.active,
+body.sm-lite .auth-lang button.active,
+body.sm-lite .lang-seg button.active,
+body.sm-lite .fc-kind.active,
+body.sm-lite .todo-toggle.active,
+body.sm-lite .au-fbtn.active { background: var(--accent) !important; color: #fff !important; border-color: transparent !important; box-shadow: none !important; }
+
+/* — Boutons : CTA arrondi 14px (décision Maxime) + neutralisation des ombres/halos résiduels. */
+body.sm-lite .btn-primary,
+body.sm-lite .btn-danger,
+body.sm-lite .btn-ghost,
+body.sm-lite .btn-accent,
+body.sm-lite .sml-btn { border-radius: 14px !important; }
+body.sm-lite .btn-danger { box-shadow: none !important; }          /* danger = fond rouge gardé, sans glow */
+body.sm-lite .btn-accent { background: var(--accent) !important; color: #fff !important; box-shadow: none !important; } /* un seul accent : corail plein */
+
+/* — Profil : masquer Premium / Pro / Admin en Lite (MVP gratuit, sécurité-first — décision Maxime). */
+body.sm-lite #profSegNav button[data-pseg="premium"],
+body.sm-lite #profSegNav button[data-pseg="pro"],
+body.sm-lite #profSegNav button[data-pseg="admin"] { display: none !important; }
+
+/* — Auth : masquer l'onglet « Pro » sur l'écran de connexion grand public. */
+body.sm-lite #tabPro { display: none !important; }
+
+/* — État vide : illustration neutralisée (plus de pastille sunset/halo). */
+body.sm-lite .empty .empty-ill { background: var(--cream) !important; box-shadow: none !important; }
+body.sm-lite .empty .empty-ill svg,
+body.sm-lite .empty .empty-ill .ie { filter: none !important; }
+
+/* — Classement : bouton de leaderboard actif (Lieux) → corail plat (ombre retirée). */
+body.sm-lite .lb-segs button.active { box-shadow: none !important; }
+
+/* — Titre de sous-vue Sécurité : aligné (sous-vue = --fs-h1, déjà le cas pour #secuHelp). */
+body.sm-lite #matesProfile > h1 { font-size: var(--fs-h1) !important; }
+
+/* (Intro Lieux : reformulation « sans classement » reportée à une passe JS propre —
+   le swap CSS ::after cassait la mise en page. Le texte original reste pour l'instant.) */
