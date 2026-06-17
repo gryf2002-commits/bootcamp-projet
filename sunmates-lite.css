@@ -749,5 +749,31 @@ body.sm-lite #weatherChip.weather-chip { display: flex !important; width: 100% !
    plus rien → on retire l'affordance de clic. Les vraies actions 112/Alerte sont juste en dessous). */
 body.sm-lite #sosLogo { pointer-events: none !important; cursor: default !important; }
 
+/* ============================================================
+   PEAUFINAGE v548 — régression tuiles JEUX revenues + icônes + sécurité réorganisée.
+   ============================================================ */
+/* RÉGRESSION CRITIQUE : `.grid2 .tile { display:flex }` (v543) écrasait le `display:none` des tuiles
+   JEUX/Gold/Profil (même spécificité, règle plus tardive) → elles revenaient (→ panneau Jeux vide).
+   On RÉ-ASSERTE les masquages ICI (après le flex) pour qu'ils gagnent. */
+body.sm-lite .tab-panel[data-panel="accueil"] .tile[data-goto="jeux"],
+body.sm-lite .tab-panel[data-panel="accueil"] .tile[data-goto="profil"],
+body.sm-lite #goldTile { display: none !important; }
+
+/* ICÔNES de tuiles VISIBLES : les SVG `data-smicon` sont blancs (#fff) → invisibles sur thumb
+   transparent (d'où « pas d'emojis » / tuiles vides). On les passe en ENCRE. */
+body.sm-lite .tile .thumb,
+body.sm-lite .tile .thumb svg { color: var(--ink) !important; }
+
+/* SÉCURITÉ réorganisée (Maxime) : le hero « Besoin d'aide ? » ne sert plus à rien (SOS non-cliquable,
+   bouton retiré) → SUPPRIMÉ ; les tuiles secuHome qui DOUBLONNENT secuHelp (Alerte/Position/Cercle/
+   Numéros/Aide-proximité) retirées → secuHelp porte les versions détaillées. Restent : Faux appel,
+   Signal d'aide, Rentrée en sécurité (uniques) + tout secuHelp. */
+body.sm-lite #secuHome > .card:first-of-type { display: none !important; }
+body.sm-lite #secuHome .grid2 .tile[data-secuquick="emergency"],
+body.sm-lite #secuHome .grid2 .tile[data-secuquick="position"],
+body.sm-lite #secuHome .grid2 .tile[data-secuquick="circle"],
+body.sm-lite #secuHome .grid2 .tile[data-secuquick="numbers"],
+body.sm-lite #secuHome .grid2 .tile[data-secuquick="lieux"] { display: none !important; }
+
 /* (Intro Lieux : reformulation « sans classement » reportée à une passe JS propre —
    le swap CSS ::after cassait la mise en page. Le texte original reste pour l'instant.) */
