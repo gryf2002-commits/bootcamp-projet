@@ -13,6 +13,9 @@
         if (standalone) { location.replace("app.html" + location.search + location.hash); }
       } catch (e) {}
     })();
+    // Animations : activées seulement si le mouvement est OK. Posé en <head> AVANT peinture →
+    // les .reveal partent masqués sans flash. Sinon (reduced-motion) tout reste visible.
+    try { if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) document.documentElement.classList.add("anim"); } catch (e) {}
   </script>
   <title>SunMates — Pars solo, trouve ta bande</title>
   <meta name="description" content="L'app sociale « sécurité d'abord » pour voyageurs solo. Profils vérifiés, lieux sûrs, partage de position et bouton d'alerte. La sécurité, gratuite pour tous." />
@@ -28,6 +31,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- LCP : l'écran hero (mockup) est préchargé en priorité. -->
+  <link rel="preload" as="image" href="showcase-safety.jpg" fetchpriority="high" />
   <style>
     /* ============================================================
        SunMates — vitrine « Radiant Horizon » (page d'arrivée).
@@ -111,11 +116,13 @@
     .nav-links a { font-weight: 600; color: var(--muted); font-size: .96rem; transition: color .15s ease; }
     .nav-links a:hover { color: var(--ink); }
     .nav-cta { display: flex; align-items: center; gap: .8rem; }
+    .nav-start .lbl-short { display: none; }
     @media (max-width: 860px) { .nav-links { display: none; } }
+    @media (max-width: 560px) { .wrap { padding: 0 16px; } .nav-start .lbl-full { display: none; } .nav-start .lbl-short { display: inline; } }
 
     /* ---------- hero ---------- */
     .hero { padding: clamp(48px, 8vw, 96px) 0 64px; overflow: hidden; }
-    .hero::before { content: ""; position: absolute; inset: -20% -10% auto -10%; height: 80%; background: radial-gradient(60% 70% at 72% 8%, rgba(255,138,69,.42), transparent 60%), radial-gradient(50% 60% at 18% 0%, rgba(155,123,255,.30), transparent 62%); filter: blur(6px); z-index: 0; pointer-events: none; }
+    .hero::before { content: ""; position: absolute; inset: -20% 0 auto 0; height: 80%; background: radial-gradient(60% 70% at 72% 8%, rgba(255,138,69,.42), transparent 60%), radial-gradient(50% 60% at 18% 0%, rgba(155,123,255,.30), transparent 62%); filter: blur(6px); z-index: 0; pointer-events: none; }
     .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(32px, 5vw, 72px); align-items: center; }
     .hero-eyebrow { display: inline-flex; align-items: center; gap: .5rem; font-weight: 700; font-size: .82rem; letter-spacing: .04em; color: var(--gold); background: rgba(255,209,92,.10); border: 1px solid rgba(255,209,92,.28); padding: .42rem .85rem; border-radius: 999px; margin-bottom: 1.4rem; }
     .hero h1 { font-size: clamp(2.7rem, 6vw, 4.6rem); font-weight: 900; }
@@ -210,18 +217,30 @@
     .foot-links a:hover { color: var(--ink); }
     .foot-note { color: var(--muted); font-size: .86rem; margin-top: 28px; max-width: 52ch; }
 
-    /* ---------- reveal au scroll ----------
-       VISIBLE PAR DÉFAUT (SEO / sans-JS / rendu headless = jamais blanc).
-       On ne masque QUE si le JS a activé body.reveal-on (motion dispo). */
-    .reveal { opacity: 1; transform: none; }
-    body.reveal-on .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
-    body.reveal-on .reveal.in { opacity: 1; transform: none; }
-    @media (prefers-reduced-motion: reduce) { body.reveal-on .reveal { opacity: 1; transform: none; transition: none; } }
+    /* ---------- reveal au scroll (piloté par GSAP) ----------
+       VISIBLE PAR DÉFAUT (SEO / sans-JS / rendu headless / reduced-motion = jamais blanc).
+       Masqué UNIQUEMENT si <html class="anim"> (posé en <head> si le mouvement est OK) ;
+       GSAP les révèle. Filet : la classe `anim` est retirée après 3 s si GSAP n'a pas chargé. */
+    .reveal { opacity: 1; }
+    html.anim .reveal { opacity: 0; }
+    @media (prefers-reduced-motion: reduce) { html.anim .reveal { opacity: 1; } }
 
     /* ---------- soleil qui respire (hero) ---------- */
     @media (prefers-reduced-motion: no-preference) {
       .phone-stage::before { animation: breathe 7s ease-in-out infinite; }
       @keyframes breathe { 0%,100% { transform: scale(1); opacity: .4; } 50% { transform: scale(1.06); opacity: .55; } }
+    }
+
+    /* ---------- MOBILE : collapse des grilles 2-col (corrige l'overflow horizontal) ---------- */
+    @media (max-width: 760px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .hero .lead { max-width: none; }
+      .hero-cta .btn { flex: 1 1 auto; }
+      .phone.tilt { transform: none; }
+      .spot { grid-template-columns: 1fr; }
+      .act { grid-template-columns: 40px 1fr; gap: 16px; }
+      .act:nth-child(even) { margin-left: 0; }
+      .final-card { border-radius: 26px; }
     }
   </style>
 </head>
@@ -243,7 +262,7 @@
         <a href="#histoire">Histoire</a>
       </nav>
       <div class="nav-cta">
-        <a href="app.html" class="btn btn-primary btn-sm">Commencer, c'est gratuit</a>
+        <a href="app.html" class="btn btn-primary btn-sm nav-start"><span class="lbl-full">Commencer, c'est gratuit</span><span class="lbl-short">Commencer</span></a>
       </div>
     </div>
   </header>
@@ -265,7 +284,7 @@
         </div>
         <div class="phone-stage reveal" aria-hidden="false">
           <div class="phone tilt">
-            <img src="showcase-safety.jpg" width="290" height="628" alt="Écran Sécurité de l'app SunMates : bouton d'alerte d'urgence, appel du 112, partage de position et cercle de confiance." loading="eager" />
+            <img src="showcase-safety.jpg" width="290" height="628" alt="Écran Sécurité de l'app SunMates : bouton d'alerte d'urgence, partage de position au cercle de confiance et accès rapides de secours." loading="eager" fetchpriority="high" />
           </div>
         </div>
       </div>
@@ -431,34 +450,52 @@
     </div>
   </footer>
 
+  <!-- GSAP (défer) : motion premium. Si bloqué/hors-ligne, le filet ci-dessous révèle tout. -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
   <script>
-    // Reveal au scroll — IntersectionObserver (jamais de scroll-listener), stagger léger.
-    // Le contenu est VISIBLE par défaut ; on n'active le masquage+anim que si le motion
-    // est dispo (body.reveal-on). Filet de sécurité : tout révélé après 2,8 s quoi qu'il arrive.
-    (function () {
-      var els = document.querySelectorAll(".reveal");
-      if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        return; // rien à faire : déjà visible
-      }
-      document.body.classList.add("reveal-on");
-      var revealAll = function () { els.forEach(function (el) { el.classList.add("in"); }); };
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (e.isIntersecting) {
-            var el = e.target;
-            setTimeout(function () { el.classList.add("in"); }, (el.dataset.d ? +el.dataset.d : 0));
-            io.unobserve(el);
-          }
+    // Motion piloté par GSAP : reveals en stagger au scroll, parallax léger sur les mockups,
+    // compteurs sur les chiffres, entrée hero. AUCUN window scroll-listener (ScrollTrigger).
+    // Robustesse : contenu visible par défaut (CSS) ; masqué seulement sous <html class="anim">
+    // (posé en <head> si motion OK). GSAP prend la main puis retire `anim`. Filet : si GSAP
+    // n'est pas prêt (CDN bloqué), on retire `anim` → tout redevient visible.
+    var _smGsapReady = false;
+    function _smInitMotion() {
+      if (!window.gsap || !window.ScrollTrigger) return false;
+      _smGsapReady = true;
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", function () {
+        gsap.set(".reveal", { opacity: 0, y: 28 });
+        document.documentElement.classList.remove("anim"); // GSAP possède désormais les styles inline
+        // Reveals en lots (stagger) à l'entrée dans le viewport — y compris le hero (entrée au load).
+        ScrollTrigger.batch(".reveal", {
+          start: "top 88%",
+          onEnter: function (els) { gsap.to(els, { opacity: 1, y: 0, duration: .7, ease: "power3.out", stagger: .09, overwrite: true }); }
         });
-      }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
-      els.forEach(function (el) {
-        var sibs = el.parentElement ? Array.prototype.indexOf.call(el.parentElement.children, el) : 0;
-        el.dataset.d = Math.min(sibs, 5) * 60;
-        io.observe(el);
+        // Parallax léger sur les mockups téléphone.
+        gsap.utils.toArray(".phone").forEach(function (ph) {
+          gsap.to(ph, { yPercent: -9, ease: "none", scrollTrigger: { trigger: ph, start: "top bottom", end: "bottom top", scrub: true } });
+        });
+        // Compteurs animés sur les chips numériques (0, 42, 22 ; « FR · EN » ignoré).
+        document.querySelectorAll(".chip .k").forEach(function (el) {
+          var txt = el.textContent || "", m = txt.match(/^(\d+)/); if (!m) return;
+          var end = +m[1], suffix = txt.replace(/^\d+/, ""), obj = { v: 0 };
+          gsap.to(obj, { v: end, duration: 1.2, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 92%", once: true }, onUpdate: function () { el.textContent = Math.round(obj.v) + suffix; } });
+        });
+        // Recalcule les positions une fois images/polices chargées (évite des reveals ratés).
+        ScrollTrigger.refresh();
+        // FILET ANTI-BLANC : après 4,5 s, on révèle tout élément resté masqué (crawler SEO sans scroll,
+        // scroll ultra-rapide). Garantit qu'aucune section ne reste invisible. Les utilisateurs réels
+        // ont déjà vu l'animation au scroll ; ce filet ne se déclenche qu'en cas limite.
+        setTimeout(function () {
+          document.querySelectorAll(".reveal").forEach(function (el) { if (+getComputedStyle(el).opacity < .5) gsap.set(el, { opacity: 1, y: 0 }); });
+        }, 4500);
+        return function () { /* cleanup matchMedia : GSAP révèle tout */ gsap.set(".reveal", { clearProps: "opacity,transform" }); };
       });
-      // Filet : si l'IO ne déclenche pas (rendu headless, onglet inactif…), on révèle tout.
-      setTimeout(revealAll, 2800);
-    })();
+    }
+    window.addEventListener("load", function () { if (!_smInitMotion()) document.documentElement.classList.remove("anim"); });
+    // Filet : si « load » tarde ou GSAP a échoué, on garantit le contenu visible.
+    setTimeout(function () { if (!_smGsapReady) document.documentElement.classList.remove("anim"); }, 3500);
   </script>
 </body>
 </html>
