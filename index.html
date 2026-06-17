@@ -208,7 +208,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=534"></script>
+  <script src="sunmates-badges.js?v=535"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -4654,7 +4654,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=534">
+  <link rel="stylesheet" href="sunmates-lite.css?v=535">
 </head>
 <body>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
@@ -16576,7 +16576,7 @@
     })();
 
     // ============ Onboarding « du futur » ============
-    const ONB_STEPS = 6;
+    let ONB_STEPS = 6;
     let onbStep = 0;
     function buildOnbDots() {
       const d = $("onbDots"); if (!d) return;
@@ -16596,6 +16596,9 @@
     }
     function openOnboarding() {
       const ov = $("onboarding"); if (!ov) return;
+      // Lite : retirer les 2 slides « Jeux » (steps 2-3) → onboarding MVP (rencontres / carte / lieux / sécurité)
+      try { if (typeof betaOn === "function" && !betaOn()) ov.querySelectorAll('.onb-step[data-step="2"], .onb-step[data-step="3"]').forEach(function (s) { s.remove(); }); } catch (e) {}
+      ONB_STEPS = ov.querySelectorAll(".onb-step").length || 6;
       const who = myProfile && (myProfile.first_name || myProfile.username);
       $("onbComma").textContent = who ? ", " : ""; // virgule HORS dégradé
       $("onbName").textContent = who || "";
@@ -20139,7 +20142,7 @@
     }
     window.setBeta = setBeta; window.betaOn = betaOn;
     // Boot : ?lite=1 force la version lissée à la demande (aperçu) ; sinon on respecte le réglage (défaut ON = complet).
-    try { setBeta(new URLSearchParams(location.search).has("lite") ? false : betaOn()); } catch (e) { setBeta(betaOn()); }
+    try { const _qp = new URLSearchParams(location.search); setBeta((_qp.has("full") || _qp.get("beta") === "1") ? true : _qp.has("lite") ? false : betaOn()); } catch (e) { setBeta(betaOn()); } // ?full=1 / ?beta=1 = force le mode COMPLET (et l'écrit) ; ?lite=1 = Lite ; sinon réglage mémorisé (défaut = complet)
 
     // -------------------- Réglages : haptique + présence --------------------
     (function initToggles() {
@@ -20206,6 +20209,42 @@
           mo.observe(root, { childList: true, subtree: true, characterData: true });
         } catch (e) {}
         relabel();
+      })();
+
+      // ===== v535 : peaufinage Lite (intro Lieux + accès rapides + emoji retirés du CHROME) =====
+      (function liteV535() {
+        const root = document.getElementById("appView"); if (!root) return;
+        // 1) Intro Lieux sans « classement » (textContent ; on retire data-i18n pour que l'i18n ne ré-écrase pas)
+        try { const pi = document.querySelector('[data-i18n="places.intro"]'); if (pi) { pi.removeAttribute("data-i18n"); pi.textContent = "Les meilleurs spots, validés pour se retrouver en confiance. Fais un check-in quand tu y es."; } } catch (e) {}
+        // 2) Accès rapides → actions MVP (relabel des tuiles ; la tuile Profil est masquée en CSS)
+        try {
+          const acc = document.querySelector('.tab-panel[data-panel="accueil"]');
+          if (acc) {
+            const relab = function (goto, name) { const t = acc.querySelector('.tile[data-goto="' + goto + '"] .t-name'); if (t) t.textContent = name; };
+            relab("connexions", "Découvrir des voyageurs");
+            relab("lieux", "Faire un check-in");
+            relab("securite", "Ma sécurité");
+            const sh = Array.prototype.slice.call(acc.querySelectorAll(".section-head h3")).find(function (h) { return /Acc[eè]s rapides/i.test(h.textContent); }); if (sh) sh.textContent = "Que faire maintenant ?";
+          }
+        } catch (e) {}
+        // 3) Emoji retirés du CHROME uniquement (boutons/titres/tuiles) — JAMAIS le contenu (chat/bios/noms conservés)
+        const EMOJI_RE = /[\u2300-\u27BF\u2B00-\u2BFF\u2600-\u26FF\u{1F000}-\u{1FAFF}\u{FE00}-\u{FE0F}\u{1F1E6}-\u{1F1FF}\u200D\u20E3]/gu;
+        const SEL = ".btn-primary,.btn-accent,.btn-ghost,.onb-next,.onb-skip,.onb-step h2,.auth-title h1,.section-head>h3,.qm-head>h3,.jnav-cap,.t-name,.tpa-btn,.empty-t,.etitle";
+        let busy = false, scheduled = false;
+        function strip() {
+          busy = true;
+          try {
+            document.querySelectorAll(SEL).forEach(function (el) {
+              const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), ns = []; let n;
+              while ((n = w.nextNode())) ns.push(n);
+              ns.forEach(function (t) { const v = t.nodeValue.replace(EMOJI_RE, "").replace(/\s{2,}/g, " ").replace(/\s+([,.!?])/g, "$1"); if (v !== t.nodeValue) t.nodeValue = v; });
+            });
+          } catch (e) {}
+          busy = false;
+        }
+        function sched() { if (scheduled) return; scheduled = true; requestAnimationFrame(function () { scheduled = false; strip(); }); }
+        try { const mo = new MutationObserver(function () { if (!busy) sched(); }); mo.observe(root, { childList: true, subtree: true, characterData: true }); } catch (e) {}
+        strip();
       })();
     }
 

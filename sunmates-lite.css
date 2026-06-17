@@ -529,5 +529,8 @@ body.sm-lite .lb-segs button.active { box-shadow: none !important; }
 /* — Titre de sous-vue Sécurité : aligné (sous-vue = --fs-h1, déjà le cas pour #secuHelp). */
 body.sm-lite #matesProfile > h1 { font-size: var(--fs-h1) !important; }
 
+/* — v535 : Accès rapides recomposés en actions MVP → la tuile Profil (doublon de la nav) est masquée. */
+body.sm-lite .tab-panel[data-panel="accueil"] .tile[data-goto="profil"] { display: none !important; }
+
 /* (Intro Lieux : reformulation « sans classement » reportée à une passe JS propre —
    le swap CSS ::after cassait la mise en page. Le texte original reste pour l'instant.) */
