@@ -203,7 +203,12 @@
     } catch (e) {}
     var _cm = (T.icon && T.icon.colorMode) || 'natural';
     var _styl = (T.icon && T.icon.style) || 'fill';
-    if (_styl !== 'native') {
+    // v570 — RESET Radiant Horizon : le loader N'INJECTE PLUS de couleur d'icône (--icc).
+    // L'ancien mode « naturel » dérivait des glyphes gris-crème délavés (_deriveIcc) et les modes
+    // mono/themed pouvaient rendre des icônes inline illisibles. Désormais la coloration d'icône est
+    // 100% gouvernée par le CSS in-HTML « DA v2 ICÔNES » (emblème crème --emb scopé aux tuiles),
+    // cohérent et lisible pour TOUT LE MONDE. Pour réactiver : repasser `false` à `_styl !== 'native'`.
+    if (false && _styl !== 'native') {
       if (_cm === 'mono') {
         css += '[data-smicon]{--icc:' + ((T.icon && T.icon.mono) || '#FFF6E9') + ';}\n';
       } else if (_cm === 'themed' && T.iconColors && Object.keys(T.iconColors).length) {
@@ -288,16 +293,12 @@
   function boot() {
     try { if (typeof window.betaOn === 'function' && !window.betaOn()) return; } catch (e) {} // Lite : aucun preset/DA beta, on n'injecte rien
     try { applyTokens(getTokens()); } catch (e) {} try { applyStrings(getStrings()); } catch (e) {}
-    // DA PUBLIÉE POUR TOUS : si aucun brouillon local (admin en test), on va chercher la DA publiée
-    // en base (da_tokens id='live') et on l'applique → tous les utilisateurs reçoivent la DA publiée.
-    try {
-      if (!getTokens() && window.db && window.db.from) {
-        // 1 seule ligne (id entier) → on prend la plus récente, schéma-agnostique.
-        window.db.from('da_tokens').select('tokens').order('updated_at', { ascending: false }).limit(1)
-          .then(function (r) { var row = r && r.data && r.data[0]; if (row && row.tokens && row.tokens.publishedLive) { try { applyTokens(row.tokens); } catch (e) {} } }) // n'applique QUE les DA publiées volontairement (garde-fou anti vieille ligne)
-          .catch(function () {});
-      }
-    } catch (e) {}
+    // v570 — RÉINITIALISATION DA : « Radiant Horizon pour tout le monde ».
+    // L'ancienne DA publiée en base (da_tokens) dérivait des couleurs d'icônes gris-crème
+    // (mode "naturel" _deriveIcc) + presets peu lisibles. On NE va PLUS la chercher : tous les
+    // utilisateurs reçoivent désormais la DA Radiant Horizon NATIVE, propre, intégrée au HTML/CSS.
+    // (L'aperçu admin via brouillon localStorage `sm_da_live` reste opérationnel ci-dessus.)
+    // Pour ré-activer la DA publiée : remettre le fetch da_tokens (cf. git v569).
   }
   if (document.readyState !== 'loading') boot(); else document.addEventListener('DOMContentLoaded', boot);
   // Banque d'images pilotable : renvoie l'URL configuree pour une categorie/mot-cle

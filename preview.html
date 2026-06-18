@@ -283,7 +283,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=569"></script>
+  <script src="sunmates-badges.js?v=570"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -666,7 +666,7 @@
     .fpost { background: var(--card); border: 1.5px solid var(--line); border-radius: 18px; padding: .8rem .9rem; margin-bottom: .9rem; box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .15s ease; }
     body.theme-dusk .fpost { background: var(--dcard2,#241b35); border-color: rgba(255,255,255,.12); box-shadow: 0 10px 26px rgba(0,0,0,.4); }
     /* Chip « Dispo ? » : intention de rencontre. État actif = ambre/sunset (jamais vert vif, DA). */
-    .avail-chip { flex-shrink: 0; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .3rem .6rem; font-size: .74rem; font-weight: 800; cursor: pointer; transition: .12s; }
+    .avail-chip { flex-shrink: 0; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .44rem .72rem; font-size: .74rem; font-weight: 800; cursor: pointer; transition: .12s; } /* v570 ergo : zone tactile ~36px */
     .avail-chip:active { transform: scale(.95); }
     .avail-chip.on { background: linear-gradient(135deg, #FFC93C, #FF8A3D); color: #6b3d00; border-color: transparent; box-shadow: 0 2px 8px rgba(255,138,61,.35); }
     /* Pastille « Dispo maintenant » affichée sur la fiche d'un voyageur */
@@ -1024,8 +1024,9 @@
       padding: calc(.5rem + env(safe-area-inset-top, 0px)) .8rem .5rem; transform: translateY(-100%); transition: transform .3s ease; pointer-events: none; }
     .net-banner.show { transform: translateY(0); }
 
-    /* ---- Nav du bas : icônes seules, libellé uniquement sur l'onglet ACTIF ---- */
-    .bottom-nav .nav-lbl { display: none; font-weight: 700; }
+    /* ---- Nav du bas : libellé visible sous CHAQUE onglet (v570 ergo : convention iOS/Android,
+       fini la navigation à l'aveugle où seul l'onglet actif était nommé). ---- */
+    .bottom-nav .nav-lbl { display: block; font-weight: 700; font-size: .58rem; line-height: 1; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
     .bottom-nav button.active .nav-lbl { display: block; }
     .bottom-nav button.active { background: var(--accent-soft); border-radius: 14px; }
 
@@ -1390,7 +1391,7 @@
       left: auto; top: auto; align-items: flex-end; z-index: 1500; max-width: calc(60% - 1rem); }
     .homemap-card.fs .homemap-fsclose { z-index: 1600; }
     .homemap-tools { position: absolute; right: .55rem; bottom: .55rem; z-index: 1100; display: flex; flex-direction: column; gap: .4rem; align-items: flex-end; pointer-events: auto; }
-    .homemap-tools button { background: var(--card); color: var(--ink); border: 1px solid rgba(0,0,0,.08); border-radius: 999px; padding: .4rem .7rem; font-size: .76rem; font-weight: 700; box-shadow: var(--shadow-sm); cursor: pointer; }
+    .homemap-tools button { background: var(--card); color: var(--ink); border: 1px solid rgba(0,0,0,.08); border-radius: 999px; padding: .55rem .85rem; font-size: .76rem; font-weight: 700; box-shadow: var(--shadow-sm); cursor: pointer; } /* v570 ergo : zone tactile ~40px sur carte */
     .homemap-tools button:hover { background: var(--accent-grad); color: #fff; }
     .homemap-tools #hmAdd { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 16px rgba(45,38,52,.16); }
     .homemap-capture { position: absolute; inset: 0; z-index: 1050; cursor: crosshair; background: rgba(122,92,255,.06); }
@@ -2320,7 +2321,7 @@
     .search-scopes { display: none; gap: .4rem; margin: .5rem 0 .2rem; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .search-scopes.live { display: flex; }
     .search-scopes::-webkit-scrollbar { display: none; }
-    .sscope { flex: 0 0 auto; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .35rem .75rem; font-size: .78rem; font-weight: 700; cursor: pointer; transition: .12s; white-space: nowrap; }
+    .sscope { flex: 0 0 auto; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: .5rem .85rem; font-size: .78rem; font-weight: 700; cursor: pointer; transition: .12s; white-space: nowrap; } /* v570 ergo : zone tactile ~38px */
     .sscope.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 7px rgba(45,38,52,.18); }
     .fb-chip { flex: 1; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: .45rem .3rem; font-size: .8rem; font-weight: 700; cursor: pointer; transition: .12s; }
     .fb-chip.on { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 2px 8px rgba(45,38,52,.18); }
@@ -2673,7 +2674,7 @@
     #homeHello { color: var(--accent); }
     #homeHello .hello-name { color: var(--accent); }
     /* Série de jours (streak), gamification douce près du Bonjour */
-    .hello-row { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-top: .1rem; flex-wrap: wrap; }
+    .hello-row { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-top: .1rem; flex-wrap: nowrap; } /* v570 ergo : nowrap → le chip « Dispo ? » reste stable à droite (fini le wrap désordonné) */
     .hello-row #homeSubtitle { min-width: 0; flex: 1; }
     .streak-chip { flex-shrink: 0; display: inline-flex; align-items: center; gap: .25rem; font-size: .76rem; font-weight: 800;
       color: #B5740E; background: linear-gradient(135deg, rgba(255,201,60,.22), rgba(255,138,61,.18));
@@ -4585,10 +4586,10 @@
     /* auth-core : MOBILE = plein écran (page de connexion historique) */
     #authView .auth-core { flex: 1; display: flex; flex-direction: column; }
     #authView .lp-join-head { display: none; }
-    /* MOBILE (<900px) : la chrome marketing disparaît → page de connexion historique seule */
-    @media (max-width: 899.98px) {
-      #authView .lp-chrome, #authView .lp-only { display: none !important; }
-    }
+    /* v570 — La VITRINE (index.html) est désormais le marketing. La landing in-app
+       redondante est retirée : « Embarque » mène DIRECTEMENT à l'écran de connexion
+       (#authCore) sur TOUS les viewports (plus de 2e page intermédiaire). */
+    #authView .lp-chrome, #authView .lp-only, #authView .lp-fab { display: none !important; }
 
     /* nav */
     #authView .lp-nav { position: sticky; top: 0; z-index: 30; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(28,20,44,.82); border-bottom: 1px solid var(--lp-line); }
@@ -4703,29 +4704,31 @@
     @media (prefers-reduced-motion: reduce) {
       #authView .lp-btn, #authView .lp-pillar, #authView .lp-fab { transition: none !important; }
     }
-    /* DESKTOP (≥900px) : vraie landing sombre autour du formulaire (qui devient une carte « rejoindre ») */
+    /* DESKTOP (≥900px) : l'écran de connexion seul, présenté en carte centrée (la landing
+       in-app a été retirée — cf. note v570 ci-dessus ; la vitrine joue ce rôle). */
     @media (min-width: 900px) {
-      #authView.auth-wrap { display: block; }
-      #authView .lp-fab { display: inline-flex; }
-      #authView .auth-core { display: block; flex: none; max-width: 460px; margin: 0 auto; padding: 0 1rem clamp(3rem, 7vw, 5rem); }
-      #authView .lp-join-head { display: block; text-align: center; max-width: 46ch; margin: 0 auto 1.4rem; }
-      #authView .lp-join-head h2 { font-size: clamp(1.7rem, 4.4vw, 2.5rem); font-weight: 700; }
-      #authView .lp-join-head p { margin-top: .6rem; color: var(--lp-text); }
+      #authView.auth-wrap { display: flex; align-items: center; justify-content: center; min-height: 100dvh; padding: clamp(2rem, 5vw, 4rem) 1rem; }
+      #authView .auth-core { display: block; flex: none; width: 100%; max-width: 460px; margin: 0 auto; }
       #authView .auth-core .auth-hero { border-radius: 28px 28px 0 0; padding: 2rem 1.5rem 1.6rem; margin: 0; }
       #authView .auth-core .auth-body { background: var(--lp-paper); border-radius: 0 0 28px 28px; box-shadow: var(--lp-shadow-pop); max-width: none; padding: 1.6rem 1.5rem 1.9rem; }
     }
 
-    /* === DA v2 · ICÔNES : tuiles UNIFORMES par mode (1 joyau / mode) + emblème crème. === */
-    .cic[data-smicon], .jo-ic[data-smicon], .smgem, .thumb { --ic1:#FF9A3D; --ic2:#FF4F6D; --emb:#FFF6E9; }
+    /* === DA v2 · ICÔNES (v570 — RESET Radiant Horizon) ===
+       AVANT : `.thumb { --ic1/--ic2 }` forçait UNE seule couleur de tuile par mode → pour les
+       utilisateurs sans loader (normaux + Lite), TOUTES les tuiles devenaient le même orange→rose
+       (« des groupements qui colorent toutes les tuiles »). De plus une palette `--icc` par-icône
+       donnait des glyphes de couleurs incohérentes (et le loader les dérivait en gris-crème délavé).
+       MAINTENANT : on ne fige QUE l'emblème crème `--emb` par mode. Les tuiles gardent leur couleur
+       de FAMILLE (.thumb.coral/.teal/.gold… cf. ~l.3302 via --c1/--c2) → identités distinctes pour
+       TOUT LE MONDE. Le glyphe d'icône = `--emb` crème (couleur UNIQUE, lisible sur chaque tuile). */
+    .cic[data-smicon], .jo-ic[data-smicon], .smgem, .thumb { --emb:#FFF6E9; }
     .cic[data-smicon], .jo-ic[data-smicon], .smgem, .thumb { color: var(--icc, var(--emb)) !important; }
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { color: var(--icc, var(--emb)); }
-    body.theme-dusk .cic[data-smicon], body.theme-dusk .jo-ic[data-smicon], body.theme-dusk .smgem, body.theme-dusk .thumb { --ic1:#7A3F9E; --ic2:#3A1E57; --emb:#FFF1DC; }
-    body.theme-winter .cic[data-smicon], body.theme-winter .jo-ic[data-smicon], body.theme-winter .smgem, body.theme-winter .thumb { --ic1:#3E8FD4; --ic2:#245F9E; --emb:#FFFFFF; }
-    body.theme-tropic .cic[data-smicon], body.theme-tropic .jo-ic[data-smicon], body.theme-tropic .smgem, body.theme-tropic .thumb { --ic1:#13A079; --ic2:#0A7355; --emb:#FFFDF0; }
-    body.theme-winter.theme-dusk .cic[data-smicon], body.theme-winter.theme-dusk .jo-ic[data-smicon], body.theme-winter.theme-dusk .smgem, body.theme-winter.theme-dusk .thumb { --ic1:#2E6BA0; --ic2:#14304E; --emb:#EAF6FF; }
-    body.theme-tropic.theme-dusk .cic[data-smicon], body.theme-tropic.theme-dusk .jo-ic[data-smicon], body.theme-tropic.theme-dusk .smgem, body.theme-tropic.theme-dusk .thumb { --ic1:#0E7A5C; --ic2:#073A2C; --emb:#E6FFF5; }
-    /* couleur PORTÉE PAR L'ICÔNE (1 par catégorie, claire pour ressortir sur le joyau uniforme) */
-    [data-smicon="quest"]{--icc:#FFE08A}[data-smicon="games"]{--icc:#C9B0FF}[data-smicon="medal"]{--icc:#FFD15C}[data-smicon="coupon"]{--icc:#FFB3D1}[data-smicon="rank"]{--icc:#BFD0FF}[data-smicon="shop"]{--icc:#FFB3D1}[data-smicon="coffee"]{--icc:#FFD9A8}[data-smicon="eco"]{--icc:#8FE8C0}[data-smicon="near"]{--icc:#FFC48A}[data-smicon="rating"]{--icc:#FFE08A}[data-smicon="popular"]{--icc:#FF9E9E}[data-smicon="trip"]{--icc:#FFC9A0}[data-smicon="users"]{--icc:#C9B0FF}[data-smicon="shieldsafe"]{--icc:#8FE8D8}[data-smicon="usersolo"]{--icc:#FFD0A0}[data-smicon="crown"]{--icc:#C9B0FF}[data-smicon="phone"]{--icc:#8FE8D8}[data-smicon="signal"]{--icc:#FFD98A}[data-smicon="alert"]{--icc:#FFB0B0}[data-smicon="aid"]{--icc:#FFC9A0}[data-smicon="chat"]{--icc:#AEC0FF}[data-smicon="bell"]{--icc:#FFE08A}[data-smicon="search"]{--icc:#C9D0FF}[data-smicon="mail"]{--icc:#C9B0FF}[data-smicon="clock"]{--icc:#BFD0FF}[data-smicon="firstaid"]{--icc:#FFB0B0}[data-smicon="safetravel"]{--icc:#8FE8C0}[data-smicon="report"]{--icc:#FFC48A}[data-smicon="contact"]{--icc:#BFD0FF}[data-smicon="trend-up"]{--icc:#8FE8C0}[data-smicon="bar-chart"]{--icc:#BFD0FF}
+    body.theme-dusk .cic[data-smicon], body.theme-dusk .jo-ic[data-smicon], body.theme-dusk .smgem, body.theme-dusk .thumb { --emb:#FFF1DC; }
+    body.theme-winter .cic[data-smicon], body.theme-winter .jo-ic[data-smicon], body.theme-winter .smgem, body.theme-winter .thumb { --emb:#FFFFFF; }
+    body.theme-tropic .cic[data-smicon], body.theme-tropic .jo-ic[data-smicon], body.theme-tropic .smgem, body.theme-tropic .thumb { --emb:#FFFDF0; }
+    body.theme-winter.theme-dusk .cic[data-smicon], body.theme-winter.theme-dusk .jo-ic[data-smicon], body.theme-winter.theme-dusk .smgem, body.theme-winter.theme-dusk .thumb { --emb:#EAF6FF; }
+    body.theme-tropic.theme-dusk .cic[data-smicon], body.theme-tropic.theme-dusk .jo-ic[data-smicon], body.theme-tropic.theme-dusk .smgem, body.theme-tropic.theme-dusk .thumb { --emb:#E6FFF5; }
 
     /* DA sticker : joyau SOBRE (ombre douce + léger reflet haut) + icône sticker en relief */
     .cic[data-smicon], .jo-ic[data-smicon], .smgem, .thumb { box-shadow: 0 6px 14px -6px rgba(45,28,18,.38), inset 0 1px 1px rgba(255,255,255,.26) !important; position: relative; overflow: hidden; }
@@ -5179,7 +5182,7 @@
         <!-- Formulaire voyageur (Connexion / Inscription) -->
         <div id="authForm">
           <label>Email</label>
-          <input id="authEmail" type="email" placeholder="chloe@exemple.com" />
+          <input id="authEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="chloe@exemple.com" />
           <!-- P2.5 : pseudo choisi DÈS l'inscription (sinon c'était le début de l'email qui s'affichait partout) -->
           <div id="authPseudoWrap" class="hidden">
             <label>Pseudo</label>
@@ -8579,6 +8582,8 @@
       });
     }
     $("authPlay").addEventListener("click", submitAuth);
+    // v570 ergo : « Entrée » dans l'email ou le mot de passe valide la connexion (fini le clic obligatoire).
+    ["authEmail", "authPassword", "authPseudo"].forEach(function (id) { var el = $(id); if (el) el.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); submitAuth(); } }); });
     const EYE_OPEN = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.6"/></svg>';
     const EYE_OFF = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.7 9.7 0 0 1 12 6c5 0 9 6 9 6a14 14 0 0 1-2.3 2.7"/><path d="M6.6 6.6A14 14 0 0 0 3 12s4 6 9 6c1.3 0 2.5-.4 3.6-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
     $("authPwToggle").addEventListener("click", () => {
@@ -20959,10 +20964,10 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
-  <script src="sunmates-da-loader.js?v=12"></script>
+  <script src="sunmates-da-loader.js?v=570"></script>
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->
-  <script src="da-console-overlay.js?v=24"></script>
+  <script src="da-console-overlay.js?v=570"></script>
 </body>
 </html>
