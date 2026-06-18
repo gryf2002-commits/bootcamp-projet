@@ -5295,7 +5295,7 @@
 
         <div class="search">
           <span class="ico">🔍</span>
-          <input id="homeSearch" type="text" maxlength="80" placeholder="Rechercher un lieu ou un·e voyageur·se…" />
+          <input id="homeSearch" type="text" maxlength="80" placeholder="Lieu, ville ou voyageur·se…" />
         </div>
         <div class="search-scopes" id="searchScopes">
           <button class="sscope on" data-scope="all">Tout</button>
@@ -7201,7 +7201,7 @@
       "Personne pour l'instant 🌍": "Nobody yet 🌍", "Reviens bientôt 🌍": "Come back soon 🌍", "Aucun lieu ne correspond. Essaie un autre filtre.": "No place matches. Try another filter.", "Aucun voyageur trouvé": "No traveller found", "Aucune rencontre pour l'instant. Connecte-toi avec des voyageurs !": "No meetings yet. Connect with travellers!",
       "Demander une révision": "Request a review", "Compte suspendu": "Account suspended",
       // · Batch 4 : gaps repérés au rendu ·
-      "Rechercher un lieu ou un·e voyageur·se…": "Search a place or a traveller…",
+      "Lieu, ville ou voyageur·se…": "Place, city or traveller…",
       "Filtre, puis": "Filter, then", "touche une pastille": "tap a pin", "pour agir 👇": "to act 👇",
       "📍 Lieux": "📍 Places", "🧑 Mates": "🧑 Mates", "🎉 Activités": "🎉 Activities", "✅ Check-ins": "✅ Check-ins",
       "Lieux": "Places", "Activités": "Activities", "📣 Partager une activité": "📣 Share an activity", "Titre": "Title", "Détail (optionnel)": "Detail (optional)", "Publier sur la carte": "Post on the map",
@@ -18658,6 +18658,8 @@
       _qsMode = b.dataset.qsmode;
       document.querySelectorAll("#questSpotlight .qs-mode-btn").forEach((x) => x.classList.toggle("active", x === b));
       renderQuestSpotlight();
+      // v570 ergo : le CTA confirme le mode choisi (sinon « Jouer cette quête » n'indiquait pas que Solo/À deux était pris en compte).
+      { const pb2 = $("qsPlayBtn"); if (pb2) pb2.textContent = _qsMode === "group" ? "▶️ Jouer à deux ✨" : "▶️ Jouer en solo"; }
     }));
     { const pb = $("qsPlayBtn"); if (pb) pb.addEventListener("click", () => {
       if (_qsMode === "group") { goToTab("connexions"); if (typeof toast === "function") toast("👥", "Invite un Mate à cette quête : vous gagnez tous les deux un bonus XP ✨"); return; }
