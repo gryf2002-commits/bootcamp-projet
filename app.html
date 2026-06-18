@@ -283,7 +283,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=570"></script>
+  <script src="sunmates-badges.js?v=571"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -576,7 +576,7 @@
     .cic.c-purp { --c1:#b9a6ff; --c2:#7c5cff; }
     .cic.c-gold { --c1:#FFD15C; --c2:#F4A11E; }
     .cic.c-pink { --c1:#ffa7d1; --c2:#ff5e9f; }
-    .cic.c-green, .cic.c-blue, .cic.c-purp, .cic.c-gold, .cic.c-pink { background: linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); }
+    .cic.c-green, .cic.c-blue, .cic.c-purp, .cic.c-gold, .cic.c-pink { background: var(--accent-grad); } /* v570 : cohérence RH (suit l'accent du preset, comme .c-sun) */
     /* Hiérarchie de l'onglet Jeux : 2 groupes (Jouer / Progresser) + 2 tuiles PRIMAIRES plus grandes.
        #jeuxNav était une grille 3-col (l.292) → on repasse en bloc pour empiler les groupes. */
     #jeuxNav { display: block; }
@@ -1528,7 +1528,8 @@
     .tile:active { transform: scale(.98); }
     .tile .thumb {
       height: 84px; border-radius: 12px; margin-bottom: .55rem;
-      background-image: radial-gradient(circle at 50% 22%, rgba(255,255,255,.4), rgba(255,255,255,0) 55%), var(--accent-grad);
+      /* v570 : radial blanc calmé (.4→.12) — il « grisait » le centre-haut au-dessus de l'emoji. */
+      background-image: radial-gradient(circle at 50% 20%, rgba(255,255,255,.12), rgba(255,255,255,0) 52%), var(--accent-grad);
       display: grid; place-items: center; font-size: 30px; box-shadow: 0 6px 16px rgba(45,38,52,.22);
       transition: transform .15s ease;
     }
@@ -1537,8 +1538,10 @@
        basse pour le volume (fini le rendu pastel/plat), sans le halo blanc vertical moche. */
     .tile .thumb { position: relative; overflow: hidden; filter: saturate(1.04) brightness(1.01); } /* néon coupé : la couleur émaillée DA suffit */
     .tile .thumb::before { content: ""; position: absolute; inset: 0; border-radius: inherit;
-      background: linear-gradient(158deg, rgba(255,255,255,.62) 0%, rgba(255,255,255,.22) 15%, rgba(255,255,255,.03) 36%, rgba(255,255,255,0) 58%);
-      box-shadow: inset 0 1.5px 0 rgba(255,255,255,.5);
+      /* v570 (retour Maxime) : gloss fortement calmé (.62→.18) — c'était le principal « voile
+         grisâtre au-dessus de l'emoji ». Fin liseré clair gardé pour le volume, sans wash blanc. */
+      background: linear-gradient(158deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.04) 18%, rgba(255,255,255,0) 42%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.28);
       pointer-events: none; }
     /* (Anciennes couleurs/ombres figées SUPPRIMÉES · retour Maxime : le « halo » sous les
        tuiles restait aux vieilles couleurs quel que soit le thème. Désormais l'ombre est
@@ -1972,9 +1975,12 @@
     /* Icônes maison sur tuile : fond crème (l'icône porte la couleur, DA chaude) */
     /* Tuile-joyau : dégradé sunset bombé + gloss + rim-light + ombre chaude (zéro crème) */
     .cic[data-smicon], .jo-ic[data-smicon] { position: relative; isolation: isolate; overflow: hidden; border: none;
-      background: radial-gradient(120% 90% at 28% 22%, rgba(255,255,255,.42), rgba(255,255,255,0) 42%), linear-gradient(135deg, var(--ic1, var(--c1,#FF8A3D)), var(--ic2, var(--c2,#FF5A4D)));
-      /* halo dérivé de la couleur réelle de la pastille (suit le thème) · fini l'ombre corail figée */
-      box-shadow: 0 3px 8px rgba(60,28,14,.18), inset 0 1px 1px rgba(255,246,236,.85), inset 0 -2px 3px rgba(60,25,12,.26); }
+      /* v570 (retour Maxime) : RÈGLE DOMINANTE des tuiles-joyaux. AVANT : radial blanc 42% (= le voile
+         grisâtre au-dessus de l'emoji) + gradient PAR FAMILLE via --ic1/--c1 (= l'arc-en-ciel froid).
+         MAINTENANT : dégradé-accent du preset (--accent-grad, cohérent RH pour tous/tous presets) +
+         reflet TRÈS discret (16%). Fini le gris ET les couleurs hors-DA. */
+      background: radial-gradient(120% 90% at 28% 20%, rgba(255,255,255,.16), rgba(255,255,255,0) 46%), var(--accent-grad);
+      box-shadow: 0 3px 8px rgba(60,28,14,.18), inset 0 1px 1px rgba(255,246,236,.7), inset 0 -2px 3px rgba(60,25,12,.22); }
     /* Reflet TOP plus léger (avant : blanc .5 sur 42% → givrait/floutait le glyphe). */
     .cic[data-smicon]::after, .jo-ic[data-smicon]::after { content:""; position:absolute; left:8%; right:8%; top:6%; height:34%; border-radius:50% 50% 60% 60%/70% 70% 100% 100%; background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.02)); pointer-events:none; z-index:0; }
     /* Les icônes joaillerie ont déjà leur propre reflet (::after + gloss interne au SVG) →
@@ -1988,7 +1994,7 @@
     [data-smicon="users"]{--c1:#9b7bff;--c2:#6a4fe0} [data-smicon="shieldsafe"]{--c1:#1FB38C;--c2:#0C7E6E} [data-smicon="usersolo"]{--c1:#FF9A5C;--c2:#E8631F} [data-smicon="crown"]{--c1:#8a5cff;--c2:#5028b0} [data-smicon="phone"]{--c1:#2BC48A;--c2:#15897A} [data-smicon="signal"]{--c1:#FFC04E;--c2:#E8901F}
     [data-smicon="alert"]{--c1:#FF4D4D;--c2:#D81E2A} [data-smicon="aid"]{--c1:#FF7A4D;--c2:#FF9A3D} [data-smicon="chat"]{--c1:#7a8cff;--c2:#5560f0}
     /* Pastille-joyau réutilisable (icône ivoire sur dégradé) pour harmoniser les emojis hors tuiles */
-    .smgem { background: linear-gradient(135deg, var(--ic1, var(--c1,#FF8A3D)), var(--ic2, var(--c2,#FF5A4D))) !important; box-shadow: 0 4px 10px rgba(45,38,52,.28), inset 0 1px 1px rgba(255,246,236,.6) !important; color: #fff !important; }
+    .smgem { background: var(--accent-grad) !important; box-shadow: 0 4px 10px rgba(45,38,52,.28), inset 0 1px 1px rgba(255,246,236,.6) !important; color: #fff !important; } /* v570 : cohérence RH */
     .smgem svg { filter: drop-shadow(0 1px 1px rgba(45,38,52,.25)); }
     .sv-stat .sv-ico { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; vertical-align: -5px; margin-right: 4px; }
 
@@ -2172,7 +2178,8 @@
       box-shadow:inset 0 -6px 12px rgba(0,0,0,.14), inset 0 2px 3px rgba(255,255,255,.45), 0 5px 12px rgba(0,0,0,.12); }
     .qm-coral .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), linear-gradient(135deg,#FF8A3D,#FF5A4D); }
     .qm-teal{ --c1:#34c98f; --c2:#1f9e8c; } .qm-gold{ --c1:#FFD15C; --c2:#E8961F; } .qm-violet{ --c1:#9b7bff; --c2:#7a5cff; }
-    .qm-teal .qm-ic, .qm-gold .qm-ic, .qm-violet .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.5), rgba(255,255,255,0) 55%), linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); }
+    .qm-teal .qm-ic, .qm-gold .qm-ic, .qm-violet .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.22), rgba(255,255,255,0) 55%), var(--accent-grad); } /* v570 : cohérence RH */
+    .qm-coral .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.22), rgba(255,255,255,0) 55%), var(--accent-grad); }
     .qm-name{ font-weight:800; font-size:.8rem; line-height:1.15; color:var(--ink); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .qm-xp{ margin-top:auto; font-weight:800; font-size:.74rem; color:#B5740E; background:rgba(255,209,92,.22); padding:.12rem .45rem; border-radius:999px; }
     body.theme-dusk .qm-card{ background:var(--dcard,#2a2140); border-color:rgba(255,255,255,.08); } body.theme-dusk .qm-xp{ color:#FFD79A; background:rgba(255,209,92,.14); }
@@ -2220,9 +2227,8 @@
     .sc-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); } .sc-card:active{ transform:scale(.97); }
     .sc-ic{ flex-shrink:0; width:46px; height:46px; display:grid; place-items:center; font-size:1.5rem; border-radius:14px; background:var(--accent-grad); box-shadow:0 6px 14px rgba(45,38,52,.28), inset 0 1px 0 rgba(255,255,255,.5); }
     .sc-card.sc-teal{ --c1:#34c98f; --c2:#1f9e8c; } .sc-card.sc-gold{ --c1:#FFD15C; --c2:#E8961F; } .sc-card.sc-violet{ --c1:#9b7bff; --c2:#7a5cff; }
-    .sc-card.sc-teal .sc-ic{ background:linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); box-shadow:0 6px 14px rgba(31,158,140,.30), inset 0 1px 0 rgba(255,255,255,.4); }
-    .sc-card.sc-gold .sc-ic{ background:linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); box-shadow:0 6px 14px rgba(232,150,31,.32), inset 0 1px 0 rgba(255,255,255,.5); }
-    .sc-card.sc-violet .sc-ic{ background:linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))); box-shadow:0 6px 14px rgba(122,92,255,.30), inset 0 1px 0 rgba(255,255,255,.4); }
+    /* v570 : cohérence RH — les scènes suivent l'accent du preset (la base .sc-ic l'utilise déjà). */
+    .sc-card.sc-teal .sc-ic, .sc-card.sc-gold .sc-ic, .sc-card.sc-violet .sc-ic{ background:var(--accent-grad); box-shadow:0 6px 14px rgba(45,38,52,.26), inset 0 1px 0 rgba(255,255,255,.4); }
     .sc-body{ flex:1; min-width:0; display:flex; flex-direction:column; gap:.12rem; }
     .sc-name{ font-weight:800; font-size:.95rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .sc-desc{ font-size:.8rem; color:var(--text); line-height:1.25; }
@@ -2457,8 +2463,9 @@
     .tab-panel[data-panel="accueil"] .tile .thumb::after,
     .tab-panel[data-panel="securite"] .tile .thumb::after {
       content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
-      /* reflet glossy diagonal (peps) + ombre basse pour le volume · chute rapide = brillance, pas halo */
-      background:linear-gradient(150deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.10) 26%, rgba(255,255,255,0) 50%), linear-gradient(180deg, rgba(255,255,255,0) 64%, rgba(0,0,0,.07) 100%); }
+      /* v570 (retour Maxime) : fini le voile blanc 42% qui « grisait » le haut de la tuile au-dessus
+         de l'emoji. Reflet TRÈS discret en coin haut-gauche seulement, aucune bande, aucune ombre basse. */
+      background:linear-gradient(145deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 26%); }
     .tab-panel[data-panel="accueil"] .tile:active .thumb,
     .tab-panel[data-panel="securite"] .tile:active .thumb { transform: scale(.96); }
     /* Quête du jour : aura calmée sur l'accueil (moins « jeu ») */
@@ -3310,9 +3317,12 @@
     .thumb.gold  { --c1:#FFC93C; --c2:#E8961F; } /* or franc */
     .thumb.teal  { --c1:#4ED8B8; --c2:#149E8C; } /* lagon émaillé */
     .thumb.red   { --c1:#FF5A4D; --c2:#C9281F; } /* corail-rouge d'alerte */
+    /* v570 (retour Maxime) : RADIANT HORIZON COHÉRENT POUR TOUS. Les familles ne portent plus
+       des couleurs froides distinctes (vert/teal/bleu) « qui ne collent pas à la DA » : TOUTES les
+       tuiles suivent le dégradé-accent du preset courant (--accent-grad) → corail/rosé en RH,
+       et se ré-teintent automatiquement en nuit/hiver/tropiques + en admin. Cohésion totale. */
     .thumb.green, .thumb.blue, .thumb.purp, .thumb.coral, .thumb.lime, .thumb.indigo, .thumb.rose, .thumb.gold, .thumb.teal, .thumb.red {
-      background: linear-gradient(135deg, var(--ic1, var(--c1)), var(--ic2, var(--c2))) !important;
-      /* halo DÉRIVÉ de la couleur réelle (suit le thème) + assise neutre douce */
+      background: var(--accent-grad) !important;
       box-shadow: 0 4px 12px rgba(40,18,8,.12) !important; }
     body.theme-dusk .thumb.green, body.theme-dusk .thumb.blue, body.theme-dusk .thumb.purp, body.theme-dusk .thumb.coral, body.theme-dusk .thumb.lime, body.theme-dusk .thumb.indigo, body.theme-dusk .thumb.rose, body.theme-dusk .thumb.gold, body.theme-dusk .thumb.teal, body.theme-dusk .thumb.red {
       box-shadow: 0 4px 12px rgba(0,0,0,.26) !important; }
