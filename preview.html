@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=589"></script>
+  <script src="sunmates-badges.js?v=590"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -2789,7 +2789,7 @@
               <p class="muted" style="font-size:.82rem;margin:.2rem 0 .7rem">Les grosses nouveautés sont d'abord déployées sur <b>preview.html</b> : tu y testes la PROCHAINE version en conditions réelles (même base, même compte), <b>sans toucher</b> à l'app de tout le monde ni à son cache. Quand tu valides, elle est promue en version officielle (1 commit). <b>Touche le ruban violet 🧪</b> dans la préversion : il affiche le récap de tout ce qui a changé.</p>
               <button class="btn-primary btn-block" id="sysOpenPreview">🧪 Ouvrir la préversion</button>
               <!-- (16/06 : bouton « Version lite » RETIRÉ → il ouvrait sunmates-app.html, une 2e Lite divergente. UNE seule Lite = le mode body.sm-lite via le toggle « Fonctionnalités beta ».) -->
-              <button class="btn-ghost btn-block" id="sysOpenPlaquette" style="margin-top:.5rem">📣 Plaquette marketing</button>
+              <!-- (19/06 : « Plaquette marketing » RETIRÉE de l'admin à la demande de Maxime.) -->
               <p class="muted" style="font-size:.78rem;margin:.5rem 0 0">La console DA est <b>centralisée dans l'app</b> : le bouton flottant <b>✦ DA</b> (déplaçable) ouvre l'éditeur <b>live</b> sur la vraie app — presets, palette, emojis, clic-recolor.</p>
             </div>
             <!-- P14 : état des MIGRATIONS sondé EN DIRECT sur la base -->
@@ -7712,8 +7712,7 @@
       // (sans lui, le cache HTTP GitHub Pages pouvait servir une copie périmée ~10 min).
       if (op && !op.dataset.wired) { op.dataset.wired = "1"; op.addEventListener("click", () => { try { window.open("preview.html?fresh=" + Date.now(), "_blank"); } catch (e) {} }); }
       // (16/06 : sysOpenLite retiré — plus de chemin vers sunmates-app.html ; la Lite = le mode body.sm-lite via le toggle.)
-      const opq = $("sysOpenPlaquette");
-      if (opq && !opq.dataset.wired) { opq.dataset.wired = "1"; opq.addEventListener("click", () => { try { window.open("sunmates-plaquette.html?fresh=" + Date.now(), "_blank"); } catch (e) {} }); }
+      // (19/06 : bouton « Plaquette marketing » retiré de l'admin.)
       // Rafraîchit aussi le tableau de bord en mémoire pour le rapport copiable
       try { const { data } = await db.rpc("admin_stats"); if (data && data.ok) _lastAdminStats = data; } catch (e) {}
     }
