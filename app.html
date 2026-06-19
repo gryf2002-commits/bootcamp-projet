@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=588"></script>
+  <script src="sunmates-badges.js?v=589"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -476,9 +476,17 @@
     /* Contrôle saison (easter egg) : caché par défaut, montré quand débloqué */
     #seasonCtl { margin-top: .5rem; }
     #seasonCtl.hidden { display: none; }
-    #seasonCtl .seg { display: flex; gap: .35rem; margin-top: .4rem; }
-    #seasonCtl .seg button { flex: 1; min-width: 0; padding: .5rem .25rem; border-radius: 10px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); font-weight: 700; font-size: .78rem; white-space: nowrap; cursor: pointer; }
-    #seasonCtl .seg button.active { border-color: var(--accent); background: var(--accent-soft, rgba(255,209,92,.15)); }
+    #seasonCtl .seg { display: flex; gap: .4rem; margin-top: .4rem; }
+    /* Fond/bordure DÉRIVÉS de --ink (et non var(--card)) : les tuiles restent visibles
+       même posées sur la carte Réglages (elle aussi en --card). Marche sur tout thème. */
+    #seasonCtl .seg button { flex: 1; min-width: 0; padding: .55rem .3rem; border-radius: 11px;
+      border: 1.5px solid color-mix(in oklab, var(--ink) 22%, transparent);
+      background: color-mix(in oklab, var(--ink) 7%, transparent);
+      color: var(--ink); font-weight: 700; font-size: .8rem; white-space: nowrap; cursor: pointer;
+      transition: transform .1s ease, border-color .15s ease, background .15s ease; }
+    #seasonCtl .seg button:active { transform: scale(.97); }
+    #seasonCtl .seg button.active { border-color: var(--accent); color: var(--accent);
+      background: color-mix(in oklab, var(--accent) 16%, transparent); font-weight: 800; }
     /* Centrage cohérent : titres de section vides + sous-titres d'écran */
     .set-grouptitle { text-align: left; } /* labels de réglages restent alignés à gauche (lisibilité) */
 
