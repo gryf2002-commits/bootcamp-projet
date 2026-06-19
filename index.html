@@ -55,6 +55,24 @@
       --shadow-pop: 0 34px 80px rgba(178,36,80,.32), 0 8px 22px rgba(8,4,18,.45);
       --maxw: 1180px; --z-nav: 50; --z-skip: 90; --z-grain: 60; --z-player: 55;
     }
+    /* ====== MODE JOUR (toggle vitrine, défaut = nuit prune) ======
+       On redéfinit les variables vers une palette claire « lever de soleil ».
+       Le hero (photo + voile sombre) garde son texte clair dans les deux modes. */
+    body.vit-day {
+      --bg: #FBF4EC; --bg-2: #F3E8DD; --surface: #FFFFFF; --surface-2: #F8F0E7;
+      --ink: #2A1A33; --muted: #6F5E82; --line: rgba(42,26,51,.12); --line-strong: rgba(42,26,51,.20);
+      --gold: #B5740E;
+      --shadow: 0 20px 50px rgba(80,40,90,.14);
+      --shadow-pop: 0 28px 64px rgba(255,85,112,.20), 0 8px 22px rgba(80,40,90,.14);
+    }
+    body.vit-day .btn-ghost { background: rgba(42,26,51,.05); }
+    body.vit-day .btn-ghost:hover { background: rgba(42,26,51,.10); }
+    body.vit-day .lang-btn { background: rgba(42,26,51,.05); }
+    body.vit-day header.nav.scrolled { background: rgba(255,250,244,.82); border-bottom-color: var(--line); }
+    body.vit-day ::selection { background: var(--accent); color: #fff; }
+    /* le hero reste sur sa photo sombre → texte + or gardés clairs en mode jour */
+    body.vit-day .hero h1 { color: #FCEFE9; }
+    body.vit-day .hero h1 .grad, body.vit-day .hero-eyebrow { color: #FFD15C; }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
@@ -282,7 +300,7 @@
     <div class="wrap nav-in">
       <a href="#main" class="brand" aria-label="SunMates, accueil"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="5" fill="#fff"/><g stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2v3M12 21v1M3 13H1M23 13h-2M5 6 3.5 4.5M19 6l1.5-1.5"/></g></svg></span><span class="wm">Sun<b>Mates</b></span></a>
       <nav class="nav-links" aria-label="Navigation principale"><a href="#rencontres">Rencontres</a><a href="#fonctions">Fonctions</a><a href="#temoignages">Témoignages</a><a href="#apercu">L'app</a><a href="#contact">À propos</a></nav>
-      <div class="nav-cta"><button id="langBtn" class="lang-btn" type="button" aria-label="Switch to English">EN</button><a href="app.html" class="btn btn-primary btn-sm nav-start"><span class="lbl-full">Embarque</span><span class="lbl-short">Embarque</span></a></div>
+      <div class="nav-cta"><button id="dayBtn" class="lang-btn" type="button" aria-label="Basculer jour / nuit" title="Jour / nuit">☀️</button><button id="langBtn" class="lang-btn" type="button" aria-label="Switch to English">EN</button><a href="app.html" class="btn btn-primary btn-sm nav-start"><span class="lbl-full">Embarque</span><span class="lbl-short">Embarque</span></a></div>
     </div>
   </header>
 
@@ -620,6 +638,22 @@
       }
       if (lang === "en") setLang("en"); else if (btn) btn.textContent = "EN";
       if (btn) btn.addEventListener("click", function () { setLang(lang === "en" ? "fr" : "en"); });
+    })();
+
+    // ---------- TOGGLE JOUR / NUIT de la vitrine (défaut = nuit prune) ----------
+    (function () {
+      var b = document.getElementById("dayBtn");
+      var meta = document.querySelector('meta[name="theme-color"]');
+      var mode = "night"; try { mode = localStorage.getItem("sm_vit_theme") || "night"; } catch (e) {}
+      function apply(m) {
+        mode = m;
+        document.body.classList.toggle("vit-day", m === "day");
+        if (b) { b.textContent = (m === "day") ? "🌙" : "☀️"; b.setAttribute("aria-label", (m === "day") ? "Passer en mode nuit" : "Passer en mode jour"); }
+        if (meta) meta.setAttribute("content", (m === "day") ? "#FBF4EC" : "#190E2E");
+        try { localStorage.setItem("sm_vit_theme", m); } catch (e) {}
+      }
+      apply(mode);
+      if (b) b.addEventListener("click", function () { apply(mode === "day" ? "night" : "day"); });
     })();
 
     // ---------- RADIO D'AMBIANCE (opt-in, VRAIES pistes Mixkit, 3 canaux + volume) ----------
