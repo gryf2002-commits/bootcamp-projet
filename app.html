@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=587"></script>
+  <script src="sunmates-badges.js?v=588"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -671,6 +671,106 @@
 
     /* Mate du jour (Découvrir) : léger lift cohérent au reste */
     .tab-panel[data-panel="connexions"] #mateOfDay > * { transition: transform .12s var(--mate-ease-out); }
+
+    /* ===== 🧭 Voyages passés : journal soigné (sans matching) ===== */
+    .ptrip-section { margin-top: 1rem; }
+    .ptrip-head { display: flex; align-items: baseline; justify-content: space-between; gap: .6rem; margin: .2rem .1rem .5rem; }
+    .ptrip-head h4 { margin: 0; font: 700 1.02rem/1.1 "Fraunces", Georgia, serif; color: var(--ink); }
+    .ptrip-count {
+      flex-shrink: 0; font: 700 .74rem/1 "Manrope", system-ui, sans-serif; color: #2a1640;
+      padding: .3rem .6rem; border-radius: 999px; white-space: nowrap;
+      background: linear-gradient(135deg, #FFD15C, #ff9a8d); font-variant-numeric: tabular-nums;
+    }
+    .ptrip-card { position: relative; opacity: .96; }
+    .ptrip-card::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 14px 0 0 14px;
+      background: linear-gradient(180deg, var(--accent, #ff7e72), #9B7BFF); opacity: .55;
+    }
+    .ptrip-country { display: flex; align-items: center; gap: .35rem; margin-top: .2rem; font-size: .84rem; font-weight: 600; color: var(--muted); }
+    .ptrip-flag { font-size: 1rem; line-height: 1; }
+
+    /* ===== ✨ Mon année SunMates : CTA + overlay stories ===== */
+    .wrapped-cta {
+      width: 100%; margin: 0 0 .5rem;
+      display: flex; align-items: center; justify-content: center; gap: .45rem;
+      padding: .7rem 1rem; border: 0; border-radius: 16px; cursor: pointer;
+      font: 800 .95rem/1 "Manrope", system-ui, sans-serif; letter-spacing: .2px; color: #f7eeff;
+      background:
+        radial-gradient(120% 160% at 0% 0%, rgba(255,209,92,.9) 0%, rgba(255,209,92,0) 42%),
+        linear-gradient(135deg, #9B7BFF 0%, #ff6a5d 60%, #ff9a8d 100%);
+      box-shadow: 0 8px 22px -10px rgba(155,123,255,.7), inset 0 1px 0 rgba(255,255,255,.28);
+      transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+    }
+    .wrapped-cta:hover { transform: translateY(-1px); filter: brightness(1.04); box-shadow: 0 12px 28px -10px rgba(155,123,255,.85); }
+    .wrapped-cta:active { transform: translateY(0); }
+    .wrapped-cta:focus-visible { outline: 2px solid #FFD15C; outline-offset: 3px; }
+
+    #wrappedOverlay {
+      position: fixed; inset: 0; z-index: 9600;
+      display: flex; flex-direction: column; align-items: center;
+      background:
+        radial-gradient(120% 80% at 50% -8%, #3a1d6e 0%, rgba(18,10,34,0) 58%),
+        radial-gradient(110% 70% at 50% 120%, #5a1d4f 0%, rgba(18,10,34,0) 55%),
+        #120a22;
+      color: #f3ecf6; opacity: 0; transition: opacity .3s ease;
+      -webkit-tap-highlight-color: transparent; overflow: hidden;
+    }
+    #wrappedOverlay.is-open { opacity: 1; }
+    #wrappedOverlay.hidden { display: none; }
+    .wr-bars {
+      position: absolute; top: max(.6rem, env(safe-area-inset-top)); left: .8rem; right: .8rem; z-index: 5;
+      display: flex; gap: .3rem;
+    }
+    .wr-bar { flex: 1; height: 3px; border-radius: 3px; background: rgba(255,255,255,.22); overflow: hidden; }
+    .wr-bar > i { display: block; height: 100%; width: 0; border-radius: 3px; background: linear-gradient(90deg, #FFD15C, #ff9a8d); }
+    .wr-bar.is-done > i { width: 100%; }
+    .wr-bar.is-active > i { width: 0; }
+    .wr-bar.is-active.run > i { width: 100%; transition: width var(--wr-dur, 4000ms) linear; }
+    .wr-close {
+      position: absolute; top: max(1.1rem, calc(env(safe-area-inset-top) + .5rem)); right: .8rem; z-index: 6;
+      width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.25); color: #fff; font-size: 1.05rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: background .15s ease, transform .15s ease;
+    }
+    .wr-close:hover { background: rgba(0,0,0,.4); }
+    .wr-close:active { transform: scale(.92); }
+    .wr-close:focus-visible { outline: 2px solid #FFD15C; outline-offset: 2px; }
+    .wr-stage { position: relative; flex: 1 1 auto; width: 100%; max-width: 520px; display: flex; align-items: center; justify-content: center; padding: 3rem 1.6rem 2.4rem; }
+    .wr-nav { position: absolute; top: 0; bottom: 0; width: 32%; z-index: 4; border: 0; background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .wr-prev { left: 0; } .wr-next { right: 0; }
+    .wr-nav:focus { outline: none; }
+    .wr-slide {
+      position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; gap: .7rem; padding: 3rem 1.6rem 2.4rem;
+      opacity: 0; transform: translateY(14px) scale(.99); pointer-events: none;
+    }
+    .wr-slide.is-shown { opacity: 1; transform: none; pointer-events: auto; transition: opacity .42s ease, transform .42s cubic-bezier(.22,1,.36,1); }
+    .wr-kicker { font: 800 .76rem/1 "Manrope", system-ui, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: #FFD15C; }
+    .wr-big {
+      font: 900 clamp(3.4rem, 22vw, 6rem)/0.95 "Fraunces", Georgia, serif;
+      background: linear-gradient(120deg, #FFD15C 0%, #ff9a8d 50%, #9B7BFF 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      font-variant-numeric: tabular-nums; letter-spacing: -.01em;
+    }
+    .wr-title { font: 800 clamp(1.5rem, 7vw, 2.1rem)/1.1 "Fraunces", Georgia, serif; color: #fff; }
+    .wr-sub { font: 600 1rem/1.4 "Manrope", system-ui, sans-serif; color: #d8cfe8; max-width: 24ch; }
+    .wr-emoji { font-size: clamp(2.6rem, 14vw, 3.6rem); line-height: 1; }
+    .wr-chips { display: flex; flex-wrap: wrap; gap: .4rem; justify-content: center; margin-top: .2rem; }
+    .wr-chip { font: 700 .82rem/1 "Manrope", system-ui, sans-serif; color: #2a1640; background: rgba(255,255,255,.92); padding: .4rem .7rem; border-radius: 999px; }
+    .wr-share {
+      margin-top: 1rem; border: 0; cursor: pointer; padding: .85rem 1.5rem; border-radius: 999px;
+      font: 800 .98rem/1 "Manrope", system-ui, sans-serif; color: #2a1640;
+      background: linear-gradient(135deg, #FFD15C, #ff9a8d);
+      box-shadow: 0 10px 26px -10px rgba(255,154,141,.8);
+      transition: transform .14s ease, filter .14s ease;
+    }
+    .wr-share:hover { transform: translateY(-1px); filter: brightness(1.04); }
+    .wr-share:active { transform: translateY(0); }
+    .wr-share:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      .wr-slide.is-shown { transition: none; }
+      .wr-bar.is-active.run > i { transition: none; width: 100%; }
+    }
   </style>
 
   <!-- ============================================================
@@ -997,6 +1097,15 @@
     <div id="globeStage" class="globe-stage">
       <div id="globeState" class="globe-state">Chargement du globe…</div>
     </div>
+  </div>
+
+  <!-- ✨ Mon année SunMates : rétro annuelle animée, façon stories -->
+  <div id="wrappedOverlay" class="hidden" role="dialog" aria-modal="true" aria-label="Mon année SunMates">
+    <div class="wr-bars" id="wrBars" aria-hidden="true"></div>
+    <button type="button" id="wrappedClose" class="wr-close" aria-label="Fermer">✕</button>
+    <div class="wr-stage" id="wrStage"></div>
+    <button type="button" class="wr-nav wr-prev" id="wrPrev" aria-label="Précédent"></button>
+    <button type="button" class="wr-nav wr-next" id="wrNext" aria-label="Suivant"></button>
   </div>
 
   <!-- Notifications éphémères (toasts) -->
@@ -1806,6 +1915,7 @@
         <!-- ✈️ Mes voyages : matching dans le temps + l'espace (feature signature) -->
         <div class="section-head"><h3>Mes voyages ✈️</h3><a id="tripAddLink" style="cursor:pointer">+ Ajouter</a></div>
         <button type="button" id="globeOpenBtn" class="globe-cta">🌍 Voir mon globe</button>
+        <button type="button" id="wrappedOpenBtn" class="wrapped-cta">✨ Mon année SunMates</button>
         <div id="tripMatchBanner"></div>
         <div id="myTrips"></div>
 
@@ -5380,7 +5490,13 @@
         box.innerHTML = '<div class="trip-empty">Ajoute ton prochain voyage et trouve ta bande sur place ☀️<br><button class="btn-primary" id="tripEmptyAdd" style="margin-top:.7rem">➕ Ajouter un voyage</button></div>';
         const b = $("tripEmptyAdd"); if (b) b.addEventListener("click", openAddTrip); return;
       }
-      box.innerHTML = trips.map((t) => {
+      // Séparation À VENIR / PASSÉS sur la base de la date de fin (end_date < aujourd'hui = passé).
+      const _today = ymd(new Date());
+      const upcoming = trips.filter((t) => (t.end_date || t.start_date || "") >= _today);
+      const past = trips.filter((t) => (t.end_date || t.start_date || "") < _today)
+                        .sort((a, b) => (b.start_date || "").localeCompare(a.start_date || "")); // récent → ancien
+      // ----- Carte « À venir » : comportement existant (matching conservé) -----
+      const upcomingCard = (t) => {
         const tm = matches.filter((m) => (m.city || "").toLowerCase().trim() === (t.city || "").toLowerCase().trim() && m.start_date <= t.end_date && m.end_date >= t.start_date);
         const matesHtml = tm.length ? `<div class="trip-matches"><div class="tm-lbl">🤝 ${tm.length} voyageur${tm.length > 1 ? "s" : ""} sur place en même temps</div>${tm.map((m) => {
           const p = profById[m.user_id] || {};
@@ -5389,22 +5505,38 @@
         }).join("")}</div>` : "";
         const sub = t.country ? `<div class="trip-note" style="margin-top:.15rem">${escapeHtml(t.country)}</div>` : "";
         return `<div class="trip-card"><div class="trip-top"><div class="trip-city">📍 ${escapeHtml(t.city)}</div><span class="trip-dates">${_fmtTripDates(t.start_date, t.end_date)}</span><button class="trip-del" data-tdel="${t.id}" title="Supprimer">🗑️</button></div>${sub}${t.note ? `<div class="trip-note">${escapeHtml(t.note)}</div>` : ""}${matesHtml}</div>`;
-      }).join("");
+      };
+      // ----- Carte « voyage passé » : journal soigné, SANS matching -----
+      const pastCard = (t) => {
+        const flag = (t.country && (t.country.match(/^[\u{1F1E6}-\u{1F1FF}]{2}/u) || [])[0]) || "";
+        const sub = t.country ? `<div class="ptrip-country">${flag ? `<span class="ptrip-flag">${flag}</span>` : "🏳️"} ${escapeHtml(t.country.replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, "")) || escapeHtml(t.country)}</div>` : "";
+        return `<div class="trip-card ptrip-card"><div class="trip-top"><div class="trip-city">🧭 ${escapeHtml(t.city)}</div><span class="trip-dates">${_fmtTripDates(t.start_date, t.end_date)}</span><button class="trip-del" data-tdel="${t.id}" title="Supprimer">🗑️</button></div>${sub}${t.note ? `<div class="trip-note">“${escapeHtml(t.note)}”</div>` : ""}</div>`;
+      };
+      let html = "";
+      if (upcoming.length) html += upcoming.map(upcomingCard).join("");
+      else html += '<div class="trip-empty" style="margin:.2rem 0">Aucun voyage à venir. Ajoute le prochain et trouve ta bande sur place ☀️</div>';
+      if (past.length) {
+        const nPays = new Set(past.map((t) => (t.country || "").replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, "").trim()).filter(Boolean)).size;
+        const nVilles = new Set(past.map((t) => (t.city || "").trim().toLowerCase()).filter(Boolean)).size;
+        html += `<div class="ptrip-section"><div class="ptrip-head"><h4>Mes voyages passés</h4><div class="ptrip-count">🌍 ${nVilles} ville${nVilles > 1 ? "s" : ""}${nPays ? ` · ${nPays} pays` : ""}</div></div>${past.map(pastCard).join("")}</div>`;
+      }
+      box.innerHTML = html;
       box.querySelectorAll("[data-tdel]").forEach((el) => el.addEventListener("click", () => { smConfirm("🗑️", "Supprimer ce voyage ?", "Ce voyage sera retiré de ton profil.", "Supprimer", async () => { await deleteTrip(Number(el.dataset.tdel)); renderTrips(); }); }));
       box.querySelectorAll("[data-tmate]").forEach((el) => el.addEventListener("click", () => { const p = profById[el.dataset.tmate] || travelerMap[el.dataset.tmate]; if (p) { goToTab("connexions"); if (typeof openTravelerProfile === "function") openTravelerProfile(p); } }));
     }
     const _trIn = "width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:.5rem .6rem;font:inherit;background:var(--card);color:var(--ink);margin-top:.15rem";
     const _trLbl = "font-size:.76rem;font-weight:700;color:var(--muted);margin-top:.5rem;display:block";
     function openAddTrip() {
-      const today = new Date(); const t0 = ymd(today);
       popInfo("✈️", "Ajouter un voyage", `<div style="text-align:left">
         <label style="${_trLbl};margin-top:0">Ville</label>
         <input id="tripCity" type="text" placeholder="Ex : Lisbonne" maxlength="60" style="${_trIn}" />
         <div style="display:flex;gap:.5rem">
           <!-- min-width:0 : sans ça, le déclencheur « Choisir une date 📅 » impose sa largeur
                mini et la colonne de DROITE déborde de la tuile (retour Maxime). -->
-          <div style="flex:1;min-width:0"><label style="${_trLbl}">Du</label><input id="tripStart" type="date" min="${t0}" style="${_trIn}" /></div>
-          <div style="flex:1;min-width:0"><label style="${_trLbl}">Au</label><input id="tripEnd" type="date" min="${t0}" style="${_trIn}" /></div>
+          <!-- Pas de min : on autorise les voyages PASSÉS (journal de voyage). La validation
+               end >= start reste dans saveTrip(). -->
+          <div style="flex:1;min-width:0"><label style="${_trLbl}">Du</label><input id="tripStart" type="date" style="${_trIn}" /></div>
+          <div style="flex:1;min-width:0"><label style="${_trLbl}">Au</label><input id="tripEnd" type="date" style="${_trIn}" /></div>
         </div>
         <label style="${_trLbl}">Note (optionnel)</label>
         <input id="tripNote" type="text" maxlength="120" placeholder="Ce que tu cherches sur place…" style="${_trIn}" />
@@ -5697,6 +5829,221 @@
       if (ov) ov.addEventListener("click", (e) => { if (e.target === ov) closeGlobe(); });
 
       window.openMyGlobe = openGlobe; // hook éventuel
+    })();
+
+    // ===== ✨ MON ANNÉE SUNMATES : rétro annuelle animée (stories), partageable =====
+    (function setupWrapped() {
+      const YEAR = new Date().getFullYear();
+      const SLIDE_MS = 4200;
+      let slides = [];        // [{ html, share }]
+      let idx = 0;
+      let timer = null;
+      let shareText = "";
+      const reduce = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const cleanCty = (c) => String(c || "").replace(/[\u{1F1E6}-\u{1F1FF}]/gu, "").replace(/\s+/g, " ").trim();
+      // Haversine (km) entre deux points lat/lng.
+      function haversine(a, b) {
+        const R = 6371, toR = (d) => d * Math.PI / 180;
+        const dLat = toR(b.lat - a.lat), dLng = toR(b.lng - a.lng);
+        const s = Math.sin(dLat / 2) ** 2 + Math.cos(toR(a.lat)) * Math.cos(toR(b.lat)) * Math.sin(dLng / 2) ** 2;
+        return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)));
+      }
+
+      // Rassemble les VRAIES données utilisateur (trips + checkpoints + badges).
+      async function gatherData() {
+        let trips = [], checkins = [], badges = [];
+        try { trips = (await db.from("trips").select("*").eq("user_id", myUserId)).data || []; } catch (e) {}
+        try { checkins = (await db.from("checkpoints").select("*").eq("user_id", myUserId)).data || []; } catch (e) {}
+        try { badges = (await db.from("user_badges").select("badge_key,name,emoji,earned_at").eq("user_id", myUserId)).data || []; } catch (e) {}
+        // Sélection « année en cours » ; repli « depuis le début » si trop peu de matière.
+        const inYear = (d) => String(d || "").slice(0, 4) === String(YEAR);
+        let yTrips = trips.filter((t) => inYear(t.start_date) || inYear(t.end_date));
+        let yChk = checkins.filter((c) => inYear(c.created_at));
+        let yBadges = badges.filter((b) => inYear(b.earned_at));
+        let scope = "year";
+        if (yTrips.length + yChk.length < 2) { yTrips = trips; yChk = checkins; yBadges = badges; scope = "all"; }
+        return { trips: yTrips, checkins: yChk, badges: yBadges, scope, allTrips: trips };
+      }
+
+      // Construit les slides à partir des données. Saute proprement les slides « vides ».
+      function buildSlides(d) {
+        const out = [];
+        const scopeLbl = d.scope === "year" ? ("Ton année " + YEAR) : "Depuis le début";
+        const shareBits = [];
+
+        // 1 · Intro
+        out.push({ html: `
+          <div class="wr-emoji">✨</div>
+          <div class="wr-kicker">SunMates</div>
+          <div class="wr-title">Ton année SunMates ${YEAR}</div>
+          <div class="wr-sub">Un petit voyage dans tes voyages. C'est parti.</div>` });
+
+        // 2 · Pays & villes
+        const villes = new Set(d.trips.map((t) => (t.city || "").trim().toLowerCase()).filter(Boolean));
+        const pays = new Set(d.trips.map((t) => cleanCty(t.country)).filter(Boolean));
+        if (villes.size || pays.size) {
+          shareBits.push(`${villes.size} ville${villes.size > 1 ? "s" : ""}` + (pays.size ? ` · ${pays.size} pays` : ""));
+          out.push({ html: `
+            <div class="wr-kicker">${escapeHtml(scopeLbl)}</div>
+            <div class="wr-big">${villes.size}</div>
+            <div class="wr-title">ville${villes.size > 1 ? "s" : ""} explorée${villes.size > 1 ? "s" : ""}</div>
+            ${pays.size ? `<div class="wr-sub">dans <b>${pays.size}</b> pays différent${pays.size > 1 ? "s" : ""} 🌍</div>` : ""}
+            ${pays.size ? `<div class="wr-chips">${[...pays].slice(0, 6).map((p) => `<span class="wr-chip">${escapeHtml(p)}</span>`).join("")}</div>` : ""}` });
+        }
+
+        // 3 · Check-ins (+ lieu le plus visité)
+        if (d.checkins.length) {
+          const counts = {}; d.checkins.forEach((c) => { if (c.cafe_id != null) counts[c.cafe_id] = (counts[c.cafe_id] || 0) + 1; });
+          let top = null, topN = 0; for (const k in counts) if (counts[k] > topN) { topN = counts[k]; top = k; }
+          shareBits.push(`${d.checkins.length} check-in${d.checkins.length > 1 ? "s" : ""}`);
+          out.push({ html: `
+            <div class="wr-kicker">Sur le terrain</div>
+            <div class="wr-big">${d.checkins.length}</div>
+            <div class="wr-title">check-in${d.checkins.length > 1 ? "s" : ""}</div>
+            ${topN > 1 ? `<div class="wr-sub">Ton repaire : un lieu où tu es revenu·e <b>${topN}</b> fois ☕</div>` : `<div class="wr-sub">Autant de spots sûrs validés en vrai 📍</div>`}` });
+        }
+
+        // 4 · Badges (si dispo)
+        if (d.badges.length) {
+          shareBits.push(`${d.badges.length} badge${d.badges.length > 1 ? "s" : ""}`);
+          const emojis = d.badges.map((b) => b.emoji).filter(Boolean).slice(0, 8).join(" ");
+          out.push({ html: `
+            <div class="wr-kicker">Collection</div>
+            <div class="wr-big">${d.badges.length}</div>
+            <div class="wr-title">badge${d.badges.length > 1 ? "s" : ""} débloqué${d.badges.length > 1 ? "s" : ""}</div>
+            ${emojis ? `<div class="wr-emoji" style="font-size:2rem">${emojis}</div>` : ""}` });
+        }
+
+        // 5 · Chiffre fun : plus long voyage + distance approx
+        let funHtml = "";
+        if (d.trips.length) {
+          let longest = 0;
+          d.trips.forEach((t) => { try { const a = new Date(t.start_date), b = new Date(t.end_date); const days = Math.round((b - a) / 86400000) + 1; if (days > longest) longest = days; } catch (e) {} });
+          // Distance approx : somme des sauts entre voyages consécutifs (chronologiques) avec coords.
+          const pts = d.trips.filter((t) => typeof t.lat === "number" && typeof t.lng === "number" && isFinite(t.lat) && isFinite(t.lng))
+                             .sort((a, b) => (a.start_date || "").localeCompare(b.start_date || ""));
+          let km = 0; for (let i = 1; i < pts.length; i++) km += haversine(pts[i - 1], pts[i]);
+          if (longest > 0) {
+            funHtml = `
+              <div class="wr-kicker">Anecdote</div>
+              <div class="wr-big">${longest}</div>
+              <div class="wr-title">jour${longest > 1 ? "s" : ""} loin de chez toi</div>
+              <div class="wr-sub">ton plus long voyage de l'année 🧳${km > 50 ? `<br>… et près de <b>${Math.round(km).toLocaleString("fr-FR")} km</b> parcourus ✈️` : ""}</div>`;
+            if (km > 50) shareBits.push(`~${Math.round(km).toLocaleString("fr-FR")} km`);
+          }
+        }
+        if (funHtml) out.push({ html: funHtml });
+
+        // 6 · Récap final + partage
+        shareText = `Mon année SunMates ${YEAR} ✨ ` + (shareBits.length ? shareBits.join(" · ") : "Mon voyage solo a trouvé sa bande ☀️");
+        out.push({ html: `
+          <div class="wr-emoji">☀️</div>
+          <div class="wr-kicker">${escapeHtml(scopeLbl)} en bref</div>
+          <div class="wr-title">Quelle aventure.</div>
+          ${shareBits.length ? `<div class="wr-chips">${shareBits.map((s) => `<span class="wr-chip">${escapeHtml(s)}</span>`).join("")}</div>` : `<div class="wr-sub">Ton histoire ne fait que commencer.</div>`}
+          <button type="button" class="wr-share" id="wrShareBtn">📲 Partager mon année</button>`, isFinal: true });
+
+        return out;
+      }
+
+      function clearTimer() { if (timer) { clearTimeout(timer); timer = null; } }
+
+      function renderBars() {
+        const bars = $("wrBars"); if (!bars) return;
+        bars.innerHTML = slides.map((_, i) => `<div class="wr-bar${i < idx ? " is-done" : ""}${i === idx ? " is-active" : ""}"><i></i></div>`).join("");
+        // Lance l'animation de la barre active (sauf reduced-motion).
+        if (!reduce()) {
+          const active = bars.children[idx];
+          if (active) { active.style.setProperty("--wr-dur", SLIDE_MS + "ms"); requestAnimationFrame(() => active.classList.add("run")); }
+        }
+      }
+
+      function show(i) {
+        if (i < 0) i = 0;
+        if (i >= slides.length) { close(); return; }
+        idx = i; clearTimer();
+        const stage = $("wrStage"); if (!stage) return;
+        stage.innerHTML = slides.map((s, k) => `<div class="wr-slide${k === idx ? " is-shown" : ""}">${s.html}</div>`).join("");
+        renderBars();
+        // confettis légers sur le slide final
+        if (slides[idx] && slides[idx].isFinal && typeof celebrate === "function") celebrate();
+        const sb = $("wrShareBtn"); if (sb) sb.addEventListener("click", (e) => { e.stopPropagation(); doShare(); });
+        if (!reduce()) timer = setTimeout(() => show(idx + 1), SLIDE_MS);
+      }
+
+      // Génère une image de partage via canvas (repli texte si indispo).
+      function makeShareCanvas() {
+        try {
+          const W = 1080, H = 1920, c = document.createElement("canvas"); c.width = W; c.height = H;
+          const g = c.getContext("2d");
+          const grad = g.createLinearGradient(0, 0, W, H);
+          grad.addColorStop(0, "#2a1556"); grad.addColorStop(.55, "#5a1d4f"); grad.addColorStop(1, "#120a22");
+          g.fillStyle = grad; g.fillRect(0, 0, W, H);
+          g.fillStyle = "#FFD15C"; g.font = "700 48px Manrope, sans-serif"; g.textAlign = "center";
+          g.fillText("MON ANNÉE SUNMATES", W / 2, 360);
+          g.fillStyle = "#ffffff"; g.font = "900 240px Fraunces, Georgia, serif";
+          g.fillText(String(YEAR), W / 2, 640);
+          g.font = "600 46px Manrope, sans-serif"; g.fillStyle = "#e7ddf2";
+          const bits = shareText.replace(/^Mon année SunMates \d+ ✨ /, "").split(" · ");
+          bits.slice(0, 5).forEach((b, i) => g.fillText(b, W / 2, 900 + i * 90));
+          g.fillStyle = "#ff9a8d"; g.font = "700 40px Manrope, sans-serif";
+          g.fillText("☀️ sunmatesapp.com", W / 2, 1760);
+          return c;
+        } catch (e) { return null; }
+      }
+
+      async function doShare() {
+        const txt = shareText + "\nsunmatesapp.com";
+        const c = makeShareCanvas();
+        // 1) Web Share avec image si possible
+        if (c && navigator.canShare && window.ClipboardItem !== undefined) {
+          try {
+            const blob = await new Promise((res) => c.toBlob(res, "image/png"));
+            if (blob) {
+              const file = new File([blob], "mon-annee-sunmates.png", { type: "image/png" });
+              if (navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: txt }); return; }
+            }
+          } catch (e) { if (e && e.name === "AbortError") return; }
+        }
+        // 2) Web Share texte
+        if (navigator.share) { try { await navigator.share({ title: "Mon année SunMates", text: txt }); return; } catch (e) { if (e && e.name === "AbortError") return; } }
+        // 3) Repli : télécharge l'image si on en a une
+        if (c) { try { const a = document.createElement("a"); a.download = "mon-annee-sunmates.png"; a.href = c.toDataURL("image/png"); a.click(); if (typeof toast === "function") toast("📲", "Image enregistrée ✨"); return; } catch (e) {} }
+        // 4) Dernier repli : copie le texte
+        try { await navigator.clipboard.writeText(txt); if (typeof toast === "function") toast("📋", "Récap copié, à toi de le partager ✨"); }
+        catch (e) { if (typeof toast === "function") toast("✨", txt); }
+      }
+
+      async function open() {
+        const ov = $("wrappedOverlay"); if (!ov || !myUserId) { if (typeof toast === "function") toast("✨", "Connecte-toi pour voir ton année"); return; }
+        ov.classList.remove("hidden");
+        const stage = $("wrStage"); if (stage) stage.innerHTML = '<div class="wr-slide is-shown"><div class="wr-emoji">✨</div><div class="wr-sub">On prépare ton année…</div></div>';
+        requestAnimationFrame(() => ov.classList.add("is-open"));
+        document.body.style.overflow = "hidden";
+        try { if (typeof track === "function") track("wrapped_open", {}); } catch (e) {}
+        const data = await gatherData();
+        slides = buildSlides(data);
+        idx = 0; show(0);
+      }
+      function close() {
+        clearTimer();
+        const ov = $("wrappedOverlay"); if (!ov) return;
+        ov.classList.remove("is-open");
+        document.body.style.overflow = "";
+        setTimeout(() => { ov.classList.add("hidden"); const s = $("wrStage"); if (s) s.innerHTML = ""; }, 300);
+      }
+
+      const openBtn = $("wrappedOpenBtn"); if (openBtn) openBtn.addEventListener("click", open);
+      const closeBtn = $("wrappedClose"); if (closeBtn) closeBtn.addEventListener("click", (e) => { e.stopPropagation(); close(); });
+      const prev = $("wrPrev"); if (prev) prev.addEventListener("click", () => show(idx - 1));
+      const next = $("wrNext"); if (next) next.addEventListener("click", () => show(idx + 1));
+      document.addEventListener("keydown", (e) => {
+        if (!$("wrappedOverlay") || $("wrappedOverlay").classList.contains("hidden")) return;
+        if (e.key === "Escape") close();
+        else if (e.key === "ArrowRight") show(idx + 1);
+        else if (e.key === "ArrowLeft") show(idx - 1);
+      });
+      window.openMyWrapped = open; // hook éventuel
     })();
 
     // ===== 📜 P14 : CONDITIONS & CONFIDENTIALITÉ (remplace le récap story, supprimé) =====
