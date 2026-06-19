@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=585"></script>
+  <script src="sunmates-badges.js?v=586"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -399,6 +399,182 @@
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
       align-items: center; overflow: hidden;
     }
+
+    /* =====================================================================
+       MATES + CHAT — montée en gamme (v583, juin 2026)
+       Tout est scopé à l'onglet Mates / vue chat. Variables DA réutilisées :
+       --accent (corail), --gold, --ink, --muted, --card, --line, --surface,
+       --accent-soft, --accent-grad, --sunset-grad. Aucune couleur hors DA.
+       Courbes d'easing « fortes » (philosophie design eng).
+       ===================================================================== */
+    :root {
+      --mate-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* ---- Hiérarchie de l'en-tête Mates (titre + stat + invite plus aérés) ---- */
+    #matesHome > h1[data-i18n="mates.title"] { margin-bottom: .15rem; }
+    .tab-panel[data-panel="connexions"] .mates-stat { margin: .55rem auto 1rem; }
+    /* La stat « Mates de confiance » : pastille plus premium, pression douce */
+    .tab-panel[data-panel="connexions"] .mates-stat {
+      box-shadow: 0 4px 14px rgba(45,38,52,.08); transition: transform .12s var(--mate-ease-out), box-shadow .16s ease;
+    }
+    .tab-panel[data-panel="connexions"] .mates-stat:hover { box-shadow: 0 6px 18px rgba(45,38,52,.12); }
+    /* Bannière d'invitation : plus discrète sous l'en-tête, ne vole plus la vedette */
+    .tab-panel[data-panel="connexions"] .invite-banner {
+      margin: .1rem 0 .25rem; border-radius: 16px; box-shadow: 0 3px 12px rgba(45,38,52,.10);
+      transition: transform .12s var(--mate-ease-out), box-shadow .16s ease;
+    }
+    .tab-panel[data-panel="connexions"] .invite-banner:hover { box-shadow: 0 6px 18px rgba(45,38,52,.16); }
+
+    /* ---- Segments Messages / Découvrir / Demandes ---- */
+    .tab-panel[data-panel="connexions"] .mseg button {
+      transition: background .18s ease, color .18s ease, transform .1s var(--mate-ease-out);
+    }
+    .tab-panel[data-panel="connexions"] .mseg button:active { transform: scale(.97); }
+    .tab-panel[data-panel="connexions"] .mseg button.active { box-shadow: 0 3px 10px rgba(255,90,77,.28); }
+
+    /* ============================ MESSAGES (liste) ============================ */
+    /* #convList n'est plus une « carte » bordée mais une vraie pile de
+       conversations. On neutralise le padding de .card et on stylise chaque ligne. */
+    #convList.card { padding: .25rem .35rem; }
+    #convList:empty { padding: 0; }
+    /* État vide « Pas encore de conversation » : on lui rend de l'air dans la carte resserrée */
+    #convList > .empty { padding: 1.6rem .8rem 1.4rem; }
+    #convList .conv-open {
+      display: flex; align-items: center; gap: .8rem; padding: .7rem .65rem; margin: 0;
+      border: 0; border-radius: 16px; cursor: pointer; position: relative;
+      transition: background .16s ease, transform .1s var(--mate-ease-out);
+    }
+    #convList .conv-open + .conv-open { margin-top: .12rem; }
+    #convList .conv-open:hover { background: var(--accent-soft); }
+    #convList .conv-open:active { transform: scale(.99); }
+    #convList .conv-open .avatar { width: 50px; height: 50px; font-size: 1.05rem; flex-shrink: 0; }
+    #convList .conv-open .info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .12rem; }
+    #convList .conv-open .info .name {
+      font-family: "Fraunces", serif; font-weight: 700; font-size: .98rem; color: var(--ink);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
+    }
+    /* Aperçu du dernier message : 1 ligne tronquée, ton apaisé */
+    #convList .conv-preview {
+      color: var(--muted); font-size: .82rem; line-height: 1.3; max-width: none; flex: none;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    /* Conversation non lue : aperçu plus appuyé + pastille corail */
+    #convList .conv-open.conv-unread .conv-preview { color: var(--ink); font-weight: 600; }
+    #convList .conv-meta { display: flex; flex-direction: column; align-items: flex-end; gap: .3rem; flex-shrink: 0; }
+    #convList .conv-time { color: var(--muted); font-size: .7rem; white-space: nowrap; font-weight: 600; }
+    #convList .conv-open.conv-unread .conv-time { color: var(--accent); }
+    #convList .conv-dot {
+      width: 9px; height: 9px; border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft); flex-shrink: 0;
+    }
+    /* La flèche › n'apparaît qu'au survol (moins de bruit visuel au repos) */
+    #convList .conv-open .qarrow {
+      color: var(--accent); font-weight: 800; font-size: 1.05rem; line-height: 1;
+      opacity: 0; transform: translateX(-3px); transition: opacity .16s ease, transform .16s var(--mate-ease-out);
+    }
+    #convList .conv-open:hover .qarrow { opacity: 1; transform: translateX(0); }
+    /* Conversation épinglée (BFF) : liseré doré chaud */
+    #convList .conv-open.conv-bff {
+      background: linear-gradient(135deg, rgba(255,209,92,.16), rgba(255,90,77,.08));
+      box-shadow: inset 0 0 0 1px rgba(255,209,92,.4);
+    }
+    #convList .conv-pin {
+      font-size: .62rem; font-weight: 800; color: #b5740e; background: rgba(255,209,92,.25);
+      border-radius: 999px; padding: .04rem .4rem; vertical-align: middle; white-space: nowrap;
+    }
+    body.theme-dusk #convList .conv-open:hover { background: rgba(255,255,255,.06); }
+    body.theme-dusk #convList .conv-pin { color: #ffce8a; background: rgba(255,209,92,.16); }
+    @media (hover: none) { #convList .conv-open .qarrow { opacity: .55; transform: none; } }
+
+    /* ============================ VUE CHAT ============================ */
+    /* En-tête : avatar + nom serif + statut (en ligne / vérifié), barre soignée */
+    #matesChat .chat-header { padding: .15rem 0 .8rem; gap: .6rem; align-items: center; }
+    #matesChat #chatAvatar { width: 44px; height: 44px; font-size: 1rem; flex-shrink: 0; }
+    #matesChat #chatProfileBtn { gap: .65rem; }
+    #matesChat #chatName { font-family: "Fraunces", serif; font-weight: 700; font-size: 1.06rem; line-height: 1.15; }
+    /* Statut sous le nom : « en ligne » = point ambré DA, pas de vert */
+    #matesChat #chatStatus { display: flex; align-items: center; gap: .3rem; font-size: .76rem; color: var(--muted); }
+    #matesChat #chatStatus.is-online { color: var(--accent); font-weight: 700; }
+    #matesChat #chatStatus.is-online::before {
+      content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft); display: inline-block; flex-shrink: 0;
+    }
+    #matesChat .chat-header .backbtn {
+      transition: transform .1s var(--mate-ease-out), background .15s ease;
+    }
+    #matesChat .chat-header .backbtn:active { transform: scale(.92); }
+
+    /* Corps : un fond doux qui distingue la zone de conversation */
+    #matesChat .chat-body { gap: .12rem; padding: .35rem .15rem .6rem; }
+
+    /* Bulles : entrée douce, ombres calibrées, queue plus marquée */
+    #chatBody .msg-row { margin: .12rem 0; }
+    #chatBody .bubble {
+      padding: .62rem .9rem; border-radius: 18px; font-size: .9rem; line-height: 1.4;
+      box-shadow: 0 1px 3px rgba(45,38,52,.06);
+      animation: bubbleIn .26s var(--mate-ease-out) both;
+    }
+    @keyframes bubbleIn { from { opacity: 0; transform: translateY(6px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    #chatBody .bubble.me {
+      background: var(--accent-grad); color: #fff; border-bottom-right-radius: 6px;
+      box-shadow: 0 4px 12px rgba(255,90,77,.22);
+    }
+    #chatBody .bubble.them { border-bottom-left-radius: 6px; }
+    /* Regroupement : bulles consécutives du même côté plus serrées (effet « grappe ») */
+    #chatBody .msg-row.me + .msg-row.me, #chatBody .msg-row.them + .msg-row.them { margin-top: .04rem; }
+    @media (prefers-reduced-motion: reduce) { #chatBody .bubble { animation: none; } }
+
+    /* Séparateur de date : pilule discrète, déjà câblée → on raffine */
+    #chatBody .chat-daysep { margin: 1rem 0 .6rem; }
+    #chatBody .chat-daysep span {
+      font-size: .68rem; font-weight: 800; letter-spacing: .03em; text-transform: capitalize;
+      padding: .26rem .8rem; box-shadow: 0 1px 4px rgba(45,38,52,.06);
+    }
+
+    /* Accusé de lecture « Vu » : aligné à droite, ton DA */
+    #chatBody .seen-mark { display: inline-flex; align-items: center; gap: .15rem; }
+
+    /* Brise-glace (chat vide) : carte chaleureuse, chips engageantes */
+    #chatBody .ice-break {
+      margin: auto 0; align-items: stretch; gap: .5rem; padding: 1.2rem .3rem;
+      animation: bubbleIn .3s var(--mate-ease-out) both;
+    }
+    #chatBody .ice-break-t {
+      font-family: "Fraunces", serif; font-size: 1rem; font-weight: 700; color: var(--ink);
+      text-transform: none; letter-spacing: 0; margin-bottom: .35rem;
+    }
+    #chatBody .ice-chip {
+      display: flex; align-items: center; gap: .5rem; width: 100%; text-align: left;
+      background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+      padding: .7rem .85rem; font-size: .86rem; font-weight: 600; color: var(--ink); cursor: pointer;
+      box-shadow: 0 2px 8px rgba(45,38,52,.05);
+      transition: transform .12s var(--mate-ease-out), box-shadow .16s ease, border-color .16s ease;
+    }
+    #chatBody .ice-chip:hover { border-color: var(--accent); box-shadow: 0 5px 14px rgba(255,90,77,.14); }
+    #chatBody .ice-chip:active { transform: scale(.98); }
+    #chatBody .ice-chip .ice-spark { flex-shrink: 0; filter: var(--relief); }
+    body.theme-dusk #chatBody .ice-chip { background: var(--dcard,#2a2140); border-color: rgba(255,255,255,.08); }
+
+    /* Barre de saisie : surface élégante, pression réactive sur les boutons */
+    #matesChat .chat-input { gap: .45rem; padding: .65rem 0 .35rem; align-items: center; }
+    #matesChat .chat-input input {
+      border-radius: 999px; padding: .72rem 1.05rem; box-shadow: 0 2px 8px rgba(45,38,52,.06);
+      transition: box-shadow .16s ease, border-color .16s ease;
+    }
+    #matesChat .chat-input input:focus { box-shadow: 0 3px 12px rgba(255,90,77,.16); border-color: var(--accent); }
+    #matesChat .chat-input input:disabled { opacity: .6; }
+    #matesChat .chat-input .iconbtn { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; transition: transform .12s var(--mate-ease-out); }
+    #matesChat .chat-input .iconbtn:active { transform: scale(.88); }
+    #matesChat #chatSend {
+      width: 44px; height: 44px; padding: 0; border-radius: 50%; flex-shrink: 0; font-size: 1.05rem;
+      display: grid; place-items: center; box-shadow: 0 3px 10px rgba(255,90,77,.28);
+      transition: transform .12s var(--mate-ease-out), box-shadow .16s ease;
+    }
+    #matesChat #chatSend:active { transform: scale(.9); }
+
+    /* Mate du jour (Découvrir) : léger lift cohérent au reste */
+    .tab-panel[data-panel="connexions"] #mateOfDay > * { transition: transform .12s var(--mate-ease-out); }
   </style>
 
   <!-- ============================================================
@@ -8345,6 +8521,8 @@
       convIds.sort((a, b) => (lastByPeer[b]?.created_at || "").localeCompare(lastByPeer[a]?.created_at || ""));
       // #13 : le BFF du moment vit ICI · conversation ÉPINGLÉE en tête, case dorée.
       if (myBffId && convIds.includes(myBffId)) { convIds.splice(convIds.indexOf(myBffId), 1); convIds.unshift(myBffId); }
+      // Interlocuteurs avec au moins un message non lu (pastille + aperçu appuyé)
+      const unreadPeers = new Set((typeof unreadList !== "undefined" ? unreadList : []).map((u) => u.sender_id));
       $("convList").innerHTML = convIds.length
         ? convIds
             .map((other) => {
@@ -8352,10 +8530,14 @@
               const preview = lm ? ((lm.sender_id === myId ? "Toi : " : "") + String(lm.content || "").slice(0, 140)) : "Toucher pour discuter 💬"; // aperçu borné : un message-pavé ne gonfle plus la liste
               const t = lm ? timeAgo(lm.created_at) : "";
               const isBff = other === myBffId;
-              return `<div class="person conv-open${isBff ? " conv-bff" : ""}" data-chat="${other}" style="cursor:pointer">
+              const isUnread = unreadPeers.has(other);
+              const meta = isUnread
+                ? `<div class="conv-meta"><span class="conv-time">${t}</span><span class="conv-dot" title="Non lu"></span></div>`
+                : `<div class="conv-meta"><span class="conv-time">${t}</span><span class="qarrow">›</span></div>`;
+              return `<div class="person conv-open${isBff ? " conv-bff" : ""}${isUnread ? " conv-unread" : ""}" data-chat="${other}" style="cursor:pointer">
                 ${avatarMarkup(nameOf(other), avatarOf(other), null, isActive(travelerMap[other]))}
-                <div class="info"><div class="name">${escapeHtml(nameOf(other))}${isBff ? ' <span class="conv-pin">📌 ⭐ BFF</span>' : ""}</div><div class="conv-preview">${escapeHtml(preview)}</div></div>
-                <div style="text-align:right;white-space:nowrap"><div class="muted" style="font-size:.7rem">${t}</div><div class="qarrow">›</div></div></div>`;
+                <div class="info"><div class="name">${escapeHtml(nameOf(other))}${isBff ? ' <span class="conv-pin">⭐ BFF</span>' : ""}</div><div class="conv-preview">${escapeHtml(preview)}</div></div>
+                ${meta}</div>`;
             }).join("")
         : emptyState("💬", "Pas encore de conversation", "Connecte-toi avec des voyageurs pour commencer à discuter en sécurité.", "Découvrir des Mates", "discover");
       $("convList").querySelectorAll("[data-chat]").forEach((el) =>
@@ -10199,7 +10381,7 @@
         return `<div class="person conv-open" data-demochat="${id}" style="cursor:pointer">
           ${avatarMarkup(p.username || "IA", p.avatar_url)}
           <div class="info"><div class="name">${escapeHtml(p.username || "IA")} 🤖</div><div class="conv-preview">${escapeHtml(preview)}</div></div>
-          <div class="qarrow">›</div></div>`;
+          <div class="conv-meta"><span class="qarrow">›</span></div></div>`;
       }).join("");
       box.insertAdjacentHTML("afterbegin", html);
       box.querySelectorAll("[data-demochat]").forEach((el) => el.addEventListener("click", () => openChat(el.dataset.demochat)));
@@ -10243,8 +10425,15 @@
       const chOnline = typeof isActive === "function" && isActive(p);
       $("chatAvatar").querySelectorAll(".pdot").forEach((d) => d.remove());
       if (chOnline) $("chatAvatar").insertAdjacentHTML("beforeend", '<span class="pdot"></span>');
-      $("chatStatus").textContent = (p.is_demo || String(otherUserId).startsWith("ia-")) ? "🤖 Compte démo (IA) · Voir le profil ›" : (chOnline ? (t("presence.active") + " · " + t("chat.seeProfile")) : t("chat.seeProfile"));
-      $("chatStatus").dataset.base = $("chatStatus").textContent; // base pour l'indicateur « écrit… »
+      { const stEl = $("chatStatus");
+        const isIa = (p.is_demo || String(otherUserId).startsWith("ia-"));
+        const verifMark = (!isIa && p.is_verified) ? "🛡️ " : "";
+        // En ligne : le point ambré (CSS .is-online::before) PORTE l'info → on n'écrit plus le mot.
+        stEl.textContent = isIa ? "🤖 Compte démo (IA) · " + t("chat.seeProfile")
+          : (chOnline ? (verifMark + t("chat.seeProfile")) : (verifMark + t("chat.seeProfile")));
+        stEl.classList.toggle("is-online", !!chOnline && !isIa);
+        stEl.dataset.base = stEl.textContent; // base pour l'indicateur « écrit… »
+      }
       if (typeof renderChatFlame === "function") renderChatFlame(otherUserId);
       { const it = $("chatNotifItem"); if (it) it.textContent = (localStorage.getItem("sm_chatnotif_" + otherUserId) === "0") ? "🔕 Notifications : coupées" : "🔔 Notifications : activées"; }
       $("chatBody").innerHTML = '<p class="muted" style="text-align:center">Chargement…</p>';
