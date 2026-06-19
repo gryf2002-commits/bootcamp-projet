@@ -65,3 +65,10 @@ icones-modes.html
 # Ménage v570 : artefacts locaux (scratch dev archivé + captures de vérif) — gardés sur disque, hors repo
 _archive/
 _da_shots/
+
+# Sauvegardes / fichiers de travail (jamais publiés) — ex. index.html.bak-tdz, preview.html.bak-css
+*.bak
+*.bak-*
+*.SAVE*
+*.orig
+*.tmp
