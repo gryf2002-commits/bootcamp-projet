@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=583"></script>
+  <script src="sunmates-badges.js?v=584"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -345,6 +345,61 @@
     }
   </script>
   <link rel="stylesheet" href="styles.css?v=583">
+  <!-- ============================================================
+       PREVIEW FIXES (inline, scopé preview) — 19/06 : header mobile,
+       onglet Messages, idées geo cliquables, centrage, contrôle saison.
+       Inline pour NE PAS toucher styles.css (partagé avec app.html live).
+       À fusionner dans styles.css au moment du push (feu vert Maxime).
+       ============================================================ -->
+  <style id="preview-fixes-2026">
+    /* Header : tient sur les petits écrans (≤380px) sans chevauchement */
+    .topbar { gap: .5rem; }
+    .topbar-actions { display: flex; align-items: center; gap: .35rem; flex-shrink: 0; }
+    @media (max-width: 380px) {
+      .topbar { padding-left: .9rem; padding-right: .9rem; }
+      .topbar-actions { gap: .15rem; }
+      .topbar-actions .iconbtn { width: 38px; height: 38px; padding: 0; }
+      .brand b { font-size: 1.05rem; }
+    }
+    @media (max-width: 330px) {
+      /* en tout dernier recours, le wordmark s'efface avant que ça déborde */
+      .brand b { font-size: .98rem; }
+      .topbar-actions .iconbtn { width: 36px; height: 36px; }
+    }
+    /* Bouton Messages du header : badge non-lus réutilise le style .nbadge */
+    #topMsgBtn { position: relative; }
+    /* Idées « Ici, maintenant » : lignes cliquables (tuiles d'idées) */
+    #geoNowCard .geo-idea {
+      display: flex; align-items: center; gap: .4rem; width: 100%; text-align: left;
+      background: transparent; border: 0; padding: .28rem .35rem; margin: 0; border-radius: 9px;
+      color: inherit; font: inherit; font-size: .86rem; cursor: pointer; transition: background .15s;
+    }
+    #geoNowCard .geo-idea:hover, #geoNowCard .geo-idea:focus-visible { background: rgba(0,0,0,.05); outline: none; }
+    #geoNowCard .geo-idea .gi-arrow { opacity: .5; margin-left: auto; }
+    body.theme-dusk #geoNowCard .geo-idea:hover, body.theme-dusk #geoNowCard .geo-idea:focus-visible { background: rgba(255,255,255,.08); }
+    /* Contrôle saison (easter egg) : caché par défaut, montré quand débloqué */
+    #seasonCtl { margin-top: .5rem; }
+    #seasonCtl.hidden { display: none; }
+    #seasonCtl .seg { display: flex; gap: .35rem; margin-top: .4rem; }
+    #seasonCtl .seg button { flex: 1; min-width: 0; padding: .5rem .25rem; border-radius: 10px; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); font-weight: 700; font-size: .78rem; white-space: nowrap; cursor: pointer; }
+    #seasonCtl .seg button.active { border-color: var(--accent); background: var(--accent-soft, rgba(255,209,92,.15)); }
+    /* Centrage cohérent : titres de section vides + sous-titres d'écran */
+    .set-grouptitle { text-align: left; } /* labels de réglages restent alignés à gauche (lisibilité) */
+
+    /* Tuiles ACCÈS RAPIDES : grille cohérente. Avant, .t-meta{margin-top:auto} collait la
+       méta en bas → grand vide entre l'icône et le texte quand une tuile était plus haute que
+       sa voisine (effet « décousu »). On regroupe le contenu en haut, slots de hauteur fixe. */
+    .tab-panel[data-panel="accueil"] .grid2 .tile,
+    .secu-view .grid2 .tile { justify-content: flex-start; gap: .12rem; }
+    .tab-panel[data-panel="accueil"] .grid2 .tile .t-name,
+    .secu-view .grid2 .tile .t-name { min-height: 2.4em; display: flex; align-items: center; justify-content: center; }
+    .tab-panel[data-panel="accueil"] .grid2 .tile .t-meta,
+    .secu-view .grid2 .tile .t-meta {
+      margin-top: 0; line-height: 1.2; min-height: 2.3em;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      align-items: center; overflow: hidden;
+    }
+  </style>
 
   <!-- ============================================================
        SM-2026 · SEO / partage social / données structurées
@@ -1170,8 +1225,10 @@
       <div class="topbar-actions hidden" id="userBox">
         <!-- LITE UNIQUEMENT (masqué en CSS hors body.sm-lite) — accès Sécurité permanent, toujours à portée. data-tab="securite" → câblé par le listener générique goToTab. -->
         <button class="iconbtn secu-top" id="topSecuBtn" data-tab="securite" title="Sécurité" aria-label="Sécurité — SOS, partage de position et contacts d'urgence"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3 5.5 5.7v6.1c0 4 2.8 7 6.5 8.4 3.7-1.4 6.5-4.4 6.5-8.4V5.7L12 3z"/><path d="M9.3 12.2l1.9 1.9 3.6-3.8"/></svg><span class="navbadge hidden" id="navSecuLite" role="status" aria-label="nouvelle activité sécurité">●</span></button>
-        <button class="iconbtn" id="themeToggle" title="Changer de thème" aria-label="Changer de thème jour / nuit">🌙</button>
+        <!-- 🌙 sélecteur de mode (thème/saison) DÉPLACÉ dans Réglages → Apparence -->
         <button class="iconbtn" id="notifBell" aria-label="Notifications"><span data-smicon="bell" data-smicon-size="22">🔔</span><span class="nbadge hidden" id="notifBellCount">0</span></button>
+        <!-- Onglet Messages, tout à droite : ouvre Connexions → Messages -->
+        <button class="iconbtn" id="topMsgBtn" title="Messages" aria-label="Messages"><span data-smicon="chat" data-smicon-size="22">💬</span><span class="nbadge hidden" id="topMsgCount">0</span></button>
         <!-- Déconnexion déplacée dans Réglages (compte) -->
       </div>
     </header>
@@ -1193,6 +1250,13 @@
 
         <!-- GEO-TRIGGER : « Ici, maintenant » → l'app s'adapte au LIEU (quartier + heure + idées). Rempli par renderGeoNow(). -->
         <div id="geoNowCard" class="hidden" role="status" aria-live="polite" style="margin:.55rem 0 .2rem;padding:.7rem .85rem;border-radius:14px;background:var(--accent-soft,rgba(255,209,92,.12));border:1px solid var(--line,rgba(0,0,0,.08))"></div>
+        <!-- Invitation douce à activer la position (geo-trigger) : affichée seulement si pas encore décidée -->
+        <div id="geoPrompt" class="hidden" style="margin:.55rem 0 .2rem;padding:.7rem .85rem;border-radius:14px;background:var(--accent-soft,rgba(255,209,92,.12));border:1px solid var(--line,rgba(0,0,0,.08));display:flex;align-items:center;gap:.6rem">
+          <span style="font-size:1.3rem">📍</span>
+          <div style="flex:1;font-size:.84rem;line-height:1.35">Active ta position pour voir les lieux sûrs et les voyageur·ses <b>autour de toi</b>.</div>
+          <button id="geoPromptBtn" class="btn-accent" style="flex-shrink:0;padding:.5rem .8rem;border-radius:10px">Activer</button>
+          <button id="geoPromptX" aria-label="Fermer" style="flex-shrink:0;background:none;border:0;font-size:1.1rem;color:var(--muted);cursor:pointer">✕</button>
+        </div>
 
         <!-- Bascule Voyage / Maison : l'app s'adapte à ta situation -->
         <div class="mode-switch" id="homeModeSwitch">
@@ -2072,7 +2136,7 @@
             <button class="btn-primary" id="saveProfileBtn">Enregistrer</button>
             <button class="btn-accent" id="verifyBtn">Demander la vérification</button>
           </div>
-          <p class="muted" style="font-size:.74rem;margin:.5rem 0 0;text-align:center">🔎 Vérification <b>simulée</b> (démo MVP), la vraie vérification d'identité arrivera avec le backend.</p>
+          <p class="muted" style="font-size:.74rem;margin:.5rem 0 0;text-align:center">🔎 Vérification <b>simulée</b> pour l'instant, la vraie vérification d'identité arrive bientôt.</p>
           <div class="msg" id="profileMsg"></div>
         </div>
         </div><!-- /prof-seg edit -->
@@ -2358,6 +2422,15 @@
             <div><div class="st-lbl">🌙 Mode sombre</div><div class="st-sub">Thème « nuit tropicale », repose les yeux</div></div>
             <label class="switch"><input type="checkbox" id="setThemeToggle"><span class="sl"></span></label>
           </div>
+          <!-- Contrôle des modes saison : caché tant qu'il n'est pas débloqué (easter egg) -->
+          <div id="seasonCtl" class="hidden">
+            <div class="st-sub" style="font-weight:700;color:var(--ink)">🎨 Ambiance saisonnière</div>
+            <div class="seg">
+              <button type="button" data-season="">🌞 Normal</button>
+              <button type="button" data-season="winter">❄️ Hiver</button>
+              <button type="button" data-season="tropic">🌴 Tropiques</button>
+            </div>
+          </div>
           <!-- Vibrations (haptique) retiré : jamais paramétré -->
           <div class="set-toggle">
             <div><div class="st-lbl" data-i18n="set.sound">🔊 Sons de l'interface</div><div class="st-sub" data-i18n="set.soundSub">Petits sons sur les clics, succès et déblocages</div></div>
@@ -2395,6 +2468,11 @@
             <label class="switch"><input type="checkbox" id="betaToggle"><span class="sl"></span></label>
           </div>
           <!-- (16/06 : bouton « Découvrir la version lite » RETIRÉ → il ouvrait sunmates-app.html, 2e Lite divergente. Désormais : désactive le toggle ci-dessus pour voir la version épurée — UNE seule Lite = body.sm-lite.) -->
+
+          <!-- Autorisations : demandées au bon moment, avec une explication claire -->
+          <div class="set-grouptitle">Autorisations</div>
+          <button class="btn-ghost btn-block" id="permNotifBtn"><span style="display:flex;align-items:center;gap:.5rem"><span>🔔</span><span style="text-align:left"><b style="display:block">Notifications</b><span class="muted" style="font-size:.78rem">Messages, demandes et défis, même app fermée</span></span></span></button>
+          <button class="btn-ghost btn-block" id="permGeoBtn" style="margin-top:.5rem"><span style="display:flex;align-items:center;gap:.5rem"><span>📍</span><span style="text-align:left"><b style="display:block">Localisation</b><span class="muted" style="font-size:.78rem">Lieux sûrs et voyageur·ses autour, partage de position</span></span></span></button>
 
           <!-- Application -->
           <div class="set-grouptitle">Application</div>
@@ -3333,7 +3411,7 @@
       "Choisis une question et réponds-y pour donner vie à ton profil.": "Pick a question and answer it to bring your profile to life.",
       "🔎 Vérification": "🔎 Verification is",
       "simulée": "simulated",
-      "(démo MVP), la vraie vérification d'identité arrivera avec le backend.": "(MVP demo), real identity verification will arrive with the backend.",
+      "pour l'instant, la vraie vérification d'identité arrive bientôt.": "for now, real identity verification is coming soon.",
       "Bientôt disponible": "Coming soon",
       "Me prévenir au lancement": "Notify me at launch",
       "🔔 Me prévenir au lancement": "🔔 Notify me at launch",
@@ -3613,7 +3691,7 @@
       "Catalogue de lieux": "Place catalogue",
       "Cartes photo : éco, check-ins, note, top noté.": "Photo cards: eco, check-ins, rating, top rated.",
       "Check-in par code": "Check-in by code",
-      "Code affiché sur place, validé côté serveur (RPC).": "Code shown on site, validated server-side (RPC).",
+      "Code affiché sur place, validé en sécurité.": "Code shown on site, securely validated.",
       "Filtres & tris en tuiles": "Filters & sorting as tiles",
       "Tous / Éco / Près de moi / Top notés / Populaires.": "All / Eco / Near me / Top rated / Popular.",
       "Avis sur les lieux": "Place reviews",
@@ -3711,7 +3789,7 @@
       "🌱 Filtre éco-responsable": "🌱 Eco-friendly filter",
       "Un filtre met en avant les lieux éco-responsables. Un autre trie par distance autour de toi.": "One filter highlights eco-friendly places. Another sorts by distance around you.",
       "🔒 Le check-in par code": "🔒 Check-in by code",
-      "Pour valider un lieu, il faut le code affiché sur place. Les points sont attribués côté serveur : on est sûr que tu y étais vraiment.": "To validate a place, you need the code shown on site. Points are awarded server-side: we know you were really there.",
+      "Pour valider un lieu, il faut le code affiché sur place. Les points sont attribués de façon sécurisée : on est sûr que tu y étais vraiment.": "To validate a place, you need the code shown on site. Points are awarded securely: we know you were really there.",
       "🤝 Rencontrer des voyageurs": "🤝 Meet travellers",
       "👤 Une fiche détaillée": "👤 A detailed profile card",
       "Chaque profil affiche le pourcentage de compatibilité, le score de confiance, les centres d'intérêt et le nombre de Mates.": "Each profile shows the compatibility percentage, trust score, interests and number of Mates.",
@@ -4167,11 +4245,27 @@
     // Renvoie true UNE seule fois par "key". Empêche une même notification/toast
     // de s'afficher deux fois si Supabase redélivre le même événement temps réel
     // (reconnexion réseau, double abonnement…).
+    // 19/06 : le Set était PUREMENT en mémoire → à chaque reconnexion / rechargement de page,
+    // toutes les demandes/messages/défis déjà en attente étaient re-notifiés (« on les revoit une
+    // 2e fois en se connectant »). On PERSISTE désormais les clés vues, par utilisateur, dans
+    // localStorage : un événement déjà signalé ne re-sonne plus après reload/reconnexion.
     const _notifiedEvents = new Set();
+    let _notifKey = null;
+    function loadNotified(uid) {
+      _notifKey = uid ? "sm_notified_" + uid : null;
+      _notifiedEvents.clear();
+      if (!_notifKey) return;
+      try { (JSON.parse(localStorage.getItem(_notifKey) || "[]") || []).forEach((k) => _notifiedEvents.add(k)); } catch (e) {}
+    }
+    function _saveNotified() {
+      if (!_notifKey) return;
+      try { localStorage.setItem(_notifKey, JSON.stringify([..._notifiedEvents].slice(-500))); } catch (e) {}
+    }
     function notifyOnce(key) {
       if (_notifiedEvents.has(key)) return false;
       _notifiedEvents.add(key);
       if (_notifiedEvents.size > 500) _notifiedEvents.delete(_notifiedEvents.values().next().value);
+      _saveNotified();
       return true;
     }
 
@@ -4546,6 +4640,7 @@
         if (typeof renderHomeMap === "function") setTimeout(renderHomeMap, 80);
         if (typeof updateSafetyBadge === "function") updateSafetyBadge();
         if (typeof maybeShowOnboarding === "function") maybeShowOnboarding();
+        loadNotified(myUserId); // recharge les événements déjà signalés (anti re-notif au reconnect)
         subscribeToCircle();
         subscribeMessages();
         subscribeConnections();
@@ -4554,6 +4649,7 @@
       } else {
         _renderedUserId = null;
         myUserId = null;
+        loadNotified(null); // vide le cache de notifs au logout (sinon l'autre compte en hérite)
         unsubscribeCircle();
         unsubscribeMessages();
         unsubscribeConnections();
@@ -5686,6 +5782,7 @@
       if (typeof updateStreak === "function") updateStreak();
       if (typeof renderAvailChip === "function") renderAvailChip();
       if (typeof renderGeoNow === "function") renderGeoNow(); // geo-trigger « Ici, maintenant »
+      if (typeof maybeShowGeoBanner === "function") maybeShowGeoBanner(); // invitation douce à activer la position
       if (typeof renderTrips === "function") renderTrips();
       if (typeof maybeWeeklyRecap === "function") maybeWeeklyRecap();
       if (typeof renderGameHub === "function") renderGameHub();
@@ -6797,7 +6894,7 @@
       ]],
       ["📍 Lieux sûrs", [
         ["☕", "Catalogue de lieux", "Cartes photo : éco, check-ins, note, top noté."],
-        ["🔒", "Check-in par code", "Code affiché sur place, validé côté serveur (RPC)."],
+        ["🔒", "Check-in par code", "Code affiché sur place, validé en sécurité."],
         ["🧭", "Filtres & tris en tuiles", "Tous / Éco / Près de moi / Top notés / Populaires."],
         ["⭐", "Avis sur les lieux", "Note + commentaires, 1 avis/personne, top noté ≥4.5."],
         ["☀️", "Spot du jour", "Statut éphémère 24 h façon story."],
@@ -7047,7 +7144,7 @@
         run: () => { A(() => goToTab("lieux")); A(() => { cafeFilter.q = "a"; const s = $("cafeSearch"); if (s) s.value = "a"; if (typeof renderCafesList === "function") renderCafesList(); }); } },
       { title: "🌱 Filtre éco-responsable", text: "Un filtre met en avant les lieux éco-responsables. Un autre trie par distance autour de toi.", ms: 6000,
         run: () => { A(() => { cafeFilter = { q: "", mode: "eco" }; const s = $("cafeSearch"); if (s) s.value = ""; if (typeof setCafeChipActive === "function") setCafeChipActive("eco"); if (typeof renderCafesList === "function") renderCafesList(); }); } },
-      { title: "🔒 Le check-in par code", text: "Pour valider un lieu, il faut le code affiché sur place. Les points sont attribués côté serveur : on est sûr que tu y étais vraiment.", ms: 7500,
+      { title: "🔒 Le check-in par code", text: "Pour valider un lieu, il faut le code affiché sur place. Les points sont attribués de façon sécurisée : on est sûr que tu y étais vraiment.", ms: 7500,
         run: () => { A(() => { cafeFilter = { q: "", mode: "all" }; if (typeof setCafeChipActive === "function") setCafeChipActive("all"); if (typeof renderCafesList === "function") renderCafesList(); }); setTimeout(() => { const c = document.querySelector("#cafesList [data-cafecard]"); if (c) { c.scrollIntoView({ block: "center", behavior: "smooth" }); c.classList.add("flash"); setTimeout(() => c.classList.remove("flash"), 1800); } }, 250); } },
       { title: "🤝 Rencontrer des voyageurs", text: "L'onglet Mates propose des voyageurs vérifiés autour de toi, triés par compatibilité ou par confiance.", ms: 6500,
         run: () => { A(() => goToTab("connexions")); A(() => { if (typeof showMatesView === "function") showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); }); } },
@@ -7093,10 +7190,10 @@
         run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => adClick("notifBell"), 500); } },
       { title: "🌍 SunMates en anglais", text: "Un simple réglage bascule toute l'interface en anglais, pratique pour les voyageurs du monde entier. Regarde la navigation et les filtres changer en direct.", ms: 7500,
         run: () => { adCleanup(); A(() => goToTab("connexions")); A(() => { if (typeof showMatesView === "function") showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); }); setTimeout(() => { if (typeof setLang === "function") setLang("en", { persist: false }); }, 700); setTimeout(() => { if (typeof setLang === "function") setLang(localStorage.getItem("sm_lang") || "fr", { persist: false }); }, 6400); } },
-      { title: "🌙 Le mode sombre", text: "Un thème « nuit tropicale » repose les yeux le soir.", ms: 5500,
-        run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => { if (!document.body.classList.contains("theme-dusk")) adClick("themeToggle"); }, 500); } },
-      { title: "☀️ …et le retour au jour", text: "Un simple bouton bascule entre nuit tropicale et mode jour ensoleillé.", ms: 5500,
-        run: () => { setTimeout(() => { if (document.body.classList.contains("theme-dusk")) adClick("themeToggle"); }, 400); } },
+      { title: "🌙 Le mode sombre", text: "Dans les Réglages, un thème « nuit tropicale » repose les yeux le soir.", ms: 5500,
+        run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => { if (!document.body.classList.contains("theme-dusk")) adClick("setThemeToggle"); }, 500); } },
+      { title: "☀️ …et le retour au jour", text: "Le réglage « Mode sombre » bascule entre nuit tropicale et mode jour ensoleillé.", ms: 5500,
+        run: () => { setTimeout(() => { if (document.body.classList.contains("theme-dusk")) adClick("setThemeToggle"); }, 400); } },
       // ===== Chapitres ÉTENDUS (mode Maison, hub de jeu, sécurité avancée, admin) =====
       { title: "🏠 Le mode Maison", text: "Même rentré·e chez toi, l'app continue : bascule « Voyage / Maison » pour accéder à ton hub solo.", ms: 6000,
         run: () => { adCleanup(); A(() => goToTab("accueil")); setTimeout(() => { if (typeof setHomeMode === "function") setHomeMode("home"); adInto("#homeModeSwitch", 200); }, 350); } },
@@ -7241,7 +7338,7 @@
       window._demoOn = false;
       clearTimeout(adTimer); clearTimeout(adHideTimer); adCleanup();
       const bar = $("autoDemo"); if (bar) { bar.classList.add("hidden"); bar.classList.remove("dim"); }
-      if (document.body.classList.contains("theme-dusk") !== adThemeWasDusk) adClick("themeToggle"); // restaure le thème
+      if (document.body.classList.contains("theme-dusk") !== adThemeWasDusk) adClick("setThemeToggle"); // restaure le thème
       if (typeof setLang === "function") A(() => setLang(localStorage.getItem("sm_lang") || "fr", { persist: false })); // restaure la langue
       A(() => goToTab("accueil"));
     }
@@ -9775,7 +9872,7 @@
     }
     // Vignette explicative quand on touche un badge « Vérifié » (vérification simulée en MVP).
     function showVerifInfo() {
-      showInfo("Vérification ✅", '<p style="line-height:1.55;text-align:left">Sur cette démo (MVP), la vérification est <b>simulée</b> : elle attribue le badge ✅ et des points de confiance, pour montrer le principe.<br><br>La <b>vraie vérification d\'identité</b> (pièce + selfie) arrivera avec le backend, c\'est le cœur de la promesse « sécurité » de SunMates. 🛡️</p>');
+      showInfo("Vérification ✅", '<p style="line-height:1.55;text-align:left">Pour l\'instant, la vérification est <b>simulée</b> : elle attribue le badge ✅ et des points de confiance, pour montrer le principe.<br><br>La <b>vraie vérification d\'identité</b> (pièce + selfie) arrive bientôt, c\'est le cœur de la promesse « sécurité » de SunMates. 🛡️</p>');
     }
     ["tpVerif", "verifBadge"].forEach((id) => {
       const e = $(id);
@@ -10587,7 +10684,7 @@
             updateNotifBadges();
             if (window.SMSound) SMSound.play("notify"); // ping signature SunMates
             toast("💬", `<b>${escapeHtml(nameById(m.sender_id))}</b> t'a envoyé un message`,
-              () => { goToTab("connexions"); openChat(m.sender_id); }); // openChat marque cette conversation lue
+              () => { goToTab("connexions"); openChat(m.sender_id); }, { important: true }); // openChat marque cette conversation lue
             if (!window._pushOn) sysNotify("Nouveau message 💬", nameById(m.sender_id) + " t'a écrit sur SunMates", "connexions"); // sinon le push serveur s'en charge (anti-doublon)
             _refreshConnsSoon(); // débounce : pas un rechargement complet par message
           }
@@ -12444,6 +12541,17 @@
         : i18nT("Un verre du soir avec des Mates 🥂");
       return [first, i18nT("Vois qui est dispo autour de toi 👀"), i18nT("Lance un défi de quartier 🎯")];
     }
+    // Route une idée « Ici, maintenant » vers le bon écran selon son contenu (mots-clés).
+    function _geoIdeaGo(text) {
+      const t = (text || "").toLowerCase();
+      if (/défi|defi|quête|quete|jeu|mission/.test(t)) { goToTab("jeux"); return; }
+      if (/dispo|autour|qui est|mate|voyageur|rencontr|cercle|connex/.test(t)) {
+        // « Vois qui est dispo » → signale d'abord ta dispo puis ouvre Connexions/Découvrir
+        goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); return;
+      }
+      // café / déjeuner / verre / balade / musée / lieu… → les lieux sûrs autour
+      goToTab("lieux");
+    }
     // GEO-TRIGGER : remplit la carte « Ici, maintenant ». Position SEULEMENT si déjà accordée (zéro prompt).
     async function renderGeoNow() {
       const card = $("geoNowCard"); if (!card) return;
@@ -12459,17 +12567,33 @@
           try { const c = JSON.parse(localStorage.getItem("sm_weather") || "null"); if (c && c.w && typeof _WMO === "function") meteo = c.w.temp + "° " + _WMO(c.w.code); } catch (e) {}
           let ideas = await aiSuggest({ meteo: meteo });
           if (!ideas) ideas = _ruleSuggest();
+          const top = ideas.slice(0, 3);
           card.innerHTML =
             '<div style="font-weight:800;font-size:.95rem;display:flex;flex-wrap:wrap;gap:.4rem;align-items:baseline">📍 ' + where +
             '<span class="muted" style="font-weight:600;font-size:.78rem">' + moment + (meteo ? " · " + escapeHtml(meteo) : "") + '</span></div>' +
-            '<ul style="margin:.45rem 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.25rem;font-size:.86rem">' +
-            ideas.slice(0, 3).map((s) => '<li style="display:flex;gap:.4rem"><span style="opacity:.6">›</span>' + escapeHtml(s) + '</li>').join("") +
-            '</ul>';
+            '<div style="margin:.4rem 0 0">' +
+            top.map((s, i) => '<button type="button" class="geo-idea" data-idea="' + i + '"><span style="opacity:.6">›</span> ' + escapeHtml(s) + '<span class="gi-arrow">›</span></button>').join("") +
+            '</div>';
+          // GEO-TRIGGER : chaque idée mène à l'écran correspondant (jamais décorative).
+          card.querySelectorAll(".geo-idea").forEach((b) => b.addEventListener("click", () => _geoIdeaGo(top[Number(b.dataset.idea)] || "")));
           card.classList.remove("hidden");
         });
       } catch (e) {}
     }
 
+    // Invitation douce à activer la position : seulement si pas encore accordée/refusée et pas déjà masquée.
+    async function maybeShowGeoBanner() {
+      const el = $("geoPrompt"); if (!el) return;
+      try { if (localStorage.getItem("sm_geo_prompt_dismissed") === "1") return; } catch (e) {}
+      if (!navigator.geolocation || !navigator.permissions || !navigator.permissions.query) return;
+      try {
+        const st = await navigator.permissions.query({ name: "geolocation" });
+        if (st.state === "prompt") el.classList.remove("hidden");
+        else el.classList.add("hidden"); // déjà accordée ou refusée → pas de bandeau
+      } catch (e) {}
+    }
+    { const b = $("geoPromptBtn"); if (b) b.addEventListener("click", async () => { const el = $("geoPrompt"); if (el) el.classList.add("hidden"); if (typeof askGeoPermission === "function") await askGeoPermission(); }); }
+    { const x = $("geoPromptX"); if (x) x.addEventListener("click", () => { const el = $("geoPrompt"); if (el) el.classList.add("hidden"); try { localStorage.setItem("sm_geo_prompt_dismissed", "1"); } catch (e) {} }); }
     // Centre la carte sur la vraie position GPS de l'utilisateur
     function homeLocateMe() {
       if (!homeLeaf) return;
@@ -13261,6 +13385,9 @@
     });
     $("replayOnbBtn").addEventListener("click", () => { if (typeof openOnboarding === "function") openOnboarding(); });
     { const ia = $("installAppBtn"); if (ia) ia.addEventListener("click", () => { if (typeof window.openInstallHelp === "function") window.openInstallHelp(); }); }
+    // Boutons d'autorisations (Réglages) → demande contextuelle au moment du clic
+    { const pn = $("permNotifBtn"); if (pn) pn.addEventListener("click", () => askNotifPermission(true)); }
+    { const pg = $("permGeoBtn"); if (pg) pg.addEventListener("click", () => askGeoPermission()); }
     // P2.50 RGPD : suppression de compte (irréversible) → double confirmation, RPC, déconnexion.
     { const da = $("deleteAccountBtn"); if (da) da.addEventListener("click", () => once("delete-account", async () => {
       if (!(await smConfirmP("⚠️", "Supprimer ton compte ?", "Suppression DÉFINITIVE de ton compte et de toutes tes données. Cette action est irréversible.", "Continuer"))) return;
@@ -13443,7 +13570,9 @@
       el.addEventListener("touchmove", (e) => { if (sy == null) return; const dy = e.touches[0].clientY - sy; if (dy < 0) el.style.transform = `translateY(${dy}px)`; }, { passive: true });
       el.addEventListener("touchend", (e) => { const dy = e.changedTouches[0].clientY - (sy == null ? e.changedTouches[0].clientY : sy); sy = null; if (dy < -36) kill(0); else el.style.transform = ""; });
       wrap.appendChild(el);
-      kill(5200);
+      // Notifs importantes (message, demande, défi) : restent plus longtemps (11 s) pour
+      // laisser le temps de taper dessus sur mobile ; les autres gardent 5,2 s.
+      kill(opts && opts.important ? 11000 : 5200);
     }
 
     // ---- popInfo : une vraie TUILE qui pop au centre (remplace les bandeaux toast pour les explications) ----
@@ -13626,6 +13755,7 @@
       const bell = mates + jeux;
       setBadge("notifBellCount", bell);
       setBadge("segMsg", unreadMsgCount);
+      setBadge("topMsgCount", unreadMsgCount); // badge du bouton Messages (header)
       setBadge("segReq", pendingRequestsList.length);
       // Pastilles contextuelles sur les tuiles d'accès rapides de l'accueil (découvrabilité) :
       // « Mes Mates » si messages non lus / demandes en attente, « Jeux » si défis reçus.
@@ -13644,6 +13774,10 @@
         if (bell > _lastBellCount) { btn.classList.remove("ring"); void btn.offsetWidth; btn.classList.add("ring"); }
       }
       _lastBellCount = bell;
+      // Badge sur l'icône de l'app installée (Android/desktop) : nombre total de notifs en attente.
+      try {
+        if (navigator.setAppBadge) { if (bell > 0) navigator.setAppBadge(bell); else if (navigator.clearAppBadge) navigator.clearAppBadge(); }
+      } catch (e) {}
       updateQuickAccess();
     }
 
@@ -13670,9 +13804,10 @@
     // ---- Panneau de notifications (cloche) ----
     function openNotifPanel() {
       const items = [];
-      pendingRequestsList.forEach((r) => items.push({ e: "📨", h: `<b>${escapeHtml(nameById(r.fromId))}</b> souhaite se connecter`, go: () => { closeNotif(); goToTab("connexions"); } }));
-      unreadList.forEach((u) => items.push({ e: "💬", h: `Nouveau message de <b>${escapeHtml(nameById(u.sender_id))}</b>`, go: () => { closeNotif(); goToTab("connexions"); openChat(u.sender_id); } })); // openChat marque cette conversation lue
-      (mySuggestions || []).forEach((s) => items.push({ e: "🎯", h: `<b>${escapeHtml(nameById(s.from_user))}</b> te propose : ${escapeHtml(s.quest_title || "une quête")}`, go: () => { closeNotif(); acceptSuggestion(s.id, s.quest_key); } }));
+      const _seen = new Set(); // dédup : jamais 2 lignes pour la même demande / le même contact / le même défi
+      pendingRequestsList.forEach((r) => { const k = "req:" + r.fromId; if (_seen.has(k)) return; _seen.add(k); items.push({ e: "📨", h: `<b>${escapeHtml(nameById(r.fromId))}</b> souhaite se connecter`, go: () => { closeNotif(); goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("requests"); } }); });
+      unreadList.forEach((u) => { const k = "msg:" + u.sender_id; if (_seen.has(k)) return; _seen.add(k); const n = unreadList.filter((x) => x.sender_id === u.sender_id).length; items.push({ e: "💬", h: `${n > 1 ? n + " nouveaux messages de " : "Nouveau message de "}<b>${escapeHtml(nameById(u.sender_id))}</b>`, go: () => { closeNotif(); goToTab("connexions"); openChat(u.sender_id); } }); }); // openChat marque cette conversation lue
+      (mySuggestions || []).forEach((s) => { const k = "sugg:" + s.id; if (_seen.has(k)) return; _seen.add(k); items.push({ e: "🎯", h: `<b>${escapeHtml(nameById(s.from_user))}</b> te propose : ${escapeHtml(s.quest_title || "une quête")}`, go: () => { closeNotif(); acceptSuggestion(s.id, s.quest_key); } }); });
       $("notifList").innerHTML = items.length
         ? items.map((it, i) => `<div class="notif-item" data-n="${i}"><div class="nemoji">${it.e}</div><div class="info"><div class="name">${it.h}</div></div><div class="qarrow">›</div></div>`).join("")
         : emptyState("🔔", i18nT("Tout est calme"), i18nT("Tes alertes (demandes, messages, quêtes) s'afficheront ici. Profite du calme 🎉"));
@@ -13681,6 +13816,8 @@
     }
     function closeNotif() { show($("notifPanel"), false); }
     $("notifBell").addEventListener("click", openNotifPanel);
+    // Onglet Messages (header, tout à droite) → Connexions, segment Messages
+    { const mb = $("topMsgBtn"); if (mb) mb.addEventListener("click", () => { goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("messages"); }); }
     $("notifClose").addEventListener("click", closeNotif);
     $("notifPanel").addEventListener("click", (e) => { if (e.target.id === "notifPanel") closeNotif(); });
 
@@ -15589,13 +15726,13 @@
           const row = payload.new || payload.old; if (!row) return;
           if (payload.eventType === "INSERT" && row.user_b === myUserId && notifyOnce("conn-new:" + row.id)) {
             if (window.SMSound) SMSound.play("notify");
-            toast("📨", `<b>${escapeHtml(nameById(row.user_a))}</b> souhaite se connecter`, () => goToTab("connexions"));
+            toast("📨", `<b>${escapeHtml(nameById(row.user_a))}</b> souhaite se connecter`, () => { goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("requests"); }, { important: true });
             if (!window._pushOn) sysNotify(i18nT("Nouvelle demande 📨"), i18nT("{n} souhaite se connecter", { n: nameById(row.user_a) }), "connexions"); // anti-doublon : couvert par le push serveur
           }
           if (payload.eventType === "UPDATE" && row.status === "accepted" && (row.user_a === myUserId || row.user_b === myUserId) && notifyOnce("conn-acc:" + row.id)) {
             const other = row.user_a === myUserId ? row.user_b : row.user_a;
             if (window.SMSound) SMSound.play("match"); // connexion mutuelle = petit accord ensoleillé
-            toast("✅", `<b>${escapeHtml(nameById(other))}</b> a accepté ta connexion`, () => goToTab("connexions"));
+            toast("✅", `<b>${escapeHtml(nameById(other))}</b> a accepté ta connexion`, () => goToTab("connexions"), { important: true });
           }
           loadConnections();
         }).subscribe();
@@ -15610,7 +15747,7 @@
           const row = payload.new; if (!row || row.to_user !== myUserId) return;
           if (notifyOnce("sugg-new:" + row.id)) {
             if (window.SMSound) SMSound.play("notify");
-            toast("🎯", `<b>${escapeHtml(nameById(row.from_user))}</b> te propose : ${escapeHtml(row.quest_title || "une quête")}`, () => goToTab("jeux"));
+            toast("🎯", `<b>${escapeHtml(nameById(row.from_user))}</b> te propose : ${escapeHtml(row.quest_title || "une quête")}`, () => goToTab("jeux"), { important: true });
             sysNotify("Nouveau défi 🎯", nameById(row.from_user) + " te propose : " + (row.quest_title || "une quête"), "jeux");
           }
           loadGameData();
@@ -15699,43 +15836,28 @@
       _smSyncStatusColor(); // status-bar = vrai fond du mode courant (saison comprise, y compris retour au défaut)
       if (typeof smRefreshMapTheme === "function") smRefreshMapTheme(); // la carte suit la saison
     }
-    let _seasonLpFired = false;
-    // Retour Maxime : en SAISON, le clic re-bascule ❄️ hiver ↔ 🌴 tropiques (comme avant, accès
-    // direct aux tropiques). Hors saison, clic = jour/nuit. La NUIT DE SAISON reste accessible
-    // via Réglages → Mode nuit (et la bascule auto du soir) : les palettes combinées s'appliquent.
-    $("themeToggle").addEventListener("click", () => {
-      if (_seasonLpFired) { _seasonLpFired = false; return; } // le relâché de l'appui long ne doit pas re-basculer
-      const s = seasonMode();
-      if (s) {
-        const next = s === "winter" ? "tropic" : "winter";
-        applySeason(next, true); _seasonFx(next);
-        toast(next === "winter" ? "❄️" : "🌴", next === "winter" ? i18nT("Mode hiver ❄️") : i18nT("Mode tropiques 🌴"), null, { low: true });
-        return;
-      }
-      const next = document.body.classList.contains("theme-dusk") ? "day" : "dusk";
-      localStorage.setItem("sm_theme", next); applyTheme(next);
-      _seasonFx(next === "dusk" ? "dusk" : "day");
-    });
-    { const tt = $("themeToggle"); let _lpT = null, _lpHint = null;
-      const start = () => { clearTimeout(_lpT); clearTimeout(_lpHint);
-        // Easter egg : l'indice à 3 s ne s'affiche qu'à ceux qui SAVENT (admin, ou déjà en
-        // mode saison · il faut bien pouvoir en sortir). Les autres découvrent par hasard.
-        // Toast EN BAS (low) : sinon le bandeau recouvrait le bouton qu'on est en train de tenir.
-        _lpHint = setTimeout(() => { const initie = seasonMode() || (myProfile && myProfile.is_admin); if (initie && typeof toast === "function") toast(seasonMode() ? "🌞" : "❄️", i18nT("Continue d'appuyer (10 s) pour changer de saison…"), null, { low: true }); }, 3000);
-        _lpT = setTimeout(() => {
-          _seasonLpFired = true;
-          // Appui long = ENTRER/SORTIR du mode saison (en saison, le clic bascule ❄️↔🌴).
-          if (seasonMode()) { applySeason("", true); toast("🌞", i18nT("Retour au mode normal (jour / nuit)"), null, { low: true }); }
-          else { applySeason("winter", true); _seasonFx("winter"); toast("❄️", i18nT("Mode hiver activé ! Un clic sur ce bouton bascule ❄️ hiver / 🌴 tropiques."), null, { low: true }); }
-          if (navigator.vibrate) { try { navigator.vibrate(80); } catch (e) {} }
-        }, 10000);
-      };
-      const stop = () => { clearTimeout(_lpT); clearTimeout(_lpHint); };
-      tt.addEventListener("pointerdown", start);
-      ["pointerup", "pointerleave", "pointercancel"].forEach((ev) => tt.addEventListener(ev, stop));
-      tt.addEventListener("contextmenu", (e) => e.preventDefault()); // l'appui long mobile ne doit pas ouvrir le menu natif
+    // 19/06 : le bouton 🌙 du header (jour/nuit + appui-long saison) est DÉPLACÉ dans
+    // Réglages → le toggle « Mode sombre » gère jour/nuit. L'easter egg des modes SAISON
+    // (❄️/🌴) se déclenche désormais en basculant ce toggle 10× rapidement (voir handler
+    // setThemeToggle plus bas). Une fois débloqué, le contrôle #seasonCtl (Réglages)
+    // permet de basculer ❄️↔🌴 et de revenir au mode normal.
+    function setSeason(s) { // "" normal | "winter" | "tropic"
+      applySeason(s, true); _seasonFx(s || (document.body.classList.contains("theme-dusk") ? "dusk" : "day"));
+      refreshSeasonCtl();
+      if (navigator.vibrate) { try { navigator.vibrate(s ? 60 : 30); } catch (e) {} }
     }
+    // Affiche le contrôle saison s'il est débloqué (easter egg) OU déjà actif OU admin.
+    function refreshSeasonCtl() {
+      const box = $("seasonCtl"); if (!box) return;
+      let unlocked = false; try { unlocked = localStorage.getItem("sm_seasons_unlocked") === "1"; } catch (e) {}
+      const show = (unlocked || seasonMode() || (myProfile && myProfile.is_admin)) && (typeof betaOn !== "function" || betaOn());
+      box.classList.toggle("hidden", !show);
+      const cur = seasonMode();
+      box.querySelectorAll("[data-season]").forEach((b) => b.classList.toggle("active", (b.dataset.season || "") === cur));
+    }
+    { const box = $("seasonCtl"); if (box) box.querySelectorAll("[data-season]").forEach((b) => b.addEventListener("click", () => setSeason(b.dataset.season || ""))); }
     applySeason(seasonMode());
+    refreshSeasonCtl();
     // Auto météo (open-meteo, sans clé) : seulement si la géoloc est DÉJÀ accordée et
     // qu'aucun choix manuel de saison n'a été fait.
     (function autoSeason() {
@@ -15800,11 +15922,29 @@
     }
     setTimeout(renderWeather, 2500);
 
+    let _stToggleTimes = []; // horodatage des bascules récentes (easter egg saison)
     { const st = $("setThemeToggle"); if (st) st.addEventListener("change", () => {
       const next = st.checked ? "dusk" : "day";
       localStorage.setItem("sm_theme", next); applyTheme(next);
       _seasonFx(next === "dusk" ? "dusk" : "day");
       const s = seasonMode(); if (s) { _seasonIcon(s); applySeason(s); } // garde l'icône/carte saison synchro
+      // EASTER EGG (non mentionné) : basculer ce toggle 10× rapidement (chaque bascule < 800 ms
+      // de la précédente) déverrouille les MODES SAISON et fait défiler normal → ❄️ → 🌴 → normal.
+      try {
+        if (typeof betaOn === "function" && !betaOn()) return; // gardé hors Lite, comme les autres eggs
+        const now = Date.now();
+        if (_stToggleTimes.length && now - _stToggleTimes[_stToggleTimes.length - 1] > 800) _stToggleTimes = [];
+        _stToggleTimes.push(now);
+        if (_stToggleTimes.length >= 10) {
+          _stToggleTimes = [];
+          try { localStorage.setItem("sm_seasons_unlocked", "1"); } catch (e) {}
+          const cur = seasonMode();
+          const nextS = cur === "" ? "winter" : cur === "winter" ? "tropic" : "";
+          setSeason(nextS);
+          if (typeof toast === "function") toast(nextS === "winter" ? "❄️" : nextS === "tropic" ? "🌴" : "🌞",
+            nextS === "winter" ? "Mode hiver ❄️" : nextS === "tropic" ? "Mode tropiques 🌴" : "Retour au mode normal", null, { low: true });
+        }
+      } catch (e) {}
     }); }
 
     /* ====================================================================
@@ -16711,11 +16851,32 @@
       for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
       return arr;
     }
-    async function askNotifPermission() {
-      if (!("Notification" in window)) return;
+    // 19/06 : on ne POP plus le dialogue système au login sans contexte (mauvaise UX, refus fréquents).
+    // - au login : askNotifPermission() → on ré-abonne SEULEMENT si déjà accordé (zéro popup).
+    // - sur action (bouton Réglages) : askNotifPermission(true) → mini-explication PUIS demande native.
+    async function askNotifPermission(withPrompt) {
+      if (!("Notification" in window)) { if (withPrompt && typeof toast === "function") toast("🔔", "Ton navigateur ne gère pas les notifications."); return; }
       let perm = Notification.permission;
-      if (perm === "default") { try { perm = await Notification.requestPermission(); } catch (e) {} }
-      if (perm === "granted") subscribePush();
+      if (perm === "granted") { subscribePush(); return; }
+      if (perm === "denied") { if (withPrompt && typeof toast === "function") toast("🔕", "Notifications bloquées dans les réglages de ton navigateur."); return; }
+      if (!withPrompt) return; // default + pas d'action explicite → on ne demande rien
+      let ok = true;
+      if (typeof smConfirmP === "function") ok = await smConfirmP("🔔", i18nT("Activer les notifications ?"), i18nT("Pour être prévenu·e des nouveaux messages, demandes de connexion et défis — même quand l'app est fermée."), i18nT("Activer"));
+      if (!ok) return;
+      try { perm = await Notification.requestPermission(); } catch (e) {}
+      if (perm === "granted") { subscribePush(); if (typeof toast === "function") toast("🔔", i18nT("Notifications activées ✅")); }
+    }
+    // Demande la localisation AVEC contexte (pour les fonctions geo : carte, lieux proches, sécurité).
+    async function askGeoPermission() {
+      if (!navigator.geolocation) { if (typeof toast === "function") toast("📍", "Ton appareil ne partage pas la position."); return; }
+      let ok = true;
+      if (typeof smConfirmP === "function") ok = await smConfirmP("📍", i18nT("Activer la localisation ?"), i18nT("Pour voir les lieux sûrs et les voyageur·ses autour de toi, et pour le partage de position en cas de besoin. Tu peux couper quand tu veux."), i18nT("Autoriser"));
+      if (!ok) return;
+      navigator.geolocation.getCurrentPosition(
+        () => { if (typeof toast === "function") toast("📍", i18nT("Localisation activée ✅")); if (typeof startGeoWatchIfGranted === "function") startGeoWatchIfGranted(); if (typeof renderGeoNow === "function") renderGeoNow(); },
+        () => { if (typeof toast === "function") toast("📍", i18nT("Localisation refusée — tu peux réessayer dans les réglages du navigateur.")); },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
     }
     // Abonne l'appareil au Web Push et enregistre l'abonnement dans Supabase
     async function subscribePush() {
@@ -16766,9 +16927,14 @@
     // (b) app ouverte via la notif (nouvelle fenêtre) : on lit ?tab= au démarrage.
     (function navFromNotifQuery() {
       try {
-        const t = new URLSearchParams(location.search).get("tab");
+        const qs = new URLSearchParams(location.search);
+        const t = qs.get("tab"); const seg = qs.get("seg"); // seg = sous-onglet (raccourcis PWA : messages / discover)
         if (!t) return;
-        setTimeout(() => { const app = $("appView"); if (app && !app.classList.contains("hidden") && typeof goToTab === "function") goToTab(t); }, 900);
+        setTimeout(() => {
+          const app = $("appView"); if (!(app && !app.classList.contains("hidden") && typeof goToTab === "function")) return;
+          goToTab(t);
+          if (seg && t === "connexions" && typeof showMatesSegment === "function") showMatesSegment(seg);
+        }, 900);
       } catch (e) {}
     })();
 

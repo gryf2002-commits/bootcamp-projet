@@ -18,8 +18,10 @@
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ],
   "shortcuts": [
-    { "name": "Découvrir des Mates", "short_name": "Découvrir", "url": "./app.html?tab=connexions", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Sécurité — SOS & position", "short_name": "Sécurité", "url": "./app.html?tab=securite", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
     { "name": "Mes messages", "short_name": "Messages", "url": "./app.html?tab=connexions&seg=messages", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Découvrir des Mates", "short_name": "Découvrir", "url": "./app.html?tab=connexions&seg=discover", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "La carte autour de moi", "short_name": "Carte", "url": "./app.html?tab=accueil", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
     { "name": "Quêtes & jeux", "short_name": "Jeux", "url": "./app.html?tab=jeux", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
   ],
   "screenshots": [
