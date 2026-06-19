@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=586"></script>
+  <script src="sunmates-badges.js?v=587"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -352,6 +352,102 @@
        À fusionner dans styles.css au moment du push (feu vert Maxime).
        ============================================================ -->
   <style id="preview-fixes-2026">
+    /* ===== 🌍 Mon globe : CTA + overlay globe 3D (globe.gl) ===== */
+    .globe-cta {
+      width: 100%; margin: .15rem 0 .35rem;
+      display: flex; align-items: center; justify-content: center; gap: .45rem;
+      padding: .7rem 1rem; border: 0; border-radius: 16px; cursor: pointer;
+      font: 700 .95rem/1 "Manrope", system-ui, sans-serif; letter-spacing: .2px;
+      color: #2a1640;
+      background: linear-gradient(135deg, #FFD15C 0%, #ff9a8d 48%, var(--accent, #ff7e72) 100%);
+      box-shadow: 0 8px 22px -10px rgba(255,126,114,.65), inset 0 1px 0 rgba(255,255,255,.35);
+      transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+    }
+    .globe-cta:hover { transform: translateY(-1px); box-shadow: 0 12px 28px -10px rgba(255,126,114,.8); filter: brightness(1.03); }
+    .globe-cta:active { transform: translateY(0); }
+    .globe-cta:focus-visible { outline: 2px solid #FFD15C; outline-offset: 3px; }
+
+    #globeOverlay {
+      position: fixed; inset: 0; z-index: 9000;
+      display: flex; flex-direction: column;
+      background:
+        radial-gradient(120% 90% at 50% -10%, #2c1850 0%, rgba(25,14,46,0) 60%),
+        radial-gradient(100% 80% at 50% 120%, #3a1d3f 0%, rgba(25,14,46,0) 55%),
+        #120a22;
+      color: var(--ink, #f3ecf6);
+      opacity: 0; transition: opacity .28s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #globeOverlay.is-open { opacity: 1; }
+    #globeOverlay.hidden { display: none; }
+    .globe-topbar {
+      flex-shrink: 0; display: flex; align-items: center; gap: .6rem;
+      padding: max(.7rem, env(safe-area-inset-top)) .9rem .7rem; position: relative; z-index: 3;
+    }
+    .globe-title { display: flex; align-items: center; gap: .45rem; font: 700 1.15rem/1 "Fraunces", Georgia, serif; }
+    .globe-title span { background: linear-gradient(90deg, #FFD15C, #ff9a8d); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .globe-modes { margin-left: auto; display: flex; gap: .25rem; padding: .25rem; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); }
+    .globe-mode {
+      border: 0; cursor: pointer; padding: .42rem .8rem; border-radius: 999px;
+      font: 700 .8rem/1 "Manrope", system-ui, sans-serif; color: var(--muted, #a99fbe);
+      background: transparent; transition: color .15s ease, background .15s ease;
+    }
+    .globe-mode.is-on { color: #2a1640; background: linear-gradient(135deg, #FFD15C, #ff9a8d); }
+    .globe-mode:focus-visible { outline: 2px solid #FFD15C; outline-offset: 2px; }
+    .globe-close {
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06); color: var(--ink, #f3ecf6); font-size: 1.1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: background .15s ease, transform .15s ease;
+    }
+    .globe-close:hover { background: rgba(255,255,255,.14); }
+    .globe-close:active { transform: scale(.94); }
+    .globe-close:focus-visible { outline: 2px solid #FFD15C; outline-offset: 2px; }
+    .globe-stats {
+      flex-shrink: 0; display: flex; gap: .55rem; flex-wrap: wrap; justify-content: center;
+      padding: 0 .9rem .35rem; position: relative; z-index: 3; min-height: 0;
+    }
+    .globe-stats:empty { display: none; }
+    .globe-stat {
+      display: inline-flex; align-items: baseline; gap: .35rem;
+      padding: .3rem .7rem; border-radius: 999px;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+      font: 600 .78rem/1 "Manrope", system-ui, sans-serif; color: var(--text, #ded3e6);
+    }
+    .globe-stat b { font: 800 .95rem/1 "Fraunces", Georgia, serif; font-variant-numeric: tabular-nums; color: #FFD15C; }
+    .globe-stage { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+    .globe-stage canvas { display: block; }
+    .globe-state {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: .9rem; text-align: center;
+      padding: 1.5rem; color: var(--text, #ded3e6); z-index: 2;
+    }
+    .globe-state.is-loading::before {
+      content: ""; width: 42px; height: 42px; border-radius: 50%;
+      border: 3px solid rgba(255,209,92,.25); border-top-color: #FFD15C;
+      animation: globeSpin .8s linear infinite;
+    }
+    @keyframes globeSpin { to { transform: rotate(360deg); } }
+    .globe-state h4 { margin: 0; font: 700 1.25rem/1.2 "Fraunces", Georgia, serif; color: var(--ink, #f3ecf6); }
+    .globe-state p { margin: 0; max-width: 30ch; font-size: .9rem; color: var(--muted, #a99fbe); }
+    .globe-state .btn-primary { margin-top: .3rem; }
+    .globe-tip {
+      position: absolute; left: 50%; bottom: max(.7rem, env(safe-area-inset-bottom)); transform: translateX(-50%);
+      font-size: .72rem; color: var(--muted, #a99fbe); background: rgba(18,10,34,.55);
+      padding: .3rem .7rem; border-radius: 999px; pointer-events: none; z-index: 2; white-space: nowrap;
+    }
+    .globe-pt-label {
+      font: 600 .78rem/1.35 "Manrope", system-ui, sans-serif; color: #2a1640;
+      background: linear-gradient(135deg, #FFD15C, #ff9a8d); padding: .35rem .55rem; border-radius: 10px;
+      box-shadow: 0 6px 18px -8px rgba(0,0,0,.6); max-width: 200px;
+    }
+    .globe-pt-label b { color: #2a1640; }
+    .globe-pt-label .gl-meta { display: block; font-weight: 600; opacity: .82; font-size: .72rem; }
+    @media (max-width: 420px) {
+      .globe-modes { margin-left: auto; }
+      .globe-mode { padding: .4rem .62rem; font-size: .74rem; }
+      .globe-title { font-size: 1.02rem; }
+    }
+
     /* Header : tient sur les petits écrans (≤380px) sans chevauchement */
     .topbar { gap: .5rem; }
     .topbar-actions { display: flex; align-items: center; gap: .35rem; flex-shrink: 0; }
@@ -883,6 +979,23 @@
     <div class="picker-card">
       <div class="picker-head"><h3 id="pickerTitle" style="margin:0">Choisir</h3><button id="pickerClose" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
       <div id="pickerBody"></div>
+    </div>
+  </div>
+
+  <!-- 🌍 Mon globe : globe 3D des voyages (globe.gl, lazy-load) -->
+  <div id="globeOverlay" class="hidden" role="dialog" aria-modal="true" aria-label="Mon globe">
+    <div class="globe-topbar">
+      <div class="globe-title">🌍 <span>Mon globe</span></div>
+      <div class="globe-modes" id="globeModes" role="tablist">
+        <button type="button" class="globe-mode is-on" data-gmode="points">Points</button>
+        <button type="button" class="globe-mode" data-gmode="arcs">Arcs</button>
+        <button type="button" class="globe-mode" data-gmode="heat">Heatmap</button>
+      </div>
+      <button type="button" id="globeClose" class="globe-close" aria-label="Fermer">✕</button>
+    </div>
+    <div class="globe-stats" id="globeStats" aria-live="polite"></div>
+    <div id="globeStage" class="globe-stage">
+      <div id="globeState" class="globe-state">Chargement du globe…</div>
     </div>
   </div>
 
@@ -1692,6 +1805,7 @@
 
         <!-- ✈️ Mes voyages : matching dans le temps + l'espace (feature signature) -->
         <div class="section-head"><h3>Mes voyages ✈️</h3><a id="tripAddLink" style="cursor:pointer">+ Ajouter</a></div>
+        <button type="button" id="globeOpenBtn" class="globe-cta">🌍 Voir mon globe</button>
         <div id="tripMatchBanner"></div>
         <div id="myTrips"></div>
 
@@ -5324,6 +5438,266 @@
       } catch (e) { if (typeof toast === "function") toast("✈️", "Voyage ajouté ✨"); }
     }
     { const a = $("tripAddLink"); if (a) a.addEventListener("click", openAddTrip); }
+
+    // ===== 🌍 MON GLOBE : globe 3D des voyages (globe.gl, lazy-load, offline-safe) =====
+    (function setupGlobe() {
+      const ACCENT = "#ff7e72", GOLD = "#FFD15C", CORAL2 = "#ff9a8d";
+      let globe = null;          // instance globe.gl
+      let scriptPromise = null;  // chargement lazy unique
+      let rotateTimer = null;
+      let resizeObs = null;
+      let onKey = null;
+      let lastTrips = [];
+      let mode = "points";
+
+      // Retire un éventuel emoji drapeau / espaces parasites d'un pays.
+      function cleanCountry(c) {
+        if (!c) return "";
+        return String(c).replace(/[\u{1F1E6}-\u{1F1FF}]/gu, "").replace(/\s+/g, " ").trim();
+      }
+      function tripsWithCoords(trips) {
+        return (trips || []).filter((t) => t && typeof t.lat === "number" && typeof t.lng === "number" && isFinite(t.lat) && isFinite(t.lng));
+      }
+
+      // Charge globe.gl (embarque three) une seule fois, avec timeout offline-safe.
+      function loadGlobeLib() {
+        if (window.Globe) return Promise.resolve();
+        if (scriptPromise) return scriptPromise;
+        scriptPromise = new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = "https://unpkg.com/globe.gl";
+          s.async = true;
+          const timer = setTimeout(() => { cleanup(); reject(new Error("timeout")); }, 12000);
+          function cleanup() { clearTimeout(timer); s.onload = s.onerror = null; }
+          s.onload = () => { cleanup(); window.Globe ? resolve() : reject(new Error("noapi")); };
+          s.onerror = () => { cleanup(); reject(new Error("network")); };
+          document.head.appendChild(s);
+        }).catch((e) => { scriptPromise = null; throw e; });
+        return scriptPromise;
+      }
+
+      function setState(html, loading) {
+        const el = $("globeState");
+        if (!el) return;
+        el.innerHTML = html;
+        el.classList.toggle("is-loading", !!loading);
+        el.style.display = "flex";
+      }
+      function hideState() { const el = $("globeState"); if (el) el.style.display = "none"; }
+
+      function renderStats(trips) {
+        const box = $("globeStats");
+        if (!box) return;
+        const withCoords = tripsWithCoords(trips);
+        const countries = new Set();
+        (trips || []).forEach((t) => { const c = cleanCountry(t.country); if (c) countries.add(c.toLowerCase()); });
+        const cities = new Set();
+        (trips || []).forEach((t) => { if (t.city) cities.add(String(t.city).toLowerCase().trim()); });
+        const ci = (typeof globeCheckinCount === "number") ? globeCheckinCount : null;
+        let html = `<span class="globe-stat"><b>${countries.size}</b> pays</span><span class="globe-stat"><b>${cities.size}</b> ville${cities.size > 1 ? "s" : ""}</span>`;
+        if (ci != null) html += `<span class="globe-stat"><b>${ci}</b> check-in${ci > 1 ? "s" : ""}</span>`;
+        box.innerHTML = html;
+      }
+
+      // Check-ins de l'utilisateur (best-effort) → coords des lieux pour la heatmap.
+      let globeCheckins = null, globeCheckinCount = null;
+      async function loadGlobeCheckins() {
+        if (globeCheckins) return globeCheckins;
+        try {
+          const { data: cps } = await db.from("checkpoints").select("cafe_id").eq("user_id", myUserId);
+          globeCheckinCount = (cps || []).length;
+          if (!cps || !cps.length) { globeCheckins = []; return globeCheckins; }
+          const ids = [...new Set(cps.map((c) => c.cafe_id).filter(Boolean))];
+          if (!ids.length) { globeCheckins = []; return globeCheckins; }
+          const { data: cafes } = await db.from("partner_cafes").select("id,lat,lng,name").in("id", ids);
+          const byId = {}; (cafes || []).forEach((c) => { byId[c.id] = c; });
+          const counts = {}; cps.forEach((c) => { counts[c.cafe_id] = (counts[c.cafe_id] || 0) + 1; });
+          globeCheckins = ids.map((id) => byId[id]).filter((c) => c && typeof c.lat === "number" && typeof c.lng === "number")
+            .map((c) => ({ lat: c.lat, lng: c.lng, weight: counts[c.id] || 1, name: c.name }));
+        } catch (e) { globeCheckins = []; globeCheckinCount = globeCheckinCount || 0; }
+        return globeCheckins;
+      }
+
+      function stopRotate() { if (globe) { try { globe.controls().autoRotate = false; } catch (e) {} } }
+      function startRotate() {
+        if (!globe) return;
+        try { const c = globe.controls(); c.autoRotate = true; c.autoRotateSpeed = 0.45; } catch (e) {}
+      }
+
+      // Centre la vue sur le barycentre des points.
+      function focusOnTrips(trips) {
+        const pts = tripsWithCoords(trips);
+        if (!pts.length || !globe) return;
+        let lat = 0, lng = 0; pts.forEach((p) => { lat += p.lat; lng += p.lng; });
+        lat /= pts.length; lng /= pts.length;
+        try { globe.pointOfView({ lat: lat, lng: lng, altitude: pts.length > 1 ? 2.1 : 1.7 }, 900); } catch (e) {}
+      }
+
+      function buildGlobe() {
+        const stage = $("globeStage");
+        if (!stage || globe) return;
+        globe = window.Globe()(stage)
+          .backgroundColor("rgba(0,0,0,0)")
+          .showAtmosphere(true)
+          .atmosphereColor(CORAL2)
+          .atmosphereAltitude(0.18)
+          .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
+          .pointLat("lat").pointLng("lng")
+          .pointColor(() => GOLD)
+          .pointAltitude(0.018)
+          .pointRadius(0.42)
+          .pointLabel((d) => `<div class="globe-pt-label"><b>${escapeHtml(d.city || "")}</b>${d.country ? `<span class="gl-meta">${escapeHtml(cleanCountry(d.country))}</span>` : ""}${d.dates ? `<span class="gl-meta">${escapeHtml(d.dates)}</span>` : ""}</div>`)
+          .arcColor(() => [ACCENT, GOLD])
+          .arcDashLength(0.45).arcDashGap(0.12).arcDashAnimateTime(2200)
+          .arcStroke(0.5).arcAltitudeAutoScale(0.4);
+        // Stoppe l'auto-rotation dès qu'on interagit.
+        try { globe.controls().addEventListener("start", stopRotate); } catch (e) {}
+        sizeGlobe();
+        resizeObs = new ResizeObserver(sizeGlobe);
+        try { resizeObs.observe(stage); } catch (e) {}
+      }
+
+      function sizeGlobe() {
+        const stage = $("globeStage");
+        if (!stage || !globe) return;
+        const r = stage.getBoundingClientRect();
+        try { globe.width(r.width).height(r.height); } catch (e) {}
+      }
+
+      function setMode(m) {
+        mode = m;
+        document.querySelectorAll("#globeModes .globe-mode").forEach((b) => b.classList.toggle("is-on", b.dataset.gmode === m));
+        applyData();
+      }
+
+      function applyData() {
+        if (!globe) return;
+        const pts = tripsWithCoords(lastTrips).map((t) => ({ lat: t.lat, lng: t.lng, city: t.city, country: t.country, dates: _fmtTripDates(t.start_date, t.end_date) }));
+        // Reset layers
+        const noHeat = () => { if (typeof globe.heatmapsData === "function") { try { globe.heatmapsData([]); } catch (e) {} } };
+        if (mode === "points") {
+          globe.pointsData(pts).arcsData([]); noHeat();
+        } else if (mode === "arcs") {
+          const sorted = tripsWithCoords(lastTrips).slice().sort((a, b) => String(a.start_date || "").localeCompare(String(b.start_date || "")));
+          const arcs = [];
+          for (let i = 0; i < sorted.length - 1; i++) {
+            arcs.push({ startLat: sorted[i].lat, startLng: sorted[i].lng, endLat: sorted[i + 1].lat, endLng: sorted[i + 1].lng });
+          }
+          globe.pointsData(pts)
+            .arcStartLat("startLat").arcStartLng("startLng").arcEndLat("endLat").arcEndLng("endLng")
+            .arcsData(arcs); noHeat();
+        } else if (mode === "heat") {
+          globe.arcsData([]);
+          const heatPts = (globeCheckins && globeCheckins.length)
+            ? globeCheckins.map((c) => ({ lat: c.lat, lng: c.lng, weight: c.weight || 1 }))
+            : pts.map((p) => ({ lat: p.lat, lng: p.lng, weight: 1 }));
+          if (typeof globe.heatmapsData === "function") {
+            globe.pointsData([]).heatmapsData([heatPts])
+              .heatmapPointLat("lat").heatmapPointLng("lng").heatmapPointWeight("weight")
+              .heatmapBandwidth(2.4).heatmapTopAltitude(0.18).heatmapColorSaturation(1.6);
+          } else {
+            // Repli : points pondérés en dégradé sunset.
+            globe.pointsData(heatPts)
+              .pointColor((d) => (d.weight > 2 ? ACCENT : d.weight > 1 ? CORAL2 : GOLD))
+              .pointAltitude((d) => 0.01 + Math.min(d.weight, 6) * 0.012)
+              .pointRadius((d) => 0.35 + Math.min(d.weight, 6) * 0.12);
+          }
+        }
+      }
+
+      async function openGlobe() {
+        const ov = $("globeOverlay");
+        if (!ov) return;
+        ov.classList.remove("hidden");
+        requestAnimationFrame(() => ov.classList.add("is-open"));
+        document.body.style.overflow = "hidden";
+        onKey = (e) => { if (e.key === "Escape") closeGlobe(); };
+        document.addEventListener("keydown", onKey);
+
+        // Données voyages d'abord (rapide, local Supabase).
+        let trips = [];
+        try { trips = (await loadMyTrips()) || []; } catch (e) { trips = []; }
+        lastTrips = trips;
+        const withCoords = tripsWithCoords(trips);
+
+        // Cas vide : invite chaleureuse, pas besoin de charger la lib lourde.
+        if (!withCoords.length) {
+          renderStats(trips);
+          setState(`<h4>Ton globe attend ta première escale ☀️</h4><p>Ajoute un voyage avec une ville et on l'affiche sur ton globe.</p><button class="btn-primary" id="globeEmptyAdd">✈️ Ajouter un voyage</button>`, false);
+          const b = $("globeEmptyAdd");
+          if (b) b.addEventListener("click", () => {
+            closeGlobe();
+            const link = $("tripAddLink");
+            if (link) { try { link.focus(); } catch (e) {} link.scrollIntoView({ behavior: "smooth", block: "center" }); }
+            if (typeof openAddTrip === "function") openAddTrip();
+          });
+          return;
+        }
+
+        renderStats(trips);
+        setState("Chargement du globe…", true);
+
+        try {
+          await loadGlobeLib();
+        } catch (e) {
+          setState(`<h4>Le globe a besoin d'une connexion</h4><p>Reviens quand tu seras en ligne pour faire tourner ton globe 🌍</p>`, false);
+          return;
+        }
+        if (!$("globeOverlay") || $("globeOverlay").classList.contains("hidden")) return; // fermé entre-temps
+
+        buildGlobe();
+        hideState();
+        setMode("points");
+        focusOnTrips(trips);
+        startRotate();
+        const stage = $("globeStage");
+        if (stage && !stage.querySelector(".globe-tip")) {
+          const tip = document.createElement("div");
+          tip.className = "globe-tip"; tip.textContent = "Fais glisser pour explorer ✦ pince pour zoomer";
+          stage.appendChild(tip);
+          setTimeout(() => { if (tip.parentNode) { tip.style.transition = "opacity .6s ease"; tip.style.opacity = "0"; } }, 4200);
+        }
+        // Check-ins en best-effort pour stats + heatmap (non bloquant).
+        loadGlobeCheckins().then(() => { renderStats(lastTrips); });
+      }
+
+      function closeGlobe() {
+        const ov = $("globeOverlay");
+        if (!ov) return;
+        ov.classList.remove("is-open");
+        if (onKey) { document.removeEventListener("keydown", onKey); onKey = null; }
+        document.body.style.overflow = "";
+        setTimeout(() => { ov.classList.add("hidden"); }, 280);
+        destroyGlobe();
+      }
+
+      // Libère WebGL/canvas pour ne pas fuir la mémoire à la réouverture.
+      function destroyGlobe() {
+        if (rotateTimer) { clearInterval(rotateTimer); rotateTimer = null; }
+        if (resizeObs) { try { resizeObs.disconnect(); } catch (e) {} resizeObs = null; }
+        if (globe) {
+          try { globe._destructor && globe._destructor(); } catch (e) {}
+          globe = null;
+        }
+        const stage = $("globeStage");
+        if (stage) { stage.innerHTML = '<div id="globeState" class="globe-state">Chargement du globe…</div>'; }
+      }
+
+      // Branchements (les éléments existent dans le DOM dès le boot).
+      const openBtn = $("globeOpenBtn"); if (openBtn) openBtn.addEventListener("click", openGlobe);
+      const closeBtn = $("globeClose"); if (closeBtn) closeBtn.addEventListener("click", closeGlobe);
+      const modes = $("globeModes");
+      if (modes) modes.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-gmode]"); if (!b) return;
+        if (!globe) return; // pas encore chargé (état vide / erreur)
+        setMode(b.dataset.gmode);
+        if (b.dataset.gmode === "heat" && (!globeCheckins)) loadGlobeCheckins().then(() => { renderStats(lastTrips); applyData(); });
+      });
+      const ov = $("globeOverlay");
+      if (ov) ov.addEventListener("click", (e) => { if (e.target === ov) closeGlobe(); });
+
+      window.openMyGlobe = openGlobe; // hook éventuel
+    })();
 
     // ===== 📜 P14 : CONDITIONS & CONFIDENTIALITÉ (remplace le récap story, supprimé) =====
     // Le strict nécessaire pour une app sociale de voyage : CGU, données (RGPD), limites
