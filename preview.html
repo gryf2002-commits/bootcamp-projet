@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=584"></script>
+  <script src="sunmates-badges.js?v=585"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -371,11 +371,11 @@
     /* Idées « Ici, maintenant » : lignes cliquables (tuiles d'idées) */
     #geoNowCard .geo-idea {
       display: flex; align-items: center; gap: .4rem; width: 100%; text-align: left;
-      background: transparent; border: 0; padding: .28rem .35rem; margin: 0; border-radius: 9px;
-      color: inherit; font: inherit; font-size: .86rem; cursor: pointer; transition: background .15s;
+      background: transparent; border: 0; padding: .34rem .4rem; margin: 0; border-radius: 9px;
+      color: var(--ink); font: inherit; font-size: .86rem; font-weight: 600; cursor: pointer; transition: background .15s;
     }
-    #geoNowCard .geo-idea:hover, #geoNowCard .geo-idea:focus-visible { background: rgba(0,0,0,.05); outline: none; }
-    #geoNowCard .geo-idea .gi-arrow { opacity: .5; margin-left: auto; }
+    #geoNowCard .geo-idea:hover, #geoNowCard .geo-idea:focus-visible { background: rgba(0,0,0,.06); outline: none; }
+    #geoNowCard .geo-idea .gi-arrow { color: var(--accent); font-weight: 800; margin-left: auto; }
     body.theme-dusk #geoNowCard .geo-idea:hover, body.theme-dusk #geoNowCard .geo-idea:focus-visible { background: rgba(255,255,255,.08); }
     /* Contrôle saison (easter egg) : caché par défaut, montré quand débloqué */
     #seasonCtl { margin-top: .5rem; }
@@ -1228,7 +1228,7 @@
         <!-- 🌙 sélecteur de mode (thème/saison) DÉPLACÉ dans Réglages → Apparence -->
         <button class="iconbtn" id="notifBell" aria-label="Notifications"><span data-smicon="bell" data-smicon-size="22">🔔</span><span class="nbadge hidden" id="notifBellCount">0</span></button>
         <!-- Onglet Messages, tout à droite : ouvre Connexions → Messages -->
-        <button class="iconbtn" id="topMsgBtn" title="Messages" aria-label="Messages"><span data-smicon="chat" data-smicon-size="22">💬</span><span class="nbadge hidden" id="topMsgCount">0</span></button>
+        <button class="iconbtn" id="topMsgBtn" title="Messages" aria-label="Messages"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><path d="M5 4.5h14A2.6 2.6 0 0 1 21.6 7.1v6.6A2.6 2.6 0 0 1 19 16.3h-7.6l-4 3.1a.7.7 0 0 1-1.13-.56V16.3H5A2.6 2.6 0 0 1 2.4 13.7V7.1A2.6 2.6 0 0 1 5 4.5z" fill="#ffd15c"/><g fill="#FF8A3D"><circle cx="8.4" cy="10.4" r="1.15"/><circle cx="12" cy="10.4" r="1.15"/><circle cx="15.6" cy="10.4" r="1.15"/></g></svg><span class="nbadge hidden" id="topMsgCount">0</span></button>
         <!-- Déconnexion déplacée dans Réglages (compte) -->
       </div>
     </header>
@@ -12544,12 +12544,15 @@
     // Route une idée « Ici, maintenant » vers le bon écran selon son contenu (mots-clés).
     function _geoIdeaGo(text) {
       const t = (text || "").toLowerCase();
-      if (/défi|defi|quête|quete|jeu|mission/.test(t)) { goToTab("jeux"); return; }
+      const beta = (typeof betaOn === "function") ? betaOn() : true;
+      // Jeux/défis seulement en version complète : en Lite l'onglet Jeux est masqué → on
+      // retomberait sur un écran vide (« la tuile ne déclenche rien »). On route ailleurs.
+      if (beta && /défi|defi|quête|quete|jeu|mission/.test(t)) { goToTab("jeux"); return; }
       if (/dispo|autour|qui est|mate|voyageur|rencontr|cercle|connex/.test(t)) {
-        // « Vois qui est dispo » → signale d'abord ta dispo puis ouvre Connexions/Découvrir
+        // « Vois qui est dispo » → ouvre Connexions/Découvrir
         goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); return;
       }
-      // café / déjeuner / verre / balade / musée / lieu… → les lieux sûrs autour
+      // café / déjeuner / verre / balade / musée / défi-en-Lite… → les lieux sûrs autour
       goToTab("lieux");
     }
     // GEO-TRIGGER : remplit la carte « Ici, maintenant ». Position SEULEMENT si déjà accordée (zéro prompt).
