@@ -392,6 +392,7 @@ body.sm-lite #advFilters { display:none !important; }
 body.sm-lite {
   --accent-grad: var(--accent) !important;   /* tout l'accent natif → corail #FF5A4D plein */
   --bg-grad: var(--bg) !important;           /* fond de page → surface unie neutre (plus de radial sunset) */
+  --relief: drop-shadow(0 2px 4px rgba(20,18,40,.14)) !important; /* relief icônes/badges ALLÉGÉ : l'ombre forte (.34) tapait trop sur le fond crème Lite */
 }
 /* Garde-fou : le bouton DANGER reste rouge (ne pas le laisser virer corail via accent-grad) */
 body.sm-lite .btn-danger { background: var(--danger) !important; }
