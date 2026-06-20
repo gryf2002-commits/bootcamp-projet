@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=592"></script>
+  <script src="sunmates-badges.js?v=593"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -1773,7 +1773,7 @@
         <!-- 🌙 sélecteur de mode (thème/saison) DÉPLACÉ dans Réglages → Apparence -->
         <button class="iconbtn" id="notifBell" aria-label="Notifications"><span data-smicon="bell" data-smicon-size="22">🔔</span><span class="nbadge hidden" id="notifBellCount">0</span></button>
         <!-- Onglet Messages, tout à droite : ouvre Connexions → Messages -->
-        <button class="iconbtn" id="topMsgBtn" title="Messages" aria-label="Messages"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="display:block"><path d="M5 4.5h14A2.6 2.6 0 0 1 21.6 7.1v6.6A2.6 2.6 0 0 1 19 16.3h-7.6l-4 3.1a.7.7 0 0 1-1.13-.56V16.3H5A2.6 2.6 0 0 1 2.4 13.7V7.1A2.6 2.6 0 0 1 5 4.5z" fill="#ffd15c"/><g fill="#FF8A3D"><circle cx="8.4" cy="10.4" r="1.15"/><circle cx="12" cy="10.4" r="1.15"/><circle cx="15.6" cy="10.4" r="1.15"/></g></svg><span class="nbadge hidden" id="topMsgCount">0</span></button>
+        <button class="iconbtn" id="topMsgBtn" title="Messages" aria-label="Messages"><span style="font-size:20px;line-height:1">💬</span><span class="nbadge hidden" id="topMsgCount">0</span></button>
         <!-- Déconnexion déplacée dans Réglages (compte) -->
       </div>
     </header>
@@ -4914,8 +4914,10 @@
       function yearsFor(inp) {
         const thisY = new Date().getFullYear();
         if (inp.id === "pBirthdate") return [thisY - 100, thisY - 13];
+        // Voyages (et autres dates) : on remonte loin (journal de voyage = parfois des années en arrière).
+        if (inp.id === "tripStart" || inp.id === "tripEnd") return [thisY - 50, thisY + 5];
         if (inp.min) { const y = +inp.min.split("-")[0]; return [y, y + 5]; }
-        return [thisY - 1, thisY + 5];
+        return [thisY - 50, thisY + 5];
       }
       function ensureOv() {
         if (_ov) return _ov;
@@ -18016,13 +18018,10 @@
           // Toute navigation par la barre du bas ferme l'overlay (sans re-popper l'historique).
           document.querySelectorAll(".bottom-nav [data-tab]").forEach(function (el) { el.addEventListener("click", function () { document.body.classList.remove("lite-msg-on"); }); });
           const bell = document.getElementById("notifBell");
-          if (bell && !document.getElementById("liteMsgBtn")) {
-            const b = document.createElement("button");
-            b.className = "iconbtn"; b.id = "liteMsgBtn"; b.title = "Messages"; b.setAttribute("aria-label", "Mes messages");
-            b.innerHTML = '<span data-smicon="chat" data-smicon-size="22">💬</span>';
-            bell.parentNode.insertBefore(b, bell.nextSibling);
-            b.addEventListener("click", openLiteMsg);
-          }
+          // Anti-doublon (19/06) : le bouton Messages du header est désormais #topMsgBtn (statique,
+          // emoji 💬). On NE crée plus #liteMsgBtn → fini les 2 icônes. (La section Messages dédiée
+          // façon Instagram via cet overlay = chantier ergonomie en cours.)
+          void openLiteMsg; // référence conservée (utilisée par le futur câblage section Messages)
         } catch (e) {}
         // v554 — Profil : ouvrir d'office l'édition (« ça fait plus complet ») ; carte raccourcis retirée en CSS.
         try {
