@@ -9,9 +9,12 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://sunmatesapp.com/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://sunmatesapp.com/" />
   </url>
-  <url>
-    <loc>https://sunmatesapp.com/presentation.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
+  <url><loc>https://sunmatesapp.com/presentation.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sunmatesapp.com/voyager-seul-a-paris.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sunmatesapp.com/voyager-seul-a-lyon.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sunmatesapp.com/voyager-seul-a-lisbonne.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sunmatesapp.com/voyager-seul-a-barcelone.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sunmatesapp.com/voyager-seul-a-berlin.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sunmatesapp.com/voyager-seul-a-rome.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sunmatesapp.com/voyager-seule-en-securite.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>

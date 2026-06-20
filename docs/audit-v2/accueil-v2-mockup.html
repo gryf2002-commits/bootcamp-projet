@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SunMates — Accueil v2 (maquette audacieuse)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --coral:#FF5A4D; --mango:#FF8A3D; --amber:#FFC93C; --rose:#FF4F6D;
+    --plum:#190E2E; --ink:#39203A; --text:#5B4455; --muted:#8A7585;
+    --cream:#FFF4E6; --card:#FFFFFF; --line:#F2E0D2;
+    --grad:linear-gradient(135deg,#FFC93C 0%,#FF8A3D 42%,#FF4F6D 100%);
+    --sky:linear-gradient(180deg,#FFD98A 0%,#FF9E6B 38%,#FF6A6A 70%,#C95C9E 100%);
+    --r:22px; --sh:0 18px 40px -22px rgba(120,40,30,.45);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:"Manrope",system-ui,sans-serif; color:var(--text);
+    min-height:100vh; display:grid; place-items:center; padding:34px 14px;
+    background:
+      radial-gradient(120% 80% at 80% -10%, #2a1850 0%, transparent 55%),
+      radial-gradient(120% 90% at 10% 110%, #3a1d3d 0%, transparent 50%),
+      #140a22;
+  }
+  .stage{display:flex;flex-direction:column;align-items:center;gap:16px}
+  .cap{font:600 12px/1.4 "Manrope";letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+  /* ===== Phone frame ===== */
+  .phone{
+    width:390px; height:844px; border-radius:52px; padding:11px;
+    background:linear-gradient(160deg,#3a2a40,#1a1020); position:relative;
+    box-shadow:0 50px 90px -30px rgba(0,0,0,.7), inset 0 0 0 2px rgba(255,255,255,.06);
+  }
+  .screen{
+    width:100%; height:100%; border-radius:42px; overflow:hidden; position:relative;
+    background:
+      radial-gradient(140% 60% at 50% -8%, #FFE2B0 0%, rgba(255,226,176,0) 46%),
+      var(--cream);
+    display:flex; flex-direction:column;
+  }
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:128px;height:30px;background:#1a1020;border-radius:0 0 18px 18px;z-index:60}
+  .scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+  .scroll::-webkit-scrollbar{width:0}
+  .pad{padding:0 18px 110px}
+  /* entrance reveal */
+  @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  .rev{opacity:0;animation:rise .7s cubic-bezier(.2,.8,.2,1) forwards}
+
+  /* ===== Header ===== */
+  header{display:flex;align-items:center;justify-content:space-between;padding:54px 18px 8px;position:sticky;top:0;z-index:40;
+    background:linear-gradient(180deg,var(--cream) 64%,rgba(255,244,230,0))}
+  .brand{display:flex;align-items:center;gap:9px}
+  .mark{width:34px;height:34px;border-radius:11px;background:var(--grad);display:grid;place-items:center;
+    box-shadow:0 8px 18px -6px rgba(255,90,77,.6), inset 0 1px 0 rgba(255,255,255,.5);position:relative;overflow:hidden}
+  .mark::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 50% 0,rgba(255,255,255,.55),transparent 70%)}
+  .mark svg{width:21px;height:21px;position:relative;z-index:1}
+  .word{font:800 21px/1 "Manrope";color:var(--ink);letter-spacing:-.02em}
+  .word b{color:var(--coral);font-weight:800}
+  .hbtns{display:flex;gap:8px}
+  .ic{width:40px;height:40px;border-radius:13px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;font-size:18px;
+    box-shadow:0 4px 10px -6px rgba(120,40,30,.3);position:relative;cursor:pointer;transition:transform .15s}
+  .ic:active{transform:scale(.92)}
+  .ic .dot{position:absolute;top:-3px;right:-3px;min-width:17px;height:17px;border-radius:9px;background:var(--coral);color:#fff;font:800 10px/17px "Manrope";text-align:center;border:2px solid var(--cream)}
+
+  /* ===== Greeting ===== */
+  .hello{padding:6px 0 2px}
+  .hello h1{font:700 33px/1.05 "Fraunces";color:var(--ink);letter-spacing:-.01em}
+  .hello h1 .nm{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hello .sub{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
+  .hello .sub p{font:500 13.5px/1.4 "Manrope";color:var(--muted)}
+  .chip-streak{margin-left:auto;display:flex;align-items:center;gap:5px;font:800 12px "Manrope";color:#B8540A;
+    background:linear-gradient(135deg,#FFE9C2,#FFD79E);padding:6px 11px;border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+
+  /* ===== HERO — Ici, maintenant (le "waouh") ===== */
+  .hero{position:relative;margin-top:15px;border-radius:26px;overflow:hidden;color:#fff;
+    box-shadow:0 26px 50px -24px rgba(150,40,60,.6);isolation:isolate}
+  .hero .sky{position:absolute;inset:0;z-index:-2;background:var(--sky);background-size:100% 220%;animation:sky 14s ease-in-out infinite alternate}
+  @keyframes sky{0%{background-position:0 0}100%{background-position:0 60%}}
+  .hero .sun{position:absolute;z-index:-1;width:150px;height:150px;right:-22px;top:-34px;border-radius:50%;
+    background:radial-gradient(circle,#FFF4C2 0%,#FFD15C 38%,rgba(255,170,90,0) 72%);filter:blur(2px);animation:bob 7s ease-in-out infinite alternate}
+  @keyframes bob{from{transform:translateY(0)}to{transform:translateY(12px)}}
+  .hero .grain{position:absolute;inset:0;z-index:-1;opacity:.10;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .hero-in{padding:17px 18px 16px}
+  .hero .eyebrow{display:inline-flex;align-items:center;gap:6px;font:800 10.5px/1 "Manrope";letter-spacing:.16em;text-transform:uppercase;
+    background:rgba(255,255,255,.22);backdrop-filter:blur(4px);padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.3)}
+  .hero .pulse{width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 0 0 rgba(255,255,255,.7);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.6)}70%{box-shadow:0 0 0 9px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+  .hero h2{font:600 27px/1.05 "Fraunces";margin:12px 0 3px;text-shadow:0 2px 14px rgba(120,30,40,.4)}
+  .hero .meta{font:600 13px/1.4 "Manrope";opacity:.92}
+  .ideas{display:flex;gap:8px;margin-top:14px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+  .ideas::-webkit-scrollbar{display:none}
+  .idea{flex:0 0 auto;display:flex;align-items:center;gap:7px;white-space:nowrap;cursor:pointer;
+    background:rgba(255,255,255,.92);color:var(--ink);font:700 13px "Manrope";padding:9px 13px;border-radius:14px;
+    box-shadow:0 8px 16px -8px rgba(120,30,40,.5);transition:transform .15s, box-shadow .15s}
+  .idea:active{transform:scale(.96)}
+  .idea .em{font-size:15px}
+  .idea .go{color:var(--coral);font-weight:800}
+
+  /* ===== Segmented Voyage/Maison ===== */
+  .seg{display:flex;gap:5px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:5px;margin-top:16px;box-shadow:var(--sh)}
+  .seg button{flex:1;border:0;background:transparent;font:700 14px "Manrope";color:var(--muted);padding:11px;border-radius:12px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:7px}
+  .seg button.on{background:var(--grad);color:#fff;box-shadow:0 8px 16px -8px rgba(255,90,77,.7)}
+
+  /* ===== Search ===== */
+  .search{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-top:12px;box-shadow:0 6px 14px -10px rgba(120,40,30,.4)}
+  .search input{flex:1;border:0;outline:0;font:500 14.5px "Manrope";color:var(--ink);background:transparent}
+  .search input::placeholder{color:var(--muted)}
+
+  /* ===== Section title ===== */
+  .sect{display:flex;align-items:baseline;justify-content:space-between;margin:24px 2px 11px}
+  .sect h3{font:600 19px/1 "Fraunces";color:var(--ink)}
+  .sect a{font:700 12.5px "Manrope";color:var(--coral)}
+
+  /* ===== Live map ===== */
+  .map{position:relative;height:172px;border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--sh);
+    background:linear-gradient(135deg,#FBEEDD,#F6E0CE)}
+  .map .grid{position:absolute;inset:0;opacity:.5;
+    background-image:linear-gradient(rgba(180,120,90,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(180,120,90,.14) 1px,transparent 1px);
+    background-size:34px 34px}
+  .map .road{position:absolute;height:9px;background:#fff;opacity:.7;border-radius:9px}
+  .pin{position:absolute;width:38px;height:38px;border-radius:50% 50% 50% 4px;transform:rotate(45deg);
+    box-shadow:0 8px 14px -6px rgba(120,40,30,.6);border:2.5px solid #fff;animation:float 4s ease-in-out infinite}
+  .pin span{transform:rotate(-45deg);display:block;width:100%;height:100%;display:grid;place-items:center;font-size:15px}
+  @keyframes float{0%,100%{transform:rotate(45deg) translateY(0)}50%{transform:rotate(45deg) translateY(-7px)}}
+  .map .you{position:absolute;left:50%;top:54%;width:18px;height:18px;border-radius:50%;background:#2BA7FF;border:3px solid #fff;transform:translate(-50%,-50%);box-shadow:0 0 0 0 rgba(43,167,255,.5);animation:ring 2.4s infinite}
+  @keyframes ring{0%{box-shadow:0 0 0 0 rgba(43,167,255,.5)}70%{box-shadow:0 0 0 18px rgba(43,167,255,0)}100%{box-shadow:0 0 0 0 rgba(43,167,255,0)}}
+  .map .badge{position:absolute;left:12px;bottom:12px;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);font:700 12px "Manrope";color:var(--ink);padding:7px 11px;border-radius:12px;box-shadow:var(--sh)}
+
+  /* ===== Tiles ===== */
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .tile{position:relative;background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px;overflow:hidden;box-shadow:0 10px 22px -16px rgba(120,40,30,.5);cursor:pointer;transition:transform .15s}
+  .tile:active{transform:translateY(2px) scale(.99)}
+  .tile .tic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:21px;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+  .tile .tn{font:700 15px "Manrope";color:var(--ink);margin-top:11px}
+  .tile .tm{font:500 12px "Manrope";color:var(--muted);margin-top:2px}
+  .tile .arr{position:absolute;right:13px;top:15px;color:var(--line);font-size:18px;font-weight:800}
+  .c-coral{background:linear-gradient(135deg,#FF8A6B,#FF4F6D)} .c-teal{background:linear-gradient(135deg,#2BD3C0,#13A99B)}
+  .c-amber{background:linear-gradient(135deg,#FFD15C,#FF9E3D)} .c-indigo{background:linear-gradient(135deg,#8A7BFF,#5B4BD6)}
+
+  /* ===== Feed card ===== */
+  .post{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 10px 22px -16px rgba(120,40,30,.5)}
+  .post .ph{display:flex;align-items:center;gap:10px}
+  .av{width:38px;height:38px;border-radius:50%;background:var(--grad);display:grid;place-items:center;color:#fff;font:800 14px "Manrope"}
+  .post .pn{font:700 14px "Manrope";color:var(--ink)} .post .pt{font:500 11.5px "Manrope";color:var(--muted)}
+  .post .pb{font:500 14px/1.5 "Manrope";color:var(--text);margin-top:9px}
+  .post .pa{display:flex;gap:18px;margin-top:11px;font:700 12.5px "Manrope";color:var(--muted)}
+
+  /* ===== Bottom nav ===== */
+  .nav{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-around;padding:9px 8px 26px;z-index:50;
+    background:linear-gradient(0deg,var(--cream) 70%,rgba(255,244,230,0));}
+  .nav button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;font:700 10px "Manrope";color:var(--muted);cursor:pointer}
+  .nav .nic{width:26px;height:26px;display:grid;place-items:center}
+  .nav button svg{width:23px;height:23px;stroke:var(--muted);fill:none;stroke-width:1.9}
+  .nav button.on{color:var(--coral)} .nav button.on svg{stroke:var(--coral)}
+  .nav button.on .nic{background:var(--grad);border-radius:11px;box-shadow:0 8px 16px -8px rgba(255,90,77,.7)} .nav button.on svg{stroke:#fff}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="cap">SunMates — Accueil v2 · maquette « golden hour » audacieuse</div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <div class="scroll">
+        <header class="rev" style="animation-delay:.02s">
+          <div class="brand">
+            <span class="mark"><svg viewBox="0 0 64 64"><g stroke="#fff" stroke-width="3.6" stroke-linecap="round"><line x1="32" y1="9" x2="32" y2="16"/><line x1="15" y1="17" x2="20" y2="22"/><line x1="49" y1="17" x2="44" y2="22"/><line x1="9" y1="35" x2="16" y2="35"/><line x1="48" y1="35" x2="55" y2="35"/></g><circle cx="32" cy="35" r="11" fill="#fff"/><path d="M13 48h38" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg></span>
+            <span class="word"><b>Sun</b>Mates</span>
+          </div>
+          <div class="hbtns">
+            <div class="ic">🔔<span class="dot">2</span></div>
+            <div class="ic">💬<span class="dot">3</span></div>
+          </div>
+        </header>
+
+        <div class="pad">
+          <div class="hello rev" style="animation-delay:.08s">
+            <h1>Bonjour, <span class="nm">Chloé</span></h1>
+            <div class="sub">
+              <p>Le Marais t'attend 👀</p>
+              <span class="chip-streak">🔥 7 jours</span>
+            </div>
+          </div>
+
+          <!-- HERO -->
+          <section class="hero rev" style="animation-delay:.16s">
+            <div class="sky"></div><div class="sun"></div><div class="grain"></div>
+            <div class="hero-in">
+              <span class="eyebrow"><span class="pulse"></span> Ici, maintenant</span>
+              <h2>Le Marais, Paris</h2>
+              <div class="meta">Vendredi · fin d'après-midi · 24° ☀️</div>
+              <div class="ideas">
+                <div class="idea"><span class="em">☕</span> Un café avec un·e local·e <span class="go">›</span></div>
+                <div class="idea"><span class="em">👀</span> 5 voyageur·ses dispo <span class="go">›</span></div>
+                <div class="idea"><span class="em">🎯</span> Défi de quartier <span class="go">›</span></div>
+              </div>
+            </div>
+          </section>
+
+          <div class="seg rev" style="animation-delay:.22s">
+            <button class="on">✈️ En voyage</button>
+            <button>🏠 À la maison</button>
+          </div>
+
+          <div class="search rev" style="animation-delay:.26s">
+            <span>🔍</span><input placeholder="Un lieu, une ville, un·e voyageur·se…">
+          </div>
+
+          <div class="sect rev" style="animation-delay:.30s"><h3>Autour de toi</h3><a>Tout voir ›</a></div>
+          <div class="map rev" style="animation-delay:.32s">
+            <div class="grid"></div>
+            <div class="road" style="left:-10px;top:60px;width:180px;transform:rotate(-12deg)"></div>
+            <div class="road" style="right:-20px;top:110px;width:200px;transform:rotate(8deg)"></div>
+            <div class="pin c-coral" style="left:24%;top:28%"><span>🧑</span></div>
+            <div class="pin c-teal" style="left:62%;top:22%;animation-delay:.8s"><span>🛟</span></div>
+            <div class="pin c-amber" style="left:74%;top:60%;animation-delay:1.6s"><span>🎯</span></div>
+            <div class="you"></div>
+            <div class="badge">📍 12 spots & 8 voyageur·ses tout près</div>
+          </div>
+
+          <div class="sect rev" style="animation-delay:.36s"><h3>Que faire maintenant</h3></div>
+          <div class="tiles rev" style="animation-delay:.38s">
+            <div class="tile"><div class="tic c-amber">🛟</div><div class="tn">Lieux sûrs</div><div class="tm">Cafés, co-livings</div><span class="arr">›</span></div>
+            <div class="tile"><div class="tic c-coral">🎉</div><div class="tn">Créer un moment</div><div class="tm">Sortie, balade…</div><span class="arr">›</span></div>
+            <div class="tile"><div class="tic c-teal">🎮</div><div class="tn">Quêtes du coin</div><div class="tm">+ d'XP, badges</div><span class="arr">›</span></div>
+            <div class="tile"><div class="tic c-indigo">🛡️</div><div class="tn">Ma sécurité</div><div class="tm">SOS, cercle</div><span class="arr">›</span></div>
+          </div>
+
+          <div class="sect rev" style="animation-delay:.42s"><h3>Le fil</h3><a>Publier ›</a></div>
+          <div class="post rev" style="animation-delay:.44s">
+            <div class="ph"><div class="av">L</div><div><div class="pn">Lina · Lisbonne</div><div class="pt">il y a 12 min · ☕ humeur</div></div></div>
+            <div class="pb">Quelqu'un pour un coucher de soleil au Miradouro ce soir ? 🌅</div>
+            <div class="pa"><span>❤️ 14</span><span>💬 5</span><span>↗ Partager</span></div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="on"><span class="nic"><svg viewBox="0 0 24 24"><path d="M3 11.4 12 4l9 7.4"/><path d="M5.5 10v9.5h13V10"/></svg></span>Accueil</button>
+        <button><span class="nic"><svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5.8-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.2 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.4"/></svg></span>Lieux</button>
+        <button><span class="nic"><svg viewBox="0 0 24 24"><rect x="2.5" y="6.5" width="19" height="11" rx="4"/><path d="M6.5 11h4M8.5 9v4"/></svg></span>Jeux</button>
+        <button><span class="nic"><svg viewBox="0 0 24 24"><path d="M12 3 5.5 5.7v6.1c0 4 2.8 7 6.5 8.4 3.7-1.4 6.5-4.4 6.5-8.4V5.7L12 3z"/></svg></span>Sécurité</button>
+        <button><span class="nic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span>Profil</button>
+      </nav>
+    </div>
+  </div>
+  <div class="cap">Hero « Ici, maintenant » = ciel vivant · révélation en cascade · profondeur · Fraunces éditorial</div>
+</div>
+</body>
+</html>
