@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=614"></script>
+  <script src="sunmates-badges.js?v=615"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -14312,9 +14312,12 @@
         res.classList.remove("hidden");
         res.innerHTML = '<li class="act-sr-msg">' + i18nT("Recherche…") + "</li>";
         try {
-          const r = await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=5&accept-language=fr&q=" + encodeURIComponent(q), { headers: { "Accept-Language": "fr" } });
-          const list = await r.json();
+          const r = await fetch("https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=8&accept-language=fr&q=" + encodeURIComponent(q), { headers: { "Accept-Language": "fr" } });
+          let list = await r.json();
           if (!list || !list.length) { res.innerHTML = '<li class="act-sr-msg">' + i18nT("Aucun lieu trouvé.") + "</li>"; return; }
+          // « Grenade » (ville) ne doit pas faire ressortir le PAYS d'abord : on priorise villes/quartiers, le pays en dernier.
+          const _rank = (p) => { const t = (p.addresstype || p.type || "").toLowerCase(); if (/city|town|village|municipality|suburb|neighbourhood|hamlet/.test(t)) return 0; if (t === "country") return 4; if (/state|region|province|county|administrative/.test(t)) return 3; return 1; };
+          list = list.sort((a, b) => _rank(a) - _rank(b)).slice(0, 5);
           res.innerHTML = "";
           list.forEach((p) => {
             const li = document.createElement("li");
