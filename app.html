@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=616"></script>
+  <script src="sunmates-badges.js?v=617"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -513,6 +513,12 @@
     }
     #geoNowCard .geo-idea:hover, #geoNowCard .geo-idea:focus-visible { background: var(--accent-soft); border-color: var(--accent); outline: none; }
     #geoNowCard .geo-idea .gi-arrow { color: var(--accent); font-weight: 800; }
+    /* Bulle de suggestion « Ici, maintenant » (contenu réel : défi / voyageurs / lieu) */
+    #geoNowCard .geo-result { display: flex; align-items: center; gap: .5rem; margin-top: .55rem; padding: .55rem .65rem; border-radius: 12px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 6px 14px -10px rgba(120,40,30,.5); animation: geoPop .22s ease; }
+    @keyframes geoPop { from { opacity: 0; transform: translateY(-4px) scale(.98); } to { opacity: 1; transform: none; } }
+    #geoNowCard .geo-result-txt { flex: 1; min-width: 0; font-size: .85rem; line-height: 1.35; color: var(--text); }
+    #geoNowCard .geo-result-txt b { color: var(--ink); }
+    #geoNowCard .geo-result-go { flex: 0 0 auto; border: 0; background: var(--accent); color: #fff; font-weight: 800; font-size: .8rem; padding: .4rem .7rem; border-radius: 999px; cursor: pointer; }
     /* Autorisations (Réglages) : géo + notifs présentées pareil, état clair + cliquable */
     .perm-block { display: flex; flex-direction: column; gap: .55rem; }
     .perm-btn { display: flex !important; align-items: center; gap: .7rem; text-align: left; }
@@ -14047,9 +14053,31 @@
         '<div class="geo-ideas">' +
         top.map((s, i) => '<button type="button" class="geo-idea" data-idea="' + i + '">' + escapeHtml(s) + '<span class="gi-arrow">›</span></button>').join("") +
         '</div>';
-      // GEO-TRIGGER : chaque idée mène à l'écran correspondant (jamais décorative).
-      card.querySelectorAll(".geo-idea").forEach((b) => b.addEventListener("click", () => _geoIdeaGo(top[Number(b.dataset.idea)] || "")));
+      // GEO-TRIGGER : clic sur une idée → une BULLE qui pop avec une VRAIE suggestion + « Voir » (pas un tab mort).
+      card.querySelectorAll(".geo-idea").forEach((b) => b.addEventListener("click", () => _geoSuggestBubble(card, top[Number(b.dataset.idea)] || "")));
       card.classList.remove("hidden");
+    }
+    // « Ici, maintenant » actionnable : ouvre une bulle avec du CONTENU RÉEL (défi/voyageurs/lieu) + bouton Voir.
+    function _geoSuggestBubble(card, text) {
+      const t = (text || "").toLowerCase();
+      let html = "", goText = i18nT("Voir ›");
+      if (/défi|defi|quête|quete|jeu|mission/.test(t) && (typeof betaOn !== "function" || betaOn())) {
+        const qs = (typeof allQuests !== "undefined" && allQuests) ? allQuests : [];
+        const q = qs.find((x) => x && !x.done) || qs[0];
+        html = q ? ("🎯 " + i18nT("Défi du quartier") + " : <b>" + escapeHtml(q.title || "") + "</b>") : ("🎯 " + i18nT("De nouveaux défis arrivent dans ton coin, repasse vite !"));
+      } else if (/dispo|autour|qui est|mate|voyageur|rencontr|cercle|connex/.test(t)) {
+        const act = Object.values(typeof travelerMap !== "undefined" ? travelerMap : {}).filter((p) => p && p.id !== myUserId && typeof isActive === "function" && isActive(p));
+        const n = act.length;
+        html = n ? ("👀 <b>" + n + "</b> " + i18nT(n > 1 ? "voyageur·ses dispo autour de toi" : "voyageur·se dispo autour de toi")) : ("👀 " + i18nT("Personne en ligne là tout de suite — repasse un peu plus tard 🌍"));
+      } else {
+        const cf = (typeof allCafes !== "undefined" && allCafes && allCafes.length) ? allCafes[0] : null;
+        html = cf ? ("🛟 " + i18nT("À découvrir") + " : <b>" + escapeHtml(cf.name || "") + "</b>" + (cf.city ? " · " + escapeHtml(cf.city) : "")) : ("🛟 " + i18nT("Des lieux sûrs t'attendent juste à côté"));
+      }
+      let b = card.querySelector(".geo-result");
+      if (!b) { b = document.createElement("div"); b.className = "geo-result"; card.appendChild(b); }
+      b.innerHTML = '<span class="geo-result-txt">' + html + '</span><button type="button" class="geo-result-go">' + goText + '</button>';
+      b.querySelector(".geo-result-go").addEventListener("click", (e) => { e.stopPropagation(); _geoIdeaGo(text); });
+      if (window.SMSound) SMSound.play("pop");
     }
     async function renderGeoNow() {
       const card = $("geoNowCard"); if (!card) return;
