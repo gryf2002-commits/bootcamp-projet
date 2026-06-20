@@ -555,14 +555,15 @@ body.sm-lite #hmLayersBtn,                /* bouton « Filtres » de la carte (c
 body.sm-lite .homemap-filters .chip.cl-quests,
 body.sm-lite #daySessionCard,             /* carte « Ma journée » (quêtes/XP/confettis) */
 body.sm-lite #badgeRailSection,           /* rail « À débloquer 🏅 » → lien mort vers le hub Jeux */
-body.sm-lite #homeStreak,                 /* chip « série 🔥 N jours » (gaming) */
+/* (#homeStreak n'est PLUS masqué en Lite : gamification LÉGÈRE voulue par Maxime — la série 🔥 de
+   jours d'affilée est locale, douce, sans transformer la Lite en hub de jeu.) */
 body.sm-lite #parcoursCard,               /* « Mon parcours » (quêtes/badges/XP cliquables vers Jeux) */
 body.sm-lite #profileBadges,              /* médaillons de badges du profil */
 body.sm-lite .stat-box[data-stat="xp"],   /* stat « XP ⭐ » du profil */
 body.sm-lite #smdaBtn { display: none !important; }   /* FAB « +DA » (console admin) — pas en grand public */
 
 /* --- « Bonjour » contenu (ne prend plus tout l'écran) --- */
-body.sm-lite #homeHello { font-size: 1.6rem !important; line-height: 1.2 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.sm-lite #homeHello { font-size: 1.6rem !important; line-height: 1.2 !important; white-space: normal; overflow-wrap: anywhere; } /* fix : « Bonjour [prénom] » ne se coupe plus sur petits écrans (<360px) */
 
 /* --- Tuiles AVEC PROFONDEUR (remplace le box-shadow:none v534 → ombre douce neutre) --- */
 body.sm-lite .card,

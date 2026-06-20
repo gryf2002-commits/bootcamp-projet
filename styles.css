@@ -1139,7 +1139,8 @@
     .onb-step p b { color: #fff; }
     .onb-dots { display: flex; gap: .5rem; justify-content: center; margin: 1rem 0; }
     .onb-dots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.3); transition: all .3s; }
-    .onb-dots i.on { width: 26px; border-radius: 999px; background: linear-gradient(90deg,#ffd15c,#ff7e5f); }
+    .onb-dots i.on { width: 20px; border-radius: 10px; background: linear-gradient(90deg,#ffd15c,#ff7e5f); }
+    .onb-dots i:focus-visible { outline: 2px solid rgba(255,255,255,.7); outline-offset: 2px; }
     .onb-actions { display: flex; gap: .7rem; }
     .onb-actions button { flex: 1; padding: .9rem; border-radius: 999px; font-weight: 800; cursor: pointer; border: 0; font-size: .95rem; }
     .onb-next { background: linear-gradient(135deg,#FFC93C,#ff7e5f 60%,#FF5A4D); color: #fff; box-shadow: 0 10px 24px rgba(255,90,77,.28); transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; }
