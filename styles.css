@@ -2149,6 +2149,10 @@
       background:linear-gradient(145deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 26%); }
     .tab-panel[data-panel="accueil"] .tile:active .thumb,
     .tab-panel[data-panel="securite"] .tile:active .thumb { transform: scale(.96); }
+    /* ===== Accueil v2 — élévation premium (greeting éditorial + profondeur tuiles) ===== */
+    #homeHello { font-family: "Fraunces", Georgia, serif; font-weight: 700; font-size: 1.95rem; line-height: 1.06; letter-spacing: -.01em; }
+    .tab-panel[data-panel="accueil"] .grid2 .tile { box-shadow: 0 12px 24px -18px rgba(120,40,30,.5); transition: transform .14s ease, box-shadow .2s ease; }
+    .tab-panel[data-panel="accueil"] .grid2 .tile:hover { transform: translateY(-2px); box-shadow: 0 18px 32px -18px rgba(120,40,30,.55); }
     /* Quête du jour : aura calmée sur l'accueil (moins « jeu ») */
     .tab-panel[data-panel="accueil"] .qs-aura { opacity: .45; }
     /* Accessibilité : croix de fermeture des panneaux → vraie cible tactile 44px */
