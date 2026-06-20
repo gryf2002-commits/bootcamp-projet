@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=591"></script>
+  <script src="sunmates-badges.js?v=592"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -732,6 +732,107 @@
     }
     .ptrip-country { display: flex; align-items: center; gap: .35rem; margin-top: .2rem; font-size: .84rem; font-weight: 600; color: var(--muted); }
     .ptrip-flag { font-size: 1rem; line-height: 1; }
+
+    /* ===== 🧳 Passeport de voyage : stats cosmétiques (aucun trust) ===== */
+    .trip-passport {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem;
+      margin: .25rem 0 .55rem; padding: .75rem .7rem;
+      border-radius: 16px;
+      /* Fond dérivé de --ink (jamais var(--card) sur une carte --card) pour rester visible sur tout thème */
+      background:
+        radial-gradient(120% 140% at 0% 0%, color-mix(in oklab, var(--gold, #FFD15C) 16%, transparent) 0%, transparent 46%),
+        color-mix(in oklab, var(--ink) 5%, transparent);
+      border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+    }
+    .tpp-cell { text-align: center; min-width: 0; }
+    .tpp-num {
+      font: 800 1.5rem/1 "Fraunces", Georgia, serif;
+      background: linear-gradient(135deg, var(--gold, #FFD15C), var(--accent, #ff6a5d));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      font-variant-numeric: tabular-nums;
+    }
+    .tpp-lbl { margin-top: .15rem; font: 700 .64rem/1.15 "Manrope", system-ui, sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; }
+    .tpp-streak { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: .4rem; margin-top: .35rem; padding-top: .5rem; border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); }
+    .tpp-streak .fire { font-size: 1rem; line-height: 1; }
+    .tpp-streak b { color: var(--ink); font-weight: 800; }
+    .tpp-streak span { font: 600 .78rem/1.2 "Manrope", system-ui, sans-serif; color: var(--muted); }
+
+    /* ===== Bascule de vue Cartes / Frise ===== */
+    .trip-vtoggle {
+      display: inline-flex; gap: .25rem; margin: 0 0 .55rem; padding: .22rem;
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--ink) 7%, transparent);
+      border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+    }
+    .tvt-btn {
+      border: 0; cursor: pointer; padding: .4rem .85rem; border-radius: 999px;
+      font: 700 .8rem/1 "Manrope", system-ui, sans-serif; color: var(--muted);
+      background: transparent; transition: color .16s ease, background .16s ease, box-shadow .16s ease;
+    }
+    .tvt-btn.is-on {
+      color: #2a1640;
+      background: linear-gradient(135deg, var(--gold, #FFD15C), #ff9a8d);
+      box-shadow: 0 4px 12px -6px rgba(255,126,114,.6);
+    }
+    .tvt-btn:focus-visible { outline: 2px solid var(--gold, #FFD15C); outline-offset: 2px; }
+
+    /* ===== 🗺️ Frise chronologique verticale ===== */
+    .trip-timeline { position: relative; margin: .15rem 0 .4rem; padding: .2rem 0 .2rem; }
+    .ttl-year {
+      position: relative; margin: .55rem 0 .35rem; padding-left: 2.1rem;
+      font: 800 .92rem/1 "Fraunces", Georgia, serif; color: var(--ink);
+    }
+    .ttl-year:first-child { margin-top: .1rem; }
+    .ttl-year::before {
+      content: ""; position: absolute; left: .58rem; top: -.1rem; bottom: -.45rem; width: 3px; border-radius: 2px;
+      background: linear-gradient(180deg, var(--gold, #FFD15C), var(--accent, #ff6a5d) 55%, #9B7BFF);
+    }
+    /* segment de ligne sous chaque nœud, pour relier en continu */
+    .ttl-node {
+      position: relative; padding: .15rem 0 .65rem 2.1rem; cursor: pointer;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity .45s ease, transform .45s ease;
+    }
+    .ttl-node.is-in { opacity: 1; transform: none; }
+    .ttl-node::before {
+      content: ""; position: absolute; left: .58rem; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(180deg, var(--gold, #FFD15C), var(--accent, #ff6a5d) 55%, #9B7BFF);
+      opacity: .5;
+    }
+    .ttl-node:last-child::before { background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 55%, transparent), transparent); }
+    .ttl-dot {
+      position: absolute; left: .12rem; top: .2rem; width: 1rem; height: 1rem; border-radius: 50%;
+      border: 2px solid color-mix(in oklab, var(--ink) 14%, transparent);
+      box-shadow: 0 0 0 4px color-mix(in oklab, var(--ink) 4%, transparent);
+      z-index: 1;
+    }
+    .ttl-dot.past   { background: var(--accent, #ff6a5d); border-color: color-mix(in oklab, var(--accent) 60%, white); }
+    .ttl-dot.future { background: var(--gold, #FFD15C);   border-color: color-mix(in oklab, var(--gold) 55%, white); }
+    .ttl-card {
+      border-radius: 13px; padding: .5rem .65rem;
+      background: color-mix(in oklab, var(--ink) 5%, transparent);
+      border: 1px solid color-mix(in oklab, var(--ink) 11%, transparent);
+      transition: transform .14s ease, border-color .16s ease, background .16s ease;
+    }
+    .ttl-node:hover .ttl-card, .ttl-node:focus-visible .ttl-card {
+      transform: translateX(2px);
+      border-color: color-mix(in oklab, var(--accent) 45%, transparent);
+      background: var(--accent-soft, color-mix(in oklab, var(--accent) 12%, transparent));
+    }
+    .ttl-node:focus-visible { outline: none; }
+    .ttl-city { display: flex; align-items: center; gap: .35rem; font: 700 .94rem/1.15 "Manrope", system-ui, sans-serif; color: var(--ink); }
+    .ttl-flag { font-size: 1rem; line-height: 1; }
+    .ttl-soon { margin-left: auto; flex-shrink: 0; font: 800 .6rem/1 "Manrope", system-ui, sans-serif; color: #2a1640; padding: .18rem .4rem; border-radius: 999px; background: linear-gradient(135deg, var(--gold, #FFD15C), #ff9a8d); letter-spacing: .3px; }
+    .ttl-dates { margin-top: .12rem; font: 600 .76rem/1.2 "Manrope", system-ui, sans-serif; color: var(--muted); }
+    .ttl-note { margin-top: .15rem; font: 500 .78rem/1.3 "Manrope", system-ui, sans-serif; color: var(--muted); font-style: italic; }
+    /* Marqueur « aujourd'hui » entre passés et à venir */
+    .ttl-now { position: relative; padding: .25rem 0 .55rem 2.1rem; }
+    .ttl-now::before { content: ""; position: absolute; left: .58rem; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--accent, #ff6a5d), var(--gold, #FFD15C)); opacity: .5; }
+    .ttl-now-dot { position: absolute; left: .12rem; top: .2rem; width: 1rem; height: 1rem; border-radius: 50%; background: #fff; border: 3px solid var(--accent, #ff6a5d); box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 22%, transparent); z-index: 1; }
+    .ttl-now-lbl { display: inline-block; font: 800 .68rem/1 "Manrope", system-ui, sans-serif; color: var(--accent, #ff6a5d); text-transform: uppercase; letter-spacing: .4px; }
+    @media (prefers-reduced-motion: reduce) {
+      .ttl-node { opacity: 1; transform: none; transition: none; }
+    }
 
     /* ===== ✨ Mon année SunMates : CTA + overlay stories ===== */
     .wrapped-cta {
@@ -1963,6 +2064,13 @@
         <button type="button" id="globeOpenBtn" class="globe-cta">🌍 Voir mon globe</button>
         <button type="button" id="wrappedOpenBtn" class="wrapped-cta">✨ Mon année SunMates</button>
         <div id="tripMatchBanner"></div>
+        <!-- 🧳 Passeport de voyage (stats cosmétiques) + bascule de vue Cartes/Frise -->
+        <div id="tripPassport"></div>
+        <div id="tripViewToggle" class="trip-vtoggle" role="tablist" aria-label="Affichage des voyages" hidden>
+          <button type="button" class="tvt-btn is-on" data-tview="cards" role="tab" aria-selected="true">🗂️ Cartes</button>
+          <button type="button" class="tvt-btn" data-tview="timeline" role="tab" aria-selected="false">🗺️ Frise</button>
+        </div>
+        <div id="tripTimeline" class="trip-timeline" hidden></div>
         <div id="myTrips"></div>
 
         <div class="section-head"><h3>Accès rapides</h3></div>
@@ -5516,6 +5624,7 @@
     async function renderTrips() {
       const box = $("myTrips"); if (!box || !myUserId) return;
       const trips = await loadMyTrips();
+      _tripPassportTimelineHide();
       if (trips === null) { console.warn("[SunMates] table trips absente · lance supabase_migration_trips.sql"); box.innerHTML = '<div class="trip-empty">Tes voyages arrivent très vite ✈️</div>'; const bn = $("tripMatchBanner"); if (bn) bn.innerHTML = ""; return; }
       const matches = await loadTripMatches();
       // Profils des voyageurs qui chevauchent (1 requête)
@@ -5569,7 +5678,128 @@
       box.innerHTML = html;
       box.querySelectorAll("[data-tdel]").forEach((el) => el.addEventListener("click", () => { smConfirm("🗑️", "Supprimer ce voyage ?", "Ce voyage sera retiré de ton profil.", "Supprimer", async () => { await deleteTrip(Number(el.dataset.tdel)); renderTrips(); }); }));
       box.querySelectorAll("[data-tmate]").forEach((el) => el.addEventListener("click", () => { const p = profById[el.dataset.tmate] || travelerMap[el.dataset.tmate]; if (p) { goToTab("connexions"); if (typeof openTravelerProfile === "function") openTravelerProfile(p); } }));
+      // 🧳 Passeport (stats) + 🗺️ frise chronologique, à partir des mêmes voyages
+      _renderTripPassport(trips);
+      _renderTripTimeline(trips);
     }
+
+    // ===== 🧳 Passeport de voyage + 🗺️ frise chronologique (cosmétique, AUCUN trust) =====
+    function _tripPassportTimelineHide() {
+      const p = $("tripPassport"), tg = $("tripViewToggle"), tl = $("tripTimeline");
+      if (p) p.innerHTML = "";
+      if (tg) tg.hidden = true;
+      if (tl) { tl.hidden = true; tl.innerHTML = ""; }
+    }
+    // pays « propre » : retire l'emoji drapeau de tête s'il existe
+    function _tripCountryName(c) { return (c || "").replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, "").trim(); }
+    function _tripFlag(c) { return (c && (c.match(/^[\u{1F1E6}-\u{1F1FF}]{2}/u) || [])[0]) || ""; }
+    // « Série » choisie = nombre d'ANNÉES CONSÉCUTIVES (jusqu'à l'année en cours) avec au moins un voyage.
+    function _tripYearStreak(trips) {
+      const years = new Set();
+      trips.forEach((t) => { const s = t.start_date || ""; if (s.length >= 4) years.add(Number(s.slice(0, 4))); });
+      if (!years.size) return 0;
+      const nowY = new Date().getFullYear();
+      // On part de l'année la plus récente ayant un voyage (≤ année en cours) et on remonte tant que c'est consécutif.
+      let from = Math.min(nowY, Math.max(...[...years]));
+      let streak = 0;
+      for (let y = from; years.has(y); y--) streak++;
+      return streak;
+    }
+    function _renderTripPassport(trips) {
+      const host = $("tripPassport"); if (!host) return;
+      if (!trips || !trips.length) { host.innerHTML = ""; return; }
+      const nTrips = trips.length;
+      const nCities = new Set(trips.map((t) => (t.city || "").trim().toLowerCase()).filter(Boolean)).size;
+      const nCountries = new Set(trips.map((t) => _tripCountryName(t.country).toLowerCase()).filter(Boolean)).size;
+      const streak = _tripYearStreak(trips);
+      const streakTxt = streak > 1
+        ? i18nT("<b>{n}</b> années consécutives de voyage. Continue la série ☀️", { n: streak })
+        : i18nT("Reviens chaque année pour faire grandir ta série ☀️");
+      host.innerHTML =
+        '<div class="trip-passport" aria-label="' + i18nT("Passeport de voyage") + '">' +
+          '<div class="tpp-cell"><div class="tpp-num">' + nTrips + '</div><div class="tpp-lbl">' + i18nT("Voyages") + '</div></div>' +
+          '<div class="tpp-cell"><div class="tpp-num">' + nCities + '</div><div class="tpp-lbl">' + i18nT("Villes") + '</div></div>' +
+          '<div class="tpp-cell"><div class="tpp-num">' + nCountries + '</div><div class="tpp-lbl">' + i18nT("Pays") + '</div></div>' +
+          '<div class="tpp-cell"><div class="tpp-num">' + (streak || 0) + '</div><div class="tpp-lbl">' + i18nT("Série") + '</div></div>' +
+          '<div class="tpp-streak"><span class="fire">🔥</span><span>' + streakTxt + '</span></div>' +
+        '</div>';
+    }
+    function _renderTripTimeline(trips) {
+      const tl = $("tripTimeline"), tg = $("tripViewToggle"), box = $("myTrips");
+      if (!tl || !tg || !box || !trips || !trips.length) { if (tg) tg.hidden = true; if (tl) tl.hidden = true; return; }
+      tg.hidden = false;
+      const today = ymd(new Date());
+      // ancien → récent (chronologique vrai)
+      const sorted = trips.slice().sort((a, b) => (a.start_date || "").localeCompare(b.start_date || ""));
+      // Insertion du marqueur « aujourd'hui » au 1er voyage à venir
+      let nowInserted = false;
+      let html = "", curYear = null;
+      const nodeHtml = (t) => {
+        const isFuture = (t.end_date || t.start_date || "") >= today;
+        const flag = _tripFlag(t.country);
+        const cName = _tripCountryName(t.country);
+        const soon = isFuture ? '<span class="ttl-soon">' + i18nT("À venir") + '</span>' : '';
+        const note = t.note ? '<div class="ttl-note">“' + escapeHtml(t.note) + '”</div>' : '';
+        const place = (flag ? '<span class="ttl-flag">' + flag + '</span>' : '') + escapeHtml(t.city || '');
+        const sub = cName ? '<div class="ttl-dates">' + escapeHtml(cName) + ' · ' + _fmtTripDates(t.start_date, t.end_date) + '</div>'
+                          : '<div class="ttl-dates">' + _fmtTripDates(t.start_date, t.end_date) + '</div>';
+        return '<div class="ttl-node" tabindex="0" role="button" data-tnode="' + escapeHtml(String(t.id)) +
+               '" aria-label="' + escapeHtml((t.city || '') + ' ' + _fmtTripDates(t.start_date, t.end_date)) + '">' +
+                 '<span class="ttl-dot ' + (isFuture ? 'future' : 'past') + '"></span>' +
+                 '<div class="ttl-card"><div class="ttl-city">' + place + soon + '</div>' + sub + note + '</div>' +
+               '</div>';
+      };
+      sorted.forEach((t) => {
+        const isFuture = (t.end_date || t.start_date || "") >= today;
+        if (isFuture && !nowInserted) {
+          html += '<div class="ttl-now"><span class="ttl-now-dot"></span><span class="ttl-now-lbl">' + i18nT("Aujourd'hui") + '</span></div>';
+          nowInserted = true;
+        }
+        const yr = (t.start_date || "").slice(0, 4) || "—";
+        if (yr !== curYear) { curYear = yr; html += '<div class="ttl-year">' + escapeHtml(yr) + '</div>'; }
+        html += nodeHtml(t);
+      });
+      if (!nowInserted) html += '<div class="ttl-now"><span class="ttl-now-dot"></span><span class="ttl-now-lbl">' + i18nT("Aujourd'hui") + '</span></div>';
+      tl.innerHTML = html;
+      // Clic / clavier sur un nœud → surligne la carte correspondante et y défile
+      const onNode = (id) => {
+        if (_tripView !== "cards") _setTripView("cards");
+        const card = box.querySelector('[data-tdel="' + CSS.escape(String(id)) + '"]');
+        const target = card ? card.closest(".trip-card") : null;
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+          target.style.transition = "box-shadow .3s ease"; target.style.boxShadow = "0 0 0 2px var(--accent, #ff6a5d)";
+          setTimeout(() => { target.style.boxShadow = ""; }, 1200);
+        }
+      };
+      tl.querySelectorAll("[data-tnode]").forEach((el) => {
+        el.addEventListener("click", () => onNode(el.dataset.tnode));
+        el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onNode(el.dataset.tnode); } });
+      });
+      // Apparition douce (IntersectionObserver), respecte prefers-reduced-motion
+      const nodes = tl.querySelectorAll(".ttl-node");
+      const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce || !("IntersectionObserver" in window)) {
+        nodes.forEach((n) => n.classList.add("is-in"));
+      } else {
+        const io = new IntersectionObserver((ents) => {
+          ents.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); } });
+        }, { rootMargin: "0px 0px -8% 0px", threshold: .05 });
+        nodes.forEach((n) => io.observe(n));
+      }
+    }
+    // Bascule Cartes / Frise
+    let _tripView = "cards";
+    function _setTripView(v) {
+      _tripView = (v === "timeline") ? "timeline" : "cards";
+      const box = $("myTrips"), tl = $("tripTimeline"), tg = $("tripViewToggle");
+      if (box) box.hidden = (_tripView === "timeline");
+      if (tl) tl.hidden = (_tripView !== "timeline");
+      if (tg) tg.querySelectorAll(".tvt-btn").forEach((b) => {
+        const on = b.dataset.tview === _tripView; b.classList.toggle("is-on", on); b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+    }
+    { const tg = $("tripViewToggle"); if (tg) tg.addEventListener("click", (e) => { const b = e.target.closest(".tvt-btn"); if (b) _setTripView(b.dataset.tview); }); }
     const _trIn = "width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:.5rem .6rem;font:inherit;background:var(--card);color:var(--ink);margin-top:.15rem";
     const _trLbl = "font-size:.76rem;font-weight:700;color:var(--muted);margin-top:.5rem;display:block";
     function openAddTrip() {
