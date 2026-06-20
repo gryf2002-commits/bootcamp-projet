@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=603"></script>
+  <script src="sunmates-badges.js?v=604"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -552,8 +552,8 @@
       color: var(--ink); font-weight: 700; font-size: .8rem; white-space: nowrap; cursor: pointer;
       transition: transform .1s ease, border-color .15s ease, background .15s ease; }
     #seasonCtl .seg button:active { transform: scale(.97); }
-    #seasonCtl .seg button.active { border-color: var(--accent); color: var(--accent);
-      background: color-mix(in oklab, var(--accent) 16%, transparent); font-weight: 800; }
+    #seasonCtl .seg button.active { border-color: transparent; color: #fff;
+      background: var(--accent-grad); font-weight: 800; box-shadow: 0 4px 12px -4px rgba(255,90,77,.4); } /* contraste net : dégradé plein + texte blanc (avant : corail sur corail pâle ~2.5:1, illisible) */
     /* Centrage cohérent : titres de section vides + sous-titres d'écran */
     .set-grouptitle { text-align: left; } /* labels de réglages restent alignés à gauche (lisibilité) */
 

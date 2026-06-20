@@ -115,7 +115,7 @@
     .topbar {
       display: flex; align-items: center; justify-content: space-between; gap: .75rem;
       /* safe-area-inset-top : laisse la place de l'encoche / status bar (iPhone) sans chevauchement */
-      padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem 1.05rem; position: sticky; top: 0; z-index: var(--z-header);
+      padding: calc(1rem + env(safe-area-inset-top, 0px)) .7rem 1.05rem; position: sticky; top: 0; z-index: var(--z-header); /* padding latéral réduit (1.25→.7rem) : logo flush gauche, boutons flush droite (retour Maxime) */
       /* P3 (retour Maxime) : la TRANSPARENCE revient, mais propre · opaque sur 62 % (la status
          bar et le titre restent couverts → icônes natives du téléphone toujours lisibles), puis
          fondu DOUX vers transparent. Ce qui gênait avant : le dégradé partait de 86 % d'opacité
@@ -1123,10 +1123,11 @@
     .onb-stage { position: relative; min-height: 280px; }
     /* Glissement plus doux et plus COURT (#20 : la latence entre slides) ; .fast = pressé → instantané */
     /* Transition d'étape = FONDU vertical doux (plus de glissement horizontal vers la droite, banni). */
-    .onb-step { position: absolute; inset: 0; opacity: 0; transform: translateY(12px) scale(.985); transition: opacity .3s cubic-bezier(.22,1,.36,1), transform .3s cubic-bezier(.22,1,.36,1);
-      pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; will-change: transform, opacity; backface-visibility: hidden; }
-    .onb-step.active { opacity: 1; transform: none; pointer-events: auto; }
-    .onb-step.left { transform: translateY(-12px) scale(.985); }
+    /* Transition d'étape = FONDU PUR (aucun mouvement, demande de Maxime : ni horizontal ni vertical). */
+    .onb-step { position: absolute; inset: 0; opacity: 0; transition: opacity .34s ease;
+      pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; will-change: opacity; backface-visibility: hidden; }
+    .onb-step.active { opacity: 1; pointer-events: auto; }
+    .onb-step.left { opacity: 0; }
     .onb-stage.fast .onb-step { transition: none; }
     .onb-skip.hot { color: #ffd15c; font-weight: 800; text-decoration: underline; }
     .onb-emoji { position: relative; font-size: 76px; margin-bottom: .9rem; filter: drop-shadow(0 12px 22px rgba(0,0,0,.45)); animation: floaty 3s ease-in-out infinite; }
@@ -3828,7 +3829,7 @@
        proprement. Mode-aware via var(--bg). !important pour gagner sur toutes les couches topbar par mode.
        (La topbar n'est pas un ancêtre de la carte → ce backdrop-filter ne casse PAS le plein écran.) */
     .topbar { background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 80%, transparent) 0%, color-mix(in srgb, var(--bg) 60%, transparent) 58%, transparent 100%) !important;
-      -webkit-backdrop-filter: blur(7px) saturate(1.08); backdrop-filter: blur(7px) saturate(1.08); /* flou RÉDUIT (retour Maxime « pavé flou moche ») — moins de frosting, transparence gardée */
+      /* backdrop-filter RETIRÉ (retour Maxime « pavé flou moche », plusieurs fois) — le fondu opaque->transparent du gradient suffit, fini le frosting. */
       /* Bug Maxime « le flou translucide du header est trop marqué d'une démarcation » : le backdrop-filter
          a un BORD NET en bas (le flou s'arrête d'un coup = la ligne visible). On ESTOMPE ce bord avec un
          masque dégradé → le flou ET le fond fondent en douceur sur les ~22px du bas (zone de padding, sous
