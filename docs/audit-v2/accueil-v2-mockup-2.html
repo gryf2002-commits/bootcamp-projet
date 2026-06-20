@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SunMates — Accueil v2 · MAP-FIRST premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --coral:#FF5A4D; --amber:#FFC93C; --ink:#26161F; --text:#5B4A52; --muted:#9B8A91;
+    --paper:#FBF7F2; --line:#ECE3DA;
+    --land:#F4EDE4; --land2:#EDE3D7; --road:#FFFFFF; --water:#CFE3E6; --park:#DCE7D3;
+    --r:20px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Manrope",system-ui,sans-serif;color:var(--text);min-height:100vh;display:grid;place-items:center;padding:30px 14px;
+    background:radial-gradient(130% 90% at 80% -10%,#241634 0,transparent 55%),#120a1c}
+  .cap{font:600 11.5px/1.5 "Manrope";letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.42);text-align:center;margin:10px 0}
+  .phone{width:390px;height:844px;border-radius:52px;padding:11px;background:linear-gradient(160deg,#34262f,#160e16);box-shadow:0 50px 90px -30px rgba(0,0,0,.7),inset 0 0 0 2px rgba(255,255,255,.05)}
+  .screen{width:100%;height:100%;border-radius:42px;overflow:hidden;position:relative;background:var(--paper);display:flex;flex-direction:column}
+
+  /* ===== MAP HERO (le héros, travaillé) ===== */
+  .map{position:absolute;inset:0 0 auto;height:560px;overflow:hidden;background:var(--land)}
+  .map svg{position:absolute;inset:0;width:100%;height:100%}
+  .vign{position:absolute;inset:0;pointer-events:none;background:
+    radial-gradient(120% 70% at 50% 16%, transparent 40%, rgba(38,22,31,.10) 100%),
+    linear-gradient(180deg, rgba(251,247,242,0) 58%, rgba(251,247,242,.55) 84%, var(--paper) 100%)}
+  /* markers */
+  .mk{position:absolute;transform:translate(-50%,-50%)}
+  .person{width:30px;height:30px;border-radius:50%;border:2.5px solid #fff;background-size:cover;box-shadow:0 6px 14px -5px rgba(40,15,25,.5);
+    background:linear-gradient(135deg,#FFB48C,#FF7E6B)}
+  .person.v::after{content:"";position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;border-radius:50%;background:#21B07A;border:2px solid #fff}
+  .person.b2{background:linear-gradient(135deg,#9FB6E8,#6E8BD6)} .person.b3{background:linear-gradient(135deg,#E8C36B,#D69E3D)}
+  .place{width:13px;height:13px;border-radius:50%;background:#fff;border:3px solid var(--coral);box-shadow:0 3px 8px -2px rgba(40,15,25,.4)}
+  .place.amber{border-color:var(--amber)} .place.teal{border-color:#17A99B}
+  .me{width:16px;height:16px;border-radius:50%;background:#3B82F6;border:3px solid #fff;box-shadow:0 0 0 0 rgba(59,130,246,.5);animation:ring 2.6s infinite}
+  @keyframes ring{0%{box-shadow:0 0 0 0 rgba(59,130,246,.45)}70%{box-shadow:0 0 0 20px rgba(59,130,246,0)}100%{box-shadow:0 0 0 0 rgba(59,130,246,0)}}
+  .cluster{min-width:34px;height:34px;padding:0 8px;border-radius:18px;background:rgba(255,255,255,.95);display:flex;align-items:center;gap:5px;font:800 13px "Manrope";color:var(--ink);box-shadow:0 8px 18px -6px rgba(40,15,25,.5);border:1px solid rgba(0,0,0,.04)}
+  .cluster i{width:8px;height:8px;border-radius:50%;background:var(--coral)}
+
+  /* ===== Floating header (over map) ===== */
+  .top{position:absolute;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:52px 16px 12px}
+  .brand{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.78);backdrop-filter:blur(12px);padding:7px 13px 7px 8px;border-radius:30px;box-shadow:0 8px 20px -8px rgba(40,15,25,.3)}
+  .mk-logo{width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--amber),var(--coral));display:grid;place-items:center}
+  .mk-logo svg{width:17px;height:17px}
+  .brand b{font:800 16px "Manrope";color:var(--ink)} .brand b span{color:var(--coral)}
+  .tbtns{display:flex;gap:8px}
+  .gbtn{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.82);backdrop-filter:blur(12px);display:grid;place-items:center;font-size:18px;box-shadow:0 8px 20px -8px rgba(40,15,25,.3);position:relative;cursor:pointer}
+  .gbtn .n{position:absolute;top:-2px;right:-2px;min-width:18px;height:18px;border-radius:9px;background:var(--coral);color:#fff;font:800 10px/18px "Manrope";text-align:center;border:2px solid #fff}
+
+  /* location chip floating on map */
+  .locchip{position:absolute;top:104px;left:50%;transform:translateX(-50%);z-index:25;display:flex;align-items:center;gap:8px;
+    background:rgba(38,22,31,.82);backdrop-filter:blur(10px);color:#fff;padding:9px 15px;border-radius:30px;font:600 13px "Manrope";box-shadow:0 12px 26px -10px rgba(0,0,0,.5)}
+  .locchip b{font-weight:800} .locchip .dot{width:6px;height:6px;border-radius:50%;background:#5CE0A8}
+  .recenter{position:absolute;right:16px;top:330px;z-index:25;width:46px;height:46px;border-radius:14px;background:#fff;display:grid;place-items:center;font-size:19px;box-shadow:0 10px 24px -8px rgba(40,15,25,.45);cursor:pointer}
+
+  /* ===== Bottom sheet ===== */
+  .sheet{position:absolute;left:0;right:0;bottom:0;z-index:20;background:var(--paper);border-radius:28px 28px 0 0;padding:10px 18px 96px;
+    box-shadow:0 -20px 40px -24px rgba(40,15,25,.4);min-height:330px;display:flex;flex-direction:column}
+  .grab{width:38px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 14px}
+  .ey{display:flex;align-items:center;gap:7px;font:700 11px/1 "Manrope";letter-spacing:.12em;text-transform:uppercase;color:var(--coral)}
+  .ey .p{width:6px;height:6px;border-radius:50%;background:var(--coral);animation:pl 2s infinite}
+  @keyframes pl{0%{box-shadow:0 0 0 0 rgba(255,90,77,.5)}70%{box-shadow:0 0 0 7px rgba(255,90,77,0)}100%{box-shadow:0 0 0 0 rgba(255,90,77,0)}}
+  .place-h{font:600 26px/1.1 "Fraunces";color:var(--ink);margin:9px 0 2px;letter-spacing:-.01em}
+  .moment{font:500 13.5px "Manrope";color:var(--muted)}
+  .seg{display:flex;gap:4px;background:#F1E8DF;border-radius:13px;padding:4px;margin:15px 0 4px}
+  .seg button{flex:1;border:0;background:transparent;font:700 13.5px "Manrope";color:var(--muted);padding:10px;border-radius:10px;cursor:pointer}
+  .seg button.on{background:#fff;color:var(--ink);box-shadow:0 4px 10px -4px rgba(40,15,25,.25)}
+  .rows{margin-top:14px;display:flex;flex-direction:column}
+  .row{display:flex;align-items:center;gap:13px;padding:13px 2px;border-top:1px solid var(--line);cursor:pointer}
+  .row:first-child{border-top:0}
+  .row .ri{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:17px;flex:0 0 auto;background:#F4ECE3;color:var(--ink)}
+  .row .ri.coral{background:rgba(255,90,77,.12)} .row .ri.teal{background:rgba(23,169,155,.12)} .row .ri.amber{background:rgba(255,201,60,.16)}
+  .row .rt{flex:1} .row .rn{font:700 14.5px "Manrope";color:var(--ink)} .row .rm{font:500 12px "Manrope";color:var(--muted);margin-top:1px}
+  .row .rc{color:var(--line);font-size:20px;font-weight:700}
+  .row .cnt{font:800 13px "Manrope";color:var(--coral)}
+
+  /* nav */
+  .nav{position:absolute;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:space-around;padding:9px 8px 26px;background:linear-gradient(0deg,var(--paper) 72%,transparent)}
+  .nav button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;font:700 9.5px "Manrope";color:var(--muted);cursor:pointer}
+  .nav svg{width:23px;height:23px;stroke:var(--muted);fill:none;stroke-width:1.9}
+  .nav .on{color:var(--coral)} .nav .on svg{stroke:var(--coral)}
+</style>
+</head>
+<body>
+<div class="cap">SunMates — Accueil v2 · MAP-FIRST premium (carte = héros)</div>
+<div class="phone"><div class="screen">
+
+  <!-- MAP HERO -->
+  <div class="map">
+    <svg viewBox="0 0 390 560" preserveAspectRatio="xMidYMid slice">
+      <rect width="390" height="560" fill="#F4EDE4"/>
+      <!-- parks -->
+      <path d="M-10 360 Q60 330 120 380 T260 400 L300 470 L-10 480Z" fill="#DCE7D3" opacity=".7"/>
+      <circle cx="320" cy="150" r="60" fill="#DCE7D3" opacity=".6"/>
+      <!-- water -->
+      <path d="M-10 90 Q120 130 200 100 T410 140 L410 60 L-10 40Z" fill="#CFE3E6" opacity=".75"/>
+      <!-- roads -->
+      <g stroke="#FFFFFF" fill="none" stroke-linecap="round">
+        <path d="M-10 250 Q120 230 200 270 T410 250" stroke-width="13"/>
+        <path d="M60 -10 Q90 200 70 560" stroke-width="11"/>
+        <path d="M250 -10 Q230 250 300 560" stroke-width="11"/>
+        <path d="M-10 420 Q200 400 410 440" stroke-width="9"/>
+        <path d="M-10 160 Q150 150 410 190" stroke-width="7" opacity=".85"/>
+        <path d="M170 -10 Q160 280 220 560" stroke-width="6" opacity=".7"/>
+      </g>
+      <g stroke="#EFE6DB" fill="none" stroke-width="3" opacity=".9">
+        <path d="M0 320 H390"/><path d="M0 200 H390"/><path d="M130 0 V560"/>
+      </g>
+    </svg>
+    <div class="vign"></div>
+
+    <!-- markers -->
+    <div class="mk person v" style="left:26%;top:30%"></div>
+    <div class="mk person b2" style="left:70%;top:24%"></div>
+    <div class="mk place amber" style="left:46%;top:38%"></div>
+    <div class="mk cluster" style="left:74%;top:46%"><i></i>4</div>
+    <div class="mk person b3 v" style="left:32%;top:50%"></div>
+    <div class="mk place teal" style="left:58%;top:55%"></div>
+    <div class="mk me" style="left:50%;top:46%"></div>
+    <div class="recenter">🧭</div>
+    <div class="locchip"><span class="dot"></span>📍 <b>Le Marais</b> · 8 autour</div>
+  </div>
+
+  <!-- floating header -->
+  <div class="top">
+    <div class="brand"><span class="mk-logo"><svg viewBox="0 0 64 64"><g stroke="#fff" stroke-width="3.8" stroke-linecap="round"><line x1="32" y1="10" x2="32" y2="17"/><line x1="16" y1="18" x2="21" y2="23"/><line x1="48" y1="18" x2="43" y2="23"/><line x1="10" y1="36" x2="17" y2="36"/><line x1="47" y1="36" x2="54" y2="36"/></g><circle cx="32" cy="36" r="11" fill="#fff"/><path d="M14 49h36" stroke="#fff" stroke-width="3.8" stroke-linecap="round"/></svg></span><b><span>Sun</span>Mates</b></div>
+    <div class="tbtns"><div class="gbtn">🔔<span class="n">2</span></div><div class="gbtn">💬<span class="n">3</span></div></div>
+  </div>
+
+  <!-- bottom sheet -->
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="ey"><span class="p"></span> Ici, maintenant</div>
+    <div class="place-h">Le Marais, Paris</div>
+    <div class="moment">Vendredi · fin d'après-midi · 24° ensoleillé</div>
+    <div class="seg"><button class="on">En voyage</button><button>À la maison</button></div>
+    <div class="rows">
+      <div class="row"><span class="ri coral">☕</span><span class="rt"><div class="rn">Un café avec un·e local·e</div><div class="rm">3 lieux ouverts tout près</div></span><span class="rc">›</span></div>
+      <div class="row"><span class="ri teal">🧭</span><span class="rt"><div class="rn">Voyageur·ses dispo autour</div><div class="rm">à moins de 10 min</div></span><span class="cnt">8</span></div>
+      <div class="row"><span class="ri amber">🎯</span><span class="rt"><div class="rn">Défi de quartier</div><div class="rm">Le Marais en 5 spots</div></span><span class="rc">›</span></div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <button class="on"><svg viewBox="0 0 24 24"><path d="M3 11.4 12 4l9 7.4"/><path d="M5.5 10v9.5h13V10"/></svg>Accueil</button>
+    <button><svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5.8-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.2 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.4"/></svg>Lieux</button>
+    <button><svg viewBox="0 0 24 24"><rect x="2.5" y="6.5" width="19" height="11" rx="4"/><path d="M6.5 11h4M8.5 9v4"/></svg>Jeux</button>
+    <button><svg viewBox="0 0 24 24"><path d="M12 3 5.5 5.7v6.1c0 4 2.8 7 6.5 8.4 3.7-1.4 6.5-4.4 6.5-8.4V5.7L12 3z"/></svg>Sécurité</button>
+    <button><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Profil</button>
+  </nav>
+
+</div></div>
+<div class="cap">Carte travaillée en héros · marqueurs élégants · bottom-sheet glass · palette mature, sunset en accent</div>
+</body>
+</html>
