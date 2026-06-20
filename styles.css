@@ -2151,6 +2151,13 @@
     .tab-panel[data-panel="securite"] .tile:active .thumb { transform: scale(.96); }
     /* ===== Accueil v2 — élévation premium (greeting éditorial + profondeur tuiles) ===== */
     #homeHello { font-family: "Fraunces", Georgia, serif; font-weight: 700; font-size: 1.95rem; line-height: 1.06; letter-spacing: -.01em; }
+    /* MAP-FIRST (v2, retour Maxime « la carte = le premier truc qu'on voit ») : la carte vivante remonte
+       en HÉROS via flex-order (zéro changement DOM/JS), plus grande. greeting au-dessus, le reste dessous. */
+    .tab-panel[data-panel="accueil"] { display: flex; flex-direction: column; }
+    .tab-panel[data-panel="accueil"] > #homeHello,
+    .tab-panel[data-panel="accueil"] > .hello-row { order: -3; }
+    .tab-panel[data-panel="accueil"] > #homeTravelMap { order: -2; margin-top: .35rem; }
+    .tab-panel[data-panel="accueil"] .homemap { height: 40vh; min-height: 300px; max-height: 400px; }
     .tab-panel[data-panel="accueil"] .grid2 .tile { box-shadow: 0 12px 24px -18px rgba(120,40,30,.5); transition: transform .14s ease, box-shadow .2s ease; }
     .tab-panel[data-panel="accueil"] .grid2 .tile:hover { transform: translateY(-2px); box-shadow: 0 18px 32px -18px rgba(120,40,30,.55); }
     /* Quête du jour : aura calmée sur l'accueil (moins « jeu ») */
