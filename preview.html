@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=601"></script>
+  <script src="sunmates-badges.js?v=602"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -6697,7 +6697,7 @@
       const all = Object.values(travelerMap || {}).filter((p) => p && p.id !== myUserId);
       let list = myCity ? all.filter((p) => (p.city || "").trim().toLowerCase() === myCity) : [];
       if (!list.length) list = all.slice(0, 4); // repli : quelques voyageurs pour ne pas laisser vide
-      if (!list.length) { box.innerHTML = '<p class="muted" style="font-size:.85rem">Personne dans le coin pour l\'instant. Reviens bientôt 🌍</p>'; return; }
+      if (!list.length) { box.innerHTML = emptyState("🧭", i18nT("Personne dans le coin"), i18nT("Reviens bientôt, ou élargis ta zone pour trouver des voyageur·ses 🌍")); return; }
       box.innerHTML = list.slice(0, 6).map((p) => `<div class="person hm-visitor" data-visit="${escapeHtml(p.id)}" style="cursor:pointer">
           ${avatarMarkup(p.username, p.avatar_url)}
           <div class="info"><div class="name">${escapeHtml(p.username || "Voyageur")}</div>
@@ -7549,7 +7549,7 @@
     function renderCafesList() {
       const list = $("cafesList"); if (!list) return;
       renderFavCard(); // 💛 favoris synchronisés avec la liste des lieux
-      if (!allCafes.length) { list.innerHTML = '<p class="muted">Aucun lieu pour l\'instant.</p>'; $("cafesCount").textContent = ""; return; }
+      if (!allCafes.length) { list.innerHTML = emptyState("🛟", i18nT("Aucun lieu pour l'instant"), i18nT("Les lieux sûrs validés s'afficheront ici. Reviens bientôt ou explore une autre ville.")); $("cafesCount").textContent = ""; return; }
       const q = (cafeFilter.q || "").toLowerCase();
       let arr = allCafes.filter((c) => {
         if (cafeFilter.mode === "eco" && !c.is_eco) return false;
