@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=611"></script>
+  <script src="sunmates-badges.js?v=612"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -344,7 +344,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=611">
+  <link rel="stylesheet" href="styles.css?v=612">
   <!-- ============================================================
        PREVIEW FIXES (inline, scopé preview) — 19/06 : header mobile,
        onglet Messages, idées geo cliquables, centrage, contrôle saison.
@@ -488,7 +488,7 @@
     .topbar { gap: .5rem; }
     .topbar-actions { display: flex; align-items: center; gap: .35rem; flex-shrink: 0; }
     @media (max-width: 380px) {
-      .topbar { padding-left: .9rem; padding-right: .9rem; }
+      .topbar { padding-left: max(.4rem, env(safe-area-inset-left)); padding-right: max(.4rem, env(safe-area-inset-right)); } /* header flush sur petits écrans aussi */
       .topbar-actions { gap: .15rem; }
       .topbar-actions .iconbtn { width: 38px; height: 38px; padding: 0; }
       .brand b { font-size: 1.05rem; }
@@ -2208,6 +2208,8 @@
 
           <!-- Sous-onglet : Messages -->
           <div class="mates-seg" data-msegpanel="messages">
+            <!-- Recherche EN PREMIER (la barre de recherche doit être en haut ; « Tes groupes » au-dessus n'avait aucun sens). -->
+            <div class="conv-search"><span class="ico">🔍</span><input id="convSearch" type="text" maxlength="60" placeholder="Rechercher une conversation…" aria-label="Rechercher une conversation" /></div>
             <!-- #6 : conversations de GROUPE (events à plusieurs) · masqué tant que la
                  migration supabase_migration_groupes.sql n'est pas lancée. -->
             <div class="card" id="groupCard" style="display:none">
@@ -2217,8 +2219,6 @@
               </div>
               <div id="groupList"></div>
             </div>
-            <!-- Recherche dans les conversations (façon Instagram, filtre client) -->
-            <div class="conv-search"><span class="ico">🔍</span><input id="convSearch" type="text" maxlength="60" placeholder="Rechercher une conversation…" aria-label="Rechercher une conversation" /></div>
             <div class="card" id="convList"></div>
           </div>
 

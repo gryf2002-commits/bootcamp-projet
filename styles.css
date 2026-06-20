@@ -115,7 +115,7 @@
     .topbar {
       display: flex; align-items: center; justify-content: space-between; gap: .75rem;
       /* safe-area-inset-top : laisse la place de l'encoche / status bar (iPhone) sans chevauchement */
-      padding: calc(1rem + env(safe-area-inset-top, 0px)) .7rem 1.05rem; position: sticky; top: 0; z-index: var(--z-header); /* padding latéral réduit (1.25→.7rem) : logo flush gauche, boutons flush droite (retour Maxime) */
+      padding: calc(1rem + env(safe-area-inset-top, 0px)) max(.45rem, env(safe-area-inset-right)) 1.05rem max(.45rem, env(safe-area-inset-left)); position: sticky; top: 0; z-index: var(--z-header); /* header FLUSH (logo gauche / boutons droite, pleine largeur) — retour Maxime */
       /* P3 (retour Maxime) : la TRANSPARENCE revient, mais propre · opaque sur 62 % (la status
          bar et le titre restent couverts → icônes natives du téléphone toujours lisibles), puis
          fondu DOUX vers transparent. Ce qui gênait avant : le dégradé partait de 86 % d'opacité
@@ -1203,7 +1203,10 @@
     .mappop-btn.ghost { background: transparent; color: var(--accent); border: 1px solid rgba(255,90,77,.4); }
 
     /* --------------------- Grille cartes accueil -------------------- */
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; min-width: 0; }
+    /* Fix débordement horizontal (→ zoom iOS « tout l'écran buggé ») : les items de grid doivent pouvoir
+       rétrécir sous leur contenu (sinon #secuHelp .grid2 dépassait de +112px et forçait le shrink-to-fit). */
+    .grid2 > * { min-width: 0; }
     .tile {
       background: var(--card); border-radius: var(--radius-sm); padding: .9rem;
       box-shadow: var(--shadow-sm); cursor: pointer; transition: transform .1s;
@@ -2052,6 +2055,8 @@
     .chat-input { display: flex; gap: .5rem; align-items: center; background: var(--bg); padding: .7rem 0 .3rem; flex-shrink: 0; }
     .chat-input input { flex: 1; box-shadow: var(--shadow-sm); border-color: #fff; }
     .chat-input button { padding: .75rem 1rem; flex-shrink: 0; }
+    /* Flamme + micro : carrés 44px à glyphe parfaitement CENTRÉ (avant : padding .75/1rem les décalait) + vraie cible tactile */
+    .chat-input .chat-poc, .chat-input .chat-mic { padding: 0; width: 44px; height: 44px; display: grid; place-items: center; line-height: 1; }
 
     /* --------------------- PROFIL VOYAGEUR -------------------------- */
     .gallery { display: flex; gap: .5rem; margin-bottom: 1rem; }
@@ -2687,7 +2692,8 @@
     /* ===== SESSION 4, sous-onglets Mates, feed "posts", recherche ===== */
     /* Sous-onglets (Mates) */
     .mseg { display: flex; gap: .35rem; background: var(--cream); border: 1px solid rgba(255,90,77,.12); border-radius: 14px; padding: .3rem; margin: .7rem 0 1rem; }
-    .mseg button { flex: 1; background: transparent; color: var(--text); font-weight: 700; font-size: .8rem; padding: .55rem .2rem; border-radius: 10px; position: relative; }
+    .mseg button { flex: 1; background: transparent; color: var(--text); font-weight: 700; font-size: .8rem; padding: .55rem .2rem; border-radius: 10px; position: relative; display: flex; align-items: center; justify-content: center; gap: .35rem; } /* icône + libellé CENTRÉS (avant : alignés à gauche, l'enveloppe/chat décalés) */
+    .mseg button [data-smicon] { display: inline-flex; align-items: center; }
     .mseg button.active { background: var(--accent-grad); color: #fff; }
     .mseg .segb { position: absolute; top: 2px; right: 5px; background: var(--accent); color: #fff; font-size: .56rem; min-width: 15px; height: 15px; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
     .mseg button.active .segb { background: #fff; color: var(--accent); }
@@ -3990,7 +3996,9 @@
        Réduit légèrement logo, espacements et bouton « Déconnexion » pour que « SunMates » + les
        3 actions tiennent TOUJOURS sur une ligne, même avec la police agrandie (accessibilité). */
     @media (max-width: 430px) {
-      .topbar { padding-left: .9rem; padding-right: .9rem; gap: .4rem; }
+      /* HEADER FLUSH (retour Maxime, plusieurs fois) : logo collé à gauche, boutons à droite, pleine largeur.
+         (Cette media-query écrasait silencieusement le padding réduit → enfin corrigée.) safe-area pour l'encoche. */
+      .topbar { padding-left: max(.45rem, env(safe-area-inset-left)); padding-right: max(.45rem, env(safe-area-inset-right)); gap: .4rem; }
       .topbar-actions { gap: .3rem; }
       .brand { font-size: 1.05rem; letter-spacing: .3px; }
       .brand .mark { width: 28px; height: 28px; }
