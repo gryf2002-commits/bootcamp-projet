@@ -62,7 +62,12 @@ async function checkMode(browser, name, url, opts) {
     bodyLen: ((document.body && document.body.innerText) || "").length,
     htmlEnd: document.documentElement.outerHTML.trim().endsWith("</html>"),
     cssLink: !![...document.querySelectorAll("link[rel=stylesheet]")].find((l) => /styles\.css/.test(l.href)),
-    themed: (() => { const bg = getComputedStyle(document.body).backgroundColor; return !!bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent" && bg !== "rgb(255, 255, 255)"; })(),
+    themed: (() => {
+      // La DA pose le fond sur <html> (déplacé là pour le liseré d'overscroll) ; <body> est transparent par design.
+      // On teste donc html PUIS body, et on accepte si l'un des deux est un fond non-blanc.
+      const ok = (bg) => !!bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent" && bg !== "rgb(255, 255, 255)";
+      return ok(getComputedStyle(document.documentElement).backgroundColor) || ok(getComputedStyle(document.body).backgroundColor);
+    })(),
     geoToast: (() => { const w = document.getElementById("toastWrapLow"); return w ? /près de/i.test(w.innerText) : false; })(),
   }));
   const real = errors.filter((e) => !IGNORE.test(e));
