@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=605"></script>
+  <script src="sunmates-badges.js?v=606"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -4838,6 +4838,11 @@
       try { return await fn(); }
       finally { _pendingActions.delete(key); }
     }
+    // Anti-spam à COOLDOWN (≠ once qui ne bloque que le double-clic concurrent) : empêche de re-déclencher
+    // une action sensible (alerte SOS, partage position) trop souvent. cooldownLeft = secondes restantes (0 = ok).
+    const _cooldowns = {};
+    function cooldownLeft(key, ms) { const last = _cooldowns[key]; if (!last) return 0; const left = ms - (Date.now() - last); return left > 0 ? Math.ceil(left / 1000) : 0; }
+    function cooldownStamp(key) { _cooldowns[key] = Date.now(); }
 
     // --- Anti double-notification ---
     // Renvoie true UNE seule fois par "key". Empêche une même notification/toast
@@ -9269,6 +9274,10 @@
     });
 
     function sendLocation(isEmergency, msg, okText) {
+      // Cooldown anti-spam (en plus du verrou once) : pas de diffusion en rafale au cercle.
+      const cdKey = "loc:" + (isEmergency ? "sos" : "share"); const cdMs = isEmergency ? 45000 : 30000;
+      const left = cooldownLeft(cdKey, cdMs);
+      if (left) { if (typeof toast === "function") toast("⏳", i18nT("Déjà envoyé — réessaie dans {n}s.", { n: left })); return Promise.resolve(); }
       // Verrou : on n'envoie qu'une position à la fois (anti double-clic / spam).
       return once("loc:" + (isEmergency ? "sos" : "share"), () => new Promise((resolve) => {
         msg.style.color = "var(--muted)"; msg.textContent = "Localisation en cours…";
@@ -9279,6 +9288,7 @@
           msg.textContent = "";
           if (error) { toast("⚠️", errFr(error)); }
           else {
+            cooldownStamp(cdKey); // succès → démarre le cooldown anti-spam
             // Confirmation VISIBLE en haut (toast), pas seulement un message en bas.
             toast(isEmergency ? "🚨" : "📍", i18nT("{t} (visible 1 h sur la carte)", { t: okText }));
             await loadCircleLocations();
@@ -18312,7 +18322,13 @@
       if (!("Notification" in window)) { if (withPrompt && typeof toast === "function") toast("🔔", "Ton navigateur ne gère pas les notifications."); return; }
       let perm = Notification.permission;
       if (perm === "granted") { subscribePush(); if (withPrompt && typeof toast === "function") toast("🔔", i18nT("Notifications déjà activées ✅")); if (typeof updatePermStates === "function") updatePermStates(); return; }
-      if (perm === "denied") { if (withPrompt && typeof toast === "function") toast("🔕", "Notifications bloquées dans les réglages de ton navigateur."); return; }
+      if (perm === "denied") {
+        // Déjà refusé → le navigateur INTERDIT de redemander → on n'a pas l'air « mort », on explique comment réactiver.
+        if (withPrompt && typeof showInfo === "function") showInfo("🔕 " + i18nT("Notifications bloquées"), '<p style="line-height:1.6;text-align:left">' + i18nT("Tu les as déjà refusées, et le navigateur empêche l'app de redemander. Pour les réactiver :") + '</p><ol style="line-height:1.75;text-align:left;padding-left:1.2rem;margin:.5rem 0 0"><li>' + i18nT("Touche le cadenas 🔒 dans la barre d'adresse") + '</li><li>' + i18nT("Autorise les <b>Notifications</b>") + '</li><li>' + i18nT("Recharge l'app") + '</li></ol>');
+        else if (withPrompt && typeof toast === "function") toast("🔕", i18nT("Notifications bloquées dans les réglages de ton navigateur."));
+        if (typeof updatePermStates === "function") updatePermStates();
+        return;
+      }
       if (!withPrompt) return; // default + pas d'action explicite → on ne demande rien
       let ok = true;
       if (typeof smConfirmP === "function") ok = await smConfirmP("🔔", i18nT("Activer les notifications ?"), i18nT("Pour être prévenu·e des nouveaux messages, demandes de connexion et défis, même quand l'app est fermée."), i18nT("Activer"));
