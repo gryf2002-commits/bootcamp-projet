@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=594"></script>
+  <script src="sunmates-badges.js?v=595"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -500,15 +500,46 @@
     }
     /* Bouton Messages du header : badge non-lus réutilise le style .nbadge */
     #topMsgBtn { position: relative; }
-    /* Idées « Ici, maintenant » : lignes cliquables (tuiles d'idées) */
-    #geoNowCard .geo-idea {
-      display: flex; align-items: center; gap: .4rem; width: 100%; text-align: left;
-      background: transparent; border: 0; padding: .34rem .4rem; margin: 0; border-radius: 9px;
-      color: var(--ink); font: inherit; font-size: .86rem; font-weight: 600; cursor: pointer; transition: background .15s;
+    /* Idées « Ici, maintenant » : chips horizontales scrollables (compactes, 1 ligne au lieu de 3) */
+    #geoNowCard .geo-ideas {
+      display: flex; gap: .4rem; overflow-x: auto; margin: .45rem -.85rem -.1rem; padding: .15rem .85rem .2rem;
+      scrollbar-width: none; -webkit-overflow-scrolling: touch;
     }
-    #geoNowCard .geo-idea:hover, #geoNowCard .geo-idea:focus-visible { background: rgba(0,0,0,.06); outline: none; }
-    #geoNowCard .geo-idea .gi-arrow { color: var(--accent); font-weight: 800; margin-left: auto; }
-    body.theme-dusk #geoNowCard .geo-idea:hover, body.theme-dusk #geoNowCard .geo-idea:focus-visible { background: rgba(255,255,255,.08); }
+    #geoNowCard .geo-ideas::-webkit-scrollbar { display: none; }
+    #geoNowCard .geo-idea {
+      display: inline-flex; align-items: center; gap: .3rem; flex: 0 0 auto; white-space: nowrap;
+      background: var(--card); border: 1px solid var(--line); padding: .34rem .6rem; margin: 0; border-radius: 999px;
+      color: var(--ink); font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s;
+    }
+    #geoNowCard .geo-idea:hover, #geoNowCard .geo-idea:focus-visible { background: var(--accent-soft); border-color: var(--accent); outline: none; }
+    #geoNowCard .geo-idea .gi-arrow { color: var(--accent); font-weight: 800; }
+    /* Autorisations (Réglages) : géo + notifs présentées pareil, état clair + cliquable */
+    .perm-block { display: flex; flex-direction: column; gap: .55rem; }
+    .perm-btn { display: flex !important; align-items: center; gap: .7rem; text-align: left; }
+    .perm-ic { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; font-size: 1.15rem; flex: 0 0 auto; }
+    .perm-txt { flex: 1; min-width: 0; }
+    .perm-txt b { display: block; font-weight: 700; color: var(--ink); }
+    .perm-txt .perm-sub { display: block; font-size: .76rem; color: var(--muted); margin-top: .1rem; }
+    .perm-state { flex: 0 0 auto; font-size: .72rem; font-weight: 800; letter-spacing: .02em; color: var(--muted); white-space: nowrap; }
+    .perm-state.state-granted { color: var(--ok); }
+    .perm-state.state-denied { color: var(--danger); }
+    .perm-state.state-prompt { color: var(--accent); }
+    /* Messages — recherche dans les conversations (filtre client, façon Insta) */
+    .conv-search { display: flex; align-items: center; gap: .5rem; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .5rem .7rem; margin: 0 0 .5rem; }
+    .conv-search .ico { opacity: .6; font-size: .95rem; }
+    .conv-search input { flex: 1; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: .9rem; outline: none; }
+    /* Messages — réactions emoji sur les bulles */
+    .bubble-reacts { display: inline-flex; gap: .2rem; margin-left: .35rem; vertical-align: middle; }
+    .bubble-reacts .rchip { display: inline-flex; align-items: center; gap: .1rem; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 0 .35rem; font-size: .82rem; line-height: 1.55; }
+    .bubble-reacts .rchip.mine { border-color: var(--accent); background: var(--accent-soft); }
+    .bubble-reacts .rchip b { font-size: .72rem; font-weight: 700; color: var(--muted); }
+    .bubble-reacts.pop { animation: rpop .25s ease; }
+    @keyframes rpop { 0% { transform: scale(.6); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+    /* Messages — picker de réactions ancré sur la bulle */
+    .react-pick { position: absolute; bottom: 100%; left: 0; margin-bottom: .3rem; display: flex; gap: .15rem; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: .2rem .3rem; box-shadow: 0 6px 18px -6px rgba(0,0,0,.35); z-index: 30; opacity: 0; transform: translateY(4px) scale(.95); transition: opacity .14s ease, transform .14s ease; }
+    .react-pick.show { opacity: 1; transform: translateY(0) scale(1); }
+    .react-pick button { border: 0; background: transparent; font-size: 1.25rem; line-height: 1; padding: .15rem .25rem; border-radius: 50%; cursor: pointer; transition: transform .1s ease, background .12s ease; }
+    .react-pick button:hover { transform: scale(1.25); background: var(--accent-soft); }
     /* Contrôle saison (easter egg) : caché par défaut, montré quand débloqué */
     #seasonCtl { margin-top: .5rem; }
     #seasonCtl.hidden { display: none; }
@@ -660,6 +691,7 @@
     /* Bulles : entrée douce, ombres calibrées, queue plus marquée */
     #chatBody .msg-row { margin: .12rem 0; }
     #chatBody .bubble {
+      position: relative; /* ancre le picker de réactions (.react-pick) */
       padding: .62rem .9rem; border-radius: 18px; font-size: .9rem; line-height: 1.4;
       box-shadow: 0 1px 3px rgba(45,38,52,.06);
       animation: bubbleIn .26s var(--mate-ease-out) both;
@@ -1218,7 +1250,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=567">
+  <link rel="stylesheet" href="sunmates-lite.css?v=595">
 </head>
 <body>
   <!-- a11y : lien d'évitement (premier élément focalisable) → saute la barre/nav vers le contenu principal. -->
@@ -1324,8 +1356,8 @@
     <div class="ban-card">
       <div class="ban-emoji">🚫</div>
       <h2>Compte suspendu</h2>
-      <p class="muted" id="banReason">Ton compte a été suspendu par la modération SunMates.</p>
-      <p class="muted" style="font-size:.82rem">Si tu penses que c'est une erreur, tu peux demander une révision. Notre équipe réexaminera ton compte.</p>
+      <p class="muted" id="banReason">On a dû suspendre ton compte.</p>
+      <p class="muted" style="font-size:.82rem">Si tu penses que c'est une erreur, tu peux demander une révision. On le réexamine de près.</p>
       <div id="banRecoveryForm">
         <textarea id="banRecoveryNote" rows="3" maxlength="500" placeholder="Explique pourquoi tu penses que c'est une erreur (optionnel)…"></textarea>
         <button class="btn-primary btn-block" id="banRecoveryBtn" style="margin-top:.5rem">📨 Demander une révision</button>
@@ -1442,32 +1474,27 @@
         <section class="onb-step active" data-step="0">
           <div class="onb-emoji">🌍</div>
           <h2>Salut<span id="onbComma"></span><span class="grad-name" id="onbName"></span> !</h2>
-          <p>Rencontre des <b>voyageurs</b> du monde entier et vis des <b>aventures ensemble</b>. Fini de voyager seul·e ! ☀️</p>
+          <p>Voyage en solo, mais <b>jamais seul·e</b>. Les bons plans et les voyageur·ses sont juste à côté ☀️</p>
         </section>
         <section class="onb-step" data-step="1">
           <div class="onb-emoji">🗺️</div>
           <h2>Ta carte vivante</h2>
-          <p>Repère en un coup d'œil <b>qui est autour</b>, les spots sympas et les <b>activités du moment</b> près de toi. 🎉</p>
+          <p>Qui est dans le coin, les spots sympas, ce qui se passe <b>maintenant</b> : tout est sur la carte 🗺️</p>
         </section>
         <section class="onb-step" data-step="2">
           <div class="onb-emoji">🎉</div>
           <h2>Crée des moments</h2>
-          <p>Café, balade, coucher de soleil, soirée… lance des <b>activités</b> et des <b>défis</b> à tes Mates et débloque des <b>badges</b> 🏅</p>
+          <p>Café, balade, coucher de soleil… propose une sortie et retrouve tes <b>Mates</b> pour la vivre ensemble 🎉</p>
         </section>
-        <section class="onb-step" data-step="3">
+        <section class="onb-step" data-step="3" data-onbbeta="1">
           <div class="onb-emoji">🎮</div>
           <h2>Joue & gagne</h2>
-          <p>Accomplis des <b>quêtes</b>, gagne de l'<b>XP</b>, débloque des <b>badges</b> et grimpe au <b>classement</b>. Voyager devient un jeu 🏆</p>
+          <p>Quêtes, badges, XP : explorer une ville devient un vrai <b>jeu</b> 🏆</p>
         </section>
         <section class="onb-step" data-step="4">
-          <div class="onb-emoji">☕</div>
-          <h2>Tes spots préférés</h2>
-          <p>Découvre les <b>meilleurs spots</b> de la communauté (cafés, co-livings, bars), avis et notes à l'appui, pour retrouver du monde 🎉</p>
-        </section>
-        <section class="onb-step" data-step="5">
           <div class="onb-emoji">😎</div>
-          <h2>…et l'esprit léger</h2>
-          <p>Profils vérifiés et bouton SOS à portée : toi tu kiffes, nous on gère la sécurité. 🛡️</p>
+          <h2>L'esprit léger</h2>
+          <p>Profils vérifiés et <b>SOS</b> à portée. Toi tu kiffes, on veille sur la sécurité 🛡️</p>
         </section>
       </div>
       <div class="onb-dots" id="onbDots"></div>
@@ -1604,7 +1631,7 @@
       </section>
 
       <section id="lp-why" class="lp-sec">
-        <div class="lp-sec-head"><h2>Pourquoi tu vas adorer</h2></div>
+        <div class="lp-sec-head"><h2>Ce que tu vas kiffer ici</h2></div>
         <div class="lp-pillars">
           <article class="lp-pillar">
             <div class="lp-ico sun"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.8-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.2 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.4"/></svg></div>
@@ -1778,7 +1805,7 @@
       </span><b><span class="sun">Sun</span>Mates</b></div>
       <div class="topbar-actions hidden" id="userBox">
         <!-- LITE UNIQUEMENT (masqué en CSS hors body.sm-lite) — accès Sécurité permanent, toujours à portée. data-tab="securite" → câblé par le listener générique goToTab. -->
-        <button class="iconbtn secu-top" id="topSecuBtn" data-tab="securite" title="Sécurité" aria-label="Sécurité — SOS, partage de position et contacts d'urgence"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3 5.5 5.7v6.1c0 4 2.8 7 6.5 8.4 3.7-1.4 6.5-4.4 6.5-8.4V5.7L12 3z"/><path d="M9.3 12.2l1.9 1.9 3.6-3.8"/></svg><span class="navbadge hidden" id="navSecuLite" role="status" aria-label="nouvelle activité sécurité">●</span></button>
+        <button class="iconbtn secu-top" id="topSecuBtn" data-tab="securite" title="Sécurité" aria-label="Sécurité : SOS, partage de position et contacts d'urgence"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3 5.5 5.7v6.1c0 4 2.8 7 6.5 8.4 3.7-1.4 6.5-4.4 6.5-8.4V5.7L12 3z"/><path d="M9.3 12.2l1.9 1.9 3.6-3.8"/></svg><span class="navbadge hidden" id="navSecuLite" role="status" aria-label="nouvelle activité sécurité">●</span></button>
         <!-- 🌙 sélecteur de mode (thème/saison) DÉPLACÉ dans Réglages → Apparence -->
         <button class="iconbtn" id="notifBell" aria-label="Notifications"><span data-smicon="bell" data-smicon-size="22">🔔</span><span class="nbadge hidden" id="notifBellCount">0</span></button>
         <!-- Onglet Messages, tout à droite : ouvre Connexions → Messages -->
@@ -2161,8 +2188,8 @@
 
         <!-- Vue principale (sous-onglets) -->
         <div id="matesHome" class="mates-view">
-          <h1 data-i18n="mates.title">Mes Mates</h1>
-          <p class="muted" style="margin-top:-.2rem">Rencontre des voyageurs, discute et pars à l'aventure ensemble 🌍</p>
+          <h1 data-i18n="mates.title">Messages</h1>
+          <p class="muted" style="margin-top:-.2rem">Tes conversations avec tes Mates 💬. Pour rencontrer du monde, file sur l'accueil 🌍</p>
           <div class="mates-stat stat-click" id="matesStatBtn" title="Voir mes connexions">🤝 <b id="matesCount">0</b><span id="matesStatLbl">Mates de confiance ›</span></div>
 
           <!-- Croissance : inviter des amis (partage natif) -->
@@ -2174,7 +2201,8 @@
 
           <div class="mseg">
             <button data-mseg="messages" class="active"><span data-smicon="chat" data-smicon-size="15" style="vertical-align:-2px"></span> <span data-i18n="mates.messages">Messages</span><span class="segb hidden" id="segMsg"></span></button>
-            <button data-mseg="discover"><span data-smicon="search" data-smicon-size="15" style="vertical-align:-2px"></span> <span data-i18n="mates.discover">Découvrir</span></button>
+            <!-- Fusion Mates→Messages (20/06) : « Découvrir » sorti de cet onglet (doublon avec l'accueil) → sous-onglet masqué, showMatesSegment('discover') redirige vers l'accueil. -->
+            <button data-mseg="discover" style="display:none"><span data-smicon="search" data-smicon-size="15" style="vertical-align:-2px"></span> <span data-i18n="mates.discover">Découvrir</span></button>
             <button data-mseg="requests"><span data-smicon="mail" data-smicon-size="15" style="vertical-align:-2px"></span> <span data-i18n="mates.requests">Demandes</span><span class="segb hidden" id="segReq"></span></button>
           </div>
 
@@ -2189,6 +2217,8 @@
               </div>
               <div id="groupList"></div>
             </div>
+            <!-- Recherche dans les conversations (façon Instagram, filtre client) -->
+            <div class="conv-search"><span class="ico">🔍</span><input id="convSearch" type="text" maxlength="60" placeholder="Rechercher une conversation…" aria-label="Rechercher une conversation" /></div>
             <div class="card" id="convList"></div>
           </div>
 
@@ -2337,6 +2367,7 @@
                 <button data-cmenu="profile">👤 Voir le profil</button>
                 <button data-cmenu="flame">🔥 Flammes (24 h)</button>
                 <button data-cmenu="notif" id="chatNotifItem">🔔 Notifications : activées</button>
+                <button data-cmenu="pin" id="chatPinItem">📌 Épingler</button>
                 <button data-cmenu="block">🚫 Bloquer / signaler</button>
                 <button data-cmenu="delete" style="color:var(--danger)">🗑️ Supprimer la conversation</button>
               </div>
@@ -2945,7 +2976,7 @@
               <button class="btn-primary btn-block" id="sysOpenPreview">🧪 Ouvrir la préversion</button>
               <!-- (16/06 : bouton « Version lite » RETIRÉ → il ouvrait sunmates-app.html, une 2e Lite divergente. UNE seule Lite = le mode body.sm-lite via le toggle « Fonctionnalités beta ».) -->
               <!-- (19/06 : « Plaquette marketing » RETIRÉE de l'admin à la demande de Maxime.) -->
-              <p class="muted" style="font-size:.78rem;margin:.5rem 0 0">La console DA est <b>centralisée dans l'app</b> : le bouton flottant <b>✦ DA</b> (déplaçable) ouvre l'éditeur <b>live</b> sur la vraie app — presets, palette, emojis, clic-recolor.</p>
+              <p class="muted" style="font-size:.78rem;margin:.5rem 0 0">La console DA est <b>centralisée dans l'app</b> : le bouton flottant <b>✦ DA</b> (déplaçable) ouvre l'éditeur <b>live</b> sur la vraie app : presets, palette, emojis, clic-recolor.</p>
             </div>
             <!-- P14 : état des MIGRATIONS sondé EN DIRECT sur la base -->
             <div class="card">
@@ -3032,10 +3063,12 @@
           </div>
           <!-- (16/06 : bouton « Découvrir la version lite » RETIRÉ → il ouvrait sunmates-app.html, 2e Lite divergente. Désormais : désactive le toggle ci-dessus pour voir la version épurée — UNE seule Lite = body.sm-lite.) -->
 
-          <!-- Autorisations : demandées au bon moment, avec une explication claire -->
+          <!-- Autorisations : demandées au bon moment, avec une explication claire + état visible et cliquable -->
           <div class="set-grouptitle">Autorisations</div>
-          <button class="btn-ghost btn-block" id="permNotifBtn"><span style="display:flex;align-items:center;gap:.5rem"><span>🔔</span><span style="text-align:left"><b style="display:block">Notifications</b><span class="muted" style="font-size:.78rem">Messages, demandes et défis, même app fermée</span></span></span></button>
-          <button class="btn-ghost btn-block" id="permGeoBtn" style="margin-top:.5rem"><span style="display:flex;align-items:center;gap:.5rem"><span>📍</span><span style="text-align:left"><b style="display:block">Localisation</b><span class="muted" style="font-size:.78rem">Lieux sûrs et voyageur·ses autour, partage de position</span></span></span></button>
+          <div class="perm-block">
+            <button class="btn-ghost btn-block perm-btn" id="permNotifBtn"><span class="perm-ic">🔔</span><span class="perm-txt"><b>Notifications</b><span class="perm-sub">Messages, demandes et défis, même app fermée</span></span><span class="perm-state" id="permNotifState"></span></button>
+            <button class="btn-ghost btn-block perm-btn" id="permGeoBtn"><span class="perm-ic">📍</span><span class="perm-txt"><b>Localisation</b><span class="perm-sub">Lieux sûrs et voyageur·ses autour, partage de position</span></span><span class="perm-state" id="permGeoState"></span></button>
+          </div>
 
           <!-- Application -->
           <div class="set-grouptitle">Application</div>
@@ -3044,9 +3077,8 @@
           <div class="set-grouptitle">Compte</div>
           <button class="btn-block" id="logoutBtn" style="margin-top:.4rem;border:1.6px solid var(--danger);background:color-mix(in oklab, var(--danger) 8%, transparent);color:var(--danger);font-weight:800;border-radius:12px;padding:.85rem">🚪 Se déconnecter</button>
 
-          <!-- Compte -->
-          <div class="set-grouptitle">Compte</div>
-          <label data-i18n="set.newEmail">Nouvel email</label>
+          <!-- (doublon « Compte » retiré : email/mot de passe restent sous le même groupe Compte ci-dessus) -->
+          <label data-i18n="set.newEmail" style="margin-top:.8rem">Nouvel email</label>
           <input id="setEmail" type="email" placeholder="nouvel@email.com" />
           <button class="btn-accent btn-block" id="saveEmailBtn" style="margin-top:.4rem">Changer l'email</button>
           <label style="margin-top:.8rem">Nouveau mot de passe</label>
@@ -3313,7 +3345,7 @@
       <button data-tab="accueil" class="active"><span class="ni"><svg viewBox="0 0 24 24"><path d="M3 11.4 12 4l9 7.4"/><path d="M5.5 10v9.5h13V10"/></svg></span><span class="nav-lbl" data-i18n="nav.home">Accueil</span></button>
       <button data-tab="lieux"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5.8-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.2 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.4"/></svg></span><span class="nav-lbl" data-i18n="nav.places">Lieux</span></button>
       <button data-tab="jeux"><span class="ni"><svg viewBox="0 0 24 24"><rect x="2.5" y="6.5" width="19" height="11" rx="4"/><path d="M6.5 11h4M8.5 9v4"/><circle cx="16" cy="10.7" r="1.1"/><circle cx="18.3" cy="13.3" r="1.1"/></svg></span><span class="nav-lbl" data-i18n="nav.games">Jeux</span><span class="navbadge hidden" id="navJeux"></span></button>
-      <button data-tab="connexions"><span class="ni"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.3a3 3 0 0 1 0 5.6"/><path d="M17.6 13.7A5.5 5.5 0 0 1 20.5 19"/></svg></span><span class="nav-lbl" data-i18n="nav.mates">Mates</span><span class="navbadge hidden" id="navMates"></span></button>
+      <button data-tab="connexions"><span class="ni"><svg viewBox="0 0 24 24"><path d="M21 11.5a7.5 7.5 0 0 1-10.9 6.7L4 19.5l1.4-4.6A7.5 7.5 0 1 1 21 11.5z"/></svg></span><span class="nav-lbl" data-i18n="nav.mates">Messages</span><span class="navbadge hidden" id="navMates"></span></button>
       <!-- Mode complet (beta) = 6 onglets, INCHANGÉ. En Lite (body.sm-lite), ce bouton est masqué en CSS et l'accès Sécurité passe en haut à droite (#topSecuBtn). -->
       <button data-tab="securite"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 3 5.5 5.7v6.1c0 4 2.8 7 6.5 8.4 3.7-1.4 6.5-4.4 6.5-8.4V5.7L12 3z"/><path d="M9.3 12.2l1.9 1.9 3.6-3.8"/></svg></span><span class="nav-lbl" data-i18n="nav.safety">Sécurité</span><span class="navbadge hidden" id="navSecu" role="status" aria-label="nouvelle activité sécurité">●</span></button>
       <button data-tab="profil"><span class="ni"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span><span class="nav-lbl" data-i18n="nav.profile">Profil</span></button>
@@ -3431,7 +3463,7 @@
       "Rejoindre l'aventure →": "Join the adventure →",
       "Voir comment ça marche": "See how it works",
       "🗺️ Repère les lieux et les voyageurs autour de toi, et pars l'esprit tranquille.": "🗺️ Spot the places and travellers around you, and set off with peace of mind.",
-      "Pourquoi tu vas adorer": "Why you'll love it",
+      "Ce que tu vas kiffer ici": "What you'll love here",
       "Explore autour de toi": "Explore around you",
       "Une carte vivante te montre les lieux qui valent le détour et les voyageurs dans le coin. Tu n'as jamais voyagé seul·e, tu ne le savais juste pas encore.": "A living map shows you the places worth the detour and the travellers nearby. You've never really travelled alone, you just didn't know it yet.",
       "Trouve ta bande": "Find your crew",
@@ -3843,8 +3875,8 @@
       "Ajoute SunMates à ton écran d'accueil : accès direct, plein écran, et même hors-ligne. Voici comment :": "Add SunMates to your home screen: direct access, full screen, and even offline. Here's how:",
       "J'AI BESOIN D'AIDE": "I NEED HELP",
       "Montre cet écran ou agite ton téléphone pour te signaler": "Show this screen or wave your phone to get noticed",
-      "Ton compte a été suspendu par la modération SunMates.": "Your account has been suspended by SunMates moderation.",
-      "Si tu penses que c'est une erreur, tu peux demander une révision. Notre équipe réexaminera ton compte.": "If you think this is a mistake, you can request a review. Our team will take another look at your account.",
+      "On a dû suspendre ton compte.": "We had to suspend your account.",
+      "Si tu penses que c'est une erreur, tu peux demander une révision. On le réexamine de près.": "If you think this is a mistake, you can request a review. We'll take another close look.",
       "📨 Demander une révision": "📨 Request a review",
       "Répondre": "Reply",
       "Trouve les secours du pays où tu es. Touche un numéro pour appeler.": "Find the emergency services of the country you're in. Tap a number to call.",
@@ -4727,6 +4759,9 @@
       "Lance des activités, relève des défis, gagne des badges et des coupons.": "Start activities, take on challenges, earn badges and coupons.",
       "Tes Mates": "Your Mates",
       "Rencontre des voyageurs, discute et trouve des compagnons d'aventure.": "Meet travellers, chat and find adventure buddies.",
+      "Tes conversations avec tes Mates. Pour rencontrer du monde, c'est sur l'accueil.": "Your chats with your Mates. To meet new people, head to Home.",
+      "Tes conversations et tes demandes de connexion, au même endroit.": "Your chats and connection requests, all in one place.",
+      "Tes conversations avec tes Mates 💬. Pour rencontrer du monde, file sur l'accueil 🌍": "Your chats with your Mates 💬. To meet new people, head to Home 🌍",
       "SOS et partage de position à portée de main, pour t'amuser l'esprit tranquille.": "SOS and location sharing at your fingertips, so you can have fun with peace of mind.",
       "Ton profil": "Your profile",
       "Ton score de confiance, tes badges et tes réglages. Tu peux revoir ce tuto ici quand tu veux !": "Your trust score, badges and settings. You can replay this tutorial here any time!",
@@ -5327,7 +5362,7 @@
     // valeur ajoutée · un tap ouvre une TUILE-SOMMAIRE (les features de la destination, chacune
     // cliquable en accès direct) + bouton « Ouvrir ». Les tuiles à vue précise restent directes.
     const QA_FEATURES = {
-      connexions: { e: "🤝", t: "Mes Mates", rows: [["💬", "Mes conversations", () => { goToTab("connexions"); }], ["🔎", "Découvrir des voyageurs", () => { goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); }], ["📨", "Demandes reçues", () => { goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("requests"); }], ["🪪", "Mon QR à faire scanner", () => { if (typeof openQr === "function") openQr(); }]] },
+      connexions: { e: "💬", t: "Messages", rows: [["💬", "Mes conversations", () => { goToTab("connexions"); }], ["🔎", "Découvrir des voyageurs", () => { if (typeof showMatesSegment === "function") showMatesSegment("discover"); else goToTab("accueil"); }], ["📨", "Demandes reçues", () => { goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("requests"); }], ["🪪", "Mon QR à faire scanner", () => { if (typeof openQr === "function") openQr(); }]] },
       securite: { e: "🛟", t: "Sécurité", rows: [["📞", "Faux appel (sortie de secours)", () => { goToTab("securite"); setTimeout(() => { const b = document.querySelector('[data-secuquick="fakecall"]'); if (b) b.click(); }, 250); }], ["📍", "Partager ma position", () => { goToTab("securite"); setTimeout(() => { const b = document.querySelector('[data-secuquick="position"]'); if (b) b.click(); }, 250); }], ["⏱️", "Minuteur « bien arrivé·e »", () => { goToTab("securite"); setTimeout(() => { const b = document.querySelector('[data-secuquick="safearrival"]'); if (b) b.click(); }, 250); }], ["☎️", "Numéros d'urgence du pays", () => { goToTab("securite"); setTimeout(() => { const b = document.querySelector('[data-secuquick="numbers"]'); if (b) b.click(); }, 250); }]] },
       lieux: { e: "📍", t: "Lieux sûrs", rows: [["☕", "Explorer les lieux validés", () => { goToTab("lieux"); }], ["📡", "Près de moi", () => { goToTab("lieux"); setTimeout(() => { const c = document.querySelector('[data-catcf="near"]') || document.querySelector('[data-cf="near"]'); if (c) { c.click(); c.scrollIntoView({ block: "center", behavior: "smooth" }); } }, 320); }], ["🌅", "Mon spot du jour", () => { goToTab("lieux"); setTimeout(() => { const s = document.getElementById("spotCard"); if (s) { try { s.open = true; } catch (e) {} s.scrollIntoView({ block: "center", behavior: "smooth" }); } }, 320); }], ["🏆", "Top notés", () => { goToTab("lieux"); setTimeout(() => { const c = document.querySelector('[data-catsort="rating"]'); if (c) c.click(); }, 320); }]] },
       jeux: { e: "🎮", t: "Jeux & Quêtes", rows: [["🎯", "Les quêtes du jour", () => { goToTab("jeux"); }], ["🎲", "Mini-jeux instantanés", () => { goToTab("jeux"); setTimeout(() => { if (typeof openJeuxSheet === "function") openJeuxSheet("games"); }, 300); }], ["🏅", "Ma collection de badges", () => { goToTab("jeux"); if (typeof showJeuxView === "function") showJeuxView("jeuxBadges"); }], ["🛍️", "La boutique SunCoins", () => { goToTab("jeux"); if (typeof showJeuxView === "function") { showJeuxView("jeuxShop"); if (typeof renderShop === "function") renderShop(); } }]] },
@@ -5377,7 +5412,7 @@
       // PERF : revenir sur Jeux ne re-télécharge PAS tout si les données ont <60 s (re-rendu
       // des grilles évité = switch net) ; le pull-to-refresh et les actions de jeu rechargent, eux.
       if (target === "jeux" && typeof showJeuxView === "function") { showJeuxView("jeuxHome"); if (changed && typeof loadGameData === "function" && myUserId && Date.now() - (window._gameLoadedAt || 0) > 60000) loadGameData(); }
-      if (target === "connexions" && typeof showMatesView === "function") { showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment((typeof betaOn === "function" && !betaOn()) ? "discover" : "messages"); }
+      if (target === "connexions" && typeof showMatesView === "function") { showMatesView("matesHome"); if (typeof showMatesSegment === "function") showMatesSegment("messages"); } // fusion Messages : l'onglet ouvre TOUJOURS sur les conversations
       if (target === "securite" && typeof showSecuView === "function") showSecuView("secuHome");
       if (target === "profil") { const sc = $("settingsCard"), pm = $("profMain"); if (sc) sc.classList.add("hidden"); if (pm) pm.classList.remove("hidden"); }
       window.scrollTo(0, 0); // PERF : retour haut INSTANTANÉ (le scroll animé donnait une impression de lenteur au switch)
@@ -6179,6 +6214,7 @@
       }
 
       async function openGlobe() {
+        if (typeof betaOn === "function" && !betaOn()) return; // anti-fuite Lite : globe = feature complète uniquement
         const ov = $("globeOverlay");
         if (!ov) return;
         ov.classList.remove("hidden");
@@ -6459,6 +6495,7 @@
       }
 
       async function open() {
+        if (typeof betaOn === "function" && !betaOn()) return; // anti-fuite Lite : Wrapped = feature complète uniquement
         const ov = $("wrappedOverlay"); if (!ov || !myUserId) { if (typeof toast === "function") toast("✨", "Connecte-toi pour voir ton année"); return; }
         ov.classList.remove("hidden");
         const stage = $("wrStage"); if (stage) stage.innerHTML = '<div class="wr-slide is-shown"><div class="wr-emoji">✨</div><div class="wr-sub">On prépare ton année…</div></div>';
@@ -8563,6 +8600,13 @@
         run: () => { A(() => { if (typeof setHomeMode === "function") setHomeMode("home"); }); adInto("#homeMates", 300); } },
       { title: "📖 L'album souvenir par ville", text: "Note un souvenir marquant par ville visitée, ton carnet de route perso.", ms: 5500,
         run: () => { adInto("#homeMates", 200); } },
+      // ===== Voyages : globe 3D, Wrapped annuel, passeport (features signature, beta) =====
+      { title: "🌍 Mon globe", text: "Tous les pays où tu as posé les pieds, sur un globe 3D qui tourne. Ta carte du monde perso.", ms: 6000,
+        run: () => { adCleanup(); A(() => goToTab("accueil")); A(() => { if (typeof setHomeMode === "function") setHomeMode("travel"); }); adInto("#globeOpenBtn", 350); } },
+      { title: "✨ Mon année SunMates", text: "Ton récap de l'année façon Wrapped : tes Mates, tes villes, tes plus beaux moments, à partager.", ms: 6000,
+        run: () => { A(() => goToTab("accueil")); adInto("#wrappedOpenBtn", 300); } },
+      { title: "🛂 Mon passeport de voyage", text: "Chaque voyage te laisse un tampon, comme dans un vrai passeport, avec la frise de tes aventures.", ms: 6000,
+        run: () => { A(() => goToTab("accueil")); adInto("#tripPassport", 300); } },
       { title: "📍 Mon spot du jour", text: "Dis où tu traînes : tes Mates te voient sur la carte et peuvent te rejoindre. Visible 24 h, façon story.", ms: 6000,
         run: () => { adCleanup(); A(() => goToTab("lieux")); setTimeout(() => { const s = document.getElementById("spotCard"); if (s) s.open = true; adInto("#spotCard", 250); }, 400); } },
       { title: "📰 Le fil : humeur ou spot", text: "Publie en un geste : touche une tuile d'humeur ou de spot, le champ se pré-remplit.", ms: 6000,
@@ -8627,7 +8671,7 @@
       adHideTimer = setTimeout(() => { const b = $("autoDemo"); if (b && !b.classList.contains("hidden")) b.classList.add("dim"); }, 3800);
     }
     // V0.2 — un chapitre de démo qui cible une section beta (masquée en Lite) : détecté via la source de son run.
-    function _stepIsBeta(s) { try { return /soloChallenges|soloRituals|scReroll|editCustomRitual|jeuxShop|tpVouchCard|jeux|openJeux|showJeux|showLevel|showCollection|questSpotlight|premium|openB2B|openDetail|jeuxBadges|jeuxCoupons/.test(String(s && s.run)); } catch (e) { return false; } }
+    function _stepIsBeta(s) { try { return /soloChallenges|soloRituals|scReroll|editCustomRitual|jeuxShop|tpVouchCard|jeux|openJeux|showJeux|showLevel|showCollection|questSpotlight|premium|openB2B|openDetail|jeuxBadges|jeuxCoupons|globeOpenBtn|wrappedOpenBtn|tripPassport/.test(String(s && s.run)); } catch (e) { return false; } }
     function adSchedule() {
       clearTimeout(adTimer);
       if (adPaused) return;
@@ -9683,7 +9727,10 @@
       // « Mes conversations » = connexions acceptées (hors supprimées), triées par dernier message
       const convIds = [...connectedIds].filter((id) => !hiddenConvs.has(id));
       convIds.sort((a, b) => (lastByPeer[b]?.created_at || "").localeCompare(lastByPeer[a]?.created_at || ""));
-      // #13 : le BFF du moment vit ICI · conversation ÉPINGLÉE en tête, case dorée.
+      // Épinglage utilisateur : les conversations épinglées remontent en tête (Array.sort stable → l'ordre par date est gardé dans chaque groupe).
+      const pinnedSet = new Set(loadPinnedConvs().map(String));
+      convIds.sort((a, b) => ((pinnedSet.has(String(b)) ? 1 : 0) - (pinnedSet.has(String(a)) ? 1 : 0)));
+      // #13 : le BFF du moment vit ICI · conversation ÉPINGLÉE en tête, case dorée (au-dessus des épinglés).
       if (myBffId && convIds.includes(myBffId)) { convIds.splice(convIds.indexOf(myBffId), 1); convIds.unshift(myBffId); }
       // Interlocuteurs avec au moins un message non lu (pastille + aperçu appuyé)
       const unreadPeers = new Set((typeof unreadList !== "undefined" ? unreadList : []).map((u) => u.sender_id));
@@ -9694,19 +9741,21 @@
               const preview = lm ? ((lm.sender_id === myId ? "Toi : " : "") + String(lm.content || "").slice(0, 140)) : "Toucher pour discuter 💬"; // aperçu borné : un message-pavé ne gonfle plus la liste
               const t = lm ? timeAgo(lm.created_at) : "";
               const isBff = other === myBffId;
+              const isPinnedConv = pinnedSet.has(String(other));
               const isUnread = unreadPeers.has(other);
               const meta = isUnread
                 ? `<div class="conv-meta"><span class="conv-time">${t}</span><span class="conv-dot" title="Non lu"></span></div>`
                 : `<div class="conv-meta"><span class="conv-time">${t}</span><span class="qarrow">›</span></div>`;
               return `<div class="person conv-open${isBff ? " conv-bff" : ""}${isUnread ? " conv-unread" : ""}" data-chat="${other}" style="cursor:pointer">
                 ${avatarMarkup(nameOf(other), avatarOf(other), null, isActive(travelerMap[other]))}
-                <div class="info"><div class="name">${escapeHtml(nameOf(other))}${isBff ? ' <span class="conv-pin">⭐ BFF</span>' : ""}</div><div class="conv-preview">${escapeHtml(preview)}</div></div>
+                <div class="info"><div class="name">${escapeHtml(nameOf(other))}${isBff ? ' <span class="conv-pin">⭐ BFF</span>' : (isPinnedConv ? ' <span class="conv-pin">📌</span>' : "")}</div><div class="conv-preview">${escapeHtml(preview)}</div></div>
                 ${meta}</div>`;
             }).join("")
         : emptyState("💬", "Pas encore de conversation", "Connecte-toi avec des voyageurs pour commencer à discuter en sécurité.", "Découvrir des Mates", "discover");
       $("convList").querySelectorAll("[data-chat]").forEach((el) =>
         el.addEventListener("click", () => openChat(el.dataset.chat)));
       if (typeof appendDemoConvs === "function") appendDemoConvs(); // + les conversations IA en cours
+      if (typeof filterConvs === "function") filterConvs(); // ré-applique la recherche après reconstruction de la liste
 
       // Voyageurs à rencontrer (autres profils, hors connexions/demandes déjà existantes)
       const related = new Set();
@@ -11227,6 +11276,21 @@
     // Badges épinglés sur le profil (3 max), stockés sur l'appareil.
     function loadPinnedBadges() { try { return JSON.parse(localStorage.getItem("sm_pinned_badges") || "[]"); } catch (e) { return []; } }
     function savePinnedBadges(a) { try { localStorage.setItem("sm_pinned_badges", JSON.stringify(a.slice(0, 3))); } catch (e) {} }
+    // Épinglage de conversations (local, par utilisateur) : les épinglées remontent en tête de la liste Messages.
+    function loadPinnedConvs() { try { return JSON.parse(localStorage.getItem("sm_pinned_convs_" + (myUserId || "x")) || "[]"); } catch (e) { return []; } }
+    function isConvPinned(id) { return loadPinnedConvs().map(String).includes(String(id)); }
+    function toggleConvPin(id) { let a = loadPinnedConvs().map(String); id = String(id); a = a.includes(id) ? a.filter((x) => x !== id) : [id, ...a]; try { localStorage.setItem("sm_pinned_convs_" + (myUserId || "x"), JSON.stringify(a.slice(0, 20))); } catch (e) {} }
+    // Recherche dans les conversations : filtre client par nom + aperçu du dernier message.
+    function filterConvs() {
+      const q = (($("convSearch") || {}).value || "").trim().toLowerCase();
+      const box = $("convList"); if (!box) return;
+      box.querySelectorAll(".conv-open").forEach((row) => {
+        const name = ((row.querySelector(".name") || {}).textContent || "");
+        const prev = ((row.querySelector(".conv-preview") || {}).textContent || "");
+        row.style.display = (!q || (name + " " + prev).toLowerCase().indexOf(q) !== -1) ? "" : "none";
+      });
+    }
+    { const cs = $("convSearch"); if (cs) cs.addEventListener("input", filterConvs); }
     function togglePinBadge(key) {
       let a = loadPinnedBadges();
       if (a.includes(key)) a = a.filter((k) => k !== key);
@@ -11436,45 +11500,64 @@
       //  pas au simple tap, pour ne pas chevaucher ses propres bulles.)
     });
 
-    // ===== Item 12 · Liker un message (double-tap ❤️) + swipe pour voir l'heure (façon Insta) =====
-    const _msgReact = {}; // id → { mine: bool, count: int }
+    // ===== Réactions emoji aux messages (façon Insta) : double-tap = ❤️, appui long / clic droit = picker =====
+    const REACT_EMOJIS = ["❤️", "🔥", "😂", "😮", "😢", "👍"];
+    const _msgReact = {}; // id → { mine: emoji|null, counts: { emoji: n } }
     function _reactKey(mid) { return "sm_react_" + mid; }
-    function renderHeart(mid, pop) {
+    function renderReacts(mid, pop) {
       const bub = document.querySelector('.bubble[data-mid="' + mid + '"]'); if (!bub) return;
-      const r = _msgReact[mid] || { mine: false, count: 0 };
-      let h = bub.querySelector(".bubble-heart");
-      if (!r.count) { if (h) h.remove(); return; }
-      if (!h) { h = document.createElement("span"); h.className = "bubble-heart"; bub.appendChild(h); }
-      h.innerHTML = "❤️" + (r.count > 1 ? "<b>" + r.count + "</b>" : "");
+      const r = _msgReact[mid] || { mine: null, counts: {} };
+      const entries = Object.keys(r.counts).filter((e) => r.counts[e] > 0);
+      let h = bub.querySelector(".bubble-reacts");
+      if (!entries.length) { if (h) h.remove(); return; }
+      if (!h) { h = document.createElement("span"); h.className = "bubble-reacts"; bub.appendChild(h); }
+      h.innerHTML = entries.map((e) => '<span class="rchip' + (r.mine === e ? " mine" : "") + '">' + e + (r.counts[e] > 1 ? "<b>" + r.counts[e] + "</b>" : "") + "</span>").join("");
       if (pop) { h.classList.remove("pop"); void h.offsetWidth; h.classList.add("pop"); }
     }
     async function loadReactions(ids) {
       ids = (ids || []).map(Number).filter(Boolean); if (!ids.length) return;
-      // Repli local d'abord (marche même sans la table) :
-      ids.forEach((id) => { try { const v = localStorage.getItem(_reactKey(id)); if (v === "1") _msgReact[id] = { mine: true, count: Math.max(1, (_msgReact[id] || {}).count || 0) }; } catch (e) {} });
+      // Repli local d'abord (marche même sans la table) : on garde l'emoji choisi.
+      ids.forEach((id) => { try { const v = localStorage.getItem(_reactKey(id)); if (v) { _msgReact[id] = _msgReact[id] || { mine: null, counts: {} }; _msgReact[id].mine = v; _msgReact[id].counts[v] = Math.max(1, _msgReact[id].counts[v] || 0); } } catch (e) {} });
       try {
-        const { data, error } = await db.from("message_reactions").select("message_id,user_id").in("message_id", ids);
-        if (!error && data) { // la table existe → source de vérité partagée
-          const agg = {}; data.forEach((r) => { const m = r.message_id; (agg[m] = agg[m] || { mine: false, count: 0 }); agg[m].count++; if (r.user_id === myUserId) agg[m].mine = true; });
-          ids.forEach((id) => { _msgReact[id] = agg[id] || { mine: false, count: 0 }; });
+        const { data, error } = await db.from("message_reactions").select("message_id,user_id,emoji").in("message_id", ids);
+        if (!error && data) { // la table existe → source de vérité partagée (agrégat par emoji)
+          const agg = {}; data.forEach((r) => { const m = r.message_id, e = r.emoji || "❤️"; (agg[m] = agg[m] || { mine: null, counts: {} }); agg[m].counts[e] = (agg[m].counts[e] || 0) + 1; if (r.user_id === myUserId) agg[m].mine = e; });
+          ids.forEach((id) => { _msgReact[id] = agg[id] || { mine: null, counts: {} }; });
         }
       } catch (e) {}
-      ids.forEach((id) => renderHeart(id));
+      ids.forEach((id) => renderReacts(id));
     }
-    async function toggleReaction(mid) {
+    async function setReaction(mid, emoji) {
       mid = Number(mid); if (!mid) return;
-      const cur = _msgReact[mid] || { mine: false, count: 0 };
-      const willLike = !cur.mine;
-      _msgReact[mid] = { mine: willLike, count: Math.max(0, cur.count + (willLike ? 1 : -1)) };
-      renderHeart(mid, willLike);
-      if (window.SMSound) SMSound.play(willLike ? "pop" : "tap");
-      try { localStorage.setItem(_reactKey(mid), willLike ? "1" : "0"); } catch (e) {}
+      const cur = _msgReact[mid] || { mine: null, counts: {} };
+      const remove = cur.mine === emoji; // re-tap le MÊME emoji = retirer ma réaction
+      if (cur.mine && cur.counts[cur.mine]) cur.counts[cur.mine] = Math.max(0, cur.counts[cur.mine] - 1); // retire l'ancienne réaction perso
+      if (!remove) { cur.counts[emoji] = (cur.counts[emoji] || 0) + 1; cur.mine = emoji; } else { cur.mine = null; }
+      _msgReact[mid] = cur;
+      renderReacts(mid, !remove);
+      if (window.SMSound) SMSound.play(remove ? "tap" : "pop");
+      try { if (cur.mine) localStorage.setItem(_reactKey(mid), cur.mine); else localStorage.removeItem(_reactKey(mid)); } catch (e) {}
       try {
-        if (willLike) await db.from("message_reactions").upsert({ message_id: mid, user_id: myUserId, emoji: "❤️" }, { onConflict: "message_id,user_id" });
+        if (!remove) await db.from("message_reactions").upsert({ message_id: mid, user_id: myUserId, emoji: emoji }, { onConflict: "message_id,user_id" });
         else await db.from("message_reactions").delete().eq("message_id", mid).eq("user_id", myUserId);
       } catch (e) {} // best-effort (table absente → reste local)
+      return;
     }
-    // Double-tap / double-clic sur une bulle = like.
+    function toggleReaction(mid) { setReaction(mid, "❤️"); } // double-tap = cœur rapide (compat)
+    // Picker de réactions ancré sur la bulle (appui long tactile / clic droit desktop).
+    function closeReactPicker() { const p = document.getElementById("reactPick"); if (p) p.remove(); }
+    function openReactPicker(bub) {
+      if (!bub || !bub.dataset.mid) return;
+      closeReactPicker();
+      const mid = bub.dataset.mid;
+      const pick = document.createElement("div"); pick.className = "react-pick"; pick.id = "reactPick";
+      pick.innerHTML = REACT_EMOJIS.map((e) => '<button type="button" data-react="' + e + '">' + e + "</button>").join("");
+      bub.appendChild(pick);
+      pick.querySelectorAll("[data-react]").forEach((b) => b.addEventListener("click", (ev) => { ev.stopPropagation(); setReaction(mid, b.dataset.react); closeReactPicker(); }));
+      requestAnimationFrame(() => pick.classList.add("show"));
+    }
+    document.addEventListener("click", (e) => { if (!e.target.closest(".react-pick") && !e.target.closest("[data-reactopen]")) closeReactPicker(); });
+    // Double-tap / double-clic sur une bulle = like ❤️ ; appui long / clic droit = picker emoji.
     { const cb = $("chatBody");
       cb.addEventListener("dblclick", (e) => { const b = e.target.closest(".bubble"); if (b && b.dataset.mid && !e.target.closest("button")) { e.preventDefault(); toggleReaction(b.dataset.mid); } });
       // Double-tap tactile (deux touches rapprochées au même endroit).
@@ -11505,6 +11588,18 @@
       const _endPeek = () => { if (!_peeking) return; _peeking = false; cb.classList.remove("peeking"); cb.style.setProperty("--peek", "0px"); };
       cb.addEventListener("touchend", _endPeek);
       cb.addEventListener("touchcancel", _endPeek);
+      // Appui LONG (tactile) sur une bulle = picker emoji ; annulé dès qu'on bouge (peek/scroll) ou relâche.
+      let _lpTimer = null;
+      const _clearLp = () => { if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; } };
+      cb.addEventListener("touchstart", (e) => {
+        const b = e.target.closest(".bubble"); if (!b || !b.dataset.mid || e.target.closest("button")) return;
+        _clearLp(); _lpTimer = setTimeout(() => { _lpTimer = null; openReactPicker(b); if (window.SMSound) SMSound.play("tap"); }, 480);
+      }, { passive: true });
+      cb.addEventListener("touchmove", _clearLp, { passive: true });
+      cb.addEventListener("touchend", _clearLp);
+      cb.addEventListener("touchcancel", _clearLp);
+      // Clic DROIT (desktop) sur une bulle = picker emoji.
+      cb.addEventListener("contextmenu", (e) => { const b = e.target.closest(".bubble"); if (b && b.dataset.mid && !e.target.closest("button")) { e.preventDefault(); openReactPicker(b); } });
     }
 
     // ---- Conversations d'exemple avec les comptes IA (démo), côté navigateur ----
@@ -11684,7 +11779,7 @@
     // ===== Menu ⋯ de la conversation (réglages + actions) =====
     { const mb = $("chatMenuBtn"), menu = $("chatMenu");
       if (mb && menu) {
-        mb.addEventListener("click", (e) => { e.stopPropagation(); menu.classList.toggle("hidden"); });
+        mb.addEventListener("click", (e) => { e.stopPropagation(); const it = $("chatPinItem"); if (it && currentChatUserId) it.textContent = isConvPinned(currentChatUserId) ? "📌 Détacher" : "📌 Épingler"; menu.classList.toggle("hidden"); });
         document.addEventListener("click", (e) => { if (!menu.classList.contains("hidden") && !e.target.closest("#chatMenu") && e.target !== mb) menu.classList.add("hidden"); });
         menu.querySelectorAll("[data-cmenu]").forEach((b) => b.addEventListener("click", () => {
           menu.classList.add("hidden");
@@ -11693,6 +11788,7 @@
           else if (a === "delete") { deleteConversation(); }
           else if (a === "flame") { const f = _flameGet(id); showInfo("🔥 Flammes", '<p style="line-height:1.6;text-align:center;padding:.3rem">Envoie une <b>flamme 🔥</b> à ' + escapeHtml((travelerMap[id] || {}).username || "ce Mate") + ' chaque jour pour entretenir votre <b>flamme</b>.<br><br>Flamme actuelle : <b>🔥 ' + (f.active ? f.count : 0) + '</b><br><span class="muted" style="font-size:.82rem">Reviens <b>chaque jour</b> pour la garder ! (rate un jour entier = flamme perdue)</span></p>'); }
           else if (a === "notif") { const on = (localStorage.getItem("sm_chatnotif_" + id) !== "0"); localStorage.setItem("sm_chatnotif_" + id, on ? "0" : "1"); const it = $("chatNotifItem"); if (it) it.textContent = on ? "🔕 Notifications : coupées" : "🔔 Notifications : activées"; toast(on ? "🔕" : "🔔", on ? "Notifications coupées pour cette conv" : "Notifications activées"); }
+          else if (a === "pin") { if (id) { toggleConvPin(id); const pinned = isConvPinned(id); const it = $("chatPinItem"); if (it) it.textContent = pinned ? "📌 Détacher" : "📌 Épingler"; toast("📌", pinned ? "Conversation épinglée" : "Conversation détachée"); if (typeof loadConnections === "function") loadConnections(); } }
           else if (a === "block") {
             // Sécurité d'abord : on bloque DIRECTEMENT depuis le chat (avant : renvoi vers le profil
             // = friction inacceptable pour quelqu'un qui se fait harceler). blockUser confirme déjà.
@@ -13902,8 +13998,8 @@
       // retomberait sur un écran vide (« la tuile ne déclenche rien »). On route ailleurs.
       if (beta && /défi|defi|quête|quete|jeu|mission/.test(t)) { goToTab("jeux"); return; }
       if (/dispo|autour|qui est|mate|voyageur|rencontr|cercle|connex/.test(t)) {
-        // « Vois qui est dispo » → ouvre Connexions/Découvrir
-        goToTab("connexions"); if (typeof showMatesSegment === "function") showMatesSegment("discover"); return;
+        // « Vois qui est dispo » → découverte des voyageurs sur l'accueil (fusion Messages : plus de Découvrir dans l'onglet)
+        if (typeof showMatesSegment === "function") showMatesSegment("discover"); else goToTab("accueil"); return;
       }
       // café / déjeuner / verre / balade / musée / défi-en-Lite… → les lieux sûrs autour
       goToTab("lieux");
@@ -13927,8 +14023,8 @@
           card.innerHTML =
             '<div style="font-weight:800;font-size:.95rem;display:flex;flex-wrap:wrap;gap:.4rem;align-items:baseline">📍 ' + where +
             '<span class="muted" style="font-weight:600;font-size:.78rem">' + moment + (meteo ? " · " + escapeHtml(meteo) : "") + '</span></div>' +
-            '<div style="margin:.4rem 0 0">' +
-            top.map((s, i) => '<button type="button" class="geo-idea" data-idea="' + i + '"><span style="opacity:.6">›</span> ' + escapeHtml(s) + '<span class="gi-arrow">›</span></button>').join("") +
+            '<div class="geo-ideas">' +
+            top.map((s, i) => '<button type="button" class="geo-idea" data-idea="' + i + '">' + escapeHtml(s) + '<span class="gi-arrow">›</span></button>').join("") +
             '</div>';
           // GEO-TRIGGER : chaque idée mène à l'écran correspondant (jamais décorative).
           card.querySelectorAll(".geo-idea").forEach((b) => b.addEventListener("click", () => _geoIdeaGo(top[Number(b.dataset.idea)] || "")));
@@ -14225,9 +14321,9 @@
     }
     function openOnboarding() {
       const ov = $("onboarding"); if (!ov) return;
-      // Lite : retirer les 2 slides « Jeux » (steps 2-3) → onboarding MVP (rencontres / carte / lieux / sécurité)
-      try { if (typeof betaOn === "function" && !betaOn()) ov.querySelectorAll('.onb-step[data-step="2"], .onb-step[data-step="3"]').forEach(function (s) { s.remove(); }); } catch (e) {}
-      ONB_STEPS = ov.querySelectorAll(".onb-step").length || 6;
+      // Lite : retirer l'étape gaming (« Joue & gagne », data-onbbeta) → onboarding MVP court (rencontres / carte / moments / sécurité)
+      try { if (typeof betaOn === "function" && !betaOn()) ov.querySelectorAll(".onb-step[data-onbbeta]").forEach(function (s) { s.remove(); }); } catch (e) {}
+      ONB_STEPS = ov.querySelectorAll(".onb-step").length || 5;
       const who = myProfile && (myProfile.first_name || myProfile.username);
       $("onbComma").textContent = who ? ", " : ""; // virgule HORS dégradé
       $("onbName").textContent = who || "";
@@ -14273,7 +14369,7 @@
       { tab: "accueil",    sel: '[data-tab="accueil"]',    emoji: "🗺️", title: "Ta carte vivante",   text: "Vois qui est autour, les spots sympas et les activités du moment. Clique une pastille pour foncer !" },
       { tab: "lieux",      sel: '[data-tab="lieux"]',      emoji: "📍", title: "Des spots à découvrir", text: "Cafés, co-livings et lieux cools. Fais un check-in quand tu y es, ça te fait gagner des points." },
       { tab: "jeux",       sel: '[data-tab="jeux"]',       emoji: "🎉", title: "Activités & défis",   text: "Lance des activités, relève des défis, gagne des badges et des coupons." },
-      { tab: "connexions", sel: '[data-tab="connexions"]', emoji: "🤝", title: "Tes Mates",          text: "Rencontre des voyageurs, discute et trouve des compagnons d'aventure." },
+      { tab: "connexions", sel: '[data-tab="connexions"]', emoji: "💬", title: "Messages",          text: "Tes conversations avec tes Mates. Pour rencontrer du monde, c'est sur l'accueil." },
       { tab: "securite",   sel: '[data-tab="securite"]',   emoji: "🛡️", title: "Toujours serein·e",   text: "SOS et partage de position à portée de main, pour t'amuser l'esprit tranquille." },
       { tab: "profil",     sel: '[data-tab="profil"]',     emoji: "👤", title: "Ton profil",         text: "Ton score de confiance, tes badges et tes réglages. Tu peux revoir ce tuto ici quand tu veux !" },
     ];
@@ -14306,7 +14402,7 @@
         { tab: "jeux", view: "jeuxHome", sel: "#playerBadge", emoji: "⭐", title: "Ton niveau", text: "Gagne de l'XP en accomplissant des quêtes. Touche ce badge pour voir ta progression, tes titres et ta série." },
         { tab: "jeux", sel: "#jeuxNav", emoji: "🎯", title: "Quêtes & jeux", text: "Quêtes, jeux, badges, coupons, classement, boutique : tout est ici." },
         { tab: "connexions", sel: "#inviteFriendsBtn", emoji: "✨", title: "Inviter des amis", text: "Fais venir tes amis sur SunMates : plus on est, plus c'est sûr & fun 🌍" },
-        { tab: "connexions", sel: ".mseg", emoji: "🤝", title: "Tes Mates", text: "Messages, Découvrir de nouveaux voyageurs, et Demandes de connexion." },
+        { tab: "connexions", sel: ".mseg", emoji: "💬", title: "Messages", text: "Tes conversations et tes demandes de connexion, au même endroit." },
         { tab: "securite", sel: '[data-tab="securite"]', emoji: "🛡️", title: "Sécurité", text: "SOS, faux appel, partage de position au cercle, contacts d'urgence, pour voyager serein·e." },
         { tab: "profil", sel: "#editProfileBtn", emoji: "👤", title: "Ton profil", text: "Complète-le pour de meilleurs matchs. Mon parcours est dans la carte juste en dessous, ton BFF brille en tête de tes messages 📌⭐." },
       ],
@@ -14405,6 +14501,14 @@
 
     // ---- Sous-onglets de la page Mates ----
     function showMatesSegment(seg) {
+      // Fusion Mates→Messages (20/06) : « Découvrir » a quitté cet onglet (doublon avec l'accueil).
+      // Point unique : tout appel "discover" est redirigé vers la découverte de l'accueil (voyageurs + carte).
+      if (seg === "discover") {
+        if (typeof goToTab === "function") goToTab("accueil");
+        try { const sc = document.querySelector('.sscope[data-scope="people"]'); if (sc) sc.click(); } catch (e) {}
+        try { const s = $("homeSearch"); if (s) s.focus(); } catch (e) {}
+        return;
+      }
       document.querySelectorAll("[data-mseg]").forEach((b) => b.classList.toggle("active", b.dataset.mseg === seg));
       document.querySelectorAll("[data-msegpanel]").forEach((p) => show(p, p.dataset.msegpanel === seg));
       // Ne PLUS tout marquer lu au simple affichage de la liste : on ne marque une conversation
@@ -14744,6 +14848,7 @@
     // Boutons d'autorisations (Réglages) → demande contextuelle au moment du clic
     { const pn = $("permNotifBtn"); if (pn) pn.addEventListener("click", () => askNotifPermission(true)); }
     { const pg = $("permGeoBtn"); if (pg) pg.addEventListener("click", () => askGeoPermission()); }
+    if (typeof updatePermStates === "function") updatePermStates(); // état initial des autorisations (Réglages)
     // P2.50 RGPD : suppression de compte (irréversible) → double confirmation, RPC, déconnexion.
     { const da = $("deleteAccountBtn"); if (da) da.addEventListener("click", () => once("delete-account", async () => {
       if (!(await smConfirmP("⚠️", "Supprimer ton compte ?", "Suppression DÉFINITIVE de ton compte et de toutes tes données. Cette action est irréversible.", "Continuer"))) return;
@@ -17318,9 +17423,9 @@
         "a11y.skip": "Aller au contenu principal",
         "act.locLbl": "Lieu", "act.searchPh": "🔎 Nom du lieu, adresse, ville…", "act.searchBtn": "Chercher",
         "back": "‹ Retour",
-        "nav.home": "Accueil", "nav.places": "Lieux", "nav.games": "Jeux", "nav.mates": "Mates", "nav.safety": "Sécurité", "nav.profile": "Profil",
+        "nav.home": "Accueil", "nav.places": "Lieux", "nav.games": "Jeux", "nav.mates": "Messages", "nav.safety": "Sécurité", "nav.profile": "Profil",
         "auth.login": "Connexion",
-        "mates.title": "Mes Mates", "mates.trusted": "Mates de confiance ›", "mates.messages": "Messages", "mates.discover": "Découvrir", "mates.requests": "Demandes",
+        "mates.title": "Messages", "mates.trusted": "Mates de confiance ›", "mates.messages": "Messages", "mates.discover": "Découvrir", "mates.requests": "Demandes",
         "places.title": "Lieux sûrs", "places.intro": "Les meilleurs spots pour se retrouver ☕ Fais un check-in pour grimper au classement 🏆", "places.searchph": "Rechercher un lieu ou une ville…", "profile.title": "Mon profil", "safety.title": "Sécurité", "games.title": "Jeux & Quêtes",
         "prof.seg.edit": "Mon profil", "profile.replay": "🚀 Revoir la présentation",
         "filter.verified": "Vérifiés", "filter.active": "● En ligne", "filter.city": "Même ville", "filter.affinity": "Affinité 50%+",
@@ -17338,9 +17443,9 @@
         "a11y.skip": "Skip to main content",
         "act.locLbl": "Place", "act.searchPh": "🔎 Place name, address, city…", "act.searchBtn": "Search",
         "back": "‹ Back",
-        "nav.home": "Home", "nav.places": "Places", "nav.games": "Games", "nav.mates": "Mates", "nav.safety": "Safety", "nav.profile": "Profile",
+        "nav.home": "Home", "nav.places": "Places", "nav.games": "Games", "nav.mates": "Messages", "nav.safety": "Safety", "nav.profile": "Profile",
         "auth.login": "Log in",
-        "mates.title": "My Mates", "mates.trusted": "Trusted Mates ›", "mates.messages": "Messages", "mates.discover": "Discover", "mates.requests": "Requests",
+        "mates.title": "Messages", "mates.trusted": "Trusted Mates ›", "mates.messages": "Messages", "mates.discover": "Discover", "mates.requests": "Requests",
         "places.title": "Safe places", "places.intro": "The best spots to meet up ☕ Check in to climb the leaderboard 🏆", "places.searchph": "Search a place or city…", "profile.title": "My profile", "safety.title": "Safety", "games.title": "Games & Quests",
         "prof.seg.edit": "My profile", "profile.replay": "🚀 Replay the intro",
         "filter.verified": "Verified", "filter.active": "● Online", "filter.city": "Same city", "filter.affinity": "Affinity 50%+",
@@ -17920,7 +18025,7 @@
           const acc = document.querySelector('.tab-panel[data-panel="accueil"]');
           if (acc) {
             const relab = function (goto, name) { const t = acc.querySelector('.tile[data-goto="' + goto + '"] .t-name'); if (t) t.textContent = name; };
-            relab("connexions", "Découvrir des voyageurs");
+            relab("connexions", "Mes messages");
             relab("lieux", "Faire un check-in");
             relab("securite", "Ma sécurité");
             const sh = Array.prototype.slice.call(acc.querySelectorAll(".section-head h3")).find(function (h) { return /Acc[eè]s rapides/i.test(h.textContent); }); if (sh) sh.textContent = "Que faire maintenant ?";
@@ -17980,7 +18085,7 @@
             try { if (typeof closePopInfo === "function") closePopInfo(); } catch (e2) {}
             try { if (typeof closePicker === "function") closePicker(); } catch (e2) {}
             if (k === "msg") { goToTab("connexions"); setTimeout(function () { if (typeof showMatesSegment === "function") showMatesSegment("messages"); }, 150); }
-            else if (k === "disc") { goToTab("connexions"); setTimeout(function () { if (typeof showMatesSegment === "function") showMatesSegment("discover"); }, 150); }
+            else if (k === "disc") { setTimeout(function () { if (typeof showMatesSegment === "function") showMatesSegment("discover"); else goToTab("accueil"); }, 150); }
             else if (k === "lieux") { goToTab("lieux"); }
             else if (k === "spot") { goToTab("lieux"); setTimeout(function () { const sc = document.getElementById("spotCard"); if (sc) { try { if ("open" in sc) sc.open = true; } catch (e3) {} sc.scrollIntoView({ behavior: "smooth", block: "center" }); } }, 220); }
           });
@@ -18092,19 +18197,8 @@
           const ph = document.querySelector("#profMain .prof-head");
           if (ac && ph && ac.parentElement !== ph) ph.appendChild(ac);
         } catch (e) {}
-        // v561 — Onboarding Lite : ton JOVIAL + RASSURANT, sans gaming (défis/quêtes/XP/badges/classement).
-        try {
-          const setStep = function (n, emoji, title, html) {
-            const s = document.querySelector('.onb-step[data-step="' + n + '"]'); if (!s) return;
-            const e = s.querySelector(".onb-emoji"); if (e && emoji) e.textContent = emoji;
-            const h = s.querySelector("h2"); if (h && title) h.textContent = title;
-            const p = s.querySelector("p"); if (p && html) p.innerHTML = html;
-          };
-          // step 2 : on retire « défis » et « badges » (gaming) ; on garde l'esprit fête/rencontres.
-          setStep(2, "🎉", "Crée des moments", "Café, balade, coucher de soleil, soirée… propose des sorties et retrouve tes Mates pour les vivre <b>ensemble</b> ☀️");
-          // step 3 : « Joue & gagne » (100 % gaming) → un pilier Lite chaleureux : des rencontres sûres.
-          setStep(3, "🤝", "Tes Mates de confiance", "Connecte-toi avec des <b>voyageurs vérifiés</b>, papote tranquillement, et pars à l'aventure <b>l'esprit léger</b> 💛");
-        } catch (e) {}
+        // Onboarding Lite : géré nativement (refonte 20/06) — l'étape gaming « Joue & gagne » porte
+        // data-onbbeta et est retirée en Lite ; les 4 autres étapes ont une copie universelle (sans gaming).
         // v565 — Sécurité : l'onglet n'avait PAS de titre (h1 secuHome/secuHelp masqués) → on injecte
         // un titre « Sécurité » en haut, cohérent avec les autres onglets (Mon profil, Mes Mates…).
         try {
@@ -18214,23 +18308,58 @@
       if (perm === "denied") { if (withPrompt && typeof toast === "function") toast("🔕", "Notifications bloquées dans les réglages de ton navigateur."); return; }
       if (!withPrompt) return; // default + pas d'action explicite → on ne demande rien
       let ok = true;
-      if (typeof smConfirmP === "function") ok = await smConfirmP("🔔", i18nT("Activer les notifications ?"), i18nT("Pour être prévenu·e des nouveaux messages, demandes de connexion et défis — même quand l'app est fermée."), i18nT("Activer"));
+      if (typeof smConfirmP === "function") ok = await smConfirmP("🔔", i18nT("Activer les notifications ?"), i18nT("Pour être prévenu·e des nouveaux messages, demandes de connexion et défis, même quand l'app est fermée."), i18nT("Activer"));
       if (!ok) return;
       try { perm = await Notification.requestPermission(); } catch (e) {}
       if (perm === "granted") { subscribePush(); if (typeof toast === "function") toast("🔔", i18nT("Notifications activées ✅")); }
+      if (typeof updatePermStates === "function") updatePermStates();
     }
     // Demande la localisation AVEC contexte (pour les fonctions geo : carte, lieux proches, sécurité).
+    // Symétrique avec askNotifPermission : on vérifie d'abord l'état existant (accordé/refusé) avant de demander.
     async function askGeoPermission() {
       if (!navigator.geolocation) { if (typeof toast === "function") toast("📍", "Ton appareil ne partage pas la position."); return; }
+      // Vérif de l'état existant (comme les notifs) : pas de double-demande inutile, feedback clair.
+      if (navigator.permissions && navigator.permissions.query) {
+        try {
+          const st = await navigator.permissions.query({ name: "geolocation" });
+          if (st.state === "granted") { if (typeof toast === "function") toast("📍", i18nT("Localisation déjà active ✅")); if (typeof startGeoWatchIfGranted === "function") startGeoWatchIfGranted(); updatePermStates(); return; }
+          if (st.state === "denied") { if (typeof toast === "function") toast("📍", i18nT("Localisation bloquée dans les réglages de ton navigateur.")); return; }
+        } catch (e) {}
+      }
       let ok = true;
       if (typeof smConfirmP === "function") ok = await smConfirmP("📍", i18nT("Activer la localisation ?"), i18nT("Pour voir les lieux sûrs et les voyageur·ses autour de toi, et pour le partage de position en cas de besoin. Tu peux couper quand tu veux."), i18nT("Autoriser"));
       if (!ok) return;
       navigator.geolocation.getCurrentPosition(
-        () => { if (typeof toast === "function") toast("📍", i18nT("Localisation activée ✅")); if (typeof startGeoWatchIfGranted === "function") startGeoWatchIfGranted(); if (typeof renderGeoNow === "function") renderGeoNow(); },
-        () => { if (typeof toast === "function") toast("📍", i18nT("Localisation refusée — tu peux réessayer dans les réglages du navigateur.")); },
+        () => { if (typeof toast === "function") toast("📍", i18nT("Localisation activée ✅")); if (typeof startGeoWatchIfGranted === "function") startGeoWatchIfGranted(); if (typeof renderGeoNow === "function") renderGeoNow(); updatePermStates(); },
+        () => { if (typeof toast === "function") toast("📍", i18nT("Localisation refusée. Tu peux réessayer dans les réglages du navigateur.")); updatePermStates(); },
         { enableHighAccuracy: true, timeout: 10000 }
       );
     }
+    // Affiche l'état des autorisations (Réglages) : Actif / Bloqué / À activer — pour géo ET notifs, présentés pareil.
+    async function updatePermStates() {
+      const setState = (el, state) => {
+        if (!el) return;
+        const map = { granted: i18nT("Actif ✅"), denied: i18nT("Bloqué"), prompt: i18nT("À activer"), unsupported: i18nT("Indispo") };
+        el.textContent = map[state] || "";
+        el.className = "perm-state state-" + state;
+      };
+      // Notifications
+      const ns = $("permNotifState");
+      if (ns) {
+        if (!("Notification" in window)) setState(ns, "unsupported");
+        else setState(ns, Notification.permission === "default" ? "prompt" : Notification.permission);
+      }
+      // Localisation
+      const gs = $("permGeoState");
+      if (gs) {
+        if (!navigator.geolocation) setState(gs, "unsupported");
+        else if (navigator.permissions && navigator.permissions.query) {
+          try { const st = await navigator.permissions.query({ name: "geolocation" }); setState(gs, st.state); }
+          catch (e) { setState(gs, "prompt"); }
+        } else setState(gs, "prompt");
+      }
+    }
+    window.updatePermStates = updatePermStates;
     // Abonne l'appareil au Web Push et enregistre l'abonnement dans Supabase
     async function subscribePush() {
       try {

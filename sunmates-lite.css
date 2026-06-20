@@ -899,17 +899,18 @@ body.sm-lite .tab-panel[data-panel="accueil"] .grid2 .tile[data-goto="profil"],
 body.sm-lite .tab-panel[data-panel="accueil"] .grid2 #goldTile { display: none !important; }
 
 /* SÉCURITÉ : retirer « Lieux publics sûrs » (→ onglet Lieux) + « Trouver un Mate sûr·e »
-   (redondant avec le Cercle de confiance) ; CENTRER tous les textes des tuiles. */
+   (redondant avec le Cercle de confiance). Tuiles en LIGNES horizontales alignées à gauche,
+   cohérentes avec l'accueil (fini le centrage « petits carreaux » jugé moche). */
 body.sm-lite #secuHelp .tile[data-help="lieux"],
 body.sm-lite #secuHelp .tile[data-help="mate"] { display: none !important; }
 body.sm-lite #secuHelp .grid2 .tile,
-body.sm-lite #secuHome .grid2 .tile { flex-direction: column !important; align-items: center !important; text-align: center !important; }
+body.sm-lite #secuHome .grid2 .tile { flex-direction: row !important; align-items: center !important; text-align: left !important; gap: .7rem !important; padding: .6rem .8rem !important; min-height: 0 !important; }
 body.sm-lite #secuHelp .grid2 .tile .thumb,
-body.sm-lite #secuHome .grid2 .tile .thumb { margin: 0 auto .3rem !important; }
+body.sm-lite #secuHome .grid2 .tile .thumb { width: 34px !important; height: 34px !important; margin: 0 !important; flex: 0 0 auto !important; font-size: 1.2rem !important; }
 body.sm-lite #secuHelp .grid2 .tile .t-name,
 body.sm-lite #secuHome .grid2 .tile .t-name,
 body.sm-lite #secuHelp .grid2 .tile .t-meta,
-body.sm-lite #secuHome .grid2 .tile .t-meta { width: 100%; }
+body.sm-lite #secuHome .grid2 .tile .t-meta { width: auto; }
 
 /* PROFIL : retirer la carte de raccourcis (jugée « nulle ») — l'édition ouverte la remplace. */
 body.sm-lite .tab-panel[data-panel="profil"] .prof-shortcuts { display: none !important; }
