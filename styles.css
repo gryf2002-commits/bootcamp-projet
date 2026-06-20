@@ -116,6 +116,9 @@
       display: flex; align-items: center; justify-content: space-between; gap: .75rem;
       /* safe-area-inset-top : laisse la place de l'encoche / status bar (iPhone) sans chevauchement */
       padding: calc(1rem + env(safe-area-inset-top, 0px)) max(.45rem, env(safe-area-inset-right)) 1.05rem max(.45rem, env(safe-area-inset-left)); position: sticky; top: 0; z-index: var(--z-header); /* header FLUSH (logo gauche / boutons droite, pleine largeur) — retour Maxime */
+      /* BANDEAU FULL-BLEED : le header sort du conteneur centré (max-width 460) et touche les bords de l'écran
+         à 0px sur TOUTE largeur (retour Maxime « le bandeau transparent doit être collé à zéro pixel du bord »). */
+      width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); box-sizing: border-box;
       /* P3 (retour Maxime) : la TRANSPARENCE revient, mais propre · opaque sur 62 % (la status
          bar et le titre restent couverts → icônes natives du téléphone toujours lisibles), puis
          fondu DOUX vers transparent. Ce qui gênait avant : le dégradé partait de 86 % d'opacité
