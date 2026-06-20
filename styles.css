@@ -116,9 +116,7 @@
       display: flex; align-items: center; justify-content: space-between; gap: .75rem;
       /* safe-area-inset-top : laisse la place de l'encoche / status bar (iPhone) sans chevauchement */
       padding: calc(1rem + env(safe-area-inset-top, 0px)) max(.45rem, env(safe-area-inset-right)) 1.05rem max(.45rem, env(safe-area-inset-left)); position: sticky; top: 0; z-index: var(--z-header); /* header FLUSH (logo gauche / boutons droite, pleine largeur) — retour Maxime */
-      /* BANDEAU FULL-BLEED : le header sort du conteneur centré (max-width 460) et touche les bords de l'écran
-         à 0px sur TOUTE largeur (retour Maxime « le bandeau transparent doit être collé à zéro pixel du bord »). */
-      width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); box-sizing: border-box;
+      box-sizing: border-box;
       /* P3 (retour Maxime) : la TRANSPARENCE revient, mais propre · opaque sur 62 % (la status
          bar et le titre restent couverts → icônes natives du téléphone toujours lisibles), puis
          fondu DOUX vers transparent. Ce qui gênait avant : le dégradé partait de 86 % d'opacité
@@ -3842,14 +3840,10 @@
        qui glisse dessous « en fantôme », pas joli). Plus transparent + flou → le contenu dessous est FONDU
        proprement. Mode-aware via var(--bg). !important pour gagner sur toutes les couches topbar par mode.
        (La topbar n'est pas un ancêtre de la carte → ce backdrop-filter ne casse PAS le plein écran.) */
-    .topbar { background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 80%, transparent) 0%, color-mix(in srgb, var(--bg) 60%, transparent) 58%, transparent 100%) !important;
-      /* backdrop-filter RETIRÉ (retour Maxime « pavé flou moche », plusieurs fois) — le fondu opaque->transparent du gradient suffit, fini le frosting. */
-      /* Bug Maxime « le flou translucide du header est trop marqué d'une démarcation » : le backdrop-filter
-         a un BORD NET en bas (le flou s'arrête d'un coup = la ligne visible). On ESTOMPE ce bord avec un
-         masque dégradé → le flou ET le fond fondent en douceur sur les ~22px du bas (zone de padding, sous
-         les boutons → aucun rognage). Supprime aussi la « barre » qui ressautait aux switch jour/nuit. */
-      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%);
-      mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%); }
+    /* Header PROPRE (retour Maxime « cassure claire en haut à gauche / zone de flou pas pleine largeur ») :
+       fond SOLIDE en haut (var(--bg) plein 0→42%) qui fond en douceur, AUCUN backdrop-filter, AUCUN mask-image
+       (le masque créait un bord découpé). → bandeau net, pleine largeur, zéro couture, zéro flou. */
+    .topbar { background: linear-gradient(180deg, var(--bg) 0%, var(--bg) 42%, color-mix(in srgb, var(--bg) 55%, transparent) 72%, transparent 100%) !important; }
     /* Bug Maxime « coupure / barre sombre sous la status-bar en NUIT » : le verre dépoli (ci-dessus, 80% au sommet)
        laissait le halo violet TRANSPARAÎTRE sous la status-bar (elle = --bg PLEIN/sombre) → marche visible. En nuit,
        on rend le SOMMET du topbar OPAQUE (var(--bg) plein à 0%) = même couleur EXACTE que la status-bar → fondu invisible ;
