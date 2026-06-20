@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=600"></script>
+  <script src="sunmates-badges.js?v=601"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -13998,11 +13998,16 @@
       // retomberait sur un écran vide (« la tuile ne déclenche rien »). On route ailleurs.
       if (beta && /défi|defi|quête|quete|jeu|mission/.test(t)) { goToTab("jeux"); return; }
       if (/dispo|autour|qui est|mate|voyageur|rencontr|cercle|connex/.test(t)) {
-        // « Vois qui est dispo » → découverte des voyageurs sur l'accueil (fusion Messages : plus de Découvrir dans l'onglet)
-        if (typeof showMatesSegment === "function") showMatesSegment("discover"); else goToTab("accueil"); return;
+        // « Vois qui est dispo » → la CARTE VIVANTE de l'accueil (mode Voyage) montre déjà les voyageur·ses
+        // autour en pins → on y va et on scrolle dessus (au lieu de focus une recherche vide = « rien »).
+        goToTab("accueil");
+        if (typeof setHomeMode === "function") setHomeMode("travel");
+        setTimeout(() => { const m = document.querySelector(".homemap-card"); if (m) m.scrollIntoView({ behavior: "smooth", block: "center" }); }, 280);
+        return;
       }
-      // café / déjeuner / verre / balade / musée / défi-en-Lite… → les lieux sûrs autour
+      // café / déjeuner / verre / balade / musée / défi-en-Lite… → les lieux sûrs autour (changement d'onglet = contenu visible)
       goToTab("lieux");
+      setTimeout(() => { const sm = $("smMain"); if (sm) sm.scrollTop = 0; }, 120);
     }
     // GEO-TRIGGER : remplit la carte « Ici, maintenant ». Position SEULEMENT si déjà accordée (zéro prompt).
     async function renderGeoNow() {
