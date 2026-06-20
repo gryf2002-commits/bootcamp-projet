@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=612"></script>
+  <script src="sunmates-badges.js?v=613"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -16109,9 +16109,15 @@
         + (!todo.length ? '<div class="solo-alldone">' + i18nT("🎉 Rituels bouclés pour aujourd'hui, prends soin de toi ✨") + "</div>" : "")
         + '<button class="rit-row rit-add" id="ritAddBtn"><span class="rit-ic">✍️</span><span class="rit-name"><b>' + (hasCustom ? "Modifier mon rituel" : "Créer MON rituel") + '</b><span class="rit-sub">ta routine à toi, +10 XP par jour</span></span></button>';
       const cnt = $("ritCnt"); if (cnt) cnt.textContent = Object.keys(done).length + "/" + rits.length;
-      list.querySelectorAll("[data-rit]").forEach((b) => b.addEventListener("click", (e) => {
+      list.querySelectorAll("[data-rit]").forEach((b) => b.addEventListener("click", async (e) => {
         if (b.classList.contains("rit-custom") && e.target.closest(".rit-name")) { editCustomRitual(); return; }
-        toggleRitual(b.dataset.rit);
+        const key = b.dataset.rit;
+        if ((_soloState().rit || {})[key]) return; // déjà fait aujourd'hui
+        const r = _allRituals().find((x) => x.key === key); if (!r) return;
+        // Pas de validation INSTANTANÉE (retour Maxime) : on ouvre une confirmation avant de valider.
+        let ok = true;
+        if (typeof smConfirmP === "function") ok = await smConfirmP(r.emoji, r.title, i18nT("Tu as pris ce moment pour toi aujourd'hui ? (+{xp} XP)", { xp: r.xp }), i18nT("Oui, je l'ai fait ✓"));
+        if (ok) toggleRitual(key);
       }));
       const add = $("ritAddBtn"); if (add) add.addEventListener("click", editCustomRitual);
       const all = $("ritAllBtn"); if (all) all.addEventListener("click", () => once("rit:all", completeAllRituals));
