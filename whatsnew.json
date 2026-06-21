@@ -1,9 +1,9 @@
 {
-  "candidate": "v651",
+  "candidate": "v652",
   "items": [
-    "🌍 « Découvrir » enfin vivant : les vrais voyageur·ses apparaissent par défaut, triés par compatibilité (les 50 plus proches de toi), au lieu de n'être trouvables qu'en tapant leur pseudo exact.",
-    "📍 Check-ins gratuits et illimités pour tout le monde — la sécurité et la confiance ne se monnaient pas. (On a retiré l'ancienne mention « 1 par jour ».)",
-    "🗂️ Le badge « Filtres » de la carte est plus clair : il indique le nombre de calques masqués et disparaît quand tout est affiché.",
+    "🌙 Veilleur de nuit : avant de sortir seul·e, lance une veille (de 30 min à 8 h). Si tu ne confirmes pas « bien arrivé·e » à temps, ton cercle de confiance est prévenu — ta dernière position sur la carte ET une notification à chaque membre. Nouveauté clé : ça veille MÊME si tu fermes l'app, car la surveillance tourne aussi côté serveur.",
+    "🌍 « Découvrir » montre enfin les vrais voyageur·ses par défaut, triés par compatibilité.",
+    "📍 Check-ins gratuits et illimités pour tout le monde.",
     "🔋 Moins de chauffe/batterie (animations en pause en arrière-plan, effets allégés sur mobile).",
     "🔥 Série sauvegardée sur ton compte + position approximative en option + « Bien démarrer » pour les nouveaux."
   ]

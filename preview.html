@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=651"></script>
+  <script src="sunmates-badges.js?v=652"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
@@ -1969,7 +1969,7 @@
     </header>
     <div id="goldPreviewBanner">👁️ Aperçu « mode Gratuit » : les fonctions 👑 Gold sont grisées</div>
     <!-- Barre flottante du minuteur « Rentrée en sécurité » (visible sur tous les onglets quand actif) -->
-    <div id="safeTimerBar" class="hidden"><span class="stb-ic">⏱️</span><span class="stb-txt">Minuteur sécurité · <b id="safeTimerCount">--:--</b></span><button id="safeArrivedBtn" type="button">✅ Bien arrivé·e</button></div>
+    <div id="safeTimerBar" class="hidden"><span class="stb-ic">🌙</span><span class="stb-txt">Veilleur de nuit · <b id="safeTimerCount">--:--</b></span><button id="safeArrivedBtn" type="button">✅ Bien arrivé·e</button></div>
 
     <main id="smMain" tabindex="-1">
       <!-- ---------------- Onglet ACCUEIL ---------------- -->
@@ -2590,7 +2590,7 @@
           <div class="section-head"><h3>🛡️ Prévention</h3></div>
           <div class="grid2">
             <div class="tile" data-secuquick="fakecall"><div class="thumb purp" data-smicon="phone" data-smicon-size="38">📞</div><div class="t-name">Faux appel</div><div class="t-meta">Sortie de secours</div></div>
-            <div class="tile" data-secuquick="safearrival"><div class="thumb gold" data-smicon="clock" data-smicon-size="38">⏱️</div><div class="t-name">Rentrée en sécurité</div><div class="t-meta">Minuteur « bien arrivé·e »</div></div>
+            <div class="tile" data-secuquick="safearrival"><div class="thumb gold" data-smicon="clock" data-smicon-size="38">🌙</div><div class="t-name">Veilleur de nuit</div><div class="t-meta">On veille même app fermée</div></div>
             <div class="tile" data-secuquick="circle"><div class="thumb teal" data-smicon="users" data-smicon-size="38">🛟</div><div class="t-name">Mon cercle</div><div class="t-meta">Positions partagées</div></div>
             <div class="tile" data-secuquick="lieux"><div class="thumb coral" data-smicon="aid" data-smicon-size="38">🏛️</div><div class="t-name">Aide à proximité</div><div class="t-meta">Police · hôpital</div></div>
           </div>
@@ -5480,6 +5480,7 @@
         subscribeSuggestions();
         askNotifPermission();
         if (typeof hydrateIce === "function") hydrateIce(); // contacts d'urgence : base = source de vérité (+ migration douce du local)
+        if (typeof hydrateSafeWatch === "function") hydrateSafeWatch(); // veilleur de nuit : restaure une veille active depuis la base
       } else {
         _renderedUserId = null;
         myUserId = null;
@@ -9629,31 +9630,53 @@
         setTimeout(() => { const b = $("saConfirmNow"); if (b) b.addEventListener("click", () => { confirmSafeArrival(); if (typeof closePopInfo === "function") closePopInfo(); }); }, 30);
         return;
       }
-      const opts = [[30, "30 min"], [60, "1 h"], [120, "2 h"]].map(([m, l]) => `<button class="btn-ghost sadur" data-min="${m}" style="flex:1">${l}</button>`).join("");
-      popInfo("⏱️", i18nT("Rentrée en sécurité"), `
-        <p class="muted" style="font-size:.84rem;margin:0 0 .6rem;text-align:center">${i18nT("Lance un minuteur avant de rentrer. Si tu ne confirmes pas « bien arrivé·e » à temps, ta position est <b>diffusée à ton cercle de confiance</b> 🛟")}</p>
-        <div style="display:flex;gap:.4rem;margin-bottom:.6rem">${opts}</div>
-        <p class="muted" style="font-size:.72rem;text-align:center">${i18nT("⚠️ Garde SunMates ouvert (même en arrière-plan) pour que le minuteur veille.")}</p>`);
+      const opts = [[30, "30 min"], [60, "1 h"], [120, "2 h"], [240, "4 h"], [480, "8 h"]].map(([m, l]) => `<button class="btn-ghost sadur" data-min="${m}" style="flex:1;min-width:60px">${l}</button>`).join("");
+      popInfo("🌙", i18nT("Veilleur de nuit"), `
+        <p class="muted" style="font-size:.84rem;margin:0 0 .6rem;text-align:center">${i18nT("Avant de sortir seul·e, lance une veille. Si tu ne confirmes pas « bien arrivé·e » à temps, ta dernière position est <b>diffusée à ton cercle de confiance</b> et chaque membre est <b>prévenu</b> 🛟")}</p>
+        <div style="display:flex;gap:.4rem;margin-bottom:.6rem;flex-wrap:wrap">${opts}</div>
+        <p class="muted" style="font-size:.72rem;text-align:center">${i18nT("✅ Ça veille pour toi même si tu fermes l'app (on prévient ton cercle côté serveur).")}</p>`);
       setTimeout(() => { document.querySelectorAll(".sadur").forEach((b) => b.addEventListener("click", () => { startSafeTimer(Number(b.dataset.min)); if (typeof closePopInfo === "function") closePopInfo(); })); }, 30);
     }
     function startSafeTimer(mins) {
-      try { localStorage.setItem("sm_safe", JSON.stringify({ deadline: Date.now() + mins * 60000 })); } catch (e) {}
-      if (typeof toast === "function") toast("⏱️", i18nT("Minuteur lancé. Confirme « bien arrivé·e » avant la fin 🛟"));
+      const deadline = Date.now() + mins * 60000;
+      try { localStorage.setItem("sm_safe", JSON.stringify({ deadline: deadline })); } catch (e) {}
+      // VEILLEUR DE NUIT : on persiste la veille en BASE → un cron serveur déclenche l'alerte
+      // (position + message au cercle = push) MÊME si l'app est fermée. Le timer local reste le
+      // chemin rapide quand l'app est ouverte. On y joint la position d'armement (repli serveur).
+      if (myUserId && window.db) {
+        const _save = (lat, lng) => { try { db.from("safety_watches").upsert({ user_id: myUserId, deadline: new Date(deadline).toISOString(), status: "active", last_lat: lat, last_lng: lng, triggered_at: null }, { onConflict: "user_id" }).then(function () {}, function () {}); } catch (e) {} };
+        if (typeof getGeo === "function") { try { getGeo((g) => _save(g.lat, g.lng), () => _save(null, null)); } catch (e) { _save(null, null); } } else _save(null, null);
+      }
+      if (typeof toast === "function") toast("🌙", i18nT("Veille lancée. Confirme « bien arrivé·e » avant la fin 🛟"));
       _safeRender();
+    }
+    // Prévient le cercle par MESSAGE (→ webhook messages existant → push) quand la veille échoue côté CLIENT
+    // (app ouverte). Le cercle voit aussi la position sur la carte (sendLocation d'urgence). Le cron serveur
+    // couvre le cas app fermée. Le garde « status=active → triggered » évite une double-alerte.
+    async function _alertCircleMessages() {
+      try {
+        if (!myUserId || !window.db || typeof connectedIds === "undefined" || !connectedIds || !connectedIds.size) return;
+        const rows = [...connectedIds].map((m) => ({ sender_id: myUserId, recipient_id: m, content: "🛟 Veilleur de nuit : je n'ai pas confirmé mon retour de sécurité à temps. Ouvre la carte pour voir ma position et vérifie que je vais bien." }));
+        if (rows.length) await db.from("messages").insert(rows);
+      } catch (e) {}
     }
     function confirmSafeArrival() {
       try { localStorage.removeItem("sm_safe"); } catch (e) {}
+      if (myUserId && window.db) { try { db.from("safety_watches").update({ status: "safe" }).eq("user_id", myUserId).then(function () {}, function () {}); } catch (e) {} } // le cron ne déclenchera plus
       if (_safeTimerInt) { clearInterval(_safeTimerInt); _safeTimerInt = null; }
       const bar = $("safeTimerBar"); if (bar) bar.classList.add("hidden");
-      if (typeof toast === "function") toast("💛", i18nT("Bien arrivé·e ! Minuteur arrêté."));
+      if (typeof toast === "function") toast("💛", i18nT("Bien arrivé·e ! Veille arrêtée."));
       if (window.SMSound) SMSound.play("success");
     }
     function _triggerSafeAlert() {
       try { localStorage.removeItem("sm_safe"); } catch (e) {}
+      // Marque la veille serveur « triggered » (garde status=active → le cron ne fera PAS de doublon).
+      if (myUserId && window.db) { try { db.from("safety_watches").update({ status: "triggered", triggered_at: new Date().toISOString() }).eq("user_id", myUserId).eq("status", "active").then(function () {}, function () {}); } catch (e) {} }
       if (_safeTimerInt) { clearInterval(_safeTimerInt); _safeTimerInt = null; }
       const bar = $("safeTimerBar"); if (bar) bar.classList.add("hidden");
-      if (typeof sendLocation === "function") sendLocation(true, $("emergencyMsg") || document.createElement("div"), i18nT("🚨 Minuteur écoulé : position diffusée à ton cercle"));
-      if (typeof popInfo === "function") popInfo("🚨", "Minuteur écoulé", "<p style='text-align:center'>Tu n'as pas confirmé ton arrivée à temps. Ta position vient d'être <b>partagée avec ton cercle de confiance</b> pour qu'il veille sur toi 🛟</p>");
+      if (typeof sendLocation === "function") sendLocation(true, $("emergencyMsg") || document.createElement("div"), i18nT("🚨 Veille écoulée : position diffusée à ton cercle"));
+      if (typeof _alertCircleMessages === "function") _alertCircleMessages(); // prévient le cercle par message (→ push)
+      if (typeof popInfo === "function") popInfo("🚨", "Veille écoulée", "<p style='text-align:center'>Tu n'as pas confirmé ton arrivée à temps. Ta position vient d'être <b>partagée avec ton cercle de confiance</b> et chacun est <b>prévenu</b> pour qu'il veille sur toi 🛟</p>");
       if (window.SMSound) SMSound.play("pop");
     }
     function _safeRender() {
@@ -9699,6 +9722,19 @@
     function _safeOnVisible() { if (document.hidden) return; try { if (!_safeGraceCheck()) _safeRender(); } catch (e) {} }
     document.addEventListener("visibilitychange", _safeOnVisible);
     window.addEventListener("focus", _safeOnVisible);
+    // VEILLEUR DE NUIT : au login, on restaure une veille active depuis la BASE (elle suit l'utilisateur
+    // d'un appareil à l'autre). Si elle est déjà échouée (deadline passée), le cron serveur l'aura gérée.
+    async function hydrateSafeWatch() {
+      if (!myUserId || !window.db) return;
+      try {
+        const { data } = await db.from("safety_watches").select("deadline,status").eq("user_id", myUserId).maybeSingle();
+        if (data && data.status === "active" && new Date(data.deadline).getTime() > Date.now()) {
+          try { localStorage.setItem("sm_safe", JSON.stringify({ deadline: new Date(data.deadline).getTime() })); } catch (e) {}
+          if (typeof _safeRender === "function") _safeRender();
+        }
+      } catch (e) {}
+    }
+    window.hydrateSafeWatch = hydrateSafeWatch;
 
     // Positions partagées par mon cercle de confiance (RLS : seules les connexions
     // acceptées peuvent lire mes positions, et inversement).
