@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=647"></script>
+  <script src="sunmates-badges.js?v=648"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
@@ -545,6 +545,11 @@
       color: var(--ink); font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s;
     }
     #geoNowCard .geo-idea:hover, #geoNowCard .geo-idea:focus-visible { background: var(--accent-soft); border-color: var(--accent); outline: none; }
+    /* Lieu sûr le plus proche (à check-in) : mis en avant + puce de distance */
+    #geoNowCard .geo-idea-place { border-color: var(--accent); background: var(--accent-soft); }
+    #geoNowCard .geo-idea-place .gi-dist { font-weight: 800; font-size: .72rem; color: var(--accent-ink, var(--accent)); }
+    /* Carte en mode invitation (position pas encore active) : le chevron prend la couleur d'accent (appel à l'action) */
+    #geoNowCard .gn-chev-go { color: var(--accent-ink, var(--accent)); font-weight: 800; }
     #geoNowCard .geo-idea .gi-arrow { color: var(--accent-ink, var(--accent)); font-weight: 800; }
     /* Bulle de suggestion « Ici, maintenant » (contenu réel : défi / voyageurs / lieu) */
     #geoNowCard .geo-result { display: flex; align-items: center; gap: .5rem; margin-top: .55rem; padding: .55rem .65rem; border-radius: 12px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 6px 14px -10px rgba(120,40,30,.5); animation: geoPop .22s ease; }
@@ -14575,10 +14580,12 @@
     // GEO-TRIGGER : remplit la carte « Ici, maintenant ». S'affiche TOUJOURS (repli moment+idées sans position),
     // puis s'AFFINE avec le vrai quartier + idées IA si la géoloc est déjà accordée (zéro prompt).
     function _geoMeteo() { try { const c = JSON.parse(localStorage.getItem("sm_weather") || "null"); if (c && c.w && typeof _WMO === "function") return c.w.temp + "° " + _WMO(c.w.code); } catch (e) {} return ""; }
-    function _paintGeoNow(card, where, ideas, country) {
+    function _paintGeoNow(card, where, ideas, country, near) {
       const moment = escapeHtml(_momentLabel());
       const meteo = _geoMeteo();
       const top = (ideas && ideas.length ? ideas : _ruleSuggest()).slice(0, 3);
+      // GEO-TRIGGER : lieu sûr le plus proche → check-in (le geste qui fait monter la confiance), mis EN TÊTE.
+      const nearIdea = (near && near.cafe) ? '<button type="button" class="geo-idea geo-idea-place" data-place="' + near.cafe.id + '">🛟 ' + escapeHtml(near.cafe.name) + ' · ' + i18nT("check-in") + ' <span class="gi-dist">' + _distLabel(near.km) + '</span><span class="gi-arrow">›</span></button>' : "";
       // GEO-TRIGGER « l'app s'adapte au lieu » : si la géoloc a résolu un PAYS qui a une histoire,
       // on glisse en tête une idée « le savais-tu ? » qui ouvre la carte histoire de CE pays-là.
       const ck = country ? _countryKey(country) : "";
@@ -14598,6 +14605,7 @@
           '<span class="gn-chev" aria-hidden="true">›</span>' +
         '</button>' +
         '<div class="gn-body"><div class="geo-ideas">' +
+        nearIdea +
         ctryIdea +
         top.map((s, i) => '<button type="button" class="geo-idea" data-idea="' + i + '">' + escapeHtml(s) + '<span class="gi-arrow">›</span></button>').join("") +
         '</div></div>';
@@ -14610,6 +14618,7 @@
       // GEO-TRIGGER : clic sur une idée → bulle pays (histoire) OU bulle suggestion réelle + « Voir ».
       card.querySelectorAll(".geo-idea").forEach((b) => b.addEventListener("click", () => {
         if (b.dataset.ctry) { if (typeof openCountryStory === "function") openCountryStory(b.dataset.ctry); return; }
+        if (b.dataset.place) { goToTab("lieux"); setTimeout(() => { if (typeof focusCafeInList === "function") focusCafeInList(Number(b.dataset.place)); }, 120); return; } // lieu proche → check-in
         _geoSuggestBubble(card, top[Number(b.dataset.idea)] || "");
       }));
       card.classList.remove("hidden");
@@ -14672,26 +14681,50 @@
         _paintGeoNow(card, i18nT("Autour de toi"), null); // repli IMMÉDIAT : la carte s'affiche toujours (fini « ne s'affiche jamais »)
         if (!navigator.geolocation || !navigator.permissions || !navigator.permissions.query) return;
         const st = await navigator.permissions.query({ name: "geolocation" });
-        if (st.state !== "granted") return; // pas accordée → on garde le repli (le bandeau #geoPrompt invite à activer)
+        // GEO-TRIGGER : l'invitation à activer la position vit DANS la carte (plus de bandeau jetable séparé).
+        if (st.state === "prompt") { _paintGeoNowActivate(card); return; }
+        if (st.state !== "granted") return; // refusée → on garde le repli générique
         const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { maximumAge: 600000, timeout: 8000 }));
         reverseGeoPlace(pos.coords.latitude, pos.coords.longitude, async (p) => {
           const where = (p && p.label) ? p.label : i18nT("Autour de toi");
           let ideas = await aiSuggest({ meteo: _geoMeteo() }); if (!ideas) ideas = _ruleSuggest();
-          _paintGeoNow(card, where, ideas, p && p.country); // affinage : vrai quartier + idées IA + idée pays geo-aware
+          const near = _nearestCafe(pos.coords.latitude, pos.coords.longitude); // lieu sûr le + proche (à check-in)
+          _paintGeoNow(card, where, ideas, p && p.country, near); // affinage : vrai quartier + idées + lieu proche + pays
         });
       } catch (e) {}
     }
-
-    // Invitation douce à activer la position : seulement si pas encore accordée/refusée et pas déjà masquée.
-    async function maybeShowGeoBanner() {
-      const el = $("geoPrompt"); if (!el) return;
-      try { if (localStorage.getItem("sm_geo_prompt_dismissed") === "1") return; } catch (e) {}
-      if (!navigator.geolocation || !navigator.permissions || !navigator.permissions.query) return;
+    // Carte « Ici & maintenant » en mode INVITATION : la carte elle-même devient le déclencheur du geo-trigger.
+    function _paintGeoNowActivate(card) {
+      card.innerHTML =
+        '<button type="button" class="geo-now-head" id="geoNowActivate">' +
+          '<span class="gn-sun" aria-hidden="true">📍</span>' +
+          '<span class="gn-tx">' +
+            '<span class="gn-eyebrow">' + i18nT("Ici & maintenant") + '</span>' +
+            '<span class="gn-where">' + i18nT("Active ta position") + '</span>' +
+            '<span class="gn-moment">' + i18nT("pour voir ton quartier et les lieux sûrs autour de toi") + '</span>' +
+          '</span>' +
+          '<span class="gn-chev gn-chev-go" aria-hidden="true">›</span>' +
+        '</button>';
+      card.classList.remove("hidden", "gn-collapsed");
+      const h = card.querySelector("#geoNowActivate");
+      if (h) h.addEventListener("click", () => { if (typeof askGeoPermission === "function") askGeoPermission(); });
+    }
+    // Lieu sûr le plus proche (à check-in) — pur calcul local sur les lieux déjà chargés (allCafes). Null si trop loin.
+    function _distLabel(km) { return km < 1 ? (Math.round(km * 1000) + " m") : (km.toFixed(km < 10 ? 1 : 0) + " km"); }
+    function _nearestCafe(lat, lng) {
       try {
-        const st = await navigator.permissions.query({ name: "geolocation" });
-        if (st.state === "prompt") el.classList.remove("hidden");
-        else el.classList.add("hidden"); // déjà accordée ou refusée → pas de bandeau
-      } catch (e) {}
+        const list = (typeof allCafes !== "undefined" && allCafes) ? allCafes.filter((c) => c && c.lat != null && c.lng != null) : [];
+        if (!list.length || typeof haversineKm !== "function") return null;
+        let best = null, bestKm = Infinity;
+        list.forEach((c) => { const km = haversineKm({ lat: lat, lng: lng }, { lat: c.lat, lng: c.lng }); if (km < bestKm) { bestKm = km; best = c; } });
+        return (best && bestKm <= 30) ? { cafe: best, km: bestKm } : null; // > 30 km = pas pertinent (pas dans la ville)
+      } catch (e) { return null; }
+    }
+
+    // L'invitation à activer la position vit DÉSORMAIS dans la carte « Ici & maintenant » (_paintGeoNowActivate)
+    // → on neutralise l'ancien bandeau séparé (jetable) pour éviter une double-invitation.
+    async function maybeShowGeoBanner() {
+      const el = $("geoPrompt"); if (el) el.classList.add("hidden");
     }
     { const b = $("geoPromptBtn"); if (b) b.addEventListener("click", async () => { const el = $("geoPrompt"); if (el) el.classList.add("hidden"); if (typeof askGeoPermission === "function") await askGeoPermission(); }); }
     { const x = $("geoPromptX"); if (x) x.addEventListener("click", () => { const el = $("geoPrompt"); if (el) el.classList.add("hidden"); try { localStorage.setItem("sm_geo_prompt_dismissed", "1"); } catch (e) {} }); }
