@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=634"></script>
+  <script src="sunmates-badges.js?v=635"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -1044,21 +1044,6 @@
     #geoNowCard .gn-body { overflow: hidden; max-height: 320px; opacity: 1; margin-top: .55rem; transition: max-height .3s cubic-bezier(.22,1,.36,1), opacity .22s ease, margin-top .3s ease; }
     #geoNowCard.gn-collapsed .gn-body { max-height: 0; opacity: 0; margin-top: 0; }
     @media (prefers-reduced-motion: reduce) { #geoNowCard .gn-chev, #geoNowCard .gn-body { transition: none; } }
-
-    /* ============================================================
-       MAP-FIRST (#2) 21/06 — la CARTE devient le HÉROS de l'accueil (mode COMPLET uniquement).
-       Via flex + order : greeting tout en haut, puis la carte, puis la bulle « Ici & maintenant »
-       (#geoNowCard, 1er enfant order-0 → tombe pile sous la carte), puis le reste.
-       Mode Maison : #homeTravelMap est display:none (order -1 sans effet) → contenu Maison normal.
-       Plein écran : .homemap-card.fs = position:fixed (non affecté par le flex). Lite NON touché.
-       ============================================================ */
-    body:not(.sm-lite) .tab-panel[data-panel="accueil"] { display: flex; flex-direction: column; }
-    body:not(.sm-lite) .tab-panel[data-panel="accueil"] > #homeHello { order: -3; }
-    body:not(.sm-lite) .tab-panel[data-panel="accueil"] > .hello-row { order: -2; }
-    body:not(.sm-lite) .tab-panel[data-panel="accueil"] > #homeTravelMap { order: -1; }
-    body:not(.sm-lite) #homeTravelMap .homemap { height: 42vh; min-height: 280px; max-height: 460px; }
-    body:not(.sm-lite) #homeTravelMap .section-head h3 { margin: .25rem 0 .4rem; }
-    body:not(.sm-lite) .tab-panel[data-panel="accueil"] > #geoNowCard { margin-top: .7rem; }
   </style>
 
   <!-- ============================================================
