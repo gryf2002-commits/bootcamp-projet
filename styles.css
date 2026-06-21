@@ -3848,15 +3848,20 @@
        le BAS du dégradé était semi-transparent (…transparent 100%) → le contenu qui défile dessous
        (cartes feed inset de 20px, w<largeur écran) TRANSPARAISSAIT sous le header = bloc plus clair
        pas pleine largeur + bord = « cassure » (visible surtout sur le compositing Android).
-       → header 100% OPAQUE, couleur unie var(--bg), pleine largeur, AUCUNE transparence : rien ne
-       peut transparaître dessous. Le contenu défile et est occulté NET, comme un header d'app classique. */
-    .topbar { background: var(--bg) !important; }
+       → header SCROLL-AWARE : TRANSPARENT au repos (il laisse voir le MÊME fond #bgFx que la page →
+       zéro bloc, zéro décalage de couleur, header invisible, juste le logo posé sur la page), et
+       OPAQUE var(--bg) seulement quand on scrolle (body.sm-scrolled, via listener) → le contenu qui
+       défile est occulté net. Règle bas : un listener window.scroll bascule body.sm-scrolled (>6px). */
+    .topbar { background: transparent !important; }
+    body.sm-scrolled .topbar { background: var(--bg) !important; }
     /* Bug Maxime « coupure / barre sombre sous la status-bar en NUIT » : le verre dépoli (ci-dessus, 80% au sommet)
        laissait le halo violet TRANSPARAÎTRE sous la status-bar (elle = --bg PLEIN/sombre) → marche visible. En nuit,
        on rend le SOMMET du topbar OPAQUE (var(--bg) plein à 0%) = même couleur EXACTE que la status-bar → fondu invisible ;
        le verre dépoli (transparence + flou) reste plus bas (30%→100%) là où le contenu défile. Spéc. 0,2,0 + !important
        gagne sur le .topbar global. Le jour garde son verre 80% (pas de coupure : status-bar claire, halo doux). */
     body.theme-dusk .topbar, body.theme-winter.theme-dusk .topbar, body.theme-tropic.theme-dusk .topbar {
+      background: transparent !important; }
+    body.sm-scrolled.theme-dusk .topbar, body.sm-scrolled.theme-winter.theme-dusk .topbar, body.sm-scrolled.theme-tropic.theme-dusk .topbar {
       background: var(--bg) !important; }
     body.theme-tropic.theme-dusk #bgFx { background:radial-gradient(120% 50% at 50% -8%, rgba(255,194,61,.16) 0%, rgba(12,29,23,0) 58%), var(--bg); }
     body.theme-tropic.theme-dusk .app-shell { background: transparent !important; }

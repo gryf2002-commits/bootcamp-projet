@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=626"></script>
+  <script src="sunmates-badges.js?v=627"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -344,7 +344,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=626">
+  <link rel="stylesheet" href="styles.css?v=627">
   <!-- ============================================================
        PREVIEW FIXES (inline, scopé preview) — 19/06 : header mobile,
        onglet Messages, idées geo cliquables, centrage, contrôle saison.
@@ -17995,6 +17995,20 @@
       vibrate(15);
       return Promise.allSettled(jobs.filter((j) => j && j.then));
     }
+    // Header SCROLL-AWARE (fix « bloc/cassure de couleur autour du logo ») : le topbar est TRANSPARENT
+    // au repos (il montre le même fond que la page → invisible, zéro bloc) et devient OPAQUE dès qu'on
+    // scrolle (body.sm-scrolled) pour occulter le contenu qui défile dessous.
+    (function setupScrollHeader() {
+      const upd = () => {
+        const sm = document.getElementById("smMain");
+        const y = window.scrollY || document.documentElement.scrollTop || (sm ? sm.scrollTop : 0) || 0;
+        document.body.classList.toggle("sm-scrolled", y > 6);
+      };
+      window.addEventListener("scroll", upd, { passive: true });
+      document.addEventListener("scroll", upd, { passive: true, capture: true });
+      const sm = document.getElementById("smMain"); if (sm) sm.addEventListener("scroll", upd, { passive: true });
+      upd();
+    })();
     (function setupPTR() {
       let ptr = document.createElement("div"); ptr.className = "ptr"; ptr.innerHTML = '<div class="ptr-ring"></div>'; document.body.appendChild(ptr);
       let startY = 0, pulling = false, dist = 0; const THRESH = 104, SHOW_AT = 42; // #4 : seuils relevés (il popait trop facilement)
