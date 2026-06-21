@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=636"></script>
+  <script src="sunmates-badges.js?v=637"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -344,7 +344,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=636">
+  <link rel="stylesheet" href="styles.css?v=637">
   <!-- ============================================================
        PREVIEW FIXES (inline, scopé preview) — 19/06 : header mobile,
        onglet Messages, idées geo cliquables, centrage, contrôle saison.
@@ -2098,6 +2098,7 @@
             <button class="chip active cl-acts" data-layer="activities">🎉 Activités <b data-cnt></b></button>
             <button class="chip active cl-checkins" data-layer="checkins">✅ Check-ins <b data-cnt></b></button>
             <button class="chip active cl-quests" data-layer="quests">🎯 Quêtes <b data-cnt></b></button>
+            <button class="chip active cl-community" data-layer="community">🌍 Communauté <b data-cnt></b></button>
             <!-- #6 : la chip MANQUAIT → le filtre « Mes adresses » du panneau tournait dans le vide -->
             <button class="chip active cl-mypins" data-layer="mypins">📌 Mes adresses <b data-cnt></b></button>
           </div>
@@ -13307,8 +13308,8 @@
     let homePopupOpen = false;   // P2.5 : un aperçu de pastille est-il ouvert ? (on ne reconstruit pas la carte pendant)
     let _homeMapDeferred = false; // un rendu a-t-il été reporté car un aperçu était ouvert ?
     let homeCluster = null;                                  // UN SEUL groupe de cluster → les marqueurs au même endroit fusionnent (rosace au clic)
-    let homeMarkersByType = { places: [], mates: [], activities: [], checkins: [], quests: [], mypins: [] }; // marqueurs par type (pour les filtres)
-    const homeLayerOn = { places: true, mates: true, activities: true, checkins: true, quests: true, mypins: true };
+    let homeMarkersByType = { places: [], mates: [], activities: [], checkins: [], quests: [], mypins: [], community: [] }; // marqueurs par type (pour les filtres)
+    const homeLayerOn = { places: true, mates: true, activities: true, checkins: true, quests: true, mypins: true, community: true };
     let homeMapSig = null;                                   // signature des données du dernier rendu carte (perf : évite un rebuild identique)
     let _questCity = "";                                     // ville sélectionnée pour les quêtes ("" = toutes)
     let _homeCityPts = [];                                   // TOUS les points datés d'une ville (quêtes + lieux sûrs) → menu villes + cadrage
@@ -13686,7 +13687,7 @@
           });
           ro.observe(el);
         }
-        const LAYER_COLORS = { places: "#FF5A4D", mates: "#7a5cff", activities: "#ff9f1c", checkins: "#17a99b", quests: "#E8961F" };
+        const LAYER_COLORS = { places: "#FF5A4D", mates: "#7a5cff", activities: "#ff9f1c", checkins: "#17a99b", quests: "#E8961F", community: "#3AA0FF" };
         homeCluster = (typeof L.markerClusterGroup === "function")
           ? L.markerClusterGroup({
               maxClusterRadius: 38, showCoverageOnHover: false, spiderfyDistanceMultiplier: 2.2,
@@ -13808,7 +13809,7 @@
 
       // À partir d'ici tout est synchrone : on vide puis on reconstruit d'un bloc.
       if (homeCluster) homeCluster.clearLayers();
-      homeMarkersByType = { places: [], mates: [], activities: [], checkins: [], quests: [], mypins: [] };
+      homeMarkersByType = { places: [], mates: [], activities: [], checkins: [], quests: [], mypins: [], community: [] };
       if (homeMeMarker) { homeLeaf.removeLayer(homeMeMarker); homeMeMarker = null; }
       const allMarkers = [];
 
@@ -14014,21 +14015,27 @@
           if (!p || p.id === myUserId || !p.city) return;
           const ll = _cityLL(p.city); if (!ll) return;
           const k = _smCityKey(p.city);
-          if (!_commByCity[k]) _commByCity[k] = { city: p.city, ll: ll, n: 0 };
-          _commByCity[k].n++;
+          if (!_commByCity[k]) _commByCity[k] = { city: p.city, ll: ll, people: [] };
+          _commByCity[k].people.push(p);
         });
         Object.values(_commByCity).forEach((c) => {
           // anti-doublon : si la ville a déjà des points (quêtes/lieux) sur la carte, pas de repère communauté
           if ((_homeCityPts || []).some((p) => _sameCity(p.city, c.city))) return;
           const cn = String(c.city).replace(/, .*$/, "");
+          const n = c.people.length;
           const qn = _betaQ ? (typeof allQuests !== "undefined" ? allQuests : []).filter((q) => q.kind === "quest" && _sameCity(q.city, c.city)).length : 0;
           let h = 0; const s = "comm" + cn; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100000; // jitter déterministe
           const jll = [c.ll[0] + ((h % 100) / 100 - 0.5) * 0.05, c.ll[1] + ((Math.floor(h / 100) % 100) / 100 - 0.5) * 0.05];
           const fact = _smPlaceFact(c.city, "");
-          const questLine = _betaQ ? (qn ? `<br>🎯 ${qn} quête${qn > 1 ? "s" : ""} à y débusquer` : "<br>✨ De quoi explorer en éclaireur·euse") : "";
-          const mk = L.marker(jll, { icon: epinIcon("🧭", "#7a5cff", "comm") })
-            .bindPopup(`<div class="mappop-mini"><b>🌍 ${escapeHtml(cn)}</b><br>👥 ${c.n} voyageur·se${c.n > 1 ? "s" : ""} ${c.n > 1 ? "y sont" : "y est"}${questLine}${fact ? `<div class="mappop-fact">💡 ${escapeHtml(fact)}</div>` : ""}<button class="mappop-btn" data-hmcommcity="${escapeHtml(c.city)}">✨ Explorer ${escapeHtml(cn)}</button></div>`);
-          mk.smType = "mates"; homeMarkersByType.mates.push(mk); allMarkers.push(mk);
+          // Data : vrais avatars + noms des voyageurs de la ville (jusqu'à 3 vignettes)
+          const av = c.people.slice(0, 3).map((p) => p.avatar_url
+            ? `<img src="${escapeHtml(p.avatar_url)}" alt="">`
+            : `<span class="comm-ph">${escapeHtml((p.username || "?").slice(0, 1).toUpperCase())}</span>`).join("");
+          const names = c.people.slice(0, 2).map((p) => escapeHtml(p.username || "Voyageur")).join(", ") + (n > 2 ? " +" + (n - 2) : "");
+          const questLine = _betaQ ? (qn ? `<div class="comm-q">🎯 ${qn} quête${qn > 1 ? "s" : ""} à y débusquer</div>` : "") : "";
+          const mk = L.marker(jll, { icon: epinIcon("🌍", "#3AA0FF", "comm") })
+            .bindPopup(`<div class="mappop-mini mappop-comm"><b>🌍 ${escapeHtml(cn)}</b>${av ? `<div class="comm-avs">${av}</div>` : ""}<div class="comm-n">👥 ${n} voyageur·se${n > 1 ? "s y sont" : " y est"}</div><div class="muted comm-names">${names}</div>${questLine}${fact ? `<div class="mappop-fact">💡 ${escapeHtml(fact)}</div>` : ""}<button class="mappop-btn" data-hmcommcity="${escapeHtml(c.city)}">✨ Explorer ${escapeHtml(cn)}</button></div>`);
+          mk.smType = "community"; homeMarkersByType.community.push(mk); allMarkers.push(mk);
         });
       } catch (e) {}
 
@@ -14039,6 +14046,7 @@
       setHomeChipCount("checkins", homeMarkersByType.checkins.length);
       setHomeChipCount("quests", homeMarkersByType.quests.length);
       setHomeChipCount("mypins", homeMarkersByType.mypins.length);
+      setHomeChipCount("community", homeMarkersByType.community.length);
 
       homeAllMarkers = allMarkers;
       applyHomeLayers();
@@ -14447,12 +14455,12 @@
 
     function renderHomeLegend() {
       const el = $("homeMapLegend"); if (!el) return;
-      el.innerHTML = [["#FF5A4D", "📍 Lieux sûrs"], ["#7a5cff", "🧑 Mates"], ["#ff9f1c", "🎉 Activités"], ["#17a99b", "✅ Check-ins"], ["#ff5e9f", "📣 Partagées"], ["#8B5E3C", "📌 Mes adresses"]]
+      el.innerHTML = [["#FF5A4D", "📍 Lieux sûrs"], ["#7a5cff", "🧑 Mates"], ["#3AA0FF", "🌍 Communauté"], ["#ff9f1c", "🎉 Activités"], ["#17a99b", "✅ Check-ins"], ["#ff5e9f", "📣 Partagées"], ["#8B5E3C", "📌 Mes adresses"]]
         .map(([c, l]) => `<span><i style="background:${c}"></i>${l}</span>`).join("");
     }
 
     // Calques de la carte : bouton → panneau DA de toggles (remplace le scroll horizontal des chips).
-    const HM_LAYERS = [["places", "📍", "Lieux"], ["mates", "🧑", "Mates"], ["activities", "🎉", "Activités"], ["checkins", "✅", "Check-ins"], ["quests", "🎯", "Quêtes"], ["mypins", "📌", "Mes adresses"]];
+    const HM_LAYERS = [["places", "📍", "Lieux"], ["mates", "🧑", "Mates"], ["community", "🌍", "Communauté"], ["activities", "🎉", "Activités"], ["checkins", "✅", "Check-ins"], ["quests", "🎯", "Quêtes"], ["mypins", "📌", "Mes adresses"]];
     function updateLayersBtn() { const c = $("hmLayersCnt"); if (c) c.textContent = Object.values(homeLayerOn).filter(Boolean).length; }
     function openLayersSheet() {
       let ov = $("hmLayersOv");

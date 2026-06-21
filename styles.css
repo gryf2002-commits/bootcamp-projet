@@ -1214,6 +1214,14 @@
     .homemap-filters .chip.cl-acts.active      { background: #ff9f1c; color: #fff; box-shadow: 0 4px 12px rgba(255,159,28,.32); }
     .homemap-filters .chip.cl-checkins.active  { background: #17a99b; color: #fff; box-shadow: 0 4px 12px rgba(23,169,155,.32); } /* DA : teal, pas de vert vif */
     .homemap-filters .chip.cl-quests.active    { background: #E8961F; color: #fff; box-shadow: 0 4px 12px rgba(232,150,31,.34); }
+    .homemap-filters .chip.cl-community.active { background: #3AA0FF; color: #fff; box-shadow: 0 4px 12px rgba(58,160,255,.34); } /* Carte #5 : calque Communauté */
+    /* Bulle « Communauté » de la carte (#5) : avatars + noms réels des voyageurs de la ville */
+    .mappop-comm .comm-avs { display: flex; justify-content: center; margin: .35rem 0 .25rem; }
+    .mappop-comm .comm-avs > * { width: 30px; height: 30px; border-radius: 50%; margin-left: -7px; border: 2px solid #fff; object-fit: cover; background: var(--accent-soft); display: grid; place-items: center; font-size: .8rem; font-weight: 800; color: var(--accent-ink, var(--accent)); }
+    .mappop-comm .comm-avs > *:first-child { margin-left: 0; }
+    .mappop-comm .comm-n { font-weight: 700; font-size: .82rem; color: var(--ink); }
+    .mappop-comm .comm-names { font-size: .74rem; margin-bottom: .1rem; }
+    .mappop-comm .comm-q { font-size: .76rem; font-weight: 700; color: var(--accent); margin-top: .15rem; }
     /* Marqueurs personnalisés (pastilles emoji colorées) */
     .epin { width: 36px; height: 36px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
       display: grid; place-items: center; box-shadow: 0 4px 10px rgba(0,0,0,.4); border: 2.5px solid #fff; transition: transform .15s ease; }

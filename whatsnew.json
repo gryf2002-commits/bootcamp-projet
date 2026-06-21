@@ -1,8 +1,8 @@
 {
-  "candidate": "v636",
+  "candidate": "v637",
   "items": [
     "🧭 Tutos par zone : la visite guidée se découpe en mini-tutos (Accueil, Lieux, Mates, Jeux, Sécurité, Profil), chacun se lance et s'arrête seul à la fin de sa zone.",
-    "🌍 La carte se remplit de la communauté : des repères apparaissent dans les villes où des voyageur·ses sont (Rome, Dublin, Tokyo…), avec les quêtes à y débusquer.",
+    "🌍 Nouveau calque « Communauté » sur la carte : un repère par ville où des voyageur·ses sont (avec leurs avatars, leurs noms et les quêtes à y débusquer). Filtrable comme les autres calques.",
     "🗺️ Petites histoires sur la carte : touche un lieu et découvre un fait fun de sa ville ou de son pays (« Un seul panneau STOP dans tout Paris… »).",
     "🌍 Ton globe façon Polarsteps : tes destinations s'allument avec des halos pulsés et la ROUTE de ton voyage se dessine en arcs lumineux (rotation fluide).",
     "✨ Logo net : plus aucun halo autour de l'icône SunMates (ombre retirée) + header transparent.",
