@@ -1,10 +1,10 @@
 {
-  "candidate": "v653",
+  "candidate": "v654",
   "items": [
-    "🇬🇧 Les nouveautés récentes (veilleur de nuit, « Bien démarrer », position approximative…) sont désormais traduites en anglais.",
-    "🛡️ La sécurité reste 100% gratuite pour tous : on a retiré toute mention qui la présentait comme un avantage payant.",
-    "🌙 Veilleur de nuit : une veille qui prévient ton cercle (position + notif) si tu ne confirmes pas ton retour — même app fermée.",
-    "🌍 « Découvrir » montre les vrais voyageur·ses par défaut + check-ins gratuits illimités.",
-    "🔋 Moins de chauffe/batterie + meilleure lisibilité."
+    "🚶 Marche avec moi : un compagnon plein écran pour tes trajets seul·e le soir. L'écran reste allumé, des mots rassurants défilent (« On marche avec toi 💛 »), un minuteur tourne, et tu gardes l'alerte SOS, le partage de position et le veilleur de nuit à portée de pouce. Présence sonore douce en option. Zéro donnée envoyée.",
+    "🌙 Veilleur de nuit : ton cercle est prévenu (position + notif) si tu ne confirmes pas ton retour — même app fermée.",
+    "🌍 « Découvrir » montre les vrais voyageur·ses + check-ins gratuits illimités.",
+    "🇬🇧 Nouveautés traduites en anglais + sécurité 100% gratuite (jamais un avantage payant).",
+    "🔋 Moins de chauffe/batterie."
   ]
 }

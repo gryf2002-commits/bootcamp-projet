@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=653"></script>
+  <script src="sunmates-badges.js?v=654"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
@@ -533,6 +533,25 @@
     #starterCard .starter-step .ss-ic { font-size: 1.05rem; flex: 0 0 auto; width: 1.4rem; text-align: center; }
     #starterCard .starter-step .ss-lbl { flex: 1; min-width: 0; font-size: .85rem; font-weight: 600; }
     #starterCard .starter-step .ss-go { flex: 0 0 auto; color: var(--accent-ink, var(--accent)); font-weight: 800; }
+    /* « Marche avec moi » : compagnon plein écran apaisant (z 6450 = sous les dialogues popinfo 6500) */
+    #wwmOv { position: fixed; inset: 0; z-index: 6450; display: grid; place-items: center; padding: 1.5rem;
+      background: radial-gradient(130% 100% at 50% 0%, #2a1850 0%, #190e2e 55%, #0c0720 100%);
+      opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s; }
+    #wwmOv.show { opacity: 1; visibility: visible; }
+    #wwmOv .wwm-inner { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; color: #f3ecf6; position: relative; }
+    #wwmOv .wwm-pulse { width: 150px; height: 150px; border-radius: 50%; display: grid; place-items: center; font-size: 3.4rem;
+      background: radial-gradient(circle, rgba(255,126,114,.32) 0%, rgba(255,126,114,0) 70%);
+      animation: wwmBreath 5s ease-in-out infinite; will-change: transform; }
+    @keyframes wwmBreath { 0%, 100% { transform: scale(1); opacity: .85; } 50% { transform: scale(1.12); opacity: 1; } }
+    #wwmOv .wwm-msg { font-family: 'Fraunces', serif; font-size: 1.45rem; font-weight: 600; line-height: 1.3; min-height: 2.6em; transition: opacity .28s ease; }
+    #wwmOv .wwm-time { font-variant-numeric: tabular-nums; font-size: .95rem; color: #a99fbe; font-weight: 700; }
+    #wwmOv .wwm-actions { display: flex; gap: .5rem; width: 100%; margin-top: .4rem; }
+    #wwmOv .wwm-sos, #wwmOv .wwm-act { flex: 1; border: 0; border-radius: 14px; padding: .85rem .4rem; font: inherit; font-weight: 800; font-size: .9rem; cursor: pointer; color: #fff; transition: transform .1s ease; }
+    #wwmOv .wwm-sos { background: linear-gradient(180deg, #ff5a4d, #e23b3b); flex: 1.3; }
+    #wwmOv .wwm-act { background: rgba(255,255,255,.12); color: #f3ecf6; }
+    #wwmOv .wwm-act:active, #wwmOv .wwm-sos:active { transform: scale(.97); }
+    #wwmOv .wwm-exit { margin-top: .8rem; background: none; border: 1px solid rgba(255,255,255,.25); color: #f3ecf6; border-radius: 999px; padding: .7rem 1.6rem; font: inherit; font-weight: 700; cursor: pointer; }
+    #wwmOv .wwm-snd { position: absolute; top: -.2rem; right: -.2rem; background: rgba(255,255,255,.1); border: 0; color: #fff; width: 42px; height: 42px; border-radius: 50%; font-size: 1.05rem; cursor: pointer; }
     /* Idées « Ici, maintenant » : chips horizontales scrollables (compactes, 1 ligne au lieu de 3) */
     #geoNowCard .geo-ideas {
       display: flex; gap: .4rem; overflow-x: auto; margin: .45rem -.85rem -.1rem; padding: .15rem .85rem .2rem;
@@ -2591,6 +2610,7 @@
           <div class="grid2">
             <div class="tile" data-secuquick="fakecall"><div class="thumb purp" data-smicon="phone" data-smicon-size="38">📞</div><div class="t-name">Faux appel</div><div class="t-meta">Sortie de secours</div></div>
             <div class="tile" data-secuquick="safearrival"><div class="thumb gold" data-smicon="clock" data-smicon-size="38">🌙</div><div class="t-name">Veilleur de nuit</div><div class="t-meta">On veille même app fermée</div></div>
+            <div class="tile" data-secuquick="walkwithme"><div class="thumb teal" data-smicon="near" data-smicon-size="38">🚶</div><div class="t-name">Marche avec moi</div><div class="t-meta">On t'accompagne</div></div>
             <div class="tile" data-secuquick="circle"><div class="thumb teal" data-smicon="users" data-smicon-size="38">🛟</div><div class="t-name">Mon cercle</div><div class="t-meta">Positions partagées</div></div>
             <div class="tile" data-secuquick="lieux"><div class="thumb coral" data-smicon="aid" data-smicon-size="38">🏛️</div><div class="t-name">Aide à proximité</div><div class="t-meta">Police · hôpital</div></div>
           </div>
@@ -3777,6 +3797,17 @@
       "check-in": "check-in",
       "Connexion interrompue": "Connection lost",
       "Vérifie ta connexion, on réessaie tout seul.": "Check your connection, we'll retry automatically.",
+      // « Marche avec moi » (compagnon de marche)
+      "Marche avec moi": "Walk with me", "On t'accompagne": "We walk with you",
+      "Son": "Sound", "Alerte": "Alert", "Partager": "Share", "Veille": "Watch", "Je suis arrivé·e": "I've arrived",
+      "Bien arrivé·e ! On range nos affaires 🌙": "Arrived safely! Wrapping up 🌙",
+      "🚨 Alerte envoyée à ton cercle…": "🚨 Alert sent to your circle…",
+      "📍 Position partagée avec ton cercle…": "📍 Location shared with your circle…",
+      "On est là 💛": "We're here 💛", "Tu n'es pas seul·e.": "You're not alone.",
+      "Respire. On marche avec toi.": "Breathe. We're walking with you.",
+      "Encore quelques pas, tu gères.": "A few more steps, you've got this.",
+      "Ton cercle veille sur toi.": "Your circle is watching over you.",
+      "Tu es bientôt arrivé·e.": "You're almost there.",
       // Corps de modales popInfo (balises <b> incluses dans la clé → traduites en un bloc par i18nT, pas via le DOM)
       "Ton minuteur de rentrée est <b>actif</b>. Touche « Bien arrivé·e » pour l'arrêter, sinon ta position sera diffusée à ton cercle.": "Your home timer is <b>active</b>. Tap “Arrived safely” to stop it, otherwise your location will be shared with your circle.",
       "Lance un minuteur avant de rentrer. Si tu ne confirmes pas « bien arrivé·e » à temps, ta position est <b>diffusée à ton cercle de confiance</b> 🛟": "Start a timer before heading home. If you don't confirm “arrived safely” in time, your location is <b>shared with your trust circle</b> 🛟",
@@ -9758,6 +9789,65 @@
       } catch (e) {}
     }
     window.hydrateSafeWatch = hydrateSafeWatch;
+
+    // ===== « Marche avec moi » : compagnon de marche (présence rassurante, zéro backend) =====
+    // Écran plein, apaisant : garde l'écran allumé (Wake Lock), messages doux qui défilent, timer,
+    // et SOS / partage / veille à portée. Son ambiant OPTIONNEL via SMSound (jamais de WebAudio à part).
+    const _WWM_MSGS = ["On est là 💛", "Tu n'es pas seul·e.", "Respire. On marche avec toi.", "Encore quelques pas, tu gères.", "Ton cercle veille sur toi.", "Tu es bientôt arrivé·e."];
+    let _wwm = { open: false, wake: null, tick: null, msgInt: null, sndInt: null, start: 0, snd: false };
+    async function _wwmAcquireWake() { try { if ("wakeLock" in navigator) _wwm.wake = await navigator.wakeLock.request("screen"); } catch (e) {} }
+    function _wwmReleaseWake() { try { if (_wwm.wake && _wwm.wake.release) _wwm.wake.release(); } catch (e) {} _wwm.wake = null; }
+    function _wwmSound(on) {
+      if (_wwm.sndInt) { clearInterval(_wwm.sndInt); _wwm.sndInt = null; }
+      // Battement de présence DOUX et lent (toutes les 9 s) via la banque SMSound (respecte le mute global).
+      if (on) { try { if (window.SMSound) SMSound.play("tap"); } catch (e) {} _wwm.sndInt = setInterval(() => { try { if (window.SMSound) SMSound.play("tap"); } catch (e) {} }, 9000); }
+    }
+    function openWalkWithMe() {
+      if (_wwm.open) return;
+      _wwm.open = true; _wwm.start = Date.now(); _wwm.snd = false;
+      let ov = document.getElementById("wwmOv");
+      if (!ov) { ov = document.createElement("div"); ov.id = "wwmOv"; document.body.appendChild(ov); }
+      ov.innerHTML =
+        '<div class="wwm-inner">' +
+          '<button class="wwm-snd" id="wwmSnd" type="button" aria-label="' + i18nT("Son") + '">🔇</button>' +
+          '<div class="wwm-pulse" aria-hidden="true"><span>🌙</span></div>' +
+          '<div class="wwm-msg" id="wwmMsg">' + i18nT(_WWM_MSGS[0]) + '</div>' +
+          '<div class="wwm-time" id="wwmTime">00:00</div>' +
+          '<div class="wwm-actions">' +
+            '<button class="wwm-sos" id="wwmSos" type="button">🚨 ' + i18nT("Alerte") + '</button>' +
+            '<button class="wwm-act" id="wwmShare" type="button">📍 ' + i18nT("Partager") + '</button>' +
+            '<button class="wwm-act" id="wwmWatch" type="button">🌙 ' + i18nT("Veille") + '</button>' +
+          '</div>' +
+          '<button class="wwm-exit" id="wwmExit" type="button">✅ ' + i18nT("Je suis arrivé·e") + '</button>' +
+        '</div>';
+      requestAnimationFrame(() => ov.classList.add("show"));
+      _wwmAcquireWake();
+      const fmt = (s) => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+      _wwm.tick = setInterval(() => { const el = document.getElementById("wwmTime"); if (el) el.textContent = fmt(Math.floor((Date.now() - _wwm.start) / 1000)); }, 1000);
+      let mi = 0;
+      _wwm.msgInt = setInterval(() => { mi = (mi + 1) % _WWM_MSGS.length; const el = document.getElementById("wwmMsg"); if (el) { el.style.opacity = "0"; setTimeout(() => { el.textContent = i18nT(_WWM_MSGS[mi]); el.style.opacity = "1"; }, 280); } }, 5000);
+      const _b = (id) => document.getElementById(id);
+      const _wwmSay = (t) => { const el = _b("wwmMsg"); if (el) { el.style.opacity = "1"; el.textContent = t; } };
+      if (_b("wwmExit")) _b("wwmExit").onclick = closeWalkWithMe;
+      // SOS : diffusion d'urgence IMMÉDIATE (+ SMS aux contacts ICE) sans quitter le compagnon.
+      // Le retour s'affiche DANS l'overlay (les toasts passeraient dessous) ; le dialogue ICE (z 6500) passe au-dessus.
+      if (_b("wwmSos")) _b("wwmSos").onclick = () => { _wwmSay(i18nT("🚨 Alerte envoyée à ton cercle…")); if (typeof sendLocation === "function") sendLocation(true, $("emergencyMsg") || document.createElement("div"), i18nT("🚨 ALERTE diffusée à ton cercle de confiance !")); };
+      if (_b("wwmShare")) _b("wwmShare").onclick = () => { _wwmSay(i18nT("📍 Position partagée avec ton cercle…")); if (typeof sendLocation === "function") sendLocation(false, $("locMsg") || document.createElement("div"), i18nT("Position partagée avec ton cercle ✅")); };
+      if (_b("wwmWatch")) _b("wwmWatch").onclick = () => { closeWalkWithMe(); if (typeof openSafeArrival === "function") openSafeArrival(); };
+      if (_b("wwmSnd")) _b("wwmSnd").onclick = () => { _wwm.snd = !_wwm.snd; const b = _b("wwmSnd"); if (b) b.textContent = _wwm.snd ? "🔊" : "🔇"; _wwmSound(_wwm.snd); };
+    }
+    function closeWalkWithMe() {
+      _wwm.open = false;
+      if (_wwm.tick) { clearInterval(_wwm.tick); _wwm.tick = null; }
+      if (_wwm.msgInt) { clearInterval(_wwm.msgInt); _wwm.msgInt = null; }
+      if (_wwm.sndInt) { clearInterval(_wwm.sndInt); _wwm.sndInt = null; }
+      _wwmReleaseWake();
+      const ov = document.getElementById("wwmOv"); if (ov) ov.classList.remove("show");
+      if (typeof toast === "function") toast("💛", i18nT("Bien arrivé·e ! On range nos affaires 🌙"));
+    }
+    // Les Wake Lock sont relâchés quand l'onglet passe en arrière-plan → on les re-prend au retour.
+    document.addEventListener("visibilitychange", () => { if (!document.hidden && _wwm.open && !_wwm.wake) _wwmAcquireWake(); });
+    window.openWalkWithMe = openWalkWithMe;
 
     // Positions partagées par mon cercle de confiance (RLS : seules les connexions
     // acceptées peuvent lire mes positions, et inversement).
@@ -18046,6 +18136,7 @@
         if (a === "fakecall") { $("fakeCallBtn").click(); return; }
         if (a === "signal") { $("signalBtn").click(); return; }
         if (a === "safearrival") { openSafeArrival(); return; }
+        if (a === "walkwithme") { if (typeof openWalkWithMe === "function") openWalkWithMe(); return; }
         if (a === "numbers") { if (typeof openNumbers === "function") openNumbers(); return; }
         showSecuView("secuHelp");
         if (a === "position") $("shareLocBtn").click();
