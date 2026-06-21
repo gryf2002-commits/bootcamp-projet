@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=646"></script>
+  <script src="sunmates-badges.js?v=647"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
@@ -515,6 +515,24 @@
     }
     /* Bouton Messages du header : badge non-lus réutilise le style .nbadge */
     #topMsgBtn { position: relative; }
+    /* Activation « Bien démarrer » : carte compacte, DA sunset, n'apparaît que pour les nouveaux */
+    #starterCard { margin: .55rem 0 .2rem; padding: .7rem .8rem; border-radius: 14px;
+      background: var(--accent-soft, rgba(255,209,92,.12)); border: 1px solid var(--line, rgba(0,0,0,.08)); }
+    #starterCard .starter-head { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
+    #starterCard .starter-head b { font-size: .92rem; color: var(--ink); }
+    #starterCard .starter-prog { margin-left: auto; font-size: .74rem; font-weight: 800; color: var(--accent-ink, var(--accent)); background: var(--card); border-radius: 999px; padding: .1rem .5rem; }
+    #starterCard .starter-x { background: none; border: 0; font-size: 1rem; color: var(--muted); cursor: pointer; padding: .1rem .2rem; line-height: 1; }
+    #starterCard .starter-steps { display: flex; flex-direction: column; gap: .35rem; }
+    #starterCard .starter-step { display: flex; align-items: center; gap: .6rem; width: 100%; text-align: left;
+      background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .55rem .65rem; cursor: pointer;
+      font: inherit; color: var(--text); transition: transform .1s ease, border-color .15s ease, background .15s ease; }
+    #starterCard .starter-step:hover { border-color: var(--accent); }
+    #starterCard .starter-step:active { transform: scale(.99); }
+    #starterCard .starter-step.done { opacity: .62; cursor: default; }
+    #starterCard .starter-step.done .ss-lbl { text-decoration: line-through; }
+    #starterCard .starter-step .ss-ic { font-size: 1.05rem; flex: 0 0 auto; width: 1.4rem; text-align: center; }
+    #starterCard .starter-step .ss-lbl { flex: 1; min-width: 0; font-size: .85rem; font-weight: 600; }
+    #starterCard .starter-step .ss-go { flex: 0 0 auto; color: var(--accent-ink, var(--accent)); font-weight: 800; }
     /* Idées « Ici, maintenant » : chips horizontales scrollables (compactes, 1 ligne au lieu de 3) */
     #geoNowCard .geo-ideas {
       display: flex; gap: .4rem; overflow-x: auto; margin: .45rem -.85rem -.1rem; padding: .15rem .85rem .2rem;
@@ -1959,6 +1977,10 @@
         </div>
         <!-- LITE uniquement (.lite-only) : orientation chaleureuse pour une première impression calme. -->
         <p class="muted lite-only" style="margin:.35rem 0 0;font-size:.82rem;line-height:1.45">Prends ton temps : découvre les lieux sûrs autour de toi et les voyageur·ses du coin.</p>
+
+        <!-- ACTIVATION : checklist « Bien démarrer » (3 étapes) — affichée seulement tant que tout n'est pas fait,
+             puis masquée définitivement. Remplie par renderStarterChecklist(). 100% règles, marche Lite + complet. -->
+        <div id="starterCard" class="hidden" aria-label="Bien démarrer"></div>
 
         <!-- GEO-TRIGGER : « Ici, maintenant » → l'app s'adapte au LIEU (quartier + heure + idées). Rempli par renderGeoNow(). -->
         <div id="geoNowCard" class="hidden" role="status" aria-live="polite" style="margin:.55rem 0 .2rem;padding:.7rem .85rem;border-radius:14px;background:var(--accent-soft,rgba(255,209,92,.12));border:1px solid var(--line,rgba(0,0,0,.08))"></div>
@@ -5627,6 +5649,7 @@
       if (target === "profil") { const sc = $("settingsCard"), pm = $("profMain"); if (sc) sc.classList.add("hidden"); if (pm) pm.classList.remove("hidden"); }
       window.scrollTo(0, 0); // PERF : retour haut INSTANTANÉ (le scroll animé donnait une impression de lenteur au switch)
       if (target === "accueil" && typeof renderHomeMap === "function" && (typeof getHomeMode !== "function" || getHomeMode() !== "home")) setTimeout(renderHomeMap, 60);
+      if (target === "accueil" && typeof renderStarterChecklist === "function") renderStarterChecklist(); // recoche les étapes faites depuis un autre onglet
       if (target !== "accueil" && window._smArmBack) window._smArmBack(); // P2.3 : le retour téléphone ramènera à l'Accueil
       __lastTab = target;
     }
@@ -7377,6 +7400,7 @@
       if (typeof renderAvailChip === "function") renderAvailChip();
       if (typeof renderGeoNow === "function") renderGeoNow(); // geo-trigger « Ici, maintenant »
       if (typeof maybeShowGeoBanner === "function") maybeShowGeoBanner(); // invitation douce à activer la position
+      if (typeof renderStarterChecklist === "function") renderStarterChecklist(); // checklist d'activation « Bien démarrer »
       if (typeof renderTrips === "function") renderTrips();
       if (typeof maybeWeeklyRecap === "function") maybeWeeklyRecap();
       if (typeof renderGameHub === "function") renderGameHub();
@@ -14612,6 +14636,36 @@
       b.querySelector(".geo-result-go").addEventListener("click", (e) => { e.stopPropagation(); _geoIdeaGo(text); });
       if (window.SMSound) SMSound.play("pop");
     }
+    // ACTIVATION « Bien démarrer » : 3 étapes calculées à partir de l'état CLIENT (zéro IA, zéro requête).
+    // La carte n'apparaît que tant qu'il reste une étape à faire, puis se masque DÉFINITIVEMENT (flag par compte).
+    function _starterKey() { return "sm_starter_done_" + (myUserId || "anon"); }
+    function _starterDone() { try { return localStorage.getItem(_starterKey()) === "1"; } catch (e) { return false; } }
+    function _starterFinish(card) { try { localStorage.setItem(_starterKey(), "1"); } catch (e) {} if (card) card.classList.add("hidden"); }
+    async function renderStarterChecklist() {
+      const card = $("starterCard"); if (!card) return;
+      if (!myUserId || _starterDone()) { card.classList.add("hidden"); return; }
+      // Signaux (tous déjà en mémoire client) :
+      const profileOk = (typeof _lastCompletionPct === "number" ? _lastCompletionPct : 0) >= 80;
+      let geoOk = false;
+      try { if (navigator.permissions && navigator.permissions.query) { const st = await navigator.permissions.query({ name: "geolocation" }); geoOk = st.state === "granted"; } } catch (e) {}
+      const ck = parseInt(($("checkinCount") || {}).textContent) || 0;
+      const conn = (typeof connectedIds !== "undefined" && connectedIds) ? connectedIds.size : 0;
+      const actionOk = ck >= 1 || conn >= 1;
+      const steps = [
+        { ok: profileOk, ic: "✏️", lbl: i18nT("Complète ton profil"), go: () => { goToTab("profil"); setTimeout(() => { if (typeof showProfileSegment === "function") showProfileSegment("edit"); }, 60); } },
+        { ok: geoOk, ic: "📍", lbl: i18nT("Active ta position"), go: () => { if (typeof askGeoPermission === "function") askGeoPermission(); } },
+        { ok: actionOk, ic: "🤝", lbl: i18nT("Fais ta 1re connexion ou ton 1er check-in"), go: () => { goToTab("connexions"); } },
+      ];
+      const done = steps.filter((s) => s.ok).length;
+      if (done >= steps.length) { _starterFinish(card); return; } // tout fait → on n'embête plus jamais
+      card.innerHTML = '<div class="starter-head"><b>🚀 ' + i18nT("Bien démarrer") + '</b><span class="starter-prog">' + done + '/' + steps.length + '</span><button class="starter-x" type="button" aria-label="' + i18nT("Masquer") + '">✕</button></div>' +
+        '<div class="starter-steps">' + steps.map((s, i) => '<button type="button" class="starter-step' + (s.ok ? " done" : "") + '" data-step="' + i + '"' + (s.ok ? " disabled" : "") + '><span class="ss-ic">' + (s.ok ? "✅" : s.ic) + '</span><span class="ss-lbl">' + s.lbl + '</span>' + (s.ok ? "" : '<span class="ss-go">›</span>') + '</button>').join("") + '</div>';
+      card.classList.remove("hidden");
+      card.querySelectorAll("[data-step]").forEach((b) => b.addEventListener("click", () => { const s = steps[Number(b.dataset.step)]; if (s && !s.ok && s.go) s.go(); }));
+      const x = card.querySelector(".starter-x"); if (x) x.addEventListener("click", () => _starterFinish(card));
+    }
+    window.renderStarterChecklist = renderStarterChecklist;
+
     async function renderGeoNow() {
       const card = $("geoNowCard"); if (!card) return;
       try {
@@ -19004,7 +19058,7 @@
       if (typeof smConfirmP === "function") ok = await smConfirmP("📍", i18nT("Activer la localisation ?"), i18nT("Pour voir les lieux sûrs et les voyageur·ses autour de toi, et pour le partage de position en cas de besoin. Tu peux couper quand tu veux."), i18nT("Autoriser"));
       if (!ok) return;
       navigator.geolocation.getCurrentPosition(
-        () => { if (typeof toast === "function") toast("📍", i18nT("Localisation activée ✅")); if (typeof startGeoWatchIfGranted === "function") startGeoWatchIfGranted(); if (typeof renderGeoNow === "function") renderGeoNow(); updatePermStates(); },
+        () => { if (typeof toast === "function") toast("📍", i18nT("Localisation activée ✅")); if (typeof startGeoWatchIfGranted === "function") startGeoWatchIfGranted(); if (typeof renderGeoNow === "function") renderGeoNow(); if (typeof renderStarterChecklist === "function") renderStarterChecklist(); updatePermStates(); },
         () => { if (typeof toast === "function") toast("📍", i18nT("Localisation refusée. Tu peux réessayer dans les réglages du navigateur.")); updatePermStates(); },
         { enableHighAccuracy: true, timeout: 10000 }
       );

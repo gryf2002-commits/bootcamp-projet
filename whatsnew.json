@@ -1,10 +1,10 @@
 {
-  "candidate": "v646",
+  "candidate": "v647",
   "items": [
-    "🛡️ Partage de position fidèle à sa promesse : ta position reste visible par ton cercle de confiance pendant 24 h (au lieu de disparaître après 1 h). Aligné partout : carte, libellés et base de données.",
-    "🆘 SOS plus complet : quand tu déclenches une alerte, en plus de ton cercle, on te propose d'envoyer un SMS pré-rempli à tes contacts d'urgence avec ta position — tu n'as qu'à appuyer sur Envoyer.",
-    "🔒 Contacts d'urgence cloisonnés par compte : sur un appareil partagé, chaque compte ne voit QUE ses propres contacts.",
-    "🛠️ Fiabilité : notifications de messages plus justes et listes qui ne restent plus bloquées si la connexion saute.",
-    "👀 Lisibilité renforcée (mode jour) : le texte corail devient bien lisible sur fond clair."
+    "🚀 Nouveau : une carte « Bien démarrer » t'accueille sur l'accueil avec 3 étapes guidées (compléter ton profil, activer ta position, faire ta 1re connexion ou ton 1er check-in). Elle disparaît toute seule une fois que tu es lancé·e.",
+    "🛡️ Partage de position fidèle à sa promesse : visible par ton cercle pendant 24 h (au lieu de 1 h).",
+    "🆘 SOS plus complet : on te propose d'envoyer un SMS pré-rempli à tes contacts d'urgence avec ta position.",
+    "🔒 Contacts d'urgence cloisonnés par compte sur un appareil partagé.",
+    "🛠️ Fiabilité : notifications de messages plus justes, listes qui ne restent plus bloquées, et meilleure lisibilité du texte corail en mode jour."
   ]
 }
