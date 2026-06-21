@@ -1,10 +1,10 @@
 {
-  "candidate": "v654",
+  "candidate": "v655",
   "items": [
-    "🚶 Marche avec moi : un compagnon plein écran pour tes trajets seul·e le soir. L'écran reste allumé, des mots rassurants défilent (« On marche avec toi 💛 »), un minuteur tourne, et tu gardes l'alerte SOS, le partage de position et le veilleur de nuit à portée de pouce. Présence sonore douce en option. Zéro donnée envoyée.",
-    "🌙 Veilleur de nuit : ton cercle est prévenu (position + notif) si tu ne confirmes pas ton retour — même app fermée.",
-    "🌍 « Découvrir » montre les vrais voyageur·ses + check-ins gratuits illimités.",
-    "🇬🇧 Nouveautés traduites en anglais + sécurité 100% gratuite (jamais un avantage payant).",
-    "🔋 Moins de chauffe/batterie."
+    "📍 Se retrouver à mi-chemin : sur le profil d'un Mate connecté, touche « Mi-chemin » — on te propose un lieu sûr partenaire entre vous deux, prêt à envoyer en un message. Fini le casse-tête du « on se voit où ? ».",
+    "🤝 « On s'est vus » : confirme une rencontre en vrai avec un Mate. Si vous le confirmez tou·tes les deux, c'est un signal de confiance fort pour la communauté (sans vérification d'identité payante).",
+    "🚶 Marche avec moi : un compagnon plein écran pour tes trajets seul·e le soir.",
+    "🌙 Veilleur de nuit + 📍 partage de position 24 h + 🆘 SOS qui prévient tes contacts d'urgence.",
+    "🌍 « Découvrir » montre les vrais voyageur·ses + check-ins gratuits illimités."
   ]
 }

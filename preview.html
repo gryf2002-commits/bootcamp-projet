@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=654"></script>
+  <script src="sunmates-badges.js?v=655"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
@@ -2500,6 +2500,8 @@
           <!-- Actions secondaires : rangée compacte, remontée pour être bien visible -->
           <div class="tp-actions2" style="margin-bottom:1rem">
             <button class="tpa-btn tpa-chal" id="tpChallengeBtn"><span class="tpa-ic">🎯</span><span>Défi</span></button>
+            <button class="tpa-btn tpa-mid" id="tpMidBtn" style="display:none"><span class="tpa-ic">📍</span><span>Mi-chemin</span></button>
+            <button class="tpa-btn tpa-verif" id="tpVerifBtn" style="display:none"><span class="tpa-ic">🤝</span><span>On s'est vus</span></button>
             <button class="tpa-btn tpa-bff" id="tpBffBtn" style="display:none"><span class="tpa-ic">⭐</span><span>BFF</span></button>
             <button class="tpa-btn tpa-danger" id="tpBlockBtn"><span class="tpa-ic">🚫</span><span>Bloquer</span></button>
           </div>
@@ -3808,6 +3810,21 @@
       "Encore quelques pas, tu gères.": "A few more steps, you've got this.",
       "Ton cercle veille sur toi.": "Your circle is watching over you.",
       "Tu es bientôt arrivé·e.": "You're almost there.",
+      // Mi-chemin sûr + vérif « on s'est vus »
+      "Mi-chemin": "Halfway", "On s'est vus": "We met",
+      "On cherche un lieu sûr entre vous…": "Looking for a safe place between you…",
+      "Pas encore de lieu sûr partenaire dans votre zone. Activez vos positions et réessaie 🛟": "No partner safe place in your area yet. Turn on your locations and try again 🛟",
+      "Se retrouver à mi-chemin": "Meet halfway",
+      "Un lieu sûr partenaire": "A safe partner place",
+      "à mi-chemin entre vous": "halfway between you", "près de l'un·e de vous": "near one of you",
+      "Proposer ce lieu": "Suggest this place", "Voir sur la carte": "View on map",
+      "Proposition envoyée 🛟": "Suggestion sent 🛟",
+      "ce Mate": "this Mate", "Vous vous êtes rencontré·es en vrai ?": "Did you meet in person?",
+      "Confirme seulement si tu as vraiment rencontré {n} en personne. Ça renforce la confiance de la communauté — et si vous le confirmez tou·tes les deux, c'est un signal fort 🛟.": "Only confirm if you really met {n} in person. It builds community trust — and if you both confirm, it's a strong signal 🛟.",
+      "Oui, on s'est vus": "Yes, we met",
+      "Rencontre confirmée des deux côtés 🛟": "Meet confirmed by both 🛟",
+      "Rencontre confirmée. Dis-lui de confirmer aussi de son côté !": "Meet confirmed. Ask them to confirm on their side too!",
+      "Réessaie dans un instant.": "Try again in a moment.",
       // Corps de modales popInfo (balises <b> incluses dans la clé → traduites en un bloc par i18nT, pas via le DOM)
       "Ton minuteur de rentrée est <b>actif</b>. Touche « Bien arrivé·e » pour l'arrêter, sinon ta position sera diffusée à ton cercle.": "Your home timer is <b>active</b>. Tap “Arrived safely” to stop it, otherwise your location will be shared with your circle.",
       "Lance un minuteur avant de rentrer. Si tu ne confirmes pas « bien arrivé·e » à temps, ta position est <b>diffusée à ton cercle de confiance</b> 🛟": "Start a timer before heading home. If you don't confirm “arrived safely” in time, your location is <b>shared with your trust circle</b> 🛟",
@@ -12864,8 +12881,61 @@
         if (!iAmGold) { bffBtn.disabled = true; bffBtn.style.opacity = ".6"; setBffTxt("BFF 👑"); bffBtn.title = "« BFF du moment » réservé aux membres Gold 👑"; }
         else { bffBtn.disabled = false; bffBtn.style.opacity = "1"; const on = (myBffId === p.id); setBffTxt(on ? "BFF ✓" : "BFF"); bffBtn.title = on ? "Retirer ce Mate de tes BFF du moment" : "Définir ce Mate comme ton BFF du moment ⭐"; }
       } else { bffBtn.style.display = "none"; }
+      // Mi-chemin + « On s'est vus » : réservés aux Mates connectés
+      { const mb = $("tpMidBtn"); if (mb) mb.style.display = connectedIds.has(p.id) ? "" : "none"; }
+      { const vb = $("tpVerifBtn"); if (vb) vb.style.display = connectedIds.has(p.id) ? "" : "none"; }
     }
     $("tpMsgBtn").addEventListener("click", () => { if (currentTravelerId) openChat(currentTravelerId); });
+    { const mb = $("tpMidBtn"); if (mb) mb.addEventListener("click", () => { if (currentTravelerId && typeof suggestMidpoint === "function") suggestMidpoint(currentTravelerId); }); }
+    { const vb = $("tpVerifBtn"); if (vb) vb.addEventListener("click", () => { if (currentTravelerId && typeof startMeetVerify === "function") startMeetVerify(currentTravelerId); }); }
+    // ===== Mi-chemin sûr : suggère un lieu partenaire entre 2 Mates connectés (zéro backend dédié) =====
+    async function suggestMidpoint(otherId) {
+      const other = travelerMap[otherId] || {};
+      if (typeof toast === "function") toast("📍", i18nT("On cherche un lieu sûr entre vous…"), null, { low: true });
+      let myPos = null;
+      try { myPos = await new Promise((res) => { if (typeof getGeo === "function") getGeo((g) => res(g), () => res(null)); else res(null); }); } catch (e) {}
+      let otherPos = null;
+      try { const { data } = await db.from("locations_realtime").select("lat,lng,created_at").eq("user_id", otherId).order("created_at", { ascending: false }).limit(1); if (data && data[0] && Date.now() - new Date(data[0].created_at).getTime() < 24 * 3600 * 1000) otherPos = { lat: data[0].lat, lng: data[0].lng }; } catch (e) {}
+      let target = (myPos && otherPos) ? { lat: (myPos.lat + otherPos.lat) / 2, lng: (myPos.lng + otherPos.lng) / 2 } : (otherPos || myPos);
+      let place = null;
+      if (target && typeof _nearestCafe === "function") { const n = _nearestCafe(target.lat, target.lng); if (n) place = n.cafe; }
+      if (!place && typeof allCafes !== "undefined" && allCafes.length) {
+        const city = other.city || (myProfile && myProfile.city);
+        place = (city ? allCafes.find((c) => _deburr(c.city || "") === _deburr(city)) : null) || allCafes[0];
+      }
+      if (!place || place.lat == null) { if (typeof showInfo === "function") showInfo("📍 " + i18nT("Mi-chemin"), "<p style='text-align:center'>" + i18nT("Pas encore de lieu sûr partenaire dans votre zone. Activez vos positions et réessaie 🛟") + "</p>"); return; }
+      const maps = "https://www.google.com/maps?q=" + place.lat + "," + place.lng;
+      const midGuess = (myPos && otherPos) ? i18nT("à mi-chemin entre vous") : i18nT("près de l'un·e de vous");
+      showInfo("📍 " + i18nT("Se retrouver à mi-chemin"),
+        "<div style='text-align:center'><p class='muted' style='margin:0 0 .5rem;font-size:.84rem'>" + i18nT("Un lieu sûr partenaire") + " " + midGuess + " :</p>" +
+        "<div style='background:var(--accent-soft);border-radius:12px;padding:.7rem .8rem;margin-bottom:.7rem'><b>🛟 " + escapeHtml(place.name) + "</b><br><span class='muted' style='font-size:.82rem'>" + escapeHtml(place.city || "") + (place.address ? " · " + escapeHtml(place.address) : "") + "</span></div>" +
+        "<button class='btn-primary btn-block' id='midPropose'>💬 " + i18nT("Proposer ce lieu") + "</button>" +
+        "<a class='btn-ghost btn-block' href='" + maps + "' target='_blank' rel='noopener' style='margin-top:.4rem;display:inline-block'>🗺️ " + i18nT("Voir sur la carte") + "</a></div>");
+      setTimeout(() => { const b = $("midPropose"); if (b) b.onclick = async () => {
+        try { await db.from("messages").insert({ sender_id: myUserId, recipient_id: otherId, content: "📍 On se retrouve à mi-chemin ? Je propose un lieu sûr : " + place.name + (place.city ? " (" + place.city + ")" : "") + " → " + maps }); } catch (e) {}
+        const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden");
+        if (typeof toast === "function") toast("💬", i18nT("Proposition envoyée 🛟"));
+        if (typeof openChat === "function") openChat(otherId);
+      }; }, 40);
+    }
+    // ===== « On s'est vus » : confirmation de rencontre IRL = signal de confiance (réutilise les vouches) =====
+    // MVP de la « vérif communautaire » : confirmation MUTUELLE (les 2 confirment = signal fort, anti-faux-profil
+    // sans KYC). Évolution future : QR bilatéral géolocalisé pour prouver la co-présence.
+    async function startMeetVerify(otherId) {
+      const name = (travelerMap[otherId] && travelerMap[otherId].username) || i18nT("ce Mate");
+      let ok = true;
+      if (typeof smConfirmP === "function") ok = await smConfirmP("🤝", i18nT("Vous vous êtes rencontré·es en vrai ?"), i18nT("Confirme seulement si tu as vraiment rencontré {n} en personne. Ça renforce la confiance de la communauté — et si vous le confirmez tou·tes les deux, c'est un signal fort 🛟.", { n: name }), i18nT("Oui, on s'est vus"));
+      if (!ok) return;
+      try {
+        const { data: existing } = await db.from("vouches").select("id").eq("voucher", myUserId).eq("vouchee", otherId).maybeSingle();
+        if (!existing) { const { error } = await db.from("vouches").insert({ voucher: myUserId, vouchee: otherId }); if (error) { if (typeof toast === "function") toast("⚠️", errFr(error)); return; } }
+        const { data: back } = await db.from("vouches").select("id").eq("voucher", otherId).eq("vouchee", myUserId).maybeSingle();
+        if (typeof vibrate === "function") vibrate(30);
+        if (back) { if (typeof toast === "function") toast("🤝", i18nT("Rencontre confirmée des deux côtés 🛟")); }
+        else { if (typeof toast === "function") toast("👍", i18nT("Rencontre confirmée. Dis-lui de confirmer aussi de son côté !")); }
+        if (typeof loadMyVouchCount === "function") loadMyVouchCount();
+      } catch (e) { if (typeof toast === "function") toast("⚠️", i18nT("Réessaie dans un instant.")); }
+    }
     $("tpBlockBtn").addEventListener("click", () => blockUser(currentTravelerId));
     // « Pourquoi vous matchez » → désormais intégré à la tuile % Compatibilité (voir openTravelerProfile)
     // Score de confiance d'un voyageur → cliquable (explication)
