@@ -62,23 +62,28 @@
       var txt = (lang === "en")
         ? { aria: "Analytics consent", title: "Analytics", body: "We'd like to measure how SunMates is used (anonymised, never your texts) to improve the app. It's your call.", yes: "Sure ☀️", no: "Decline" }
         : { aria: "Consentement mesure d'audience", title: "Mesure d'audience", body: "On aimerait mesurer l'usage de SunMates (anonymisé, jamais tes textes) pour améliorer l'app. C'est toi qui choisis.", yes: "D'accord ☀️", no: "Refuser" };
-      // Léger délai : on ne se superpose pas à la pop « Installer » ni au 1er rendu (1ʳᵉ impression plus douce).
+      // Léger délai : on laisse la 1ʳᵉ impression respirer (hero + 1er rendu) avant de demander le consentement.
+      // L'analytics N'EST de toute façon JAMAIS actif sans « oui » → ce délai ne traque rien, il adoucit juste l'arrivée.
       setTimeout(function () {
         var b = document.createElement("div");
         b.id = "consentBanner";
         b.setAttribute("role", "dialog");
         b.setAttribute("aria-label", txt.aria);
         // bottom calé AU-DESSUS de la barre de navigation (≈ 80px) → ne masque plus la nav ni le contenu une fois connecté.
-        b.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:var(--z-consent,5500);width:calc(100% - 1.6rem);max-width:430px;background:var(--card,#fff);color:var(--ink,#1d2230);border:1px solid var(--line,#f0e2da);border-radius:18px;box-shadow:0 18px 50px rgba(45,38,52,.22);padding:.9rem 1rem;font:600 .85rem/1.45 Manrope,system-ui,sans-serif";
+        b.style.cssText = "position:fixed;left:50%;transform:translateX(-50%) translateY(14px);opacity:0;transition:opacity .28s ease, transform .3s cubic-bezier(.23,1,.32,1);bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:var(--z-consent,5500);width:calc(100% - 1.6rem);max-width:430px;background:var(--card,#fff);color:var(--ink,#1d2230);border:1px solid var(--line,#f0e2da);border-radius:18px;box-shadow:0 18px 50px rgba(45,38,52,.22);padding:.9rem 1rem;font:600 .85rem/1.45 Manrope,system-ui,sans-serif";
         b.innerHTML = '🍪 <b>' + txt.title + '</b><br>' + txt.body
           + '<div style="display:flex;gap:.5rem;margin-top:.6rem">'
           + '<button id="consentYes" style="flex:1;border:0;border-radius:999px;padding:.55rem;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#FFC93C,#FF8A3D,#FF5A4D);color:#fff">' + txt.yes + '</button>'
           + '<button id="consentNo" style="flex:1;border:1.5px solid var(--line,#f0e2da);border-radius:999px;padding:.55rem;font-weight:800;cursor:pointer;background:transparent;color:inherit">' + txt.no + '</button></div>';
         document.body.appendChild(b);
+        // Entrée douce (glisse vers le haut depuis sa position basse) ; coupée si prefers-reduced-motion.
+        var reduce = false; try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+        if (reduce) { b.style.transition = "none"; b.style.opacity = "1"; b.style.transform = "translateX(-50%) translateY(0)"; }
+        else { requestAnimationFrame(function () { requestAnimationFrame(function () { b.style.opacity = "1"; b.style.transform = "translateX(-50%) translateY(0)"; }); }); }
         function done(v) { try { localStorage.setItem("sm_consent_analytics", v); } catch (e) {} b.remove(); if (v === "yes") window._phInit(); }
         document.getElementById("consentYes").addEventListener("click", function () { done("yes"); });
         document.getElementById("consentNo").addEventListener("click", function () { done("no"); });
-      }, 1400);
+      }, 2600);
     });
 
     // ===== Accessibilité clavier : rendre les éléments cliquables (souvent des <div>) atteignables =====
@@ -294,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=639"></script>
+  <script src="sunmates-badges.js?v=640"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
@@ -353,6 +358,15 @@
        À fusionner dans styles.css au moment du push (feu vert Maxime).
        ============================================================ -->
   <style id="preview-fixes-2026">
+    /* ===== 🔧 impeccable 21/06 — bandeau hors-ligne RASSURANT (était #b91c1c rouge SaaS alarmant,
+       hors DA + contre la règle « rassurer, jamais alarmer ». Sunset chaud + z sous l'alerte d'urgence
+       (1000) pour qu'un vrai SOS reste toujours au-dessus). À fusionner dans styles.css l.701 au push. ===== */
+    .net-banner { background: linear-gradient(135deg, #FFE0A3 0%, #FFC074 100%); color: #5A3411;
+      z-index: 900; font-weight: 700; box-shadow: 0 4px 16px -6px rgba(90,52,17,.45); }
+    @media (prefers-reduced-motion: reduce) { .net-banner { transition: none; } }
+    /* Cible tactile de l'œil mot de passe : 40 → 44px (WCAG 2.5.5 / usage au pouce). À fusionner l.3208. */
+    .pw-eye { min-width: 44px; min-height: 44px; }
+
     /* ===== 🌍 Mon globe : CTA + overlay globe 3D (globe.gl) ===== */
     .globe-cta {
       width: 100%; margin: .15rem 0 .35rem;
@@ -1389,7 +1403,7 @@
   <div id="toastWrap" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <!-- Bandeau d'état réseau (hors-ligne / Supabase injoignable) -->
-  <div id="netBanner" class="net-banner">📡 Hors-ligne, vérifie ta connexion</div>
+  <div id="netBanner" class="net-banner">☀️ Hors-ligne · on reprend dès que le réseau revient</div>
 
   <!-- Bannière « Installer l'app » (PWA) -->
   <div id="pwaBanner" class="pwa-banner">
@@ -1805,8 +1819,11 @@
           <button id="tabPro" style="display:none" aria-hidden="true" tabindex="-1">💼 Pro</button>
         </div>
 
-        <!-- Formulaire voyageur (Connexion / Inscription) -->
-        <div id="authForm">
+        <!-- Formulaire voyageur (Connexion / Inscription).
+             impeccable 21/06 : vrai <form> (était <div>) → les gestionnaires de mots de passe / l'autofill /
+             la sémantique « Entrée = valider » fonctionnent (console : « Password field is not contained in a form »).
+             onsubmit return false : la soumission reste pilotée par submitAuth (clic + Entrée), aucun rechargement. -->
+        <form id="authForm" onsubmit="return false">
           <label>Email</label>
           <input id="authEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="chloe@exemple.com" />
           <!-- P2.5 : pseudo choisi DÈS l'inscription (sinon c'était le début de l'email qui s'affichait partout) -->
@@ -1817,11 +1834,11 @@
           <label>Mot de passe</label>
           <div style="position:relative">
             <input id="authPassword" type="password" placeholder="••••••••" style="padding-right:2.8rem" autocomplete="current-password" />
-            <button type="button" id="authPwToggle" class="pw-eye" title="Afficher / masquer le mot de passe"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.7 9.7 0 0 1 12 6c5 0 9 6 9 6a14 14 0 0 1-2.3 2.7"/><path d="M6.6 6.6A14 14 0 0 0 3 12s4 6 9 6c1.3 0 2.5-.4 3.6-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
+            <button type="button" id="authPwToggle" class="pw-eye" title="Afficher / masquer le mot de passe" aria-label="Afficher le mot de passe" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 12S5.5 5.4 12 5.4 22.2 12 22.2 12 18.5 18.6 12 18.6 1.8 12 1.8 12Z" opacity=".5"/><circle cx="12" cy="12" r="3.1" opacity=".5"/><path d="M4 3.5l16 17"/></svg></button>
           </div>
-          <div class="auth-play"><button id="authPlay" aria-label="Se connecter">Se connecter</button></div>
+          <div class="auth-play"><button type="button" id="authPlay" aria-label="Se connecter">Se connecter</button></div>
           <div class="msg" id="authMsg" style="text-align:center"></div>
-        </div>
+        </form>
 
         <!-- Bloc Pro / B2B : 4 tuiles séparées, cliquables → chacune pop son détail (pas de redirect direct) -->
         <div id="authProBlock" class="hidden">
@@ -1893,7 +1910,9 @@
         <svg class="logo-tropic-n" viewBox="0 0 64 64" width="22" height="22"><path d="M30 54c1.5-12 .5-22-4-30" stroke="#fff" stroke-width="3.4" stroke-linecap="round" fill="none"/><g fill="#fff"><path d="M26 24C18 16 9 15 3 19c8 0 14 2 23 5z"/><path d="M26 24c-3-10 0-17 8-21-4 7-6 13-8 21z"/><path d="M26 24c8-7 17-8 24-3-9 0-16 1-24 3z"/><path d="M26 24c10-2 18 3 21 10-8-5-14-7-21-10z"/></g><path d="M52 6a12 12 0 1 0 9 20 13.5 13.5 0 0 1-9-20z" fill="#fff" opacity=".95"/><g fill="#fff"><circle cx="42" cy="28" r="1.5"/><circle cx="56" cy="34" r="1.2"/></g><path d="M6 55q7-5 13 0t13 0 13 0 13 0" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".8"/></svg>
       </span><b><span class="sun">Sun</span>Mates</b></div>
       <div class="topbar-actions hidden" id="userBox">
-        <!-- LITE UNIQUEMENT (masqué en CSS hors body.sm-lite) — accès Sécurité permanent, toujours à portée. data-tab="securite" → câblé par le listener générique goToTab. -->
+        <!-- Bouclier Sécurité (raccourci header). Affiché en mode COMPLET ; MASQUÉ en Lite
+             (styles.css:985 `body.sm-lite #topSecuBtn{display:none}`), où Sécurité passe par l'onglet
+             de la barre du bas. data-tab="securite" câblé par le listener générique goToTab. -->
         <button class="iconbtn secu-top" id="topSecuBtn" data-tab="securite" title="Sécurité" aria-label="Sécurité : SOS, partage de position et contacts d'urgence"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3 5.5 5.7v6.1c0 4 2.8 7 6.5 8.4 3.7-1.4 6.5-4.4 6.5-8.4V5.7L12 3z"/><path d="M9.3 12.2l1.9 1.9 3.6-3.8"/></svg><span class="navbadge hidden" id="navSecuLite" role="status" aria-label="nouvelle activité sécurité">●</span></button>
         <!-- 🌙 sélecteur de mode (thème/saison) DÉPLACÉ dans Réglages → Apparence -->
         <button class="iconbtn" id="notifBell" aria-label="Notifications"><span data-smicon="bell" data-smicon-size="22">🔔</span><span class="nbadge hidden" id="notifBellCount">0</span></button>
@@ -3181,9 +3200,13 @@
           <button class="btn-accent btn-block" id="saveEmailBtn" style="margin-top:.4rem">Changer l'email</button>
           <label style="margin-top:.8rem">Nouveau mot de passe</label>
           <!-- autocomplete="new-password" : sans lui, Chrome proposait « enregistrer ce mot de
-               passe ? » au clic sur n'importe quelle tuile après un passage dans les Réglages -->
-          <input id="setPassword" type="password" placeholder="Au moins 8 caractères" autocomplete="new-password" />
-          <button class="btn-accent btn-block" id="savePasswordBtn" style="margin-top:.4rem">Changer le mot de passe</button>
+               passe ? » au clic sur n'importe quelle tuile après un passage dans les Réglages.
+               impeccable 21/06 : champ enveloppé dans un <form> (sémantique correcte + fin du
+               warning console « Password field is not contained in a form »). onsubmit return false. -->
+          <form onsubmit="return false" style="margin:0">
+            <input id="setPassword" type="password" placeholder="Au moins 8 caractères" autocomplete="new-password" />
+            <button type="button" class="btn-accent btn-block" id="savePasswordBtn" style="margin-top:.4rem">Changer le mot de passe</button>
+          </form>
           <div class="msg" id="settingsMsg"></div>
 
           <!-- RGPD : suppression de compte (droit à l'effacement) · P2.50 -->
@@ -3444,7 +3467,9 @@
       <button data-tab="lieux"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5.8-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.2 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.4"/></svg></span><span class="nav-lbl" data-i18n="nav.places">Lieux</span></button>
       <button data-tab="jeux"><span class="ni"><svg viewBox="0 0 24 24"><rect x="2.5" y="6.5" width="19" height="11" rx="4"/><path d="M6.5 11h4M8.5 9v4"/><circle cx="16" cy="10.7" r="1.1"/><circle cx="18.3" cy="13.3" r="1.1"/></svg></span><span class="nav-lbl" data-i18n="nav.games">Jeux</span><span class="navbadge hidden" id="navJeux"></span></button>
       <!-- Onglet « Messages » RETIRÉ de la barre du bas (20/06) : la messagerie est accessible via le 💬 du header (#topMsgBtn) → plus de doublon. Le panneau data-panel="connexions" reste atteint par goToTab("connexions"). -->
-      <!-- Mode complet (beta) = 6 onglets, INCHANGÉ. En Lite (body.sm-lite), ce bouton est masqué en CSS et l'accès Sécurité passe en haut à droite (#topSecuBtn). -->
+      <!-- Onglet Sécurité de la barre du bas, affiché dans les 2 modes. En Lite c'est le SEUL accès Sécurité
+           (le bouclier header #topSecuBtn est masqué, cf. styles.css:985). En mode complet, le bouclier header
+           s'ajoute comme raccourci. Le mode complet (beta) reste INCHANGÉ. -->
       <button data-tab="securite"><span class="ni"><svg viewBox="0 0 24 24"><path d="M12 3 5.5 5.7v6.1c0 4 2.8 7 6.5 8.4 3.7-1.4 6.5-4.4 6.5-8.4V5.7L12 3z"/><path d="M9.3 12.2l1.9 1.9 3.6-3.8"/></svg></span><span class="nav-lbl" data-i18n="nav.safety">Sécurité</span><span class="navbadge hidden" id="navSecu" role="status" aria-label="nouvelle activité sécurité">●</span></button>
       <button data-tab="profil"><span class="ni"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span><span class="nav-lbl" data-i18n="nav.profile">Profil</span></button>
     </nav>
@@ -5293,13 +5318,18 @@
     $("authPlay").addEventListener("click", submitAuth);
     // v570 ergo : « Entrée » dans l'email ou le mot de passe valide la connexion (fini le clic obligatoire).
     ["authEmail", "authPassword", "authPseudo"].forEach(function (id) { var el = $(id); if (el) el.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); submitAuth(); } }); });
-    const EYE_OPEN = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.6"/></svg>';
-    const EYE_OFF = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.7 9.7 0 0 1 12 6c5 0 9 6 9 6a14 14 0 0 1-2.3 2.7"/><path d="M6.6 6.6A14 14 0 0 0 3 12s4 6 9 6c1.3 0 2.5-.4 3.6-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+    /* impeccable 21/06 : pictogramme MAISON (l'œil Lucide générique est banni par la DA « on perd l'âme »).
+       Œil-soleil SunMates : ouvert = pupille-soleil pleine + rayons (visible/allumé) ; fermé = œil atténué + trait. */
+    const EYE_OPEN = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 12S5.5 5.4 12 5.4 22.2 12 22.2 12 18.5 18.6 12 18.6 1.8 12 1.8 12Z"/><circle cx="12" cy="12" r="3.1" fill="currentColor" stroke="none"/><path d="M12 1.6V3M19.6 4.4l-1 1M4.4 4.4l1 1"/></svg>';
+    const EYE_OFF = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 12S5.5 5.4 12 5.4 22.2 12 22.2 12 18.5 18.6 12 18.6 1.8 12 1.8 12Z" opacity=".5"/><circle cx="12" cy="12" r="3.1" opacity=".5"/><path d="M4 3.5l16 17"/></svg>';
     $("authPwToggle").addEventListener("click", () => {
       const i = $("authPassword");
       const show = i.type === "password";
       i.type = show ? "text" : "password";
-      $("authPwToggle").innerHTML = show ? EYE_OPEN : EYE_OFF; // œil ouvert quand visible
+      const t = $("authPwToggle");
+      t.innerHTML = show ? EYE_OPEN : EYE_OFF; // œil ouvert quand visible
+      t.setAttribute("aria-pressed", show ? "true" : "false");
+      t.setAttribute("aria-label", show ? "Masquer le mot de passe" : "Afficher le mot de passe");
     });
 
     // #5 : on RECHARGE après déconnexion (comme le ban-logout) → on repart d'un état 100 % propre
@@ -9093,7 +9123,7 @@
       // 🛟 Demandes d'hôte en attente : bloc dédié en tête (accepter / refuser)
       const hostReqs = adminUsersCache.filter((u) => u.host_status === "pending");
       const hostBlock = hostReqs.length
-        ? `<div class="card" style="border-left:4px solid var(--accent);margin-bottom:.6rem;padding:.7rem .8rem"><b style="font-size:.88rem">🛟 Demandes d'hôte (${hostReqs.length})</b>`
+        ? `<div class="card" style="border:1px solid var(--line);background:var(--accent-soft);margin-bottom:.6rem;padding:.7rem .8rem"><b style="font-size:.88rem">🛟 Demandes d'hôte (${hostReqs.length})</b>`
           + hostReqs.map((u) => `<div class="qrow" style="gap:.4rem;flex-wrap:wrap">
               <div class="qname" style="flex:1;min-width:110px;cursor:pointer" data-au-open="${u.id}">${escapeHtml(u.username || "Voyageur")} ${u.is_verified ? "✅" : ""}<div class="meta muted" style="font-size:.72rem">${escapeHtml(u.city || "")} · score ${u.trust_score ?? 0} · voir ›</div></div>
               <button class="btn-primary" data-au-hostok="${u.id}" style="padding:.3rem .6rem;font-size:.72rem">✓ Accepter</button>
@@ -9389,7 +9419,7 @@
       // Cooldown anti-spam (en plus du verrou once) : pas de diffusion en rafale au cercle.
       const cdKey = "loc:" + (isEmergency ? "sos" : "share"); const cdMs = isEmergency ? 45000 : 30000;
       const left = cooldownLeft(cdKey, cdMs);
-      if (left) { if (typeof toast === "function") toast("⏳", i18nT("Déjà envoyé — réessaie dans {n}s.", { n: left })); return Promise.resolve(); }
+      if (left) { if (typeof toast === "function") toast("⏳", i18nT("Déjà envoyé, réessaie dans {n}s.", { n: left })); return Promise.resolve(); }
       // Verrou : on n'envoie qu'une position à la fois (anti double-clic / spam).
       return once("loc:" + (isEmergency ? "sos" : "share"), () => new Promise((resolve) => {
         msg.style.color = "var(--muted)"; msg.textContent = "Localisation en cours…";
@@ -14411,7 +14441,7 @@
       } else if (/dispo|autour|qui est|mate|voyageur|rencontr|cercle|connex/.test(t)) {
         const act = Object.values(typeof travelerMap !== "undefined" ? travelerMap : {}).filter((p) => p && p.id !== myUserId && typeof isActive === "function" && isActive(p));
         const n = act.length;
-        html = n ? ("👀 <b>" + n + "</b> " + i18nT(n > 1 ? "voyageur·ses dispo autour de toi" : "voyageur·se dispo autour de toi")) : ("👀 " + i18nT("Personne en ligne là tout de suite — repasse un peu plus tard 🌍"));
+        html = n ? ("👀 <b>" + n + "</b> " + i18nT(n > 1 ? "voyageur·ses dispo autour de toi" : "voyageur·se dispo autour de toi")) : ("👀 " + i18nT("Personne en ligne là tout de suite, repasse un peu plus tard 🌍"));
       } else {
         const cf = (typeof allCafes !== "undefined" && allCafes && allCafes.length) ? allCafes[0] : null;
         html = cf ? ("🛟 " + i18nT("À découvrir") + " : <b>" + escapeHtml(cf.name || "") + "</b>" + (cf.city ? " · " + escapeHtml(cf.city) : "")) : ("🛟 " + i18nT("Des lieux sûrs t'attendent juste à côté"));
