@@ -1222,6 +1222,15 @@
     .mappop-comm .comm-n { font-weight: 700; font-size: .82rem; color: var(--ink); }
     .mappop-comm .comm-names { font-size: .74rem; margin-bottom: .1rem; }
     .mappop-comm .comm-q { font-size: .76rem; font-weight: 700; color: var(--accent); margin-top: .15rem; }
+    /* 🌍 Cartes HISTOIRES de pays (« Découvrir » → popInfo, carte #5 v2) */
+    .cstory-facts { display: flex; flex-direction: column; gap: .6rem; text-align: left; }
+    .cstory-fact { display: flex; gap: .6rem; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .65rem .7rem;
+      box-shadow: 0 1px 2px rgba(120,60,20,.04), 0 6px 16px -10px rgba(120,60,20,.12); }
+    .cstory-ic { flex: 0 0 auto; width: 36px; height: 36px; display: grid; place-items: center; font-size: 1.25rem; background: var(--accent-soft); border-radius: 11px; }
+    .cstory-bd { flex: 1; min-width: 0; }
+    .cstory-bd b { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: .95rem; color: var(--ink); }
+    .cstory-txt { font-size: .82rem; line-height: 1.5; color: var(--muted); margin-top: .12rem; }
+    .cstory-hl { margin-top: .8rem; padding-top: .7rem; border-top: 1px solid var(--line); font-size: .82rem; line-height: 1.5; color: var(--ink); text-align: left; }
     /* Marqueurs personnalisés (pastilles emoji colorées) */
     .epin { width: 36px; height: 36px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
       display: grid; place-items: center; box-shadow: 0 4px 10px rgba(0,0,0,.4); border: 2.5px solid #fff; transition: transform .15s ease; }

@@ -294,7 +294,8 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=637"></script>
+  <script src="sunmates-badges.js?v=638"></script>
+  <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -344,7 +345,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=637">
+  <link rel="stylesheet" href="styles.css?v=638">
   <!-- ============================================================
        PREVIEW FIXES (inline, scopé preview) — 19/06 : header mobile,
        onglet Messages, idées geo cliquables, centrage, contrôle saison.
@@ -13576,6 +13577,107 @@
     function _smCityKey(c) { return (typeof _deburr === "function" ? _deburr(c) : String(c || "").toLowerCase()).replace(/,.*$/, "").trim(); }
     function _cityLL(city) { return SM_CITY_LL[_smCityKey(city)] || null; }
 
+    // ===== 🌍 Carte #5 v2 : calque COMMUNAUTÉ par PAYS → TOUS les pays de l'app représentés =====
+    // Centroïdes pays (clé normalisée FR + alias EN car les données mêlent les deux langues).
+    const SM_COUNTRY_LL = {
+      "france": [48.8566, 2.3522],
+      "espagne": [40.4168, -3.7038], "spain": [40.4168, -3.7038],
+      "portugal": [38.7223, -9.1393],
+      "italie": [41.9028, 12.4964], "italy": [41.9028, 12.4964],
+      "allemagne": [52.52, 13.405], "germany": [52.52, 13.405],
+      "royaume-uni": [51.5074, -0.1278], "united kingdom": [51.5074, -0.1278], "angleterre": [51.5074, -0.1278],
+      "irlande": [53.3498, -6.2603], "ireland": [53.3498, -6.2603],
+      "pays-bas": [52.3676, 4.9041], "netherlands": [52.3676, 4.9041],
+      "belgique": [50.8503, 4.3517], "belgium": [50.8503, 4.3517],
+      "suisse": [46.948, 7.4474], "switzerland": [46.948, 7.4474],
+      "autriche": [48.2082, 16.3738], "austria": [48.2082, 16.3738],
+      "grece": [37.9838, 23.7275], "greece": [37.9838, 23.7275],
+      "suede": [59.3293, 18.0686], "sweden": [59.3293, 18.0686],
+      "danemark": [55.6761, 12.5683], "denmark": [55.6761, 12.5683],
+      "norvege": [59.9139, 10.7522], "norway": [59.9139, 10.7522],
+      "islande": [64.1466, -21.9426], "iceland": [64.1466, -21.9426],
+      "republique tcheque": [50.0755, 14.4378], "czechia": [50.0755, 14.4378], "czech republic": [50.0755, 14.4378],
+      "hongrie": [47.4979, 19.0402], "hungary": [47.4979, 19.0402],
+      "turquie": [41.0082, 28.9784], "turkey": [41.0082, 28.9784],
+      "maroc": [31.6295, -7.9811], "morocco": [31.6295, -7.9811],
+      "egypte": [30.0444, 31.2357], "egypt": [30.0444, 31.2357],
+      "afrique du sud": [-33.9249, 18.4241], "south africa": [-33.9249, 18.4241],
+      "japon": [35.6762, 139.6503], "japan": [35.6762, 139.6503],
+      "coree du sud": [37.5665, 126.978], "south korea": [37.5665, 126.978],
+      "chine": [39.9042, 116.4074], "china": [39.9042, 116.4074],
+      "thailande": [13.7563, 100.5018], "thailand": [13.7563, 100.5018],
+      "vietnam": [21.0278, 105.8342],
+      "indonesie": [-8.6705, 115.2126], "indonesia": [-8.6705, 115.2126],
+      "inde": [28.6139, 77.209], "india": [28.6139, 77.209],
+      "emirats arabes unis": [25.2048, 55.2708], "united arab emirates": [25.2048, 55.2708],
+      "australie": [-33.8688, 151.2093], "australia": [-33.8688, 151.2093],
+      "nouvelle-zelande": [-36.8485, 174.7633], "new zealand": [-36.8485, 174.7633],
+      "etats-unis": [40.7128, -74.006], "united states": [40.7128, -74.006], "usa": [40.7128, -74.006],
+      "canada": [45.5017, -73.5673],
+      "mexique": [19.4326, -99.1332], "mexico": [19.4326, -99.1332],
+      "bresil": [-22.9068, -43.1729], "brazil": [-22.9068, -43.1729],
+      "argentine": [-34.6037, -58.3816], "argentina": [-34.6037, -58.3816],
+    };
+    // Ville (sans pays dans la chaîne) → pays, pour dériver le pays quand "city" n'a pas de virgule.
+    const CITY_COUNTRY = {
+      "paris": "France", "lyon": "France", "marseille": "France", "bordeaux": "France", "lille": "France", "toulouse": "France", "nice": "France", "nantes": "France", "strasbourg": "France", "montpellier": "France", "biarritz": "France", "annecy": "France",
+      "lisbonne": "Portugal", "lisboa": "Portugal", "porto": "Portugal",
+      "madrid": "Espagne", "barcelone": "Espagne", "barcelona": "Espagne", "seville": "Espagne", "valence": "Espagne",
+      "rome": "Italie", "roma": "Italie", "milan": "Italie", "florence": "Italie", "venise": "Italie", "naples": "Italie",
+      "berlin": "Allemagne", "munich": "Allemagne", "hambourg": "Allemagne",
+      "londres": "Royaume-Uni", "london": "Royaume-Uni", "amsterdam": "Pays-Bas", "bruxelles": "Belgique",
+      "prague": "République tchèque", "vienne": "Autriche", "budapest": "Hongrie", "athenes": "Grèce",
+      "copenhague": "Danemark", "stockholm": "Suède", "dublin": "Irlande", "reykjavik": "Islande",
+      "bangkok": "Thaïlande", "tokyo": "Japon", "kyoto": "Japon", "bali": "Indonésie",
+      "marrakech": "Maroc", "istanbul": "Turquie", "interlaken": "Suisse", "geneve": "Suisse", "zurich": "Suisse",
+      "new york": "États-Unis", "new-york": "États-Unis", "los angeles": "États-Unis", "montreal": "Canada",
+      "mexico": "Mexique", "rio de janeiro": "Brésil", "rio": "Brésil", "buenos aires": "Argentine",
+    };
+    function _countryKey(s) { return (typeof _deburr === "function" ? _deburr(s) : String(s || "").toLowerCase()).trim(); }
+    function _countryLL(country) { return SM_COUNTRY_LL[_countryKey(country)] || null; }
+    // Dérive le PAYS d'un voyageur/voyage : champ country explicite, sinon "Ville, Pays", sinon table ville→pays.
+    function _deriveCountry(p) {
+      if (!p) return "";
+      if (p.country && String(p.country).trim()) return String(p.country).trim();
+      const city = p.city || p.hometown || "";
+      if (!city) return "";
+      const parts = String(city).split(",");
+      if (parts.length > 1) { const c = parts[parts.length - 1].trim(); if (c) return c; }
+      return CITY_COUNTRY[_smCityKey(city)] || "";
+    }
+    // Liste CANONIQUE des pays de l'app → un repère « Communauté/Découvrir » par pays (TOUS représentés).
+    // [clé normalisée FR, nom FR, drapeau]
+    const SM_COUNTRIES = [
+      ["france", "France", "🇫🇷"], ["espagne", "Espagne", "🇪🇸"], ["portugal", "Portugal", "🇵🇹"], ["italie", "Italie", "🇮🇹"],
+      ["allemagne", "Allemagne", "🇩🇪"], ["royaume-uni", "Royaume-Uni", "🇬🇧"], ["irlande", "Irlande", "🇮🇪"], ["pays-bas", "Pays-Bas", "🇳🇱"],
+      ["belgique", "Belgique", "🇧🇪"], ["suisse", "Suisse", "🇨🇭"], ["autriche", "Autriche", "🇦🇹"], ["grece", "Grèce", "🇬🇷"],
+      ["suede", "Suède", "🇸🇪"], ["danemark", "Danemark", "🇩🇰"], ["norvege", "Norvège", "🇳🇴"], ["islande", "Islande", "🇮🇸"],
+      ["republique tcheque", "République tchèque", "🇨🇿"], ["hongrie", "Hongrie", "🇭🇺"], ["turquie", "Turquie", "🇹🇷"], ["maroc", "Maroc", "🇲🇦"],
+      ["egypte", "Égypte", "🇪🇬"], ["afrique du sud", "Afrique du Sud", "🇿🇦"], ["japon", "Japon", "🇯🇵"], ["coree du sud", "Corée du Sud", "🇰🇷"],
+      ["chine", "Chine", "🇨🇳"], ["thailande", "Thaïlande", "🇹🇭"], ["vietnam", "Vietnam", "🇻🇳"], ["indonesie", "Indonésie", "🇮🇩"],
+      ["inde", "Inde", "🇮🇳"], ["emirats arabes unis", "Émirats arabes unis", "🇦🇪"], ["australie", "Australie", "🇦🇺"], ["nouvelle-zelande", "Nouvelle-Zélande", "🇳🇿"],
+      ["etats-unis", "États-Unis", "🇺🇸"], ["canada", "Canada", "🇨🇦"], ["mexique", "Mexique", "🇲🇽"], ["bresil", "Brésil", "🇧🇷"], ["argentine", "Argentine", "🇦🇷"],
+    ];
+    // 🌍 « Découvrir un pays » → cartes histoires riches (dataset SM_COUNTRY_STORIES défini plus bas).
+    function openCountryStory(country) {
+      if (!country || typeof popInfo !== "function") return;
+      const key = _countryKey(country);
+      const story = (typeof SM_COUNTRY_STORIES !== "undefined") ? (SM_COUNTRY_STORIES[key] || null) : null;
+      const flag = (story && story.emoji) || "🌍";
+      const name = (story && story.name) || country;
+      let body = "";
+      if (story && story.facts && story.facts.length) {
+        body = `<div class="cstory-facts">` + story.facts.map((f) =>
+          `<div class="cstory-fact"><div class="cstory-ic">${f.icon || "✨"}</div><div class="cstory-bd"><b>${escapeHtml(f.title || "")}</b><div class="cstory-txt">${escapeHtml(f.story || "")}</div></div></div>`
+        ).join("") + `</div>`;
+        if (story.highlights) body += `<div class="cstory-hl">📌 <b>${i18nT("À voir")} :</b> ${escapeHtml(story.highlights)}</div>`;
+      } else {
+        const fact = (typeof _smPlaceFact === "function") ? _smPlaceFact("", country) : "";
+        body = fact ? `<div class="cstory-txt">💡 ${escapeHtml(fact)}</div>` : `<p class="muted">${i18nT("Bientôt des histoires sur ce pays")} ✨</p>`;
+      }
+      popInfo(flag, i18nT("Découvrir ") + name, body);
+    }
+
     async function renderHomeMap() {
       if (typeof L === "undefined") return;
       const el = $("homeMap"); if (!el) return;
@@ -13750,6 +13852,8 @@
           node.querySelectorAll("[data-hmquest]").forEach((b) => b.addEventListener("click", () => { homeLeaf.closePopup(); goToTab("jeux"); const q = (typeof questByKey === "function") && questByKey(b.dataset.hmquest); if (q && typeof openDetail === "function") setTimeout(() => openDetail(q), 80); }));
           // 🌍 Repère COMMUNAUTÉ (carte #5) : « Explorer [ville] » → on cap la carte sur la ville
           node.querySelectorAll("[data-hmcommcity]").forEach((b) => b.addEventListener("click", () => { homeLeaf.closePopup(); const city = b.dataset.hmcommcity; const ll = (typeof _cityLL === "function") ? _cityLL(city) : null; if (ll && homeLeaf) homeLeaf.setView(ll, 11, { animate: true }); if (typeof toast === "function") toast("🌍", i18nT("Cap sur ") + String(city).replace(/, .*$/, "") + " ✨"); }));
+          // 🌍 « Découvrir un pays » → cartes histoires (carte #5 v2)
+          node.querySelectorAll("[data-hmcommctry]").forEach((b) => b.addEventListener("click", () => { homeLeaf.closePopup(); if (typeof openCountryStory === "function") openCountryStory(b.dataset.hmcommctry); }));
           // Jouer une quête-lieu de Paris : ouvre la VRAIE quête (si la migration est
           // lancée) pour gagner XP + badge ; sinon repli propre sur l'accueil des Jeux.
           node.querySelectorAll("[data-hmqplay]").forEach((b) => b.addEventListener("click", () => {
@@ -14010,31 +14114,32 @@
       //   renseigné leur localisation (plus seulement Paris) → repère « explore + quêtes à débusquer ».
       try {
         const _betaQ = !(typeof betaOn === "function" && !betaOn()); // quêtes = complet uniquement (gaming)
-        const _commByCity = {};
+        // 1) AGRÉGER les voyageurs par PAYS (depuis leur ville / champ pays)
+        const _byCountry = {};
         Object.values(typeof travelerMap !== "undefined" ? travelerMap : {}).forEach((p) => {
-          if (!p || p.id === myUserId || !p.city) return;
-          const ll = _cityLL(p.city); if (!ll) return;
-          const k = _smCityKey(p.city);
-          if (!_commByCity[k]) _commByCity[k] = { city: p.city, ll: ll, people: [] };
-          _commByCity[k].people.push(p);
+          if (!p || p.id === myUserId) return;
+          const country = _deriveCountry(p); if (!country) return;
+          const ck = _countryKey(country);
+          (_byCountry[ck] = _byCountry[ck] || []).push(p);
         });
-        Object.values(_commByCity).forEach((c) => {
-          // anti-doublon : si la ville a déjà des points (quêtes/lieux) sur la carte, pas de repère communauté
-          if ((_homeCityPts || []).some((p) => _sameCity(p.city, c.city))) return;
-          const cn = String(c.city).replace(/, .*$/, "");
-          const n = c.people.length;
-          const qn = _betaQ ? (typeof allQuests !== "undefined" ? allQuests : []).filter((q) => q.kind === "quest" && _sameCity(q.city, c.city)).length : 0;
-          let h = 0; const s = "comm" + cn; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100000; // jitter déterministe
-          const jll = [c.ll[0] + ((h % 100) / 100 - 0.5) * 0.05, c.ll[1] + ((Math.floor(h / 100) % 100) / 100 - 0.5) * 0.05];
-          const fact = _smPlaceFact(c.city, "");
-          // Data : vrais avatars + noms des voyageurs de la ville (jusqu'à 3 vignettes)
-          const av = c.people.slice(0, 3).map((p) => p.avatar_url
+        // 2) UN repère par PAYS connu de l'app → TOUS représentés, enrichis du nb de voyageurs + quêtes
+        SM_COUNTRIES.forEach(([ck, name, flag]) => {
+          const ll = _countryLL(ck); if (!ll) return;
+          const people = _byCountry[ck] || [];
+          const n = people.length;
+          const qn = _betaQ ? (typeof allQuests !== "undefined" ? allQuests : []).filter((q) => _countryKey(_deriveCountry(q)) === ck).length : 0;
+          let h = 0; for (let i = 0; i < ck.length; i++) h = (h * 31 + ck.charCodeAt(i)) % 100000; // jitter déterministe léger
+          const jll = [ll[0] + ((h % 100) / 100 - 0.5) * 0.4, ll[1] + ((Math.floor(h / 100) % 100) / 100 - 0.5) * 0.4];
+          const av = people.slice(0, 3).map((p) => p.avatar_url
             ? `<img src="${escapeHtml(p.avatar_url)}" alt="">`
             : `<span class="comm-ph">${escapeHtml((p.username || "?").slice(0, 1).toUpperCase())}</span>`).join("");
-          const names = c.people.slice(0, 2).map((p) => escapeHtml(p.username || "Voyageur")).join(", ") + (n > 2 ? " +" + (n - 2) : "");
-          const questLine = _betaQ ? (qn ? `<div class="comm-q">🎯 ${qn} quête${qn > 1 ? "s" : ""} à y débusquer</div>` : "") : "";
-          const mk = L.marker(jll, { icon: epinIcon("🌍", "#3AA0FF", "comm") })
-            .bindPopup(`<div class="mappop-mini mappop-comm"><b>🌍 ${escapeHtml(cn)}</b>${av ? `<div class="comm-avs">${av}</div>` : ""}<div class="comm-n">👥 ${n} voyageur·se${n > 1 ? "s y sont" : " y est"}</div><div class="muted comm-names">${names}</div>${questLine}${fact ? `<div class="mappop-fact">💡 ${escapeHtml(fact)}</div>` : ""}<button class="mappop-btn" data-hmcommcity="${escapeHtml(c.city)}">✨ Explorer ${escapeHtml(cn)}</button></div>`);
+          const names = n ? (people.slice(0, 2).map((p) => escapeHtml(p.username || "Voyageur")).join(", ") + (n > 2 ? " +" + (n - 2) : "")) : "";
+          const commLine = n
+            ? `${av ? `<div class="comm-avs">${av}</div>` : ""}<div class="comm-n">👥 ${n} voyageur·se${n > 1 ? "s y sont" : " y est"}</div>${names ? `<div class="muted comm-names">${names}</div>` : ""}`
+            : `<div class="comm-n muted">✨ À explorer en éclaireur·euse</div>`;
+          const questLine = (_betaQ && qn) ? `<div class="comm-q">🎯 ${qn} quête${qn > 1 ? "s" : ""} à y débusquer</div>` : "";
+          const mk = L.marker(jll, { icon: epinIcon(flag, "#3AA0FF", "comm") })
+            .bindPopup(`<div class="mappop-mini mappop-comm"><b>${flag} ${escapeHtml(name)}</b>${commLine}${questLine}<button class="mappop-btn" data-hmcommctry="${escapeHtml(name)}">✨ Découvrir ${escapeHtml(name)}</button></div>`);
           mk.smType = "community"; homeMarkersByType.community.push(mk); allMarkers.push(mk);
         });
       } catch (e) {}
@@ -14451,6 +14556,16 @@
       // invalides (null→0/0, NaN) faisait tirer une ligne (patte de rosace) de part en part.
       const valid = toAdd.filter((m) => { try { const ll = m.getLatLng(); return ll && isFinite(ll.lat) && isFinite(ll.lng) && !(ll.lat === 0 && ll.lng === 0); } catch (e) { return false; } });
       if (valid.length) homeCluster.addLayers(valid);
+      // 🌍 Carte #5 v2 : quand on ISOLE un calque (un seul actif), recadrer la carte dessus.
+      // Sinon les marqueurs éparpillés dans le monde (ex : Communauté) restent hors champ → « ça ne marche pas ».
+      // (Au 1er rendu tous les calques sont actifs → on.length > 1 → ne se déclenche pas.)
+      try {
+        const on = Object.keys(homeLayerOn).filter((k) => homeLayerOn[k]);
+        if (homeLeaf && on.length === 1 && valid.length) {
+          homeFitDone = true;
+          homeLeaf.fitBounds(L.featureGroup(valid).getBounds().pad(0.15), { maxZoom: on[0] === "community" ? 5 : 13, animate: true });
+        }
+      } catch (e) {}
     }
 
     function renderHomeLegend() {

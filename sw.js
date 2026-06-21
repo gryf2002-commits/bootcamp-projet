@@ -3,7 +3,7 @@
 // cache à la volée les libs CDN et les images (avatars, tuiles de carte) en
 // "stale-while-revalidate" (on sert le cache tout de suite, on rafraîchit en fond).
 // Les écritures Supabase (POST/PATCH…) ne sont jamais touchées.
-const VER = "v637";
+const VER = "v638";
 const SHELL_CACHE = "sunmates-shell-" + VER;   // coquille (versionnée → purge à chaque déploiement)
 const RUNTIME = "sunmates-rt-" + VER;          // libs CDN/fonts (regénéré par version, re-précaché à l'install)
 // #15/#8 : cache MÉDIA STABLE (NON versionné) → avatars, photos (quêtes/check-ins), tuiles de carte.
@@ -13,7 +13,7 @@ const MEDIA = "sunmates-media";
 const MEDIA_MAX = 350;
 // Depuis la bascule vitrine (v567) : "./" + "./index.html" = la VITRINE (accueil) ;
 // "./app.html" = l'APPLICATION. Les deux sont précachées → l'app installée marche hors-ligne.
-const SHELL = ["./", "./index.html", "./app.html", "./manifest.json", "./icon.svg", "./styles.css", "./sunmates-badges.js", "./sunmates-icons-v2.js",
+const SHELL = ["./", "./index.html", "./app.html", "./manifest.json", "./icon.svg", "./styles.css", "./sunmates-badges.js", "./sunmates-icons-v2.js", "./sm_country_stories.js",
   "./icon-192.png", "./icon-512.png", "./icon-180.png", "./icon-maskable-512.png", "./badge-96.png"];
 // Libs CDN précachées dès l'install → carte/QR/etc. dispo INSTANTANÉMENT et hors-ligne (cache plus "lourd" mais + fluide).
 const CDN_PRECACHE = [
