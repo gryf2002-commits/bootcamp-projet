@@ -1,6 +1,7 @@
 {
-  "candidate": "v624",
+  "candidate": "v625",
   "items": [
+    "✨ Header nettoyé : le bandeau « Installer l'app » ne chevauche plus le logo (fini la cassure en haut à gauche) — il s'affiche désormais en bas.",
     "🌅 « Ici & maintenant » devient une bulle repliable : touche l'en-tête pour déplier/replier tes idées du moment.",
     "🆘 Sécurité plus claire : les accès rapides sont regroupés en « En cas d'urgence » et « Prévention ».",
     "🔔 Autorisations : l'état (Actif · Bloqué · À activer) s'affiche en pastille claire — sans faux interrupteur, ton navigateur garde le contrôle.",

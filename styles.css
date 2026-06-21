@@ -438,11 +438,15 @@
     .pcard .pcard-actions button { flex: 1 1 calc(50% - .25rem); white-space: nowrap; } /* 2 par ligne sur petits écrans */
 
     /* Bannière d'installation PWA (cachée par défaut, glisse depuis le haut) */
-    .pwa-banner { position: fixed; left: 50%; top: calc(.6rem + env(safe-area-inset-top, 0px)); z-index: var(--z-pwa);
+    /* 21/06 (retour Maxime « cassure en haut à gauche / pavé flou pas pleine largeur ») :
+       le bandeau flottait EN HAUT, par-dessus le header/logo (carte arrondie quasi-couleur-page,
+       pas pleine largeur → son bord lisait comme une couture). Déplacé EN BAS (au-dessus de la nav),
+       il ne chevauche plus le logo → fini la cassure. Pattern standard d'un prompt d'installation. */
+    .pwa-banner { position: fixed; left: 50%; bottom: calc(.7rem + env(safe-area-inset-bottom, 0px) + 64px); z-index: var(--z-pwa);
       width: calc(100% - 1.2rem); max-width: 460px; display: flex; align-items: center; gap: .7rem;
       padding: .7rem .8rem; background: var(--paper); border: 1px solid var(--line); border-radius: 16px;
       box-shadow: 0 14px 40px rgba(0,0,0,.22); opacity: 0; pointer-events: none;
-      transform: translateX(-50%) translateY(-160%); transition: transform .42s cubic-bezier(.2,.8,.2,1), opacity .3s ease; }
+      transform: translateX(-50%) translateY(160%); transition: transform .42s cubic-bezier(.2,.8,.2,1), opacity .3s ease; }
     .pwa-banner.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
     .pwa-ic { width: 42px; height: 42px; border-radius: 12px; background: var(--accent-grad); display: grid; place-items: center; font-size: 1.35rem; flex-shrink: 0; }
     .pwa-txt { flex: 1; display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
