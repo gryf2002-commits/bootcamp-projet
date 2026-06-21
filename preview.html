@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=620"></script>
+  <script src="sunmates-badges.js?v=621"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -962,6 +962,49 @@
     @media (prefers-reduced-motion: reduce) {
       .wr-slide.is-shown { transition: none; }
       .wr-bar.is-active.run > i { transition: none; width: 100%; }
+    }
+
+    /* ============================================================
+       LOT UX SAFE 21/06 (preview-only) — micro-anim chat · popups carte lisibles · cibles 44px
+       ============================================================ */
+
+    /* — 1. Micro-anim bulles de chat —
+       chatBody.innerHTML n'est remplacé qu'à l'OUVERTURE d'une conv (settle doux groupé) ;
+       les nouveaux messages sont AJOUTÉS un par un (chacun pop). Pas de re-jeu à chaque message. */
+    @keyframes smBubbleIn {
+      from { opacity: 0; transform: translateY(8px) scale(.985); }
+      to   { opacity: 1; transform: none; }
+    }
+    .bubble { animation: smBubbleIn .28s cubic-bezier(.22,1,.36,1) both; }
+
+    /* — 2. Popups carte (Leaflet) lisibles en mode JOUR —
+       (le mode nuit est déjà géré dans styles.css l.2841 ; on ne touche QUE le jour) */
+    .leaflet-popup-content { font-size: .9rem !important; line-height: 1.5 !important; color: #2A1A3E; }
+    body:not(.theme-dusk) .leaflet-popup-content-wrapper,
+    body:not(.theme-dusk) .leaflet-popup-tip {
+      background: #FFF8F2 !important; color: #2A1A3E !important;
+      border: 1px solid rgba(255,126,114,.30);
+    }
+    body:not(.theme-dusk) .leaflet-popup-content-wrapper { box-shadow: 0 16px 38px -14px rgba(42,22,46,.45) !important; }
+    body:not(.theme-dusk) .leaflet-popup-content b { color: #1f1330; }
+    /* bouton fermer = cible tactile correcte + lisible dans les 2 modes */
+    .leaflet-popup-close-button {
+      width: 30px !important; height: 30px !important; font-size: 20px !important;
+      display: flex !important; align-items: center; justify-content: center;
+      color: var(--muted, #8a7da0) !important;
+    }
+
+    /* — 3. Cibles tactiles ~44px (conservateur : on agrandit la zone cliquable, pas l'icône) — */
+    .mappop { min-height: 40px !important; padding: .5rem .8rem !important; display: inline-flex; align-items: center; gap: .3rem; }
+    .bubble-act .msg-del {
+      width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+    }
+    .bubble-translate, .msg-quest { min-height: 36px; display: inline-flex; align-items: center; gap: .3rem; }
+    .bubble-audio button[data-vplay] { min-width: 36px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bubble { animation: none; }
     }
   </style>
 
