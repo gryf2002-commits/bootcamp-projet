@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=641"></script>
+  <script src="sunmates-badges.js?v=642"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
@@ -3567,6 +3567,11 @@
     const SUPABASE_URL = "https://ihiwuharxkmkzaxixhae.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_-Q0evGrgq76Fp-YWLNA1Qg_jsOXEIcn";
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Mot de passe oublié — on capture « type=recovery » TOUT DE SUITE (Supabase nettoie le hash juste après,
+    // et l'event PASSWORD_RECOVERY peut partir AVANT que l'écouteur soit prêt → sinon on entrerait dans l'app
+    // sans changer son mot de passe : bug constaté le 21/06). render() s'appuie sur ce drapeau.
+    let _pwRecoveryMode = false;
+    try { if (/[#&?]type=recovery/.test(location.hash || "") || /[#&?]type=recovery/.test(location.search || "")) _pwRecoveryMode = true; } catch (e) {}
     try { window.db = db; } catch (e) {} // exposé pour le loader DA (fetch da_tokens) + la console « Publier pour tous »
     let currentLang = localStorage.getItem("sm_lang") || "fr"; // déclaré tôt (utilisé par renderSafetyTip/updateStreak appelés avant le bloc i18n)
 
@@ -5390,7 +5395,7 @@
         m.style.color = "var(--muted)"; m.textContent = "Un instant…";
         const { error } = await db.auth.updateUser({ password: p1 });
         if (error) { m.style.color = "var(--danger)"; m.textContent = errFr(error); }
-        else { m.style.color = "var(--ok)"; m.textContent = "✅ C'est tout bon ! On te connecte…"; setTimeout(() => { try { location.replace(location.origin + location.pathname); } catch (e) { location.reload(); } }, 1000); }
+        else { _pwRecoveryMode = false; m.style.color = "var(--ok)"; m.textContent = "✅ C'est tout bon ! On te connecte…"; setTimeout(() => { try { location.replace(location.origin + location.pathname); } catch (e) { location.reload(); } }, 1000); }
       });
     }); }
 
@@ -5406,12 +5411,15 @@
     db.auth.onAuthStateChange((_event, session) => {
       // Arrivée via le lien « mot de passe oublié » → on affiche l'écran « nouveau mot de passe »
       // (et PAS l'app), même si une session de récupération existe déjà.
-      if (_event === "PASSWORD_RECOVERY") { setTimeout(showPwRecovery, 0); return; }
+      if (_event === "PASSWORD_RECOVERY") { _pwRecoveryMode = true; setTimeout(showPwRecovery, 0); return; }
       setTimeout(() => render(session), 0);
     });
 
     let _renderedUserId = null; // anti-flicker : ne relance PAS tout le pipeline à chaque event auth (TOKEN_REFRESHED, SIGNED_IN répétés…)
     async function render(session) {
+      // Lien « mot de passe oublié » : on bloque l'app et on impose l'écran « nouveau mot de passe »
+      // (même si une session de récupération existe déjà). Tant que le mot de passe n'est pas changé, pas d'app.
+      if (_pwRecoveryMode) { show($("authView"), false); show($("appView"), false); showPwRecovery(); return; }
       const loggedIn = !!session;
       show($("authView"), !loggedIn);
       show($("appView"), loggedIn);
