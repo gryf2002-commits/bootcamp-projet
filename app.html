@@ -294,7 +294,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=621"></script>
+  <script src="sunmates-badges.js?v=622"></script>
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
     /* Banque d'icônes v2 : emblèmes sur pastilles-joyaux (couleur+gloss = DA). */
@@ -1006,6 +1006,25 @@
     @media (prefers-reduced-motion: reduce) {
       .bubble { animation: none; }
     }
+
+    /* ============================================================
+       LOT LITE 21/06 — lisibilité tuiles d'aide Sécurité
+       Cause : #helpAround + .grid2 en 2 colonnes trop étroites → titres TRONQUÉS
+       (« ...ouver un mmissar », « Numéros d'urgenc »). Les rangées « Conseils & secours »
+       juste en dessous sont en pleine largeur et lisibles → on aligne dessus.
+       ============================================================ */
+    body.sm-lite #helpAround + .grid2 { grid-template-columns: 1fr !important; }
+    body.sm-lite #helpAround + .grid2 .tile {
+      display: flex !important; flex-direction: row !important; align-items: center !important;
+      text-align: left !important; gap: .8rem !important; padding: .85rem .95rem !important; width: 100% !important;
+    }
+    body.sm-lite #helpAround + .grid2 .tile .thumb { margin: 0 !important; width: 42px !important; height: 42px !important; flex: 0 0 auto !important; }
+    body.sm-lite #helpAround + .grid2 .tile .t-name {
+      white-space: normal !important; overflow: visible !important;
+      -webkit-line-clamp: initial !important; display: block !important;
+      min-height: 0 !important; font-size: .95rem !important; line-height: 1.25 !important;
+    }
+    body.sm-lite #helpAround + .grid2 .tile .t-meta { white-space: normal !important; }
   </style>
 
   <!-- ============================================================
