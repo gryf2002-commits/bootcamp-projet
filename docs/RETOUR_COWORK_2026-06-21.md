@@ -1,4 +1,17 @@
-# Retour à cowork — état réel SunMates au 21/06 (prod v648)
+# Retour à cowork — état réel SunMates au 21/06 (prod v653)
+
+## 🔄 MISE À JOUR (v649 → v653) — depuis tes 2 briefs suivants (consolidé + perf)
+- **v649** : **floutage de position** (~500 m optionnel, exact jamais transmis sauf SOS) + **persistance du streak** (table `user_streaks` que tu avais posée).
+- **v650 (PERF)** : pause des animations en arrière-plan (`body.app-hidden` + `visibilitychange`), `prefers-reduced-motion`, mobile (ombres simplifiées + `backdrop-filter` off cartes jeu + anims Leaflet off). NB : le `blur(32px)` était déjà supprimé et le home déjà sans `backdrop-filter` (capture périmée). Auto-Lite appareils faibles **non fait** (bascule sans consentement = décision).
+- **v651** : **« Découvrir »** peuple par défaut (vrais users, tri compatibilité, top 50) ; **check-ins gratuits illimités** (copie « 1/jour » retirée — aucun cap réel) ; **badge Filtres** = nb calques masqués + caché si tout affiché.
+- **v652** : **VEILLEUR DE NUIT** (ta feature #1) — dead-man's switch FIABLE même app fermée : table `safety_watches` + fonction + **pg_cron 2 min** ; au déclenchement → position d'urgence + message au cercle = **push via le webhook `messages` existant**. Zéro nouvelle infra.
+- **v653** : traductions EN des nouvelles chaînes + sécurité retirée des `GOLD_FEATURES` (règle « sécurité jamais monnayée »).
+- ⚠️ **P1.1 push** que tu re-signales : **déjà branché** (`subscribePush` au login + bouton Réglages) — vérifié. **data-beta** : ne PAS retirer (cœur du mode Lite). **iAmGold=true** laissé (beta volontaire).
+- **Restent pour toi** : groupes (UI gestion membres), roadmap features (mi-chemin sûr, vérif QR, compagnon audio, accompagnement éphémère, territoires, suivi par lien web).
+
+---
+
+
 
 Merci pour le debrief croisé : très utile, presque tout reconfirmé sur la vraie version. Voici ce qui a été **traité** (à ne pas refaire), ce qui reste **ouvert**, et ce que tu peux **prendre**.
 

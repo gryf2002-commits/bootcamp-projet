@@ -1,10 +1,10 @@
 {
-  "candidate": "v652",
+  "candidate": "v653",
   "items": [
-    "🌙 Veilleur de nuit : avant de sortir seul·e, lance une veille (de 30 min à 8 h). Si tu ne confirmes pas « bien arrivé·e » à temps, ton cercle de confiance est prévenu — ta dernière position sur la carte ET une notification à chaque membre. Nouveauté clé : ça veille MÊME si tu fermes l'app, car la surveillance tourne aussi côté serveur.",
-    "🌍 « Découvrir » montre enfin les vrais voyageur·ses par défaut, triés par compatibilité.",
-    "📍 Check-ins gratuits et illimités pour tout le monde.",
-    "🔋 Moins de chauffe/batterie (animations en pause en arrière-plan, effets allégés sur mobile).",
-    "🔥 Série sauvegardée sur ton compte + position approximative en option + « Bien démarrer » pour les nouveaux."
+    "🇬🇧 Les nouveautés récentes (veilleur de nuit, « Bien démarrer », position approximative…) sont désormais traduites en anglais.",
+    "🛡️ La sécurité reste 100% gratuite pour tous : on a retiré toute mention qui la présentait comme un avantage payant.",
+    "🌙 Veilleur de nuit : une veille qui prévient ton cercle (position + notif) si tu ne confirmes pas ton retour — même app fermée.",
+    "🌍 « Découvrir » montre les vrais voyageur·ses par défaut + check-ins gratuits illimités.",
+    "🔋 Moins de chauffe/batterie + meilleure lisibilité."
   ]
 }

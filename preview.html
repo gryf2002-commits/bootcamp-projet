@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=652"></script>
+  <script src="sunmates-badges.js?v=653"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
@@ -3754,6 +3754,29 @@
       "Déclencher une alerte d'urgence ?": "Trigger an emergency alert?", "Ta position sera diffusée aussitôt à ton cercle de confiance.": "Your location will be shared instantly with your trust circle.", "Déclencher l'alerte": "Trigger the alert",
       "Minuteur en cours": "Timer running", "Rentrée en sécurité": "Home safe",
       "J'ai besoin d'aide": "I need help", "Minuteur « bien arrivé·e »": "“Arrived safely” timer", "✅ Je suis bien arrivé·e": "✅ I've arrived safely",
+      // · Session 21/06 — veilleur de nuit, SOS→contacts ICE, Bien démarrer, geo-trigger, fiabilité ·
+      "Veilleur de nuit": "Night watch",
+      "On veille même app fermée": "We keep watch even when the app is closed",
+      "Avant de sortir seul·e, lance une veille. Si tu ne confirmes pas « bien arrivé·e » à temps, ta dernière position est <b>diffusée à ton cercle de confiance</b> et chaque membre est <b>prévenu</b> 🛟": "Before heading out alone, start a watch. If you don't confirm you've “arrived safely” in time, your last location is <b>shared with your trust circle</b> and every member is <b>notified</b> 🛟",
+      "✅ Ça veille pour toi même si tu fermes l'app (on prévient ton cercle côté serveur).": "✅ It keeps watch even if you close the app (we alert your circle from our server).",
+      "Veille lancée. Confirme « bien arrivé·e » avant la fin 🛟": "Watch started. Confirm “arrived safely” before it ends 🛟",
+      "Bien arrivé·e ! Veille arrêtée.": "Arrived safely! Watch stopped.",
+      "🚨 Veille écoulée : position diffusée à ton cercle": "🚨 Watch expired: location shared with your circle",
+      "Prévenir aussi tes contacts d'urgence ?": "Also alert your emergency contacts?",
+      "On prépare un SMS pour {names} avec ta position — tu n'as plus qu'à l'envoyer.": "We'll prepare a text for {names} with your location — you just hit send.",
+      "Préparer le SMS": "Prepare the text",
+      "j'ai déclenché une alerte d'urgence sur SunMates. Voici ma position :": "I triggered an emergency alert on SunMates. Here's my location:",
+      "Un proche": "Someone close to you",
+      "Impossible d'ouvrir l'app SMS sur cet appareil.": "Couldn't open the texting app on this device.",
+      "Bien démarrer": "Get started",
+      "Complète ton profil": "Complete your profile",
+      "Active ta position": "Turn on your location",
+      "Fais ta 1re connexion ou ton 1er check-in": "Make your 1st connection or 1st check-in",
+      "Masquer": "Hide",
+      "pour voir ton quartier et les lieux sûrs autour de toi": "to see your neighborhood and safe places around you",
+      "check-in": "check-in",
+      "Connexion interrompue": "Connection lost",
+      "Vérifie ta connexion, on réessaie tout seul.": "Check your connection, we'll retry automatically.",
       // Corps de modales popInfo (balises <b> incluses dans la clé → traduites en un bloc par i18nT, pas via le DOM)
       "Ton minuteur de rentrée est <b>actif</b>. Touche « Bien arrivé·e » pour l'arrêter, sinon ta position sera diffusée à ton cercle.": "Your home timer is <b>active</b>. Tap “Arrived safely” to stop it, otherwise your location will be shared with your circle.",
       "Lance un minuteur avant de rentrer. Si tu ne confirmes pas « bien arrivé·e » à temps, ta position est <b>diffusée à ton cercle de confiance</b> 🛟": "Start a timer before heading home. If you don't confirm “arrived safely” in time, your location is <b>shared with your trust circle</b> 🛟",
@@ -15524,8 +15547,9 @@
     });
     // Verrouillage des fonctionnalités Gold (ce qui se grise pour un compte gratuit)
     // Vignette Gold de l'accueil : cliquable seulement pour l'admin en vue Gold
+    // Règle DURABLE « sécurité jamais monnayée » : la sécurité (position, SOS, cercle, veilleur de nuit,
+    // contacts d'urgence) est GRATUITE pour tous → elle n'est JAMAIS un avantage Gold. Gold = confort/jeu/social.
     const GOLD_FEATURES = [
-      { e: "🔓", t: "Sécurité complète", d: "Partage de position, alerte d'urgence et cercle de confiance, pas seulement le 112." },
       { e: "🎯", t: "Quêtes illimitées", d: "Toutes les quêtes et activités chaque jour, sans restriction." },
       { e: "🔎", t: "Filtres avancés", d: "Filtre par âge, langues, mode de vie, signe astro…" },
       { e: "⭐", t: "BFF du moment", d: "Mets en avant ton meilleur Mate sur ton profil." },
