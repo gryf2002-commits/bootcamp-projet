@@ -1,10 +1,10 @@
 {
-  "candidate": "v648",
+  "candidate": "v649",
   "items": [
-    "🧭 « Ici & maintenant » plus malin : la carte d'accueil t'invite directement à activer ta position (fini le bandeau à part), et une fois active, elle te propose le lieu sûr le plus proche pour un check-in en un geste — avec la distance.",
-    "🚀 Carte « Bien démarrer » : 3 étapes guidées pour les nouveaux, qui disparaît une fois lancé·e.",
-    "🛡️ Partage de position visible 24 h par ton cercle + SOS qui propose un SMS pré-rempli à tes contacts d'urgence.",
-    "🔒 Contacts d'urgence cloisonnés par compte.",
-    "🛠️ Fiabilité : notifications plus justes, listes qui ne bloquent plus, meilleure lisibilité du corail en mode jour."
+    "🌫️ Nouveau — position approximative : quand tu partages ta position à ton cercle, tu peux choisir une zone floutée (~500 m) au lieu de l'exact. Ta position précise ne quitte jamais ton appareil. (En cas de SOS, l'exact est toujours transmis, la sécurité prime.)",
+    "🔥 Ta série de jours est maintenant sauvegardée sur ton compte : elle te suit d'un appareil à l'autre, fini la flamme perdue en changeant de téléphone.",
+    "🧭 « Ici & maintenant » : la carte t'invite à activer ta position et te propose le lieu sûr le plus proche pour un check-in.",
+    "🚀 Carte « Bien démarrer » pour les nouveaux + partage de position visible 24 h + SOS qui prévient tes contacts d'urgence par SMS.",
+    "🛠️ Fiabilité et lisibilité renforcées."
   ]
 }

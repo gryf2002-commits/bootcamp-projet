@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=648"></script>
+  <script src="sunmates-badges.js?v=649"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
@@ -5794,6 +5794,34 @@
       "pBirthdate", "pGender", "pJob", "pHometown", "pInstagram", "pBucket", "pFavPlaces", "pHeight"];
     // Série de jours (streak), 100% local. Compte les jours consécutifs d'ouverture.
     const ymd = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    // Série (streak) : source de vérité = table user_streaks (RLS owner-only) + repli/cache localStorage.
+    // _persistStreak écrit les DEUX (local immédiat + base en fond). hydrateStreak charge la base au login
+    // (avec migration douce du local si la base est vide), puis laisse updateStreak faire le calcul de jour.
+    function _persistStreak(st) {
+      try { localStorage.setItem("sm_streak_" + (myUserId || "x"), JSON.stringify(st)); } catch (e) {}
+      if (myUserId && window.db) {
+        try { db.from("user_streaks").upsert({ user_id: myUserId, count: st.count || 0, best: st.best || 0, last_day: st.last || null, freeze_week: st.freezeWeek || null, updated_at: new Date().toISOString() }, { onConflict: "user_id" }).then(function () {}, function () {}); } catch (e) {}
+      }
+    }
+    async function hydrateStreak() {
+      if (myUserId && window.db) {
+        try {
+          const { data, error } = await db.from("user_streaks").select("*").eq("user_id", myUserId).maybeSingle();
+          if (!error) {
+            let local = {}; try { local = JSON.parse(localStorage.getItem("sm_streak_" + myUserId) || "{}") || {}; } catch (e) {}
+            if (data) {
+              // base = vérité ; on garde juste _celebrated local (cosmétique anti-refête)
+              const st = { last: data.last_day, count: data.count, best: data.best, freezeWeek: data.freeze_week, _celebrated: local._celebrated };
+              try { localStorage.setItem("sm_streak_" + myUserId, JSON.stringify(st)); } catch (e) {}
+            } else if (local && local.count) {
+              _persistStreak(local); // pas de ligne base mais un historique local → on le pousse une fois
+            }
+          }
+        } catch (e) {}
+      }
+      if (typeof updateStreak === "function") updateStreak();
+    }
+    window.hydrateStreak = hydrateStreak;
     function updateStreak() {
       const chip = $("homeStreak"); if (!chip) return;
       const key = "sm_streak_" + (myUserId || "x");
@@ -5815,7 +5843,7 @@
         }
         st.best = Math.max(st.best || 0, st.count);
         st.last = todayStr;
-        try { localStorage.setItem(key, JSON.stringify(st)); } catch (e) {}
+        _persistStreak(st); // local + base (user_streaks)
         if (frozeNow && typeof toast === "function") toast("🧊", i18nT("Jour manqué rattrapé ! Ton <b>joker hebdo</b> a sauvé ta flamme 🔥"));
       }
       const n = st.count || 1;
@@ -5826,7 +5854,7 @@
       const MILESTONES = [3, 7, 14, 30, 60, 100];
       if (st._celebrated !== n && MILESTONES.includes(n)) {
         st._celebrated = n;
-        try { localStorage.setItem("sm_streak_" + (myUserId || "x"), JSON.stringify(st)); } catch (e) {}
+        _persistStreak(st); // local + base (user_streaks)
         if (typeof toast === "function") toast("🔥", i18nT("{n} jours de série, tu es en feu ! Continue 🌟", { n: n }));
         // P2.9 : la fête attend la FIN du boot (1,2 s) · avant, les confettis partaient pile
         // pendant le chargement (carte + données) et tout l'écran ramait.
@@ -7401,7 +7429,7 @@
       if (typeof checkFeedbackReplies === "function") checkFeedbackReplies(); // P2.34 : réponse admin à un de mes retours ?
       // Accueil : « Bonjour {pseudo} ». Seul le pseudo reçoit le dégradé ; « Bonjour » reste en texte normal.
       $("homeHello").innerHTML = 'Bonjour <span class="hello-name">' + escapeHtml(uname) + "</span>";
-      if (typeof updateStreak === "function") updateStreak();
+      if (typeof hydrateStreak === "function") hydrateStreak(); // série : base = source de vérité (+ migration douce du local)
       if (typeof renderAvailChip === "function") renderAvailChip();
       if (typeof renderGeoNow === "function") renderGeoNow(); // geo-trigger « Ici, maintenant »
       if (typeof maybeShowGeoBanner === "function") maybeShowGeoBanner(); // invitation douce à activer la position
@@ -9504,14 +9532,20 @@
 
     // ====================== SÉCURITÉ ======================
     // Partage de position : CONFIRMATION (anti miss-click) + explication de ce que ça fait.
+    // Floutage : arrondit une coordonnée à ~500 m (grille de 0.0045°). La position EXACTE ne quitte jamais l'appareil.
+    function _blur500(v) { const g = 0.0045; return Math.round(Number(v) / g) * g; }
     $("shareLocBtn").addEventListener("click", () => {
+      let approxPref = false; try { approxPref = localStorage.getItem("sm_loc_approx") === "1"; } catch (e) {}
       popInfo("📍", "Partager ma position ?",
-        "<p style='font-size:.88rem;line-height:1.5'>Ta position GPS sera <b>partagée avec ton cercle de confiance</b> (tes connexions acceptées), <b>visible 24 h</b>. Idéal quand tu sors seul·e, eux seuls la voient.</p>" +
+        "<p style='font-size:.88rem;line-height:1.5'>Ta position sera <b>partagée avec ton cercle de confiance</b> (tes connexions acceptées), <b>visible 24 h</b>. Idéal quand tu sors seul·e, eux seuls la voient.</p>" +
+        "<label style='display:flex;align-items:center;gap:.55rem;margin:.7rem 0 .2rem;font-size:.85rem;line-height:1.35;cursor:pointer'><input type='checkbox' id='locApprox'" + (approxPref ? " checked" : "") + " style='width:18px;height:18px;flex:0 0 auto'><span>Partager une <b>zone approximative</b> (~500 m) plutôt que ma position exacte</span></label>" +
+        "<p class='muted' style='font-size:.76rem;margin:.1rem 0 0'>En cas d'alerte SOS, ta position exacte est toujours transmise.</p>" +
         "<button class='btn-primary btn-block' id='confirmShareLoc' style='margin-top:.9rem'>📍 Oui, partager</button>" +
         "<button class='btn-ghost btn-block' id='cancelShareLoc' style='margin-top:.5rem'>Annuler</button>");
       setTimeout(() => {
         const close = () => { const ov = $("popInfoOv"); if (ov) ov.classList.add("hidden"); };
-        const c = $("confirmShareLoc"); if (c) c.onclick = () => { close(); sendLocation(false, $("locMsg"), i18nT("Position partagée avec ton cercle ✅")); };
+        const ap = $("locApprox"); if (ap) ap.addEventListener("change", () => { try { localStorage.setItem("sm_loc_approx", ap.checked ? "1" : "0"); } catch (e) {} });
+        const c = $("confirmShareLoc"); if (c) c.onclick = () => { const ap2 = $("locApprox"); if (ap2) { try { localStorage.setItem("sm_loc_approx", ap2.checked ? "1" : "0"); } catch (e) {} } close(); sendLocation(false, $("locMsg"), i18nT("Position partagée avec ton cercle ✅")); };
         const x = $("cancelShareLoc"); if (x) x.onclick = close;
       }, 40);
     });
@@ -9530,8 +9564,14 @@
       return once("loc:" + (isEmergency ? "sos" : "share"), () => new Promise((resolve) => {
         msg.style.color = "var(--muted)"; msg.textContent = "Localisation en cours…";
         getGeo(async (g) => {
+          // FLOUTAGE : en partage NON urgent, si l'utilisateur a choisi « zone approximative », on arrondit
+          // les coordonnées AVANT l'insert (~500 m) → la position exacte ne quitte jamais l'appareil.
+          // En URGENCE (SOS) on force TOUJOURS l'exact (la sécurité prime).
+          let approx = false; try { approx = !isEmergency && localStorage.getItem("sm_loc_approx") === "1"; } catch (e) {}
+          const lat = approx ? _blur500(g.lat) : g.lat;
+          const lng = approx ? _blur500(g.lng) : g.lng;
           const { error } = await db.from("locations_realtime").insert({
-            user_id: myUserId, lat: g.lat, lng: g.lng, is_emergency: isEmergency,
+            user_id: myUserId, lat: lat, lng: lng, is_emergency: isEmergency,
           });
           msg.textContent = "";
           if (error) { toast("⚠️", errFr(error)); }
