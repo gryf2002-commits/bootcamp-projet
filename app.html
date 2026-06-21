@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=642"></script>
+  <script src="sunmates-badges.js?v=643"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <style>
@@ -5454,6 +5454,7 @@
         subscribeConnections();
         subscribeSuggestions();
         askNotifPermission();
+        if (typeof hydrateIce === "function") hydrateIce(); // contacts d'urgence : base = source de vérité (+ migration douce du local)
       } else {
         _renderedUserId = null;
         myUserId = null;
@@ -9662,9 +9663,35 @@
     { const ag = $("allGoodBtn"); if (ag) ag.addEventListener("click", () => markSafetyOk(false)); }
     { const sl = $("sosLogo"); if (sl) sl.addEventListener("click", () => showSecuView("secuHelp")); }
 
-    // ---- Mes contacts d'urgence (ICE) : stockés sur l'appareil (privé), appel en 1 geste. ----
-    function loadIce() { try { return JSON.parse(localStorage.getItem("sm_ice") || "[]"); } catch (e) { return []; } }
-    function saveIce(a) { try { localStorage.setItem("sm_ice", JSON.stringify(a)); } catch (e) {} }
+    // ---- Mes contacts d'urgence (ICE) : synchronisés sur TON compte (table emergency_contacts,
+    //      RLS owner-only → toi seul·e y as accès), avec repli localStorage hors-ligne. Appel en 1 geste. ----
+    let _iceCache = null; // null = pas encore hydraté depuis la base ; tableau = source de vérité en mémoire
+    function loadIce() {
+      if (Array.isArray(_iceCache)) return _iceCache;
+      try { return JSON.parse(localStorage.getItem("sm_ice") || "[]"); } catch (e) { return []; }
+    }
+    function saveIce(a) { _iceCache = a; try { localStorage.setItem("sm_ice", JSON.stringify(a)); } catch (e) {} }
+    // Hydrate les contacts depuis la base au login, avec MIGRATION DOUCE : si la base est vide
+    // mais que l'appareil a déjà des contacts (ancien stockage local), on les pousse en base une fois.
+    async function hydrateIce() {
+      if (!myUserId || !window.db) return;
+      try {
+        const { data, error } = await db.from("emergency_contacts").select("*").order("created_at");
+        if (error) return; // base indispo → on garde le repli local
+        let rows = data || [];
+        if (!rows.length) {
+          let local = []; try { local = JSON.parse(localStorage.getItem("sm_ice") || "[]"); } catch (e) {}
+          if (local.length) {
+            const ins = local.slice(0, 3).map((c) => ({ user_id: myUserId, name: c.name, phone: c.phone, relation: c.relation || null }));
+            const { data: inserted } = await db.from("emergency_contacts").insert(ins).select();
+            if (inserted && inserted.length) rows = inserted;
+          }
+        }
+        saveIce(rows.map((r) => ({ id: r.id, name: r.name, phone: r.phone, relation: r.relation })));
+        if (typeof renderIce === "function") renderIce();
+      } catch (e) {}
+    }
+    window.hydrateIce = hydrateIce;
     function renderIce() {
       const el = $("iceList"); if (!el) return;
       const arr = loadIce();
@@ -9674,7 +9701,11 @@
             <button class="ice-del" data-ice="${i}" aria-label="Supprimer">✕</button>
           </div>`).join("")
         : emptyState("📇", i18nT("Aucun contact d'urgence"), i18nT("Ajoute un proche à prévenir d'un geste en cas de besoin."));
-      el.querySelectorAll("[data-ice]").forEach((b) => b.addEventListener("click", () => { const a = loadIce(); a.splice(Number(b.dataset.ice), 1); saveIce(a); renderIce(); toast("🗑️", i18nT("Contact supprimé")); }));
+      el.querySelectorAll("[data-ice]").forEach((b) => b.addEventListener("click", async () => {
+        const a = loadIce().slice(); const removed = a.splice(Number(b.dataset.ice), 1)[0];
+        saveIce(a); renderIce(); toast("🗑️", i18nT("Contact supprimé"));
+        if (removed && removed.id && myUserId && window.db) { try { await db.from("emergency_contacts").delete().eq("id", removed.id); } catch (e) {} }
+      }));
       // 3 contacts max : bouton gardé VISIBLE et grisé avec l'explication (avant : il
       // disparaissait sans raison apparente → incompréhensible)
       const add = $("iceAddBtn");
@@ -9687,7 +9718,7 @@
     // Ajout d'un contact d'urgence : formulaire EN DA (popInfo), fini les prompt() natifs « moches » et hors-app.
     function openIceForm() {
       popInfo("📇", "Nouveau contact d'urgence",
-        "<p style='font-size:.84rem;margin:0 0 .8rem;text-align:center'>Un proche à prévenir d'un geste. Il reste <b>sur ton appareil</b> (privé, rien n'est envoyé en ligne).</p>" +
+        "<p style='font-size:.84rem;margin:0 0 .8rem;text-align:center'>Un proche à prévenir d'un geste. Il est <b>privé sur ton compte</b> (toi seul·e y as accès) et te suit sur tes appareils.</p>" +
         "<label class='ice-flbl'>Nom</label>" +
         "<input id='iceFName' class='ice-fin' type='text' placeholder='ex : Maman, Léa…' autocomplete='name' maxlength='40'>" +
         "<label class='ice-flbl'>Téléphone</label>" +
@@ -9697,11 +9728,15 @@
       setTimeout(() => {
         const fn = $("iceFName"), fp = $("iceFPhone"), save = $("iceFSave"), msg = $("iceFMsg");
         if (fn) fn.focus();
-        const submit = () => {
+        const submit = async () => {
           const n = (fn && fn.value || "").trim(), p = (fp && fp.value || "").trim();
           if (!n) { if (msg) msg.textContent = "Indique un nom."; if (fn) fn.focus(); return; }
           if (!p) { if (msg) msg.textContent = "Indique un numéro."; if (fp) fp.focus(); return; }
-          const a = loadIce(); a.push({ name: n, phone: p }); saveIce(a); renderIce();
+          let saved = { name: n, phone: p };
+          if (myUserId && window.db) {
+            try { const { data } = await db.from("emergency_contacts").insert({ user_id: myUserId, name: n, phone: p }).select().single(); if (data) saved = { id: data.id, name: data.name, phone: data.phone, relation: data.relation }; } catch (e) {}
+          }
+          const a = loadIce().slice(); a.push(saved); saveIce(a); renderIce();
           closePopInfo(); toast("📇", "Contact d'urgence ajouté");
         };
         if (save) save.onclick = submit;

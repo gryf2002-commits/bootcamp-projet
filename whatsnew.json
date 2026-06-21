@@ -1,10 +1,10 @@
 {
-  "candidate": "v642",
+  "candidate": "v643",
   "items": [
+    "🆘 Tes contacts d'urgence te suivent partout : ils sont maintenant enregistrés sur ton compte (privés, toi seul·e y as accès) au lieu de rester bloqués sur un seul appareil. Tes contacts déjà saisis sont récupérés automatiquement.",
     "🔑 Mot de passe oublié : depuis l'écran de connexion, touche « Mot de passe oublié ? », reçois un lien par email, et choisis un nouveau mot de passe en deux clics.",
     "🌅 Le bandeau « hors-ligne » se fait tout doux : fini le rouge qui fait peur, place à un ton chaleureux et un message qui rassure.",
     "🔐 Connexion plus pratique : ton gestionnaire de mots de passe et le remplissage automatique fonctionnent enfin, et la touche « Entrée » valide toujours.",
-    "👁️ La petite icône « voir le mot de passe » est redessinée maison (un œil-soleil SunMates) et plus facile à toucher.",
-    "🍪 La demande de consentement arrive en douceur, une fois que la page a eu le temps de s'afficher."
+    "👁️ La petite icône « voir le mot de passe » est redessinée maison (un œil-soleil SunMates) et plus facile à toucher."
   ]
 }
