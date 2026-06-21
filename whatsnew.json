@@ -1,7 +1,7 @@
 {
-  "candidate": "v627",
+  "candidate": "v628",
   "items": [
-    "✨ Header enfin net : transparent au repos (fondu avec la page), opaque quand tu défiles → plus aucun « bloc » de couleur autour du logo.",
+    "✨ Header allégé : transparent, fondu avec la page (plus de « bloc » de couleur autour du logo).",
     "🌅 « Ici & maintenant » devient une bulle repliable : touche l'en-tête pour déplier/replier tes idées du moment.",
     "🆘 Sécurité plus claire : les accès rapides sont regroupés en « En cas d'urgence » et « Prévention ».",
     "🔔 Autorisations : l'état (Actif · Bloqué · À activer) s'affiche en pastille claire — sans faux interrupteur, ton navigateur garde le contrôle.",

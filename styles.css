@@ -3852,8 +3852,9 @@
        zéro bloc, zéro décalage de couleur, header invisible, juste le logo posé sur la page), et
        OPAQUE var(--bg) seulement quand on scrolle (body.sm-scrolled, via listener) → le contenu qui
        défile est occulté net. Règle bas : un listener window.scroll bascule body.sm-scrolled (>6px). */
+    /* 21/06 (demande Maxime) : header TRANSPARENT tout le temps (on règlera l'occultation au scroll plus tard). */
     .topbar { background: transparent !important; }
-    body.sm-scrolled .topbar { background: var(--bg) !important; }
+    body.sm-scrolled .topbar { background: transparent !important; }
     /* Bug Maxime « coupure / barre sombre sous la status-bar en NUIT » : le verre dépoli (ci-dessus, 80% au sommet)
        laissait le halo violet TRANSPARAÎTRE sous la status-bar (elle = --bg PLEIN/sombre) → marche visible. En nuit,
        on rend le SOMMET du topbar OPAQUE (var(--bg) plein à 0%) = même couleur EXACTE que la status-bar → fondu invisible ;
@@ -3862,7 +3863,7 @@
     body.theme-dusk .topbar, body.theme-winter.theme-dusk .topbar, body.theme-tropic.theme-dusk .topbar {
       background: transparent !important; }
     body.sm-scrolled.theme-dusk .topbar, body.sm-scrolled.theme-winter.theme-dusk .topbar, body.sm-scrolled.theme-tropic.theme-dusk .topbar {
-      background: var(--bg) !important; }
+      background: transparent !important; }
     body.theme-tropic.theme-dusk #bgFx { background:radial-gradient(120% 50% at 50% -8%, rgba(255,194,61,.16) 0%, rgba(12,29,23,0) 58%), var(--bg); }
     body.theme-tropic.theme-dusk .app-shell { background: transparent !important; }
     body.theme-tropic.theme-dusk .help-cta { background: var(--dcard2); border-color: rgba(92,216,168,.16); color:#E9F7EF; }
