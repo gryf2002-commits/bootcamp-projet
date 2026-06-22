@@ -2,5 +2,13 @@ User-agent: *
 Allow: /
 Disallow: /preview.html
 Disallow: /releases/
+Disallow: /da-console.html
+Disallow: /da-console-v2.html
+Disallow: /da-console.js
+Disallow: /da-console-v2.js
+Disallow: /da-console-overlay.js
+Disallow: /da-galerie/
+Disallow: /test/
+Disallow: /_da_shots/
 
 Sitemap: https://sunmatesapp.com/sitemap.xml

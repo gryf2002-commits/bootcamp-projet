@@ -25,7 +25,8 @@ const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const EMAIL_FROM = Deno.env.get("EMAIL_FROM") ?? "SunMates <onboarding@resend.dev>";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
-const ALLOWED_ORIGIN = "https://gryf2002-commits.github.io";
+// Prod = sunmatesapp.com (CNAME). Si tu sers AUSSI depuis github.io, passe à une allowlist.
+const ALLOWED_ORIGIN = "https://sunmatesapp.com";
 
 const cors = {
   "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
