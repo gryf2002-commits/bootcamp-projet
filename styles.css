@@ -1289,6 +1289,18 @@
     }
     .tile:active { transform: scale(.97); }
     .tile:hover { box-shadow: var(--shadow-md, 0 12px 28px -12px rgba(45,38,52,.30)); }
+    /* ============================================================
+       v692 (retour Maxime « enlever les arrières-tuiles » = la CARTE rectangle derrière chaque
+       icône+texte) : on RETIRE la boîte des .tile — fond, ombre, bordure — en GARDANT le carré
+       coloré (.thumb) + le titre + le sous-titre. Résultat : des icônes qui respirent, sans rectangle,
+       homogène dans tous les modes. Les VRAIES cartes de contenu (.card, .gcard, .cat-tile…) gardent
+       leur fond. Specificité gonflée (html body[.theme-x]) pour battre les `background … !important`
+       (styles.css:3117/4321/4466) qui peignaient la carte. ============================================================ */
+    html body .tile, html body.theme-dusk .tile, html body.theme-winter .tile, html body.theme-tropic .tile,
+    html body.theme-winter.theme-dusk .tile, html body.theme-tropic.theme-dusk .tile {
+      background: transparent !important; box-shadow: none !important; border: 0 !important; padding: .35rem .2rem !important; }
+    html body .tile:hover { box-shadow: none !important; transform: none; }
+    html body .tile.soon:hover { transform: none; }
     /* v684 (retour Maxime « les tuiles prennent énormément de place ») : vignette nettement plus
        compacte — l'icône passe de 84px à 50px → la rangée d'accès rapides ne bouffe plus l'écran,
        on en voit beaucoup plus d'un coup d'œil. */

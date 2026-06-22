@@ -1,8 +1,8 @@
 {
-  "candidate": "v691",
+  "candidate": "v692",
   "items": [
-    "↩️ Correctif : on a remis les fonds d'icônes et les images qui avaient disparu (mauvaise interprétation, désolé) — tout est revenu à la normale.",
-    "📱 Barre native du téléphone : elle suit de nouveau le mode de l'app (clair/sombre), pas le système.",
-    "✨ On garde le Personnaliser premium, le fond uniforme et l'accueil épuré."
+    "🪄 Tuiles allégées : on a retiré le rectangle (la carte) derrière chaque accès rapide. Il ne reste que l'icône colorée + le titre, qui respirent — beaucoup plus aéré.",
+    "📐 Plus homogène : fini les boîtes empilées d'une tuile à l'autre.",
+    "📱 Barre native : elle suit le mode de l'app (clair/sombre) une fois l'app ouverte."
   ]
 }
