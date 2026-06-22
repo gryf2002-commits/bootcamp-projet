@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=665"></script>
+  <script src="sunmates-badges.js?v=666"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
@@ -19941,42 +19941,38 @@
     var ric = window.requestIdleCallback || function (f) { return setTimeout(function () { f({ timeRemaining: function () { return 0; } }); }, 120); };
     function editable(n) { try { return n.closest && n.closest('textarea, input, [contenteditable="true"]'); } catch (e) { return false; } }
     function parse(node) { try { if (window.twemoji && node && !editable(node)) twemoji.parse(node, OPTS); } catch (e) {} }
-    // Ré-parse de TOUT le body (robuste) : les rendus dynamiques (post-login, onglets,
-    // listes Supabase, pins de carte) sont rattrapés à coup sûr. On déconnecte l'observer
-    // pendant le parse (anti-boucle), puis la moindre mutation suivante relance un parse.
-    var observer = null, timer = null, pendingSince = 0;
-    function connect() { if (observer) observer.observe(document.body, { childList: true, subtree: true, characterData: true }); }
-    function reparse() { timer = null; pendingSince = 0; if (observer) observer.disconnect(); parse(document.body); connect(); }
-    function schedule() {
-      var now = Date.now();
-      if (!pendingSince) pendingSince = now;
-      if (timer) clearTimeout(timer);
-      // débounce 220ms après la dernière mutation, mais force au bout de 1200ms d'attente continue
-      var delay = (now - pendingSince > 1200) ? 0 : 220;
-      timer = setTimeout(function () { ric(reparse, { timeout: 500 }); }, delay);
-    }
+    // Conversion SYNCHRONE dans le callback de l'observer (microtâche, AVANT le paint du
+    // navigateur) → le passage natif→Twemoji est INVISIBLE (zéro flash / rechargement).
+    // On parse seulement le sous-arbre qui change (pas tout le body), SANS déconnecter :
+    // on ignore nos propres <img.twe> pour éviter la boucle. Les callbacks d'observer étant
+    // asynchrones, twemoji.parse() ne provoque pas de ré-entrance.
+    var observer = null;
+    function parseEl(node) { if (node && node.nodeType === 1) parse(node); }
     function onMut(muts) {
       for (var i = 0; i < muts.length; i++) {
         var m = muts[i];
-        if (m.type !== "childList") { schedule(); return; } // characterData → re-parse
+        if (m.type === "characterData") { var p = m.target.parentNode; if (p) parseEl(p); continue; }
         for (var j = 0; j < m.addedNodes.length; j++) {
           var nd = m.addedNodes[j];
-          // ignorer NOS PROPRES <img.twe> (sinon boucle) ; toute autre insertion → re-parse
-          if (!(nd.nodeType === 1 && nd.tagName === "IMG" && nd.className === "twe")) { schedule(); return; }
+          if (nd.nodeType === 1) {
+            if (nd.tagName === "IMG" && nd.className === "twe") continue; // notre propre sortie → anti-boucle
+            parseEl(nd);
+          } else if (nd.nodeType === 3 && m.target && m.target.nodeType === 1) {
+            parseEl(m.target);
+          }
         }
       }
     }
     function boot() {
-      if (!window.twemoji) { return setTimeout(boot, 150); }
+      if (!window.twemoji) { return setTimeout(boot, 80); }
       parse(document.body);
       observer = new MutationObserver(onMut);
-      connect();
-      // filets de sécurité pour le gros rendu initial (login → home)
-      setTimeout(function () { ric(reparse, { timeout: 500 }); }, 1500);
-      window.addEventListener("load", function () { setTimeout(function () { ric(reparse, { timeout: 500 }); }, 600); });
+      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+      // filet unique après le gros rendu initial (au cas où une passe aurait été manquée)
+      window.addEventListener("load", function () { ric(function () { parse(document.body); }, { timeout: 500 }); });
     }
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { setTimeout(boot, 350); });
-    else setTimeout(boot, 350);
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+    else boot();
   })();
   </script>
 
