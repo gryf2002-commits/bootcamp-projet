@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=663"></script>
+  <script src="sunmates-badges.js?v=664"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
@@ -19941,45 +19941,200 @@
     var ric = window.requestIdleCallback || function (f) { return setTimeout(function () { f({ timeRemaining: function () { return 0; } }); }, 120); };
     function editable(n) { try { return n.closest && n.closest('textarea, input, [contenteditable="true"]'); } catch (e) { return false; } }
     function parse(node) { try { if (window.twemoji && node && !editable(node)) twemoji.parse(node, OPTS); } catch (e) {} }
-    var observer = null, queue = new Set(), scheduled = false;
+    // Ré-parse de TOUT le body (robuste) : les rendus dynamiques (post-login, onglets,
+    // listes Supabase, pins de carte) sont rattrapés à coup sûr. On déconnecte l'observer
+    // pendant le parse (anti-boucle), puis la moindre mutation suivante relance un parse.
+    var observer = null, timer = null, pendingSince = 0;
     function connect() { if (observer) observer.observe(document.body, { childList: true, subtree: true, characterData: true }); }
-    function flush() {
-      scheduled = false;
-      var nodes = Array.prototype.slice.call(queue); queue.clear();
-      if (observer) observer.disconnect();
-      for (var i = 0; i < nodes.length; i++) { var n = nodes[i]; if (n && n.isConnected) parse(n); }
-      connect();
+    function reparse() { timer = null; pendingSince = 0; if (observer) observer.disconnect(); parse(document.body); connect(); }
+    function schedule() {
+      var now = Date.now();
+      if (!pendingSince) pendingSince = now;
+      if (timer) clearTimeout(timer);
+      // débounce 220ms après la dernière mutation, mais force au bout de 1200ms d'attente continue
+      var delay = (now - pendingSince > 1200) ? 0 : 220;
+      timer = setTimeout(function () { ric(reparse, { timeout: 500 }); }, delay);
     }
-    function schedule() { if (scheduled) return; scheduled = true; ric(flush, { timeout: 700 }); }
     function onMut(muts) {
-      var added = false;
       for (var i = 0; i < muts.length; i++) {
         var m = muts[i];
-        if (m.type === "characterData") {
-          var p = m.target.parentNode;
-          if (p && p.nodeType === 1 && !(p.tagName === "IMG" && p.className === "twe")) { queue.add(p); added = true; }
-        } else {
-          for (var j = 0; j < m.addedNodes.length; j++) {
-            var nd = m.addedNodes[j];
-            if (nd.nodeType === 1) {
-              if (nd.tagName === "IMG" && nd.className === "twe") continue; // notre propre sortie
-              queue.add(nd); added = true;
-            } else if (nd.nodeType === 3 && m.target && m.target.nodeType === 1) {
-              queue.add(m.target); added = true;
-            }
-          }
+        if (m.type !== "childList") { schedule(); return; } // characterData → re-parse
+        for (var j = 0; j < m.addedNodes.length; j++) {
+          var nd = m.addedNodes[j];
+          // ignorer NOS PROPRES <img.twe> (sinon boucle) ; toute autre insertion → re-parse
+          if (!(nd.nodeType === 1 && nd.tagName === "IMG" && nd.className === "twe")) { schedule(); return; }
         }
       }
-      if (added) schedule();
     }
     function boot() {
       if (!window.twemoji) { return setTimeout(boot, 150); }
       parse(document.body);
       observer = new MutationObserver(onMut);
       connect();
+      // filets de sécurité pour le gros rendu initial (login → home)
+      setTimeout(function () { ric(reparse, { timeout: 500 }); }, 1500);
+      window.addEventListener("load", function () { setTimeout(function () { ric(reparse, { timeout: 500 }); }, 600); });
     }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { setTimeout(boot, 350); });
     else setTimeout(boot, 350);
+  })();
+  </script>
+
+  <!-- ============================================================
+       PERSONNALISER L'ACCUEIL v664 (preview) — repliage animé + masquer + déplacer.
+       FONDATION testée sur les sections auto-contenues du mode « À la maison »
+       (parent #homeHomeMode → réordonnancement via CSS `order`, l'ordre du DOM ne
+       change PAS donc aucun sélecteur `+` n'est cassé). Rollout vue voyage = ensuite.
+       État mémorisé en localStorage. Respecte prefers-reduced-motion.
+       ============================================================ -->
+  <style id="home-customize-css">
+    #homeHomeMode { display: flex; flex-direction: column; }
+    .hsec-toggle { cursor: pointer; }
+    .hsec-chev { margin-left: auto; flex: 0 0 auto; color: var(--muted); font-size: 1.1rem; line-height: 1;
+      transition: transform .26s var(--ease-out, cubic-bezier(.22,1,.36,1)); }
+    .hsec-collapsed .hsec-chev { transform: rotate(-90deg); }
+    .hsec-body { display: grid; grid-template-rows: 1fr; opacity: 1;
+      transition: grid-template-rows .32s var(--ease-out, cubic-bezier(.22,1,.36,1)), opacity .22s ease; }
+    .hsec-collapsed .hsec-body { grid-template-rows: 0fr; opacity: 0; }
+    .hsec-body > .hsec-inner { overflow: hidden; min-height: 0; }
+    /* entrée « Personnaliser » */
+    .hcust-open { align-self: flex-end; display: inline-flex; align-items: center; gap: .35rem; margin: -.1rem 0 .5rem;
+      background: none; border: 0; color: var(--muted); font: 700 .78rem/1 "Manrope", system-ui, sans-serif; cursor: pointer; padding: .3rem .2rem; }
+    .hcust-open:active { transform: scale(.96); }
+    .hcust-open svg { width: 15px; height: 15px; }
+    /* feuille */
+    .hcust-ov { position: fixed; inset: 0; z-index: 6650; background: rgba(20,8,30,.5); display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; transition: opacity .25s ease; }
+    .hcust-ov.on { opacity: 1; }
+    .hcust-ov.hidden { display: none; }
+    .hcust-sheet { background: var(--card, #fff); width: 100%; max-width: 460px; border-radius: 22px 22px 0 0; padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+      box-shadow: 0 -10px 40px rgba(0,0,0,.3); transform: translateY(100%); transition: transform .34s var(--ease-drawer, cubic-bezier(.32,.72,0,1)); max-height: 80vh; overflow-y: auto; }
+    .hcust-ov.on .hcust-sheet { transform: translateY(0); }
+    .hcust-h { display: flex; align-items: center; margin-bottom: .2rem; }
+    .hcust-h h3 { margin: 0; font-family: "Fraunces", Georgia, serif; }
+    .hcust-h button { margin-left: auto; background: none; border: 0; font-size: 1.2rem; cursor: pointer; color: var(--muted); padding: .2rem .4rem; }
+    .hcust-sub { color: var(--muted); font-size: .82rem; margin: 0 0 .7rem; }
+    .hcust-row { display: flex; align-items: center; gap: .6rem; padding: .55rem .2rem; border-bottom: 1px solid var(--line); }
+    .hcust-row:last-child { border-bottom: 0; }
+    .hcust-row.is-hidden .hcust-name { opacity: .45; text-decoration: line-through; }
+    .hcust-name { flex: 1; min-width: 0; font-weight: 700; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hcust-mv { display: inline-flex; gap: .25rem; }
+    .hcust-mv button, .hcust-eye { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: var(--card, #fff);
+      display: grid; place-items: center; cursor: pointer; color: var(--text); font-size: 1rem; line-height: 1; padding: 0; }
+    .hcust-mv button:active, .hcust-eye:active { transform: scale(.92); }
+    .hcust-mv button:disabled { opacity: .3; cursor: default; }
+    .hcust-eye.off { color: var(--muted); }
+    @media (prefers-reduced-motion: reduce) {
+      .hsec-body, .hsec-chev, .hcust-ov, .hcust-sheet { transition: none; }
+    }
+  </style>
+  <script>
+  (function () {
+    var KEY = "sm_home_custom_v1";
+    // Sections auto-contenues du mode Maison + leur en-tête cliquable (pour le repliage).
+    var SECTIONS = [
+      { id: "soloProgress",   head: ".sp-head", title: "Ta progression solo" },
+      { id: "homeMates",      head: ".qm-head", title: "Tes souvenirs" },
+      { id: "soloChallenges", head: ".qm-head", title: "Défis solo de ta ville" },
+      { id: "soloRituals",    head: ".qm-head", title: "Rituels du jour" },
+      { id: "hmInspo",        head: null,        title: "Inspiration du jour" }
+    ];
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+    function save(st) { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+    var state = load();
+    state.collapsed = state.collapsed || {};
+    state.hidden = state.hidden || {};
+    state.order = state.order || SECTIONS.map(function (s) { return s.id; });
+
+    function wrapBody(sec, headEl) {
+      if (sec.querySelector(":scope > .hsec-body")) return; // déjà fait
+      var body = document.createElement("div"); body.className = "hsec-body";
+      var inner = document.createElement("div"); inner.className = "hsec-inner";
+      var n = headEl ? headEl.nextSibling : sec.firstChild;
+      while (n) { var next = n.nextSibling; inner.appendChild(n); n = next; }
+      body.appendChild(inner); sec.appendChild(body);
+    }
+    function applyOne(s) {
+      var sec = document.getElementById(s.id); if (!sec) return;
+      // ordre (CSS order → DOM inchangé → sélecteurs `+` intacts)
+      var idx = state.order.indexOf(s.id); sec.style.order = idx < 0 ? 0 : idx;
+      // masquer
+      if (state.hidden[s.id]) { sec.dataset.hcustHidden = "1"; sec.style.display = "none"; }
+      else if (sec.dataset.hcustHidden) { sec.dataset.hcustHidden = ""; sec.style.display = ""; }
+      // repliage (uniquement si en-tête identifiable)
+      if (s.head) {
+        var headEl = sec.querySelector(s.head); if (!headEl) return;
+        wrapBody(sec, headEl);
+        if (!headEl.querySelector(".hsec-chev")) {
+          headEl.classList.add("hsec-toggle");
+          var chev = document.createElement("span"); chev.className = "hsec-chev"; chev.setAttribute("aria-hidden", "true"); chev.textContent = "▾";
+          headEl.appendChild(chev);
+          headEl.addEventListener("click", function (e) {
+            if (e.target.closest("a,button:not(.hsec-toggle)")) return; // ne pas voler les clics des actions de l'en-tête
+            var col = sec.classList.toggle("hsec-collapsed");
+            state.collapsed[s.id] = col; save(state);
+          });
+        }
+        sec.classList.toggle("hsec-collapsed", !!state.collapsed[s.id]);
+      }
+    }
+    function apply() { SECTIONS.forEach(applyOne); }
+
+    // Feuille « Personnaliser »
+    function openSheet() {
+      var ov = document.getElementById("hcustOv");
+      if (!ov) {
+        ov = document.createElement("div"); ov.id = "hcustOv"; ov.className = "hcust-ov hidden";
+        ov.innerHTML = '<div class="hcust-sheet" role="dialog" aria-label="Personnaliser l\'accueil">'
+          + '<div class="hcust-h"><h3>Personnaliser l\'accueil</h3><button type="button" aria-label="Fermer">✕</button></div>'
+          + '<p class="hcust-sub">Replie une section en touchant son titre. Ici tu peux la masquer ou la déplacer.</p>'
+          + '<div id="hcustList"></div></div>';
+        document.body.appendChild(ov);
+        ov.addEventListener("click", function (e) { if (e.target === ov || e.target.closest(".hcust-h button")) closeSheet(); });
+      }
+      renderList();
+      ov.classList.remove("hidden"); requestAnimationFrame(function () { ov.classList.add("on"); });
+    }
+    function closeSheet() { var ov = document.getElementById("hcustOv"); if (!ov) return; ov.classList.remove("on"); setTimeout(function () { ov.classList.add("hidden"); }, 320); }
+    function renderList() {
+      var list = document.getElementById("hcustList"); if (!list) return;
+      list.innerHTML = "";
+      state.order.forEach(function (id, i) {
+        var s = SECTIONS.find(function (x) { return x.id === id; }); if (!s) return;
+        if (!document.getElementById(id)) return; // section absente dans ce contexte
+        var hidden = !!state.hidden[id];
+        var row = document.createElement("div"); row.className = "hcust-row" + (hidden ? " is-hidden" : "");
+        row.innerHTML = '<span class="hcust-name">' + s.title + '</span>'
+          + '<button class="hcust-eye' + (hidden ? " off" : "") + '" type="button" aria-label="Afficher / masquer">' + (hidden ? "👁️" : "👁️") + '</button>'
+          + '<span class="hcust-mv"><button class="mv-up" type="button" aria-label="Monter"' + (i === 0 ? " disabled" : "") + '>↑</button>'
+          + '<button class="mv-dn" type="button" aria-label="Descendre"' + (i === state.order.length - 1 ? " disabled" : "") + '>↓</button></span>';
+        row.querySelector(".hcust-eye").onclick = function () { state.hidden[id] = !state.hidden[id]; save(state); applyOne(s); renderList(); };
+        row.querySelector(".mv-up").onclick = function () { if (i > 0) { var o = state.order; o.splice(i - 1, 0, o.splice(i, 1)[0]); save(state); apply(); renderList(); } };
+        row.querySelector(".mv-dn").onclick = function () { if (i < state.order.length - 1) { var o = state.order; o.splice(i + 1, 0, o.splice(i, 1)[0]); save(state); apply(); renderList(); } };
+        list.appendChild(row);
+      });
+    }
+
+    function injectOpener() {
+      var home = document.getElementById("homeHomeMode"); if (!home || home.querySelector(".hcust-open")) return;
+      var btn = document.createElement("button"); btn.type = "button"; btn.className = "hcust-open";
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h12M3 18h6"/></svg> Personnaliser';
+      btn.style.order = "-1"; // toujours en tête de la liste flex
+      btn.addEventListener("click", openSheet);
+      home.insertBefore(btn, home.firstChild);
+    }
+
+    function run() {
+      if (!document.getElementById("homeHomeMode")) return;
+      injectOpener(); apply();
+    }
+    // idempotent : au boot, au retour sur l'app, et quand on bascule en mode Maison.
+    function schedule() { setTimeout(run, 200); }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", schedule); else schedule();
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest('#homeModeSwitch [data-mode="home"]');
+      if (b) setTimeout(run, 120);
+    });
   })();
   </script>
 </body>

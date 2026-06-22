@@ -1,8 +1,8 @@
 {
-  "candidate": "v661",
+  "candidate": "v664",
   "items": [
-    "🎨 Emojis enfin identiques pour tout le monde : avant, ils changeaient selon ton téléphone (iPhone, Android, Samsung…). Maintenant tu vois exactement le même dessin que les autres voyageurs.",
-    "✨ Boutons plus vivants : chaque bouton répond au doigt avec un petit effet de pression, comme une vraie app native.",
-    "🗺️ Accueil plus fluide et qui chauffe moins (animations de carte sur la carte graphique, flou allégé sur mobile)."
+    "🎨 Emojis vraiment identiques partout : avant, beaucoup gardaient le style de ton téléphone (iPhone, Android, Samsung…) — maintenant c'est le même dessin pour tous, jusque dans les notifications et les animations.",
+    "🗂️ Nouveau : personnalise ton accueil « À la maison » — replie, masque ou réordonne les sections (bouton « Personnaliser »).",
+    "✨ Boutons plus vivants + accueil plus fluide qui chauffe moins."
   ]
 }
