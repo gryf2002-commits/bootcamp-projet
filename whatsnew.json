@@ -1,10 +1,8 @@
 {
-  "candidate": "v684",
+  "candidate": "v685",
   "items": [
-    "🗺️ Carte agrandie : elle devient la vraie star de l'accueil, on voit bien plus autour de soi d'un coup d'œil.",
-    "⚡ Accès rapides compacts : les tuiles prennent beaucoup moins de place — l'écran respire, tu vois plus de choses sans scroller.",
-    "🎬 Header malin : il se fait discret quand tu descends, revient dès que tu remontes. Plus d'espace pour le contenu.",
-    "✨ Animations d'entrée : les sections se posent en douceur (façon app premium), partout dans l'app.",
-    "🎯 Haut d'écran : raccord avec la barre native du téléphone corrigé (fini la cassure de couleur en haut)."
+    "🎨 Carte plus cohérente : les points « Communauté » passent de l'ancien bleu vif à l'indigo de la charte (raccord avec le reste).",
+    "📱 Petits écrans : la barre de recherche et les onglets ne sont plus coupés sur les téléphones étroits.",
+    "🗺️ (Rappel v684) Carte agrandie, accès rapides compacts remontés sous la carte, header malin qui se cache au scroll, animations d'entrée partout."
   ]
 }

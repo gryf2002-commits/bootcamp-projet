@@ -3464,6 +3464,13 @@
       .player-badge.player-hud .pb-av { width: 36px; height: 36px; font-size: 1.1rem; }
       .player-badge.player-hud .hud-info { min-width: 64px; }
       .player-badge.player-hud .hud-bar { width: 64px; }
+      /* v685 (audit C · petits Android) : le placeholder de recherche était coupé, et les segments
+         tombaient sous la cible tactile confortable. */
+      .search input { font-size: .88rem; padding-left: 2.35rem; }
+      .search input::placeholder { font-size: .86rem; }
+      .sscope { padding: .5rem .7rem; min-height: 40px; }
+      .mode-switch button { padding: .5rem .4rem; font-size: .82rem; min-height: 40px; }
+      .grid2 { gap: .45rem; }
     }
     @media (orientation: landscape) and (max-height: 560px) {
       .player-badge.player-hud .hud-info { min-width: 70px; }

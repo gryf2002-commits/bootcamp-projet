@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=684"></script>
+  <script src="sunmates-badges.js?v=685"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
@@ -14391,7 +14391,7 @@
           });
           ro.observe(el);
         }
-        const LAYER_COLORS = { places: "#FF5A4D", mates: "#7a5cff", activities: "#ff9f1c", checkins: "#17a99b", quests: "#E8961F", community: "#3AA0FF" };
+        const LAYER_COLORS = { places: "#FF5A4D", mates: "#7a5cff", activities: "#ff9f1c", checkins: "#17a99b", quests: "#E8961F", community: "#5E74E8" };
         homeCluster = (typeof L.markerClusterGroup === "function")
           ? L.markerClusterGroup({
               maxClusterRadius: 38, showCoverageOnHover: false, spiderfyDistanceMultiplier: 2.2,
@@ -14742,7 +14742,7 @@
             ? `${av ? `<div class="comm-avs">${av}</div>` : ""}<div class="comm-n">👥 ${n} voyageur·se${n > 1 ? "s y sont" : " y est"}</div>${names ? `<div class="muted comm-names">${names}</div>` : ""}`
             : `<div class="comm-n muted">✨ À explorer en éclaireur·euse</div>`;
           const questLine = (_betaQ && qn) ? `<div class="comm-q">🎯 ${qn} quête${qn > 1 ? "s" : ""} à y débusquer</div>` : "";
-          const mk = L.marker(jll, { icon: epinIcon(flag, "#3AA0FF", "comm") })
+          const mk = L.marker(jll, { icon: epinIcon(flag, "#5E74E8", "comm") })
             .bindPopup(`<div class="mappop-mini mappop-comm"><b>${flag} ${escapeHtml(name)}</b>${commLine}${questLine}<button class="mappop-btn" data-hmcommctry="${escapeHtml(name)}">✨ Découvrir ${escapeHtml(name)}</button></div>`);
           mk.smType = "community"; homeMarkersByType.community.push(mk); allMarkers.push(mk);
         });
@@ -15358,7 +15358,7 @@
 
     function renderHomeLegend() {
       const el = $("homeMapLegend"); if (!el) return;
-      el.innerHTML = [["#FF5A4D", "📍 Lieux sûrs"], ["#7a5cff", "🧑 Mates"], ["#3AA0FF", "🌍 Communauté"], ["#ff9f1c", "🎉 Activités"], ["#17a99b", "✅ Check-ins"], ["#ff5e9f", "📣 Partagées"], ["#8B5E3C", "📌 Mes adresses"]]
+      el.innerHTML = [["#FF5A4D", "📍 Lieux sûrs"], ["#7a5cff", "🧑 Mates"], ["#5E74E8", "🌍 Communauté"], ["#ff9f1c", "🎉 Activités"], ["#17a99b", "✅ Check-ins"], ["#ff5e9f", "📣 Partagées"], ["#8B5E3C", "📌 Mes adresses"]]
         .map(([c, l]) => `<span><i style="background:${c}"></i>${l}</span>`).join("");
     }
 
