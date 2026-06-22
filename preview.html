@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=687"></script>
+  <script src="sunmates-badges.js?v=688"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
@@ -20106,13 +20106,53 @@
     .hcust-ov { position: fixed; inset: 0; z-index: 6650; background: rgba(20,8,30,.5); display: flex; align-items: flex-end; justify-content: center; opacity: 0; transition: opacity .25s ease; }
     .hcust-ov.on { opacity: 1; }
     .hcust-ov.hidden { display: none; }
-    .hcust-sheet { background: var(--card, #fff); width: 100%; max-width: 460px; border-radius: 22px 22px 0 0; padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
-      box-shadow: 0 -10px 40px rgba(0,0,0,.3); transform: translateY(100%); transition: transform .34s var(--ease-drawer, cubic-bezier(.32,.72,0,1)); max-height: 80vh; overflow-y: auto; }
+    /* ===== v688 · Panneau « Personnaliser » PREMIUM ===== */
+    .hcust-sheet { background: var(--card, #fff); width: 100%; max-width: 470px; border-radius: 26px 26px 0 0; padding: .5rem 1.1rem calc(1.1rem + env(safe-area-inset-bottom));
+      box-shadow: 0 -12px 48px rgba(0,0,0,.34); transform: translateY(100%); transition: transform .42s var(--ease-drawer, cubic-bezier(.32,.72,0,1)); max-height: 86vh; overflow-y: auto; }
     .hcust-ov.on .hcust-sheet { transform: translateY(0); }
-    .hcust-h { display: flex; align-items: center; margin-bottom: .2rem; }
-    .hcust-h h3 { margin: 0; font-family: "Fraunces", Georgia, serif; }
-    .hcust-h button { margin-left: auto; background: none; border: 0; font-size: 1.2rem; cursor: pointer; color: var(--muted); padding: .2rem .4rem; }
-    .hcust-sub { color: var(--muted); font-size: .82rem; margin: 0 0 .7rem; }
+    .hc2-grab { width: 40px; height: 4px; border-radius: 999px; background: var(--line); margin: .35rem auto .75rem; flex: 0 0 auto; }
+    .hcust-h { display: flex; align-items: center; gap: .7rem; margin-bottom: 1rem; }
+    .hc2-head-ic { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; font-size: 1.3rem;
+      background: var(--accent-soft, rgba(255,209,92,.16)); box-shadow: inset 0 0 0 1px var(--line); }
+    .hc2-head-tx { flex: 1; min-width: 0; }
+    .hcust-h h3 { margin: 0; font: 800 1.22rem/1.1 "Fraunces", Georgia, serif; color: var(--ink); }
+    .hcust-sub { color: var(--muted); font-size: .8rem; margin: .12rem 0 0; line-height: 1.3; }
+    .hc2-close { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--cream, transparent);
+      font-size: 1rem; cursor: pointer; color: var(--muted); display: grid; place-items: center; padding: 0; transition: transform .14s ease, background .15s ease; }
+    .hc2-close:hover { background: var(--accent-soft); color: var(--accent-ink, var(--accent)); }
+    .hc2-close:active { transform: scale(.9); }
+    /* En-têtes de groupe (Affichées / Masquées) */
+    .hc2-grouplbl { display: flex; align-items: baseline; gap: .5rem; margin: .2rem .25rem .45rem; }
+    .hc2-grouplbl > span { font: 800 .68rem/1 "Manrope", system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink, var(--accent)); }
+    .hc2-grouplbl > i { font-style: normal; font-size: .68rem; font-weight: 700; color: var(--muted); }
+    .hc2-grouplbl-off > span { color: var(--muted); }
+    .hc2-group { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1rem; }
+    .hc2-group-off { opacity: .96; }
+    .hc2-empty { padding: 1rem; text-align: center; color: var(--muted); font-size: .84rem; border: 1px dashed var(--line); border-radius: 16px; }
+    /* Ligne = carte premium : poignée · icône · texte · interrupteur */
+    .hc2-row { display: flex; align-items: center; gap: .7rem; padding: .6rem .7rem; border-radius: 16px; background: var(--cream, #faf3ec);
+      box-shadow: inset 0 0 0 1px var(--line); transition: box-shadow .15s ease, transform .12s ease, opacity .2s ease; }
+    body.theme-dusk .hc2-row { background: rgba(255,255,255,.045); }
+    .hc2-row.dragging { box-shadow: 0 14px 34px -12px rgba(45,38,52,.45), inset 0 0 0 1px var(--accent); transform: scale(1.015); cursor: grabbing; background: var(--card); }
+    .hc2-row.is-off { opacity: .62; }
+    .hc2-drag { flex: 0 0 auto; width: 22px; text-align: center; color: var(--muted); font-size: 1.15rem; line-height: 1; cursor: grab; touch-action: none; user-select: none; }
+    .hc2-drag-off { visibility: hidden; }
+    .hc2-ic { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 1.25rem;
+      background: var(--card, #fff); box-shadow: inset 0 0 0 1px var(--line); }
+    body.theme-dusk .hc2-ic { background: rgba(255,255,255,.06); }
+    .hc2-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .08rem; }
+    .hc2-txt b { font: 700 .92rem/1.15 "Manrope", system-ui, sans-serif; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hc2-txt i { font-style: normal; font-size: .74rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* Interrupteur premium (afficher / masquer) */
+    .hc2-sw { flex: 0 0 auto; width: 46px; height: 28px; border-radius: 999px; border: 0; cursor: pointer; padding: 0; position: relative;
+      background: var(--line); transition: background .22s var(--ease-out, cubic-bezier(.22,1,.36,1)); -webkit-tap-highlight-color: transparent; }
+    .hc2-sw[aria-checked="true"] { background: var(--accent-grad, var(--accent)); }
+    .hc2-knob { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff;
+      box-shadow: 0 2px 6px rgba(45,38,52,.3); transition: transform .22s var(--ease-out, cubic-bezier(.22,1,.36,1)); }
+    .hc2-sw[aria-checked="true"] .hc2-knob { transform: translateX(18px); }
+    .hc2-sw:active .hc2-knob { width: 26px; }
+    .hc2-sw:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    /* (legacy hcust-row/eye/mv conservés inertes, plus utilisés par le rendu v688) */
     .hcust-row { display: flex; align-items: center; gap: .6rem; padding: .55rem .2rem; border-bottom: 1px solid var(--line); }
     .hcust-row:last-child { border-bottom: 0; }
     .hcust-row.is-hidden .hcust-name { opacity: .45; text-decoration: line-through; }
@@ -20122,8 +20162,9 @@
     .hcust-mv button:active, .hcust-eye:active { transform: scale(.92); }
     .hcust-mv button:disabled { opacity: .3; cursor: default; }
     .hcust-eye.off { opacity: .5; }
-    .hcust-reset { display: block; width: 100%; margin: .9rem 0 .2rem; padding: .6rem; border: 0; border-radius: 12px;
-      background: var(--accent-soft); color: var(--accent-ink, var(--accent)); font: 700 .82rem/1 "Manrope", system-ui, sans-serif; cursor: pointer; }
+    .hcust-reset { display: block; width: 100%; margin: .3rem 0 .2rem; padding: .8rem; border: 1px solid var(--line); border-radius: 14px;
+      background: transparent; color: var(--muted); font: 700 .82rem/1 "Manrope", system-ui, sans-serif; cursor: pointer; transition: background .15s ease, color .15s ease; }
+    .hcust-reset:hover { background: var(--accent-soft); color: var(--accent-ink, var(--accent)); }
     .hcust-reset:active { transform: scale(.98); }
     .hcust-drag { flex: 0 0 auto; color: var(--muted); font-size: 1.1rem; line-height: 1; cursor: grab; touch-action: none; padding: 0 .15rem; user-select: none; }
     .hcust-row.dragging { opacity: .7; background: var(--accent-soft); border-radius: 10px; cursor: grabbing; }
@@ -20151,23 +20192,23 @@
     var KEY = "sm_home_custom_v1";
     var GROUPS = [
       { key: "travel", parent: '.tab-panel[data-panel="accueil"]', physical: true, anchor: "#searchResults", title: "Personnaliser l'accueil", sections: [
-        { id: "homeTravelMap", title: "Explore autour de toi" },
-        { id: "homeQuickAccess", title: "Accès rapides", head: ".section-head" },
-        { id: "geoNowCard", title: "Ici & maintenant" },
-        { id: "todayBand", title: "Aujourd'hui", defHidden: true },
-        { id: "starterCard", title: "Bien démarrer" },
+        { id: "homeTravelMap", title: "Explore autour de toi", icon: "🗺️", desc: "La carte vivante autour de toi" },
+        { id: "homeQuickAccess", title: "Accès rapides", head: ".section-head", icon: "⚡", desc: "Tes raccourcis vers l'app" },
+        { id: "geoNowCard", title: "Ici & maintenant", icon: "📍", desc: "Ce qu'il y a à faire dans le coin" },
+        { id: "todayBand", title: "Aujourd'hui", defHidden: true, icon: "☀️", desc: "Ton rituel quotidien" },
+        { id: "starterCard", title: "Bien démarrer", icon: "🚀", desc: "Tes premières étapes" },
         // v687 (Maxime « accueil ultra-épuré ») : le bas de page devient masquable et MASQUÉ PAR DÉFAUT.
-        { id: "badgeRailSection", title: "À débloquer", defHidden: true },
-        { id: "homeFeedSection", title: "Le fil", defHidden: true },
-        { id: "homeTripsSection", title: "Mes voyages", defHidden: true }
+        { id: "badgeRailSection", title: "À débloquer", defHidden: true, icon: "🏅", desc: "Tes prochains badges" },
+        { id: "homeFeedSection", title: "Le fil", defHidden: true, icon: "✨", desc: "Le fil de la communauté" },
+        { id: "homeTripsSection", title: "Mes voyages", defHidden: true, icon: "✈️", desc: "Globe, année & voyages" }
       ]},
       { key: "home", parent: "#homeHomeMode", anchor: null, title: "Personnaliser « À la maison »", sections: [
-        { id: "soloProgress", head: ".sp-head", title: "Ta progression solo" },
-        { id: "homeMates", head: ".qm-head", title: "Tes souvenirs", defHidden: true },
-        { id: "soloChallenges", head: ".qm-head", title: "Défis solo de ta ville", defHidden: true },
-        { id: "soloRituals", head: ".qm-head", title: "Rituels du jour", defHidden: true },
-        { id: "hmInspo", title: "Inspiration du jour", defHidden: true },
-        { id: "homeVisitorsSection", title: "De passage chez toi", defHidden: true }
+        { id: "soloProgress", head: ".sp-head", title: "Ta progression solo", icon: "📈", desc: "Tes stats & ta série" },
+        { id: "homeMates", head: ".qm-head", title: "Tes souvenirs", defHidden: true, icon: "🏡", desc: "Tes aventures & tes Mates" },
+        { id: "soloChallenges", head: ".qm-head", title: "Défis solo de ta ville", defHidden: true, icon: "🧭", desc: "Redécouvre ton coin" },
+        { id: "soloRituals", head: ".qm-head", title: "Rituels du jour", defHidden: true, icon: "🌅", desc: "Tes 3 rituels quotidiens" },
+        { id: "hmInspo", title: "Inspiration du jour", defHidden: true, icon: "💡", desc: "Une destination qui fait rêver" },
+        { id: "homeVisitorsSection", title: "De passage chez toi", defHidden: true, icon: "👋", desc: "Les voyageurs dans ta ville" }
       ]}
     ];
     function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
@@ -20289,7 +20330,7 @@
       var ov = document.getElementById("hcustOv");
       if (!ov) {
         ov = document.createElement("div"); ov.id = "hcustOv"; ov.className = "hcust-ov hidden";
-        ov.innerHTML = '<div class="hcust-sheet" role="dialog" aria-label="Personnaliser l\'accueil"><div class="hcust-h"><h3 id="hcustTitle"></h3><button type="button" aria-label="Fermer">✕</button></div><p class="hcust-sub" id="hcustSub"></p><div id="hcustList"></div><button type="button" id="hcustReset" class="hcust-reset">↺ Tout réafficher · ordre par défaut</button></div>';
+        ov.innerHTML = '<div class="hcust-sheet" role="dialog" aria-label="Personnaliser l\'accueil"><div class="hc2-grab" aria-hidden="true"></div><div class="hcust-h"><span class="hc2-head-ic" aria-hidden="true">✨</span><div class="hc2-head-tx"><h3 id="hcustTitle"></h3><p class="hcust-sub" id="hcustSub"></p></div><button type="button" class="hc2-close" aria-label="Fermer">✕</button></div><div id="hcustList"></div><button type="button" id="hcustReset" class="hcust-reset">↺ Réinitialiser l\'accueil</button></div>';
         document.body.appendChild(ov);
         ov.addEventListener("click", function (e) { if (e.target === ov || e.target.closest(".hcust-h button")) closeSheet(); });
         document.getElementById("hcustReset").addEventListener("click", function () {
@@ -20299,48 +20340,69 @@
           save(); applyGroup(g); renderList();
         });
         // glisser-déposer (pointer = tactile + souris) : on déplace la ligne pendant le drag, on valide au relâché
-        var list = document.getElementById("hcustList"), dragRow = null;
+        // Drag-reorder UNIQUEMENT dans le groupe « Affichées » (#hc2Visible) ; les masquées ne s'ordonnent pas.
+        var list = document.getElementById("hcustList"), dragRow = null, dragBox = null;
         list.addEventListener("pointerdown", function (e) {
-          var h = e.target.closest(".hcust-drag"); if (!h) return;
-          dragRow = h.closest(".hcust-row"); if (!dragRow) return;
+          var h = e.target.closest(".hc2-drag"); if (!h) return;
+          dragRow = h.closest(".hc2-row"); dragBox = document.getElementById("hc2Visible");
+          if (!dragRow || !dragBox) { dragRow = null; return; }
           dragRow.classList.add("dragging"); try { list.setPointerCapture(e.pointerId); } catch (er) {} e.preventDefault();
         });
         list.addEventListener("pointermove", function (e) {
-          if (!dragRow) return;
-          var rows = Array.prototype.slice.call(list.querySelectorAll(".hcust-row:not(.dragging)"));
+          if (!dragRow || !dragBox) return;
+          var rows = Array.prototype.slice.call(dragBox.querySelectorAll(".hc2-row:not(.dragging)"));
           var after = null;
           for (var i = 0; i < rows.length; i++) { var b = rows[i].getBoundingClientRect(); if (e.clientY < b.top + b.height / 2) { after = rows[i]; break; } }
-          if (after) list.insertBefore(dragRow, after); else list.appendChild(dragRow);
+          if (after) dragBox.insertBefore(dragRow, after); else dragBox.appendChild(dragRow);
         });
         var endDrag = function () {
-          if (!dragRow) return; dragRow.classList.remove("dragging"); dragRow = null;
+          if (!dragRow) return; dragRow.classList.remove("dragging"); dragRow = null; dragBox = null;
           var g = activeGroup; if (!g) return;
-          state.order[g.key] = Array.prototype.slice.call(list.querySelectorAll(".hcust-row")).map(function (r) { return r.dataset.id; });
+          var vis = Array.prototype.slice.call(document.querySelectorAll("#hc2Visible .hc2-row")).map(function (r) { return r.dataset.id; });
+          var hid = (state.order[g.key] || []).filter(function (id) { return vis.indexOf(id) < 0; });
+          state.order[g.key] = vis.concat(hid); // les affichées dans le nouvel ordre, puis les masquées
           save(); applyGroup(g); renderList();
         };
         list.addEventListener("pointerup", endDrag);
         list.addEventListener("pointercancel", endDrag);
       }
       document.getElementById("hcustTitle").textContent = g.title;
-      document.getElementById("hcustSub").textContent = g.key === "home"
-        ? "Replie une section en touchant son titre. Ici tu peux la masquer ou la déplacer."
-        : "Touche la flèche d'une bande pour la replier. Ici tu peux masquer ou réordonner — la carte d'abord.";
+      document.getElementById("hcustSub").textContent = "Compose ton accueil : affiche, masque, réordonne.";
       renderList();
       ov.classList.remove("hidden"); requestAnimationFrame(function () { ov.classList.add("on"); });
     }
     function closeSheet() { var ov = document.getElementById("hcustOv"); if (!ov) return; ov.classList.remove("on"); setTimeout(function () { ov.classList.add("hidden"); }, 320); }
+    // v688 : refonte PREMIUM du panneau — sections groupées « Affichées » (réordonnables par glissé) /
+    // « Masquées » (1 tap pour réafficher), chaque ligne = icône + titre + sous-titre + interrupteur.
     function renderList() {
       var g = activeGroup, list = document.getElementById("hcustList"); if (!g || !list) return;
-      list.innerHTML = ""; var ord = state.order[g.key] || [];
-      ord.forEach(function (id, i) {
-        var s = g.sections.find(function (x) { return x.id === id; }); if (!s || !document.getElementById(id)) return;
+      var ord = (state.order[g.key] || []).filter(function (id) {
+        return g.sections.find(function (x) { return x.id === id; }) && document.getElementById(id);
+      });
+      var visIds = ord.filter(function (id) { return !state.hidden[id]; });
+      var hidIds = ord.filter(function (id) { return !!state.hidden[id]; });
+      function rowHTML(id, draggable) {
+        var s = g.sections.find(function (x) { return x.id === id; });
         var hidden = !!state.hidden[id];
-        var row = document.createElement("div"); row.className = "hcust-row" + (hidden ? " is-hidden" : ""); row.dataset.id = id;
-        row.innerHTML = '<span class="hcust-drag" aria-hidden="true" title="Glisser pour déplacer">⠿</span><span class="hcust-name">' + s.title + '</span><button class="hcust-eye' + (hidden ? " off" : "") + '" type="button" aria-label="Afficher ou masquer">' + (hidden ? "🙈" : "👁️") + '</button><span class="hcust-mv"><button class="mv-up" type="button" aria-label="Monter"' + (i === 0 ? " disabled" : "") + '>↑</button><button class="mv-dn" type="button" aria-label="Descendre"' + (i === ord.length - 1 ? " disabled" : "") + '>↓</button></span>';
-        row.querySelector(".hcust-eye").onclick = function () { state.hidden[id] = !state.hidden[id]; save(); applyGroup(g); renderList(); };
-        row.querySelector(".mv-up").onclick = function () { if (i > 0) { ord.splice(i - 1, 0, ord.splice(i, 1)[0]); save(); applyGroup(g); renderList(); } };
-        row.querySelector(".mv-dn").onclick = function () { if (i < ord.length - 1) { ord.splice(i + 1, 0, ord.splice(i, 1)[0]); save(); applyGroup(g); renderList(); } };
-        list.appendChild(row);
+        return '<div class="hc2-row' + (hidden ? " is-off" : "") + '" data-id="' + id + '">'
+          + (draggable ? '<span class="hc2-drag" aria-hidden="true" title="Glisser pour réordonner">⠿</span>' : '<span class="hc2-drag hc2-drag-off" aria-hidden="true"></span>')
+          + '<span class="hc2-ic" aria-hidden="true">' + (s.icon || "•") + '</span>'
+          + '<span class="hc2-txt"><b>' + s.title + '</b><i>' + (s.desc || "") + '</i></span>'
+          + '<button class="hc2-sw" type="button" role="switch" aria-checked="' + (hidden ? "false" : "true") + '" aria-label="Afficher ou masquer ' + s.title + '"><span class="hc2-knob"></span></button>'
+          + '</div>';
+      }
+      var html = '<div class="hc2-grouplbl"><span>Affichées</span><i>' + visIds.length + '</i></div><div id="hc2Visible" class="hc2-group">';
+      html += visIds.length ? visIds.map(function (id) { return rowHTML(id, true); }).join("") : '<div class="hc2-empty">Tout est masqué — réaffiche ci-dessous 👇</div>';
+      html += '</div>';
+      if (hidIds.length) {
+        html += '<div class="hc2-grouplbl hc2-grouplbl-off"><span>Masquées</span><i>1 tap pour réafficher</i></div><div id="hc2Hidden" class="hc2-group hc2-group-off">';
+        html += hidIds.map(function (id) { return rowHTML(id, false); }).join("");
+        html += '</div>';
+      }
+      list.innerHTML = html;
+      // interrupteurs : bascule afficher/masquer
+      Array.prototype.forEach.call(list.querySelectorAll(".hc2-sw"), function (sw) {
+        sw.onclick = function () { var id = sw.closest(".hc2-row").dataset.id; state.hidden[id] = !state.hidden[id]; save(); applyGroup(g); renderList(); };
       });
     }
     function run() { GROUPS.forEach(function (g) { if (document.querySelector(g.parent)) applyGroup(g); }); }

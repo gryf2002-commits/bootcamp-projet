@@ -3069,10 +3069,19 @@
        de login cohérent. App-shell transparent (le calque porte le fond). Garde la chaleur DA (jour)
        et la richesse (nuit) sans uniformiser ni laguer (calque composité fixe). */
     .app-shell { background: transparent !important; }
-    #bgFx { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(150% 64% at 50% 12%, rgba(255,201,60,.16) 0%, rgba(255,138,61,.05) 46%, rgba(255,255,255,0) 74%), var(--bg); } /* v686 : halo chaud encore calmé (.30→.16) + centre descendu sous le header → le haut = EXACTEMENT var(--bg) = barre native (Maxime « pas tout à fait la même couleur »), la chaleur bloom plus bas */
+    /* v688 (Maxime « la tache est toujours là + header trop foncé vs l'arrière-plan ») : le halo radial
+       ÉCLAIRCISSAIT le milieu du fond → le header (plat) paraissait plus sombre + bord visible = « tache ».
+       Décision : fond STRICTEMENT UNIFORME var(--bg). Status-bar = header = contenu = exactement la même
+       couleur, dans tous les modes. Plus de halo, plus de tache, plus de header « trop foncé ». */
+    #bgFx { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--bg); }
+    /* v688 : le FOND DU BODY portait AUSSI un dégradé (--bg-grad le jour, un radial corail→magenta→prune
+       la nuit l.~3181) = la VRAIE source de la « tache » (le #bgFx ne le couvrait pas toujours, ancêtre
+       transformé). On force le fond du body STRICTEMENT plat var(--bg) dans tous les thèmes → uniforme. */
+    body, body.theme-dusk, body.theme-winter, body.theme-tropic,
+    body.theme-winter.theme-dusk, body.theme-tropic.theme-dusk { background: var(--bg) !important; }
     /* P14 (DA officielle, annoncée) : le halo rosé-orangé du haut du mode nuit est remplacé par
        une lueur VIOLETTE discrète → mode nuit homogène de haut en bas (plus de « fond rosé »). */
-    body.theme-dusk #bgFx { background: radial-gradient(150% 64% at 50% 10%, rgba(122,92,255,.09) 0%, rgba(122,92,255,.03) 46%, rgba(0,0,0,0) 72%), var(--bg); } /* v686 : halo violet fortement calmé (.18→.09) + centre descendu (-8%→10%) + plus large → fini la « tache moche » top-centre en nuit, bloom doux et bas */
+    body.theme-dusk #bgFx { background: var(--bg); } /* v688 : fond uniforme (halo violet supprimé = fini la tache nuit) */
 
     h1, h2, h3 { color: var(--ink); }
     .topbar { background: linear-gradient(var(--bg) 62%, rgba(255,244,230,0)); border-bottom: 0; }
@@ -3845,14 +3854,14 @@
       --accent:#3A8FD9; --accent-2:#6FB4E8; --accent-3:#A8D8F5; --accent-soft:#E3F1FB; --accent-ink:#1F6FAE; /* Lot A2 : bleu glacier foncé pour le texte (≈4.6:1) */
       --accent-grad:linear-gradient(135deg, #A8D8F5 0%, #6FB4E8 20%, #3A8FD9 52%); }
     body.theme-winter .topbar { background: linear-gradient(#EAF3FB 62%, rgba(234,243,251,0)); border-bottom: 0; }
-    body.theme-winter #bgFx { background: radial-gradient(135% 58% at 50% -26%, rgba(168,216,245,.38) 0%, rgba(111,180,232,.09) 46%, rgba(255,255,255,0) 72%), var(--bg); } /* halo calmé au sommet (cohérent jour) */
+    body.theme-winter #bgFx { background: var(--bg); } /* v688 : fond uniforme */
     body.theme-winter .app-shell { background: transparent; }
     body.theme-tropic { --bg:#F7F9EC; --bg-grad:radial-gradient(125% 85% at 50% -12%, #FDFBE8 0%, #F3F7DE 40%, #ECF4DC 100%);
       --card:#FFFFFF; --cream:#F8FBEE; --ink:#1C3D2E; --text:#2A4A3A; --muted:#53705F; --line:#E2EDD9; /* Lot A : muted 3.5→5.2:1 */
       --accent:#0FA37C; --accent-2:#36C495; --accent-3:#FFC23D; --accent-soft:#E2F4EC; --accent-ink:#0C7F60; /* Lot A2 : lagon foncé sobre pour le texte (≈4.6:1) */
       --accent-grad:linear-gradient(135deg, #FFC23D 0%, #36C495 22%, #0FA37C 52%); }
     body.theme-tropic .topbar { background: linear-gradient(#F7F9EC 62%, rgba(247,249,236,0)); border-bottom: 0; }
-    body.theme-tropic #bgFx { background: radial-gradient(135% 58% at 50% -26%, rgba(255,194,61,.28) 0%, rgba(54,196,149,.09) 46%, rgba(255,255,255,0) 72%), var(--bg); } /* halo calmé au sommet (cohérent jour) */
+    body.theme-tropic #bgFx { background: var(--bg); } /* v688 : fond uniforme */
     body.theme-tropic .app-shell { background: transparent; }
     /* Rappel discret du mode actif sur le bouton thème */
     #themeToggle[data-season="winter"]::after, #themeToggle[data-season="tropic"]::after { content: "❄️"; position: absolute; bottom: -4px; right: -4px; font-size: .7rem; }
@@ -3908,7 +3917,7 @@
       background: radial-gradient(130% 80% at 50% -8%, #1C3149 0%, #14253A 40%, #0F1B2B 100%);
     }
     body.theme-winter.theme-dusk .topbar { background: linear-gradient(#0F1B2B 62%, rgba(15,27,43,0)); border-bottom: 0; }
-    body.theme-winter.theme-dusk #bgFx { background:radial-gradient(150% 64% at 50% 10%, rgba(95,168,232,.11) 0%, rgba(15,27,43,0) 70%), var(--bg); } /* v686 : halo calmé + descendu (cohérent dusk) */
+    body.theme-winter.theme-dusk #bgFx { background: var(--bg); } /* v688 : fond uniforme */
     body.theme-winter.theme-dusk .app-shell { background: transparent !important; }
     body.theme-winter.theme-dusk .help-cta { background: var(--dcard2); border-color: rgba(140,196,242,.16); color:#EAF3FB; }
     body.theme-winter.theme-dusk .sm-date-preview { background: linear-gradient(135deg,#1D3048,#152436); color:#A8D0F0; }
@@ -3949,7 +3958,7 @@
       background: transparent !important; }
     body.sm-scrolled.theme-dusk .topbar, body.sm-scrolled.theme-winter.theme-dusk .topbar, body.sm-scrolled.theme-tropic.theme-dusk .topbar {
       background: transparent !important; }
-    body.theme-tropic.theme-dusk #bgFx { background:radial-gradient(150% 64% at 50% 10%, rgba(255,194,61,.09) 0%, rgba(12,29,23,0) 70%), var(--bg); } /* v686 : halo calmé + descendu (cohérent dusk) */
+    body.theme-tropic.theme-dusk #bgFx { background: var(--bg); } /* v688 : fond uniforme */
     body.theme-tropic.theme-dusk .app-shell { background: transparent !important; }
     body.theme-tropic.theme-dusk .help-cta { background: var(--dcard2); border-color: rgba(92,216,168,.16); color:#E9F7EF; }
     body.theme-tropic.theme-dusk .sm-date-preview { background: linear-gradient(135deg,#1A3A2E,#122A21); color:#9ADBBE; }

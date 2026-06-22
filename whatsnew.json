@@ -1,8 +1,8 @@
 {
-  "candidate": "v687",
+  "candidate": "v688",
   "items": [
-    "🧘 Accueil ultra-épuré : par défaut, on garde l'essentiel — la carte, les accès rapides et « Ici & maintenant ». Tout le reste (fil, voyages, badges, souvenirs, défis, rituels…) est masqué pour respirer.",
-    "👆 Tout revient en 1 tap : via « Personnaliser », tu réaffiches (et réordonnes) exactement ce que tu veux. Rien n'est supprimé.",
-    "✨ Résultat : un accueil clair et rapide, qui ne scrolle plus à l'infini."
+    "🎯 Haut d'écran enfin parfait : fond strictement uniforme — la barre native, le header et le contenu ont exactement la même couleur (jour ET nuit). Fini la tache et le header plus foncé.",
+    "✨ « Personnaliser » nouvelle génération : un vrai panneau premium — sections groupées « Affichées » / « Masquées », chacune avec son icône, sa description et un interrupteur. Glisse pour réordonner.",
+    "👆 Tout reste à 1 tap : un interrupteur pour afficher/masquer chaque bloc de l'accueil, exactement comme tu le veux."
   ]
 }
