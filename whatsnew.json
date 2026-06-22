@@ -1,8 +1,10 @@
 {
-  "candidate": "v683",
+  "candidate": "v684",
   "items": [
-    "🔥 Streak réparée : fini le « 10 jours » qui se transforme en 2 sous tes yeux — la vraie valeur s'affiche directement.",
-    "🔔 Notifications : plus de doublons quand tu te reconnectes. 🔊 Sons : plus de cacophonie aux clics rapides, et l'icône son de « Marche avec moi » est centrée.",
-    "📸 Photos des lieux : stables (elles ne changent plus sans arrêt) et plus variées (moins de doublons)."
+    "🗺️ Carte agrandie : elle devient la vraie star de l'accueil, on voit bien plus autour de soi d'un coup d'œil.",
+    "⚡ Accès rapides compacts : les tuiles prennent beaucoup moins de place — l'écran respire, tu vois plus de choses sans scroller.",
+    "🎬 Header malin : il se fait discret quand tu descends, revient dès que tu remontes. Plus d'espace pour le contenu.",
+    "✨ Animations d'entrée : les sections se posent en douceur (façon app premium), partout dans l'app.",
+    "🎯 Haut d'écran : raccord avec la barre native du téléphone corrigé (fini la cassure de couleur en haut)."
   ]
 }

@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=683"></script>
+  <script src="sunmates-badges.js?v=684"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
@@ -2328,6 +2328,9 @@
         <div id="tripTimeline" class="trip-timeline" hidden></div>
         <div id="myTrips"></div>
 
+        <!-- v684 : « Accès rapides » devient une section pilotée par le customizer (groupe travel),
+             remontée par défaut JUSTE SOUS la carte (avant : tout en bas, sous le fil + les voyages). -->
+        <section id="homeQuickAccess">
         <div class="section-head"><h3>Accès rapides</h3></div>
         <div class="grid2">
           <div class="tile" data-goto="connexions"><div class="thumb purp" data-smicon="users" data-smicon-size="38">🤝</div><div class="t-name">Mes Mates</div><div class="t-meta" id="qaMates">Tes compagnons d'aventure</div></div>
@@ -2339,6 +2342,7 @@
           <div class="tile tile-soon" id="goldTile" aria-disabled="true" title="SunMates Gold · bientôt"><div class="thumb gold-soon" data-smicon="crown" data-smicon-size="38">👑</div><div class="t-name">Gold</div><div class="t-meta">Le meilleur, bientôt</div></div>
           <div class="tile" data-goto="profil"><div class="thumb indigo" data-smicon="usersolo" data-smicon-size="38">👤</div><div class="t-name">Mon profil</div><div class="t-meta" id="qaProfil">Ton aura voyageuse</div></div>
         </div>
+        </section>
       </div>
 
       <!-- ---------------- Onglet LIEUX SÛRS ---------------- -->
@@ -5580,6 +5584,7 @@
       show($("appView"), loggedIn);
       show($("userBox"), loggedIn);
       if (loggedIn) window.scrollTo(0, 0); // arrive en haut (on voit le « Bonjour »)
+      if (loggedIn) setTimeout(() => { if (typeof _smRevealPanel === "function") _smRevealPanel(typeof __lastTab !== "undefined" && __lastTab ? __lastTab : "accueil"); }, 90); // v684 : motion d'entrée au 1er affichage
       if (loggedIn) {
         if (_renderedUserId === session.user.id) return; // déjà initialisé pour cet utilisateur -> aucun rechargement (plus de flash)
         _renderedUserId = session.user.id;
@@ -5789,7 +5794,34 @@
       if (target === "accueil" && typeof renderHomeMap === "function" && (typeof getHomeMode !== "function" || getHomeMode() !== "home")) setTimeout(renderHomeMap, 60);
       if (target === "accueil" && typeof renderStarterChecklist === "function") renderStarterChecklist(); // recoche les étapes faites depuis un autre onglet
       if (target !== "accueil" && window._smArmBack) window._smArmBack(); // P2.3 : le retour téléphone ramènera à l'Accueil
+      if (typeof _smRevealPanel === "function") _smRevealPanel(target); // v684 : motion d'entrée façon Emil
       __lastTab = target;
+    }
+
+    // ========= v684 · MOTION d'entrée (façon Emil : restreint, CSS, respecte reduced-motion) =========
+    // Les blocs de premier niveau d'un onglet glissent/fondent en place, légèrement décalés (stagger),
+    // au lieu d'être « posés à plat ». IntersectionObserver = ça se rejoue au scroll. Garde-fou : si
+    // l'IO ne déclenche pas (ou pas de support), un timeout révèle tout → jamais de contenu bloqué.
+    const _smReduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const _smRevealIO = (!_smReduce && "IntersectionObserver" in window)
+      ? new IntersectionObserver((ents, io) => {
+          ents.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
+        }, { rootMargin: "0px 0px -6% 0px", threshold: .04 })
+      : null;
+    function _smRevealPanel(target) {
+      const panel = document.querySelector('.tab-panel[data-panel="' + target + '"]');
+      if (!panel) return;
+      const blocks = panel.querySelectorAll(':scope > section, :scope > .section-head, :scope > .card, :scope > .grid2, :scope > details, :scope > #homeTravelMap, :scope > .secu-view > section, :scope > .secu-view > .section-head');
+      let i = 0;
+      blocks.forEach((el) => {
+        if (el.classList.contains("sm-reveal") || el.offsetParent === null) return; // déjà animé ou masqué
+        el.classList.add("sm-reveal");
+        if (_smReduce || !_smRevealIO) { el.classList.add("in"); return; }
+        el.style.setProperty("--sm-rd", Math.min(i, 6) * 45 + "ms"); i++;
+        _smRevealIO.observe(el);
+      });
+      // Filet de sécurité : rien ne reste invisible si l'IO n'a pas tiré (onglet caché, etc.)
+      setTimeout(() => blocks.forEach((el) => el.classList.add("in")), 1400);
     }
 
     // ====================== ACCUEIL ======================
@@ -19085,10 +19117,23 @@
     // au repos (il montre le même fond que la page → invisible, zéro bloc) et devient OPAQUE dès qu'on
     // scrolle (body.sm-scrolled) pour occulter le contenu qui défile dessous.
     (function setupScrollHeader() {
+      // v684 : header AUTO-HIDE façon app native — il glisse hors champ quand on descend (plus
+      // d'écran pour le contenu) et réapparaît dès qu'on remonte, même un peu. Hystérésis pour
+      // éviter le clignotement ; jamais caché tout en haut.
+      let lastY = 0, lastDir = 0;
       const upd = () => {
         const sm = document.getElementById("smMain");
         const y = window.scrollY || document.documentElement.scrollTop || (sm ? sm.scrollTop : 0) || 0;
         document.body.classList.toggle("sm-scrolled", y > 6);
+        const dy = y - lastY;
+        if (y < 90) {
+          document.body.classList.remove("sm-hdrhide");        // toujours visible en haut
+        } else if (dy > 6 && lastDir <= 0) {
+          document.body.classList.add("sm-hdrhide"); lastDir = 1;   // on descend → on cache
+        } else if (dy < -6 && lastDir >= 0) {
+          document.body.classList.remove("sm-hdrhide"); lastDir = -1; // on remonte → on montre
+        }
+        lastY = y;
       };
       window.addEventListener("scroll", upd, { passive: true });
       document.addEventListener("scroll", upd, { passive: true, capture: true });
@@ -20085,6 +20130,7 @@
     var GROUPS = [
       { key: "travel", parent: '.tab-panel[data-panel="accueil"]', physical: true, anchor: "#searchResults", title: "Personnaliser l'accueil", sections: [
         { id: "homeTravelMap", title: "Explore autour de toi" },
+        { id: "homeQuickAccess", title: "Accès rapides" },
         { id: "geoNowCard", title: "Ici & maintenant" },
         { id: "todayBand", title: "Aujourd'hui" },
         { id: "starterCard", title: "Bien démarrer" }
