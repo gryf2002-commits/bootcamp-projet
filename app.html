@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=662"></script>
+  <script src="sunmates-badges.js?v=663"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
@@ -353,7 +353,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=662">
+  <link rel="stylesheet" href="styles.css?v=663">
   <!-- ============================================================
        PREVIEW FIXES (inline, scopé preview) — 19/06 : header mobile,
        onglet Messages, idées geo cliquables, centrage, contrôle saison.
@@ -2143,7 +2143,7 @@
             <div class="act-card">
               <div class="picker-head"><h3 id="proofTitle" style="margin:0">Confirme ton défi</h3><button id="proofCancel" class="btn-ghost" style="padding:.3rem .7rem">✕</button></div>
               <p class="muted" id="proofDesc" style="font-size:.85rem;margin:.3rem 0 .7rem"></p>
-              <textarea id="proofNote" rows="2" maxlength="200" placeholder="En un mot, comment l'as-tu accompli ? (optionnel) ✨" style="width:100%;resize:none"></textarea>
+              <textarea id="proofNote" rows="2" maxlength="200" placeholder="En un mot, comment l'as-tu accompli ? (optionnel)" style="width:100%;resize:none"></textarea>
               <button class="btn-primary btn-block" id="proofSubmit" style="margin-top:.6rem">✅ Je confirme l'avoir accompli</button>
               <div class="msg" id="proofMsg" style="text-align:center"></div>
             </div>
@@ -2235,12 +2235,12 @@
               <!-- Retour Maxime : pouvoir CHERCHER un lieu (nom/adresse) et l'associer au pin, pas seulement toucher la carte -->
               <label data-i18n="act.locLbl">Lieu</label>
               <div class="act-search">
-                <input id="actSearch" type="text" placeholder="🔎 Nom du lieu, adresse, ville…" autocomplete="off" data-i18n-ph="act.searchPh" />
+                <input id="actSearch" type="text" placeholder="Nom du lieu, adresse, ville…" autocomplete="off" data-i18n-ph="act.searchPh" />
                 <button id="actSearchBtn" type="button" data-i18n="act.searchBtn">Chercher</button>
               </div>
               <ul id="actSearchResults" class="act-search-results hidden"></ul>
               <label style="margin-top:.6rem">Titre</label>
-              <input id="actTitle" type="text" placeholder="Ex : Café découverte ☕, Balade nature 🥾" maxlength="60" />
+              <input id="actTitle" type="text" placeholder="Ex : Café découverte, Balade nature" maxlength="60" />
               <label style="margin-top:.6rem">Détail (optionnel)</label>
               <input id="actNote" type="text" placeholder="Quand, où exactement, niveau…" maxlength="120" />
               <div class="muted" id="actPos" style="font-size:.78rem;margin:.5rem 0"></div>
@@ -2349,7 +2349,7 @@
           </div>
           <div class="spot-step">3 · Décris &amp; publie</div>
           <div class="spot-compose">
-            <input id="spotInput" type="text" maxlength="60" placeholder="Ex : Café cosy à Lisbonne ☕" data-i18n-ph="spot.ph" />
+            <input id="spotInput" type="text" maxlength="60" placeholder="Ex : Café cosy à Lisbonne" data-i18n-ph="spot.ph" />
             <button class="btn-primary" id="spotSave" data-i18n="spot.save">Publier</button>
           </div>
           <div style="text-align:right;margin-top:.4rem"><a id="spotClear" style="cursor:pointer;display:none;color:var(--accent-ink, var(--accent));font-weight:600;font-size:.82rem" data-i18n="spot.clear">Effacer</a></div>
@@ -2808,7 +2808,7 @@
               <label>Ville actuelle</label>
               <input id="pCity" maxlength="60" placeholder="Lisbonne" />
               <label>Bio</label>
-              <textarea id="pBio" rows="3" maxlength="300" placeholder="Exploratrice solo, fan de cafés calmes ☕"></textarea>
+              <textarea id="pBio" rows="3" maxlength="300" placeholder="Exploratrice solo, fan de cafés calmes"></textarea>
               <small class="char-count" id="pBioCount" data-for="pBio" data-max="300">0/300</small>
             </div>
           </div>

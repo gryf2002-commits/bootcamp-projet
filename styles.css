@@ -4365,3 +4365,23 @@
         --shadow-pop: 0 10px 26px rgba(40,34,46,.18);
       }
     }
+
+    /* ============================================================
+       ICÔNES v663 (22/06) — emojis posés en CSS `content:` que Twemoji ne peut pas
+       atteindre (il ne parcourt que les nœuds texte du DOM). On les remplace par les
+       MÊMES SVG Twemoji en background-image → cohérence totale avec le reste.
+       ============================================================ */
+    .city-pick .sm-sel-trigger .sm-sel-val::before {
+      content: ""; display: inline-block; width: 1em; height: 1em; vertical-align: -.15em; margin-right: .3em;
+      background: url("https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f4cd.svg") center/contain no-repeat; /* 📍 */
+    }
+    body.streak-flame #profileAvatar::after, body.streak-flame .player-badge::after {
+      content: ""; width: 1.05rem; height: 1.05rem;
+      background: url("https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f525.svg") center/contain no-repeat; /* 🔥 */
+    }
+    #themeToggle[data-season="winter"]::after {
+      content: ""; width: .7rem; height: .7rem; background: url("https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2744.svg") center/contain no-repeat; /* ❄️ */
+    }
+    #themeToggle[data-season="tropic"]::after {
+      content: ""; width: .7rem; height: .7rem; background: url("https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f334.svg") center/contain no-repeat; /* 🌴 */
+    }
