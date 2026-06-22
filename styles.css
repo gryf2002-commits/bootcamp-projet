@@ -4417,3 +4417,18 @@
     .br-medal { width: 48px; height: 48px; font-size: 26px; }
     /* Rayons de conteneurs cohérents (14px) */
     .cat-tile, .gp-tile, .qm-card, .act-tile, .sa-tile, .jeux-open { border-radius: 14px; }
+
+    /* ============================================================
+       REFONTE TUILES v680 — look cohérent et net sur TOUTE l'app (retour Maxime : « trop subtil »).
+       Rayon + ombre douce unifiés + texte centré sur les tuiles colonne. Perceptible partout.
+       ============================================================ */
+    .tile, .cat-tile, .qm-card, .jeux-open, .gp-tile, .act-tile, .sa-tile {
+      border-radius: 16px !important;
+      box-shadow: 0 6px 18px -8px rgba(45,38,52,.18) !important;
+    }
+    body.theme-dusk .tile, body.theme-dusk .cat-tile, body.theme-dusk .qm-card,
+    body.theme-dusk .jeux-open, body.theme-dusk .gp-tile, body.theme-dusk .act-tile, body.theme-dusk .sa-tile {
+      box-shadow: 0 6px 18px -8px rgba(0,0,0,.45) !important;
+    }
+    /* Texte centré sur les tuiles en colonne (cohérence visuelle) */
+    .cat-tile, .qm-card, .gp-tile, .sa-tile, .sp-stat { text-align: center; }

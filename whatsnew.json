@@ -1,7 +1,8 @@
 {
-  "candidate": "v679",
+  "candidate": "v680",
   "items": [
-    "🗺️ Carte plein écran RÉPARÉE : elle ne s'affichait plus en grand (un conteneur que j'avais ajouté la masquait) — c'est corrigé, et l'accueil reste map-first.",
-    "🎴 Tuiles homogénéisées (icônes 44px, texte centré) · 🔥 streak réparée · 📸 photos lieux (loremflickr)."
+    "📸 VRAIES photos des lieux (Unsplash) au lieu des placeholders qui tombaient en panne — par thème (café, bar, ville), stables et fiables.",
+    "🎴 Refonte des tuiles dans toute l'app : tailles d'icônes unifiées (44px), texte centré, rayons et ombres cohérents — un vrai coup de propre.",
+    "🗺️ Carte plein écran réparée · 🔥 streak corrigée."
   ]
 }
