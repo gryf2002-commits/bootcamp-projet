@@ -1,8 +1,8 @@
 {
-  "candidate": "v668",
+  "candidate": "v671",
   "items": [
-    "🩹 Correctif : la couleur en haut de l'écran est de nouveau raccord avec la barre du téléphone (le réglage précédent créait une cassure, désolé).",
-    "🎴 Tuiles plus sobres et centrées · 🗺️ carte d'accueil plus présente sur mobile.",
-    "✨ Emojis identiques partout, sans rechargement."
+    "🗺️ Accueil map-first : la carte passe tout en haut, bien visible — les bandes (Aujourd'hui, Ici & maintenant, Bien démarrer) passent en dessous.",
+    "📑 Replie les bandes d'un toucher sur leur flèche en haut à droite, ou masque / réordonne tout via « Personnaliser ».",
+    "✨ Suite du nettoyage visuel (tuiles, emojis cohérents)."
   ]
 }

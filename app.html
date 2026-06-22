@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=670"></script>
+  <script src="sunmates-badges.js?v=671"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
@@ -20034,18 +20034,33 @@
     .hcust-mv button:active, .hcust-eye:active { transform: scale(.92); }
     .hcust-mv button:disabled { opacity: .3; cursor: default; }
     .hcust-eye.off { opacity: .5; }
-    @media (prefers-reduced-motion: reduce) { .hsec-body, .hsec-chev, .hcust-ov, .hcust-sheet { transition: none; } }
+    /* Vue Voyage : sur-conteneurs repliables des bandes (le DOM de la bande peut se re-rendre, le shell reste) */
+    .vb-shell { position: relative; }
+    .vb-fold { position: absolute; top: .55rem; right: .55rem; z-index: 6; width: 30px; height: 30px; border-radius: 50%;
+      border: 0; background: rgba(120,60,30,.07); color: var(--muted); display: grid; place-items: center; cursor: pointer;
+      font-size: .95rem; line-height: 1; padding: 0; transition: transform .26s var(--ease-out, cubic-bezier(.22,1,.36,1)); }
+    body.theme-dusk .vb-fold { background: rgba(255,255,255,.08); }
+    .vb-fold:active { transform: scale(.9); }
+    .vb-collapsed .vb-fold { transform: rotate(-90deg); }
+    .vb-collapsed.vb-shell:active .vb-fold { transform: rotate(-90deg) scale(.9); }
+    .vb-clabel { display: none; }
+    /* replié : on masque la bande et on montre une barre compacte (titre) cliquable */
+    .vb-collapsed > :not(.vb-fold):not(.vb-clabel) { display: none !important; }
+    .vb-collapsed > .vb-clabel { display: block; width: 100%; text-align: left; border: 0; cursor: pointer;
+      background: var(--card, #fff); border-radius: 16px; padding: .8rem 2.6rem .8rem 1rem; margin: .15rem 0 .55rem;
+      font: 700 .95rem/1 "Fraunces", Georgia, serif; color: var(--ink); box-shadow: var(--shadow-sm); }
+    @media (prefers-reduced-motion: reduce) { .hsec-body, .hsec-chev, .hcust-ov, .hcust-sheet, .vb-fold { transition: none; } }
   </style>
   <script>
   (function () {
     var KEY = "sm_home_custom_v1";
     var GROUPS = [
-      { key: "travel", parent: '.tab-panel[data-panel="accueil"]', anchor: "#starterCard", title: "Personnaliser l'accueil", sections: [
-        { id: "starterCard", title: "Bien démarrer" },
-        { id: "todayBand", title: "Aujourd'hui" },
-        { id: "geoNowCard", title: "Ici & maintenant" },
+      { key: "travel", parent: '.tab-panel[data-panel="accueil"]', physical: true, anchor: "#searchResults", title: "Personnaliser l'accueil", sections: [
         { id: "homeTravelMap", title: "Explore autour de toi" },
-        { id: "badgeRailSection", title: "Tes badges" }
+        { id: "geoNowCard", title: "Ici & maintenant", collapsible: true },
+        { id: "todayBand", title: "Aujourd'hui", collapsible: true },
+        { id: "starterCard", title: "Bien démarrer", collapsible: true },
+        { id: "badgeRailSection", title: "Tes badges", collapsible: true }
       ]},
       { key: "home", parent: "#homeHomeMode", anchor: null, title: "Personnaliser « À la maison »", sections: [
         { id: "soloProgress", head: ".sp-head", title: "Ta progression solo" },
@@ -20087,7 +20102,45 @@
       sec.classList.toggle("hsec-collapsed", !!state.collapsed[s.id]);
     }
     function present(g) { return g.sections.filter(function (s) { return document.getElementById(s.id); }); }
+    // ---- Vue VOYAGE : layout PHYSIQUE (map-first) + bandes repliables (sur-conteneur) ----
+    function ensureShell(s) {
+      var el = document.getElementById(s.id); if (!el) return null;
+      var shell = el.parentNode && el.parentNode.classList && el.parentNode.classList.contains("vb-shell") ? el.parentNode : null;
+      if (!shell) {
+        shell = document.createElement("div"); shell.className = "vb-shell"; shell.dataset.for = s.id;
+        el.parentNode.insertBefore(shell, el); shell.appendChild(el);
+        if (s.collapsible) {
+          var fold = document.createElement("button"); fold.type = "button"; fold.className = "vb-fold"; fold.setAttribute("aria-label", "Replier / déplier"); fold.textContent = "▾";
+          var lbl = document.createElement("button"); lbl.type = "button"; lbl.className = "vb-clabel"; lbl.textContent = s.title;
+          var toggle = function () { var c = shell.classList.toggle("vb-collapsed"); state.collapsed[s.id] = c; save(); };
+          fold.addEventListener("click", toggle); lbl.addEventListener("click", toggle);
+          shell.appendChild(fold); shell.appendChild(lbl);
+        }
+      }
+      return shell;
+    }
+    function applyPhysical(g) {
+      var parent = document.querySelector(g.parent); if (!parent) return;
+      var anchor = g.anchor ? document.querySelector(g.anchor) : null;
+      if (!anchor || anchor.parentNode !== parent) return;
+      var pres = present(g); if (!pres.length) return;
+      var ord = (state.order[g.key] || []).filter(function (id) { return pres.find(function (s) { return s.id === id; }); });
+      pres.forEach(function (s) { if (ord.indexOf(s.id) < 0) ord.push(s.id); });
+      state.order[g.key] = ord;
+      injectOpener(g, parent, null, anchor);
+      var cursor = parent.querySelector('.hcust-open[data-g="' + g.key + '"]') || anchor;
+      ord.forEach(function (id) {
+        var s = pres.find(function (x) { return x.id === id; }); if (!s) return;
+        var shell = ensureShell(s); if (!shell) return;
+        shell.style.display = state.hidden[id] ? "none" : "";
+        shell.classList.toggle("vb-collapsed", !!(s.collapsible && state.collapsed[id]));
+        cursor.insertAdjacentElement("afterend", shell); cursor = shell; // place après l'élément précédent
+      });
+      // la carte a bougé dans le DOM → resynchroniser Leaflet
+      try { if (window.homeLeaf && homeLeaf.invalidateSize) setTimeout(function () { homeLeaf.invalidateSize({ animate: false }); }, 80); } catch (e) {}
+    }
     function applyGroup(g) {
+      if (g.physical) return applyPhysical(g);
       var parent = document.querySelector(g.parent); if (!parent) return;
       freeze(parent);
       var pres = present(g); if (!pres.length) return;
@@ -20104,16 +20157,17 @@
       });
       injectOpener(g, parent, slots[0]);
     }
-    function injectOpener(g, parent, firstSlot) {
+    function injectOpener(g, parent, firstSlot, physAnchor) {
       var ex = parent.querySelector('.hcust-open[data-g="' + g.key + '"]');
       if (!ex) {
         ex = document.createElement("button"); ex.type = "button"; ex.className = "hcust-open"; ex.dataset.g = g.key;
         ex.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h12M3 18h6"/></svg> Personnaliser';
         ex.addEventListener("click", function () { openSheet(g); });
-        var anchor = g.anchor ? document.querySelector(g.anchor) : null;
-        if (anchor && anchor.parentNode === parent) parent.insertBefore(ex, anchor); else parent.insertBefore(ex, parent.firstChild);
+        if (physAnchor) parent.insertBefore(ex, parent.firstChild); // (sera repositionné juste sous l'ancre par applyPhysical)
+        else { var a = g.anchor ? document.querySelector(g.anchor) : null; if (a && a.parentNode === parent) parent.insertBefore(ex, a); else parent.insertBefore(ex, parent.firstChild); }
       }
-      if (firstSlot != null) ex.style.order = String(firstSlot);
+      if (physAnchor) { try { physAnchor.insertAdjacentElement("afterend", ex); } catch (e) {} ex.style.order = ""; }
+      else if (firstSlot != null) ex.style.order = String(firstSlot);
     }
     var activeGroup = null;
     function openSheet(g) {
@@ -20128,7 +20182,7 @@
       document.getElementById("hcustTitle").textContent = g.title;
       document.getElementById("hcustSub").textContent = g.key === "home"
         ? "Replie une section en touchant son titre. Ici tu peux la masquer ou la déplacer."
-        : "Masque les sections inutiles ou réordonne-les comme tu veux.";
+        : "Touche la flèche d'une bande pour la replier. Ici tu peux masquer ou réordonner — la carte d'abord.";
       renderList();
       ov.classList.remove("hidden"); requestAnimationFrame(function () { ov.classList.add("on"); });
     }
