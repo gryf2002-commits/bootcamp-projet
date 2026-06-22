@@ -257,7 +257,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- PWA : app installable sur le téléphone -->
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#FFF4E6" />
+  <meta name="theme-color" content="#fbeee9" />
   <script>
     // P8 : couleur de la status bar ALIGNÉE dès le 1er rendu · avant, elle restait crème ~1 s
     // au lancement en mode nuit/saison (la « vieille barre » qui jurait sous l'heure du téléphone).
@@ -265,7 +265,7 @@
       var t = localStorage.getItem("sm_theme"), h = new Date().getHours();
       var dusk = t ? t === "dusk" : (h >= 19 || h < 7);
       var s = localStorage.getItem("sm_season") || "";
-      var c = s === "winter" ? (dusk ? "#0F1B2B" : "#EAF3FB") : (s === "tropic" ? (dusk ? "#0C1D17" : "#F7F9EC") : (dusk ? "#190E2E" : "#FFF4E6")); /* Bug haut d'écran : status-bar = VRAI fond du mode (avant #fbeee9/#171026 juraient avec le contenu #FFF4E6/#190E2E) */
+      var c = s === "winter" ? (dusk ? "#0F1B2B" : "#EAF3FB") : (s === "tropic" ? (dusk ? "#0C1D17" : "#F7F9EC") : (dusk ? "#190E2E" : "#fbeee9")); /* Bug haut d'écran : status-bar = VRAI fond du mode (avant #fbeee9/#171026 juraient avec le contenu #fbeee9/#190E2E) */
       var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", c);
     } catch (e) {} })();
   </script>
@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=668"></script>
+  <script src="sunmates-badges.js?v=669"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
