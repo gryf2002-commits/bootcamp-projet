@@ -258,6 +258,12 @@
   <!-- PWA : app installable sur le téléphone -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#FFF4E6" />
+  <!-- v690 (retour Maxime « toujours une séparation avec la barre native ») : sur PWA installée, la barre
+       native est souvent peinte par une couleur STATIQUE (impossible d'être claire ET sombre pour un thème
+       manuel). On fournit les deux variantes pilotées par le thème SYSTÈME du téléphone → la barre native
+       suit le mode clair/sombre de l'OS. La synchro runtime ci-dessous reste pour l'app ouverte. -->
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFF4E6" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#190E2E" />
   <script>
     // P8 : couleur de la status bar ALIGNÉE dès le 1er rendu · avant, elle restait crème ~1 s
     // au lancement en mode nuit/saison (la « vieille barre » qui jurait sous l'heure du téléphone).
@@ -299,7 +305,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=689"></script>
+  <script src="sunmates-badges.js?v=690"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung

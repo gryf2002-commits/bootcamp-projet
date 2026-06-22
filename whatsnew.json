@@ -1,8 +1,8 @@
 {
-  "candidate": "v689",
+  "candidate": "v690",
   "items": [
-    "🧼 Icônes épurées : on a retiré les carrés colorés derrière les emojis des tuiles. Résultat : juste l'emoji, propre et identique dans tous les modes — fini les fonds de couleurs incohérentes d'une tuile à l'autre.",
-    "📐 Plus homogène et plus léger : les accès rapides, la Sécurité, les Lieux… tout respire de la même façon.",
-    "🎯 Haut d'écran : on continue d'affiner le raccord avec la barre native du téléphone."
+    "📱 Barre native du téléphone : elle suit maintenant le mode clair/sombre de ton système — le haut de l'écran se fond mieux avec l'app sur la version installée.",
+    "🧼 (Rappel v689) Icônes épurées : juste l'emoji, sans carré coloré, homogène partout.",
+    "✨ (Rappel v688) Personnaliser premium + fond d'app uniforme."
   ]
 }
