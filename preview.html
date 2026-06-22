@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=671"></script>
+  <script src="sunmates-badges.js?v=672"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
@@ -2770,7 +2770,7 @@
           </div>
           <!-- P2.28 : accès Premium/Admin gardés ICI, en haut → toujours visibles sans scroller. -->
           <div class="mseg" id="profSegNav" style="flex-wrap:wrap;margin-top:.7rem">
-            <button data-pseg="premium">Premium ✨</button>
+            <button data-pseg="premium">Gold ✨</button>
             <!-- P14 : ESPACE PRO · visible pour les comptes partenaires (partner_place_id) et l'admin (démo bar/auberge) -->
             <button data-pseg="pro" id="proSegBtn" style="display:none">Espace Pro 💼</button>
             <button data-pseg="admin" id="adminSegBtn" style="display:none">Admin 🛡️</button>
@@ -3008,16 +3008,17 @@
         <div class="prof-seg hidden" data-psegpanel="admin">
           <div class="mseg aseg-nav" style="flex-wrap:wrap">
             <!-- #34 : Démo + Livre blanc + Catalogue FUSIONNÉS en un seul hub (zéro doublon) -->
+            <!-- Onglets groupés par domaine (réorg) : Pilotage · Modération · Contenu &amp; partenaires · Technique -->
             <button data-aseg="demo" class="active">📖 Livre blanc &amp; démo</button>
             <button data-aseg="dash">📊 Bord</button>
             <button data-aseg="users">👥 Membres</button>
-            <button data-aseg="places">📍 Lieux</button>
-            <button data-aseg="reports">🚩 Signal.</button>
-            <button data-aseg="quotes">💼 Devis</button>
+            <button data-aseg="reports">🚩 Signalements</button>
             <button data-aseg="feedback">🧪 Bêta</button>
-            <button data-aseg="sounds">🔊 Sons</button>
-            <button data-aseg="da">🎨 DA</button>
+            <button data-aseg="places">📍 Lieux</button>
+            <button data-aseg="quotes">💼 Devis</button>
             <button data-aseg="data">🗄️ Données</button>
+            <button data-aseg="da">🎨 DA</button>
+            <button data-aseg="sounds">🔊 Sons</button>
             <button data-aseg="system">🧰 Système</button>
           </div>
 

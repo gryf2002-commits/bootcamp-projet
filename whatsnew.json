@@ -1,8 +1,8 @@
 {
-  "candidate": "v671",
+  "candidate": "v672",
   "items": [
-    "🗺️ Accueil map-first : la carte passe tout en haut, bien visible — les bandes (Aujourd'hui, Ici & maintenant, Bien démarrer) passent en dessous.",
-    "📑 Replie les bandes d'un toucher sur leur flèche en haut à droite, ou masque / réordonne tout via « Personnaliser ».",
-    "✨ Suite du nettoyage visuel (tuiles, emojis cohérents)."
+    "✨ L'offre premium s'appelle désormais « Gold » partout — fini le mélange « Premium / Gold », c'est plus clair.",
+    "🗺️ Rappel v671 : accueil map-first (la carte en haut) et bandes repliables.",
+    "🧹 Coulisses admin réorganisées (onglets groupés par thème)."
   ]
 }
