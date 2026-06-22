@@ -4351,3 +4351,17 @@
       .ph-streak             { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(255,255,255,.26); }
       .ph-streak:hover       { background: rgba(255,255,255,.34); }
     }
+
+    /* ============================================================
+       PERF v662 (22/06) — ombres allégées sur mobile (backlog perf item 6).
+       Le coût de peinture d'une ombre croît ~en rayon² ; sur mobile (≤820px) on
+       réduit le rayon de flou et on retire la 2e couche, en gardant une ombre douce
+       (hiérarchie visuelle préservée, juste moins coûteuse à composer chaque frame).
+       N'affecte que les éléments qui utilisent les tokens var(--shadow*).
+       ============================================================ */
+    @media (max-width: 820px) {
+      :root {
+        --shadow:     0 6px 16px rgba(45,38,52,.10);
+        --shadow-pop: 0 10px 26px rgba(40,34,46,.18);
+      }
+    }
