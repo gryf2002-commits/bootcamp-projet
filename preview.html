@@ -290,7 +290,7 @@
        Tuiles : OpenFreeMap (gratuit, sans clé, sans limite). Repli raster auto si WebGL absent. -->
   <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
   <!-- PERF : poignée de main TLS faite en avance pour les photos (quêtes/lieux) et avatars de démo -->
-  <link rel="preconnect" href="https://picsum.photos" />
+  <link rel="preconnect" href="https://loremflickr.com" />
   <link rel="preconnect" href="https://i.pravatar.cc" />
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" />
   <script defer src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=676"></script>
+  <script src="sunmates-badges.js?v=677"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
@@ -353,7 +353,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=676">
+  <link rel="stylesheet" href="styles.css?v=677">
   <!-- ============================================================
        FEEL v667 (inline preview) — allègement visuel : tuiles Lite centrées + vignettes
        plus petites (moins « imposant »), carte d'accueil plus présente sur mobile.
@@ -11002,11 +11002,18 @@
       if (/(road|trip|train|tram|vélo|gare|aéroport|pont|bridge|van\b)/.test(k)) return PHOTO_POOLS.route;
       return PHOTO_POOLS.ville;
     }
+    // Mots-clés → tag propre pour loremflickr (picsum.photos est HS → les photos de lieux étaient cassées).
+    function _imgTag(s, fallback) {
+      s = String(s || "").toLowerCase()
+        .replace(/[éèêë]/g, "e").replace(/[àâä]/g, "a").replace(/[ùûü]/g, "u").replace(/[îï]/g, "i").replace(/[ôö]/g, "o").replace(/ç/g, "c")
+        .replace(/[^a-z, ]/g, " ").trim();
+      var w = s.split(/[\s,]+/).filter(Boolean).slice(0, 2);
+      return w.length ? w.join(",") : (fallback || "travel,city");
+    }
     function flickrImg(keywords, seed) {
-      const POOL = _photoPool(keywords);
       const s = String(seed || "") + "|" + String(keywords || ""); let n = 0;
       for (let i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) >>> 0;
-      return `https://picsum.photos/id/${POOL[n % POOL.length]}/640/320`;
+      return `https://loremflickr.com/640/320/${encodeURIComponent(_imgTag(keywords))}?lock=${n % 100000}`;
     }
     // Chaque quête → sa ville (+ nuance pour varier si même pays)
     const QUEST_CITY = {
@@ -11034,12 +11041,12 @@
     // collisions → « photos similaires » sur les check-ins) et elle ne change plus jamais.
     function cafeImage(c) {
       if (c.image_url) return c.image_url;
-      // #25 : pool choisi d'après le NOM du lieu (café → tasses/intérieurs chauds), toujours
-      // ancré par id (séquentiel → deux lieux voisins n'ont jamais la même photo).
-      const POOL = _photoPool(c.name || ""); // « Café Lomi » → tasses ; sinon pool ville varié
+      // Photo de banque (loremflickr, picsum étant HS) : tag « café/coffee/bar » par défaut, ancrée
+      // par id (séquentiel → deux lieux voisins ont une photo différente et stable).
       let n = Number(c.id);
       if (!isFinite(n)) { const s = String(c.name || c.id || ""); n = 0; for (let i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) >>> 0; }
-      return `https://picsum.photos/id/${POOL[n % POOL.length]}/640/320`;
+      const tag = _imgTag(c.name, "cafe,coffee");
+      return `https://loremflickr.com/640/320/${encodeURIComponent(tag)}?lock=${n % 100000}`;
     }
 
     // ---- JEUX POPULAIRES : mini-jeux INTÉGRÉS, jouables tout de suite (indépendants de la BDD) ----

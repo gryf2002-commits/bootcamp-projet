@@ -1,7 +1,8 @@
 {
-  "candidate": "v676",
+  "candidate": "v677",
   "items": [
-    "🩹 Correctifs : zone tout en haut de l'écran peinte avec la couleur de l'app (encoche), bulles de repliage retirées de l'accueil, et fin de l'onglet « Tes badges » fantôme.",
-    "🗺️ Accueil map-first conservé · ✋ Personnaliser (glisser/masquer)."
+    "📸 Photos des lieux réparées : le service d'images externe (picsum) était en panne → bascule sur un service fiable, et photos plus pertinentes (café, bar…).",
+    "🎨 Haut d'écran : la couleur tout en haut est désormais raccord avec la barre du téléphone (le halo coloré démarre plus bas) — valable dans tous les modes.",
+    "🧹 Accueil : repliage cassé retiré, plus d'onglet « Tes badges » fantôme."
   ]
 }

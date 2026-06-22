@@ -76,12 +76,15 @@
     html:has(body.theme-tropic) { background: #F7F9EC; }
     html:has(body.theme-winter.theme-dusk) { background: #0F1B2B; }
     html:has(body.theme-tropic.theme-dusk) { background: #0C1D17; }
-    /* CASSURE haut d'écran : on PEINT la zone de l'encoche/status-bar (safe-area-inset-top) avec
-       EXACTEMENT la couleur de l'app (var(--bg)) — donc la même que theme-color, dans TOUS les modes.
-       Placé sous le topbar (z 49 < z-header 50) : invisible si le topbar couvre, comble le trou sinon.
-       Sans encoche, height:0 → inerte. */
-    body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px);
-      background: var(--bg); z-index: 49; pointer-events: none; }
+    /* CASSURE haut d'écran (barre native ≠ haut de SunMates) : le topbar est transparent et laisse
+       voir le HALO #bgFx (clair/coloré) sous la status-bar, alors que theme-color = --bg (plus foncé)
+       → séparation nette dans tous les modes (surtout en nuit : barre quasi-noire vs halo violet vif).
+       Fix universel : on COIFFE le haut de #bgFx d'un aplat var(--bg) qui s'efface en descendant →
+       le haut de l'app = var(--bg) = theme-color = barre native (fondu invisible), le halo reste plus bas. */
+    #bgFx::after { content: ""; position: absolute; top: 0; left: 0; right: 0;
+      height: calc(env(safe-area-inset-top, 0px) + 150px);
+      background: linear-gradient(180deg, var(--bg) 0, var(--bg) calc(env(safe-area-inset-top, 0px) + 64px), rgba(0,0,0,0) 100%);
+      pointer-events: none; }
     /* Barre de défilement thémée DA (fini le blanc système). Firefox + WebKit/Blink.
        Les conteneurs en scrollbar-width:none (chips, etc.) restent masqués (specificité de classe). */
     /* #7 : JOUR = barre neutre chaude discrète (le corail vif était trop agressif en clair) ;
