@@ -76,6 +76,12 @@
     html:has(body.theme-tropic) { background: #F7F9EC; }
     html:has(body.theme-winter.theme-dusk) { background: #0F1B2B; }
     html:has(body.theme-tropic.theme-dusk) { background: #0C1D17; }
+    /* CASSURE haut d'écran : on PEINT la zone de l'encoche/status-bar (safe-area-inset-top) avec
+       EXACTEMENT la couleur de l'app (var(--bg)) — donc la même que theme-color, dans TOUS les modes.
+       Placé sous le topbar (z 49 < z-header 50) : invisible si le topbar couvre, comble le trou sinon.
+       Sans encoche, height:0 → inerte. */
+    body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px);
+      background: var(--bg); z-index: 49; pointer-events: none; }
     /* Barre de défilement thémée DA (fini le blanc système). Firefox + WebKit/Blink.
        Les conteneurs en scrollbar-width:none (chips, etc.) restent masqués (specificité de classe). */
     /* #7 : JOUR = barre neutre chaude discrète (le corail vif était trop agressif en clair) ;

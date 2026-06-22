@@ -1,8 +1,7 @@
 {
-  "candidate": "v675",
+  "candidate": "v676",
   "items": [
-    "🩹 Haut de l'écran : la couleur du fond tout en haut est alignée sur le reste de l'app (le fond de page utilisait une vieille teinte un peu plus foncée).",
-    "✋ « Personnaliser l'accueil » : glisser-déposer + tout réafficher.",
-    "🗺️ Accueil map-first · ✨ Gold partout."
+    "🩹 Correctifs : zone tout en haut de l'écran peinte avec la couleur de l'app (encoche), bulles de repliage retirées de l'accueil, et fin de l'onglet « Tes badges » fantôme.",
+    "🗺️ Accueil map-first conservé · ✋ Personnaliser (glisser/masquer)."
   ]
 }
