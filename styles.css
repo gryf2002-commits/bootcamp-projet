@@ -89,6 +89,19 @@
        coiffe en dégradé est DEVENUE INUTILE et c'était la dernière source possible de « dégradé » en haut.
        On la NEUTRALISE complètement. */
     #bgFx::after { content: none !important; display: none !important; }
+
+    /* ===== ÉCRAN DE CHARGEMENT brandé (anti-friction « app à moitié chargée ») ===== */
+    #smBoot { position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center;
+      background: var(--bg, #190E2E); transition: opacity .45s ease, visibility .45s; }
+    #smBoot.smb-done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .smb-inner { display: flex; flex-direction: column; align-items: center; gap: .9rem; }
+    .smb-logo { width: 84px; height: 84px; border-radius: 22px; overflow: hidden; box-shadow: 0 14px 44px rgba(0,0,0,.32); animation: smbBreath 2.2s ease-in-out infinite; }
+    .smb-logo img { width: 100%; height: 100%; display: block; }
+    .smb-name { font-family: "Fraunces", Georgia, serif; font-weight: 800; font-size: 1.4rem; color: var(--ink, #FCEFE9); letter-spacing: -.01em; }
+    .smb-ring { width: 30px; height: 30px; border-radius: 50%; border: 3px solid color-mix(in srgb, var(--accent, #FF5A4D) 25%, transparent); border-top-color: var(--accent, #FF5A4D); animation: smbSpin .7s linear infinite; }
+    @keyframes smbBreath { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+    @keyframes smbSpin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .smb-logo, .smb-ring { animation: none !important; } }
     /* Barre de défilement thémée DA (fini le blanc système). Firefox + WebKit/Blink.
        Les conteneurs en scrollbar-width:none (chips, etc.) restent masqués (specificité de classe). */
     /* #7 : JOUR = barre neutre chaude discrète (le corail vif était trop agressif en clair) ;
@@ -1604,12 +1617,13 @@
     html body :is(h1,h2,h3,h4,.section-head>h3,.qm-head>h3,.sp-title,.qs-title,.su-head .su-t,.tz-name,.cstory-bd b,.pf-head,.ph-name,.sv-name,.detail-hero .dh-name,.parcours-card .pc-head b),
     html body[class*="theme-"] :is(h1,h2,h3,h4,.section-head>h3,.qm-head>h3,.sp-title,.qs-title,.su-head .su-t,.tz-name,.cstory-bd b,.pf-head,.ph-name,.sv-name,.detail-hero .dh-name,.parcours-card .pc-head b){
       font-family:"Fraunces",Georgia,serif !important; font-optical-sizing:auto; }
-    /* 2 · ÉCHELLE + POIDS UNIQUE (700 titres ; --ink lisible jour+nuit) */
-    html body h1, html body[class*="theme-"] h1{ font-size:1.5rem !important; font-weight:700 !important; line-height:1.14 !important; letter-spacing:-.02em !important; color:var(--ink) !important; }
-    html body h2, html body[class*="theme-"] h2{ font-size:1.25rem !important; font-weight:700 !important; line-height:1.18 !important; letter-spacing:-.015em !important; color:var(--ink) !important; }
+    /* 2 · ÉCHELLE + POIDS UNIQUE (700 titres). v716 : Maxime « ne modifie PAS les couleurs des titres »
+       → on garde UNIQUEMENT taille/poids/interligne, AUCUN color sur les titres. */
+    html body h1, html body[class*="theme-"] h1{ font-size:1.5rem !important; font-weight:700 !important; line-height:1.14 !important; letter-spacing:-.02em !important; }
+    html body h2, html body[class*="theme-"] h2{ font-size:1.25rem !important; font-weight:700 !important; line-height:1.18 !important; letter-spacing:-.015em !important; }
     html body :is(.section-head>h3,.qm-head>h3,.sp-title),
-    html body[class*="theme-"] :is(.section-head>h3,.qm-head>h3,.sp-title){ font-size:1.1rem !important; font-weight:700 !important; line-height:1.2 !important; letter-spacing:-.01em !important; color:var(--ink) !important; }
-    html body h3, html body[class*="theme-"] h3{ font-size:1rem !important; font-weight:700 !important; line-height:1.25 !important; letter-spacing:-.01em !important; color:var(--ink) !important; }
+    html body[class*="theme-"] :is(.section-head>h3,.qm-head>h3,.sp-title){ font-size:1.1rem !important; font-weight:700 !important; line-height:1.2 !important; letter-spacing:-.01em !important; }
+    html body h3, html body[class*="theme-"] h3{ font-size:1rem !important; font-weight:700 !important; line-height:1.25 !important; letter-spacing:-.01em !important; }
     html body :is(.qs-title,.tz-name,.su-head .su-t,.cstory-bd b,.pf-head),
     html body[class*="theme-"] :is(.qs-title,.tz-name,.su-head .su-t,.cstory-bd b,.pf-head){ font-weight:700 !important; }
     html body :is(.ph-name,.sv-name,.sv-stat .sv-n,.ph-xp-val b,.stat,.sp-stat b,.coll-stat .cs-v),

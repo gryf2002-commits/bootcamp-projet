@@ -1,8 +1,7 @@
 {
-  "candidate": "v715",
+  "candidate": "v716",
   "items": [
-    "🃏 Dernières cartes aplaties : Réglages (Visite guidée/Écris-nous/Ton avis), Admin (cellules stats), Sécurité (encarts, contacts), opt-in classement, grille bingo.",
-    "✨ Motion GSAP : les écrans entrent en cascade fluide (façon Emil) à chaque changement d'onglet — sans rejouer au re-clic, sans bloquer le scroll.",
-    "(Couche motion sans dépendance dure : si le réseau manque, tout retombe sur le rendu normal.)"
+    "⏳ Fini l'app à moitié chargée : un écran de chargement brandé (logo qui respire + roue sunset) reste affiché jusqu'à ce que l'essentiel soit prêt — on ne voit plus le contenu se remplir derrière.",
+    "🅰️ Couleurs des titres : laissées telles quelles (je ne touche plus qu'à la taille/au poids pour l'homogénéité)."
   ]
 }
