@@ -1,6 +1,7 @@
 {
-  "candidate": "v720",
+  "candidate": "v721",
   "items": [
-    "🔥 La série (streak) prend vie : la flamme vibre doucement et le nombre fait un petit « pop » de récompense le jour où ta série avance."
+    "⚡ Chargement BEAUCOUP plus court : l'écran de chargement se retire dès que ton profil est prêt (1 requête) au lieu d'attendre TOUTES les données de tous les onglets. La carte et le reste se chargent derrière, l'app est utilisable tout de suite.",
+    "⏱️ Garde-fou abaissé à 4 s : on ne reste jamais bloqué longtemps derrière le logo."
   ]
 }

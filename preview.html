@@ -300,13 +300,13 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=720"></script>
+  <script src="sunmates-badges.js?v=721"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
        CSS (SMMotion.* devient no-op). Aucune dépendance dure → l'app marche identiquement sans réseau. -->
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script defer src="sunmates-motion.js?v=720"></script>
+  <script defer src="sunmates-motion.js?v=721"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -5611,7 +5611,7 @@
       setTimeout(function () { try { if (window._smNavInd) _smNavInd(); } catch (e) {} }, 120);
     }
     window._smBootDone = _smBootDone;
-    setTimeout(_smBootDone, 8000); // filet de sécurité
+    setTimeout(_smBootDone, 4000); // filet de sécurité : on ne reste JAMAIS plus de 4 s derrière le loader
 
     let _renderedUserId = null; // anti-flicker : ne relance PAS tout le pipeline à chaque event auth (TOKEN_REFRESHED, SIGNED_IN répétés…)
     async function render(session) {
@@ -5641,11 +5641,15 @@
         const pGame = Promise.all([pConn, pProfile]).then(() => loadGameData());
         await pProfile;
         if (typeof checkBanStatus === "function" && await checkBanStatus()) { _smBootDone(); _renderedUserId = null; return; } // compte suspendu -> on arrête tout
+        // ⚡ PROFIL prêt = on révèle l'app TOUT DE SUITE (greeting + accès rapides + carte). Le reste
+        // (cafés, connexions, jeu, fil) se charge DERRIÈRE, l'app est déjà utilisable → fini le loader
+        // « giga long » qui attendait toutes les données de tous les onglets.
+        _smBootDone();
+        if (typeof renderHomeMap === "function") setTimeout(renderHomeMap, 40); // carte dessinée sans attendre le reste
         await Promise.all([pCafes, pCheckins, pConn, pCircle, pGame]);
         if (typeof checkMilestoneBadges === "function") checkMilestoneBadges(); // badges-jalons (premier check-in, vérifié…)
         await Promise.all([loadUnread(), Promise.resolve(buildHomeFeed())]); // non-lus + fil en parallèle (indépendants)
-        _smBootDone(); // ✅ essentiel chargé (profil + connexions + accueil + fil) → on révèle l'app prête
-        if (typeof renderHomeMap === "function") setTimeout(renderHomeMap, 80);
+        if (typeof renderHomeMap === "function") setTimeout(renderHomeMap, 30); // re-dessine avec les pins (cafés chargés)
         if (typeof updateSafetyBadge === "function") updateSafetyBadge();
         if (typeof maybeShowOnboarding === "function") maybeShowOnboarding();
         loadNotified(myUserId); // recharge les événements déjà signalés (anti re-notif au reconnect)
