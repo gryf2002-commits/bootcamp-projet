@@ -5251,3 +5251,24 @@
     html body .tab-panel[data-panel="connexions"] .invite-banner .inv-go,
     html.sm-app body .tab-panel[data-panel="connexions"] .invite-banner .inv-go {
       background: color-mix(in oklab, var(--accent) 14%, transparent); color: var(--accent-ink, var(--accent)); }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v739 · ÉPURÉ — corrections punch-list Maxime (sobriété, zéro friction).
+       (1) RETRAIT des petites barres orange devant les titres de section/captions.
+       (2) BANNIR le scroll horizontal des chips/filtres → ils passent à la ligne.
+       Réversible. Mode-safe (aucune couleur en dur). ════════════════════════════ */
+    /* (1) plus de filet/barre accent devant les titres */
+    html body .section-head > h3::before, html.sm-app body .section-head > h3::before,
+    html body .qm-head > h3::before, html.sm-app body .qm-head > h3::before,
+    html body .sp-title::before, html.sm-app body .sp-title::before,
+    html body .jnav-cap::before, html.sm-app body .jnav-cap::before,
+    html body .secu-view .section-head > h3::before, html.sm-app body .secu-view .section-head > h3::before {
+      content: none !important; display: none !important; }
+    html body .section-head > h3, html.sm-app body .section-head > h3,
+    html body .qm-head > h3, html.sm-app body .qm-head > h3,
+    html body .sp-title, html.sm-app body .sp-title,
+    html body .jnav-cap, html.sm-app body .jnav-cap { padding-left: 0 !important; }
+    /* (2) chips & filtres : à la ligne au lieu de défiler horizontalement */
+    html body :is(.chips, .fc-chips, .search-scopes, #homeMapFilters),
+    html.sm-app body :is(.chips, .fc-chips, .search-scopes, #homeMapFilters) {
+      flex-wrap: wrap !important; overflow-x: visible !important; }
