@@ -300,13 +300,13 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=719"></script>
+  <script src="sunmates-badges.js?v=720"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
        CSS (SMMotion.* devient no-op). Aucune dépendance dure → l'app marche identiquement sans réseau. -->
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script defer src="sunmates-motion.js?v=719"></script>
+  <script defer src="sunmates-motion.js?v=720"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -6061,16 +6061,16 @@
       let st = {}; try { st = JSON.parse(localStorage.getItem(key) || "{}") || {}; } catch (e) { st = {}; }
       const today = new Date(); const todayStr = ymd(today);
       const _weekKey = (d) => { const x = new Date(d); const dow = (x.getDay() + 6) % 7; x.setDate(x.getDate() - dow); return ymd(x); };
-      let frozeNow = false;
+      let frozeNow = false, _bumped = false;
       if (st.last !== todayStr) {
         const y = new Date(today); y.setDate(y.getDate() - 1); const yStr = ymd(y);
         const d2 = new Date(today); d2.setDate(today.getDate() - 2); const d2Str = ymd(d2);
         const wk = _weekKey(today);
         if (st.last === yStr) {
-          st.count = (st.count || 0) + 1; // hier → +1 (continuité normale)
+          st.count = (st.count || 0) + 1; _bumped = true; // hier → +1 (continuité normale)
         } else if (st.last === d2Str && st.freezeWeek !== wk && (st.count || 0) > 0) {
           // JOKER hebdo : 1 seul jour manqué + joker dispo cette semaine → on sauve la flamme.
-          st.freezeWeek = wk; st.count = (st.count || 0) + 1; frozeNow = true;
+          st.freezeWeek = wk; st.count = (st.count || 0) + 1; frozeNow = true; _bumped = true;
         } else {
           st.count = 1; // flamme perdue (>1 jour manqué ou joker déjà utilisé) → on repart à 1
         }
@@ -6094,6 +6094,8 @@
       const _hydr = window._streakHydrated || !window.db || !myUserId;
       const _phn = $("phStreakN"); if (_phn && _hydr) _phn.textContent = n;
       const _spn = $("spStreakN"); if (_spn && _hydr) _spn.textContent = n;
+      // La série a avancé aujourd'hui → petit « pop » de récompense sur le nombre (motion).
+      if (_bumped && _hydr) { try { if (window.SMMotion) { SMMotion.pop(_spn); SMMotion.pop(_phn); } } catch (e) {} }
       const chip = $("homeStreak"); if (!chip) return;
       if (!_hydr) { show(chip, false); return; } // pas encore hydraté → on garde le chip masqué (zéro flash)
       const enLang = (currentLang === "en");

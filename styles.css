@@ -1682,6 +1682,19 @@
     html body .bottom-nav button.active, html body[class*="theme-"] .bottom-nav button.active { background: transparent !important; }
 
     /* ============================================================
+       v720 · STREAK (série) plus vivante (Maxime « pas bien implémentée ») : la flamme VIBRE
+       doucement (vivante au lieu d'un emoji figé) ; le nombre « pop » quand la série avance (JS).
+       ============================================================ */
+    @media (prefers-reduced-motion: no-preference) {
+      html body :is(.sp-fire, .ph-streak-fire) { display: inline-block; transform-origin: 50% 85%; animation: smFlame 1.9s ease-in-out infinite; }
+      @keyframes smFlame {
+        0%, 100% { transform: scale(1) rotate(-2deg); }
+        25% { transform: scale(1.09) rotate(2.5deg); }
+        50% { transform: scale(.96) rotate(-1deg); }
+        75% { transform: scale(1.06) rotate(1.5deg); } }
+    }
+
+    /* ============================================================
        v714b · AUDIT EXHAUSTIF cartes résiduelles (agent) : dernières surfaces échappant à v692→v713
        (Admin, Réglages, Sécurité, Jeux). ENCARTS → transparent ; CELLULES répétées → filet bas.
        (.detail-hero NON aplati ici = hero à texte blanc, risque d'illisibilité.)
