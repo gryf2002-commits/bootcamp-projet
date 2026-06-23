@@ -1542,6 +1542,45 @@
     html body .secu-view > section:first-child,
     html body .tab-panel[data-panel="profil"] .pf-section:first-of-type,
     html body #placeDetail > section:first-child { border-top: 0 !important; margin-top: 0 !important; }
+
+    /* ============================================================
+       v706 (AUDIT bugs concrets agent) : 10 correctifs ciblés.
+       ============================================================ */
+    /* 1 · popup au clic d'un pin : lisible jour ET nuit */
+    html body :is(.leaflet-popup-content-wrapper, .leaflet-popup-tip),
+    html body[class*="theme-"] :is(.leaflet-popup-content-wrapper, .leaflet-popup-tip) { background: var(--card) !important; color: var(--ink) !important; }
+    html body :is(.leaflet-popup-content, .mappop-mini, .mappop-mini b, .mappop-comm .comm-n, .mappop-comm .comm-names),
+    html body[class*="theme-"] :is(.leaflet-popup-content, .mappop-mini, .mappop-mini b, .mappop-comm .comm-n, .mappop-comm .comm-names) { color: var(--ink) !important; }
+    html body .mappop-fact, html body[class*="theme-"] .mappop-fact { background: var(--accent-soft) !important; color: var(--ink) !important; }
+    /* 2 · Gold lisible en JOUR (et nuit) */
+    html body .gold-only-note, html body[class*="theme-"] .gold-only-note { background: var(--accent-soft) !important; color: var(--accent-ink, var(--accent)) !important; border-color: rgba(232,150,31,.5) !important; }
+    html body #goldPreviewBanner, html body[class*="theme-"] #goldPreviewBanner { color: #3a2500 !important; }
+    html body .gp-tile span:last-child, html body[class*="theme-"] .gp-tile span:last-child { color: var(--text) !important; }
+    /* 3 · barre de recherche : fond neutre cohérent en nuit (fini le prune saturé) */
+    html body.theme-dusk .search input, html body[class*="theme-"].theme-dusk .search input { background: var(--dcard2, #241b35) !important; color: var(--ink) !important; border-color: var(--line) !important; }
+    /* 4 · sélecteur de ville : pilule lisible (fini le gris terne) */
+    html body .city-pick .sm-sel-trigger, html body[class*="theme-"] .city-pick .sm-sel-trigger { background: var(--accent-soft) !important; border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent) !important; color: var(--ink) !important; }
+    html body.theme-dusk .city-pick .sm-sel-trigger, html body[class*="theme-"].theme-dusk .city-pick .sm-sel-trigger { background: var(--dcard, #2a2140) !important; border-color: rgba(255,209,92,.28) !important; }
+    /* 5 · « À débloquer » : masquer si le rail est vide + médaille de secours */
+    html body #badgeRailSection:not(:has(.br-item)) { display: none !important; }
+    html body #badgeRail .br-medal:empty::before { content: "🏅"; font-size: 1.4rem; }
+    /* 6 · « Mon spot du jour » : un seul chevron (tuer le marqueur natif tous moteurs) */
+    html body .spot-card > summary { list-style: none !important; }
+    html body .spot-card > summary::-webkit-details-marker { display: none !important; }
+    html body .spot-card > summary::marker { content: "" !important; }
+    /* 7 · « Ton prochain voyage » : espacement des tuiles */
+    html body #nextTripCard { display: flex; flex-direction: column; gap: .6rem; }
+    html body :is(#nextTripCard .trip-card, #nextTripCard .ptrip-card) { margin-bottom: 0; }
+    html body .ptrip-section > .ptrip-card + .ptrip-card { margin-top: .6rem; }
+    /* 8 · SOS/cercle : taille raisonnée (régression d'emphase) */
+    html body .secu-view #secuHome > .card:first-of-type .sos-logo { font-size: 2.6rem !important; }
+    /* 9 · textareas qui montrent tout le texte (auto-grow) */
+    html body :is(textarea, .feed-composer textarea, #feedInput, #spotInput) { field-sizing: content; min-height: 5.2em; max-height: 50vh; overflow-y: auto; line-height: 1.5; }
+    html body .feed-composer textarea { min-height: 3.2em; }
+    /* 10 · titres de catégories plus affirmés (fini le gris muet) */
+    html body :is(.tab-panel .jnav-cap, .jeux-view .jnav-cap),
+    html body[class*="theme-"] :is(.tab-panel .jnav-cap, .jeux-view .jnav-cap) { font-size: .82rem !important; font-weight: 800 !important; letter-spacing: .02em !important; color: var(--ink) !important; }
+    html body :is(.tab-panel .jnav-cap::before, .jeux-view .jnav-cap::before) { width: 4px !important; height: 1em !important; opacity: 1 !important; }
     /* v684 (retour Maxime « les tuiles prennent énormément de place ») : vignette nettement plus
        compacte — l'icône passe de 84px à 50px → la rangée d'accès rapides ne bouffe plus l'écran,
        on en voit beaucoup plus d'un coup d'œil. */

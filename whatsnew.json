@@ -1,9 +1,9 @@
 {
-  "candidate": "v705",
+  "candidate": "v706",
   "items": [
-    "🌑 L'ombre/bande en haut : le header est maintenant TRANSPARENT en permanence (plus aucun bandeau opaque ni arête, dans tous les modes, à tout moment).",
-    "🗺️ La carte prend plus de place en petite version (380px).",
-    "✨ Beaucoup plus de motion : les grilles de toute l'app (accueil, lieux, jeux) apparaissent en cascade façon Emil.",
-    "(La suite — contraste des popups de carte, Gold jour, fonds recherche/villes, « À débloquer », double flèche, catégories — arrive juste après.)"
+    "👁️ Lisibilité : popup au clic d'un pin de carte rendue lisible (jour + nuit), Gold lisible aussi en mode JOUR, textes de villes/recherche corrigés.",
+    "🎨 Cohérence : fond de la recherche (nuit) et du sélecteur de ville harmonisés (fini le prune/gris incohérents).",
+    "🐛 Bugs : double flèche du « spot du jour » supprimée, tuiles « ton prochain voyage » espacées, « À débloquer » ne s'affiche plus si vide, bloc SOS revenu à une taille normale.",
+    "✍️ Textareas qui montrent enfin tout le texte (auto-grow) + titres de catégories (Ton ambiance, Le top du coin, Jouer…) plus affirmés."
   ]
 }
