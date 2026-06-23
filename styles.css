@@ -1056,7 +1056,7 @@
       .auth-hero { padding: .8rem 1rem !important; min-height: 0; }
       .auth-hero::after, .auth-hero::before { display: none !important; }
       .detail-hero { height: 130px; }
-      .homemap { height: 290px; } /* v684 (retour Maxime) : carte agrandie en taille compacte — c'est la star de l'accueil */
+      .homemap { height: 380px; } /* v705 (retour Maxime « la carte mériterait plus d'espace en petite version ») : 290→380px */
       .player-hero { padding: .55rem .8rem; }
       .souvenir-card { padding: 1rem 1.1rem; }
       #photoLightboxImg { max-height: 84vh; }
@@ -1320,10 +1320,12 @@
        topbar (v694) créait justement cette bande visible. Au REPOS le topbar est TRANSPARENT → il montre
        le fond uni var(--bg) (zéro bande, zéro ombre). Il ne devient un aplat var(--bg) que quand on SCROLLE
        (pour occulter le contenu qui défile dessous). */
-    html body .topbar, html body[class*="theme-"] .topbar {
-      background: transparent !important; box-shadow: none !important; }
+    /* v705 (Maxime « ton ombre TOUJOURS là en haut + bandeau opaque ») : topbar TRANSPARENT EN PERMANENCE
+       (même scrollé) → AUCUN bandeau, AUCUNE arête/ombre, dans tous les modes. Le hide-on-scroll le
+       cache quand on descend, donc l'occultation n'est plus nécessaire. */
+    html body .topbar, html body[class*="theme-"] .topbar,
     html body.sm-scrolled .topbar, html body[class*="theme-"].sm-scrolled .topbar {
-      background: var(--bg) !important; }
+      background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
     /* ============================================================
        v695 (Maxime « encore plein de cartes et de contours dans TOUTES les couleurs de Radiant Horizon,
        ça n'a pas de sens ») : on UNIFIE les petits contrôles (pills/chips/toggles). Un seul code :
@@ -1453,6 +1455,16 @@
       html body #homeQuickAccess.sm-reveal.in .grid2 > .tile:nth-child(7) { animation-delay: 270ms; }
       html body #homeQuickAccess.sm-reveal.in .grid2 > .tile:nth-child(8) { animation-delay: 310ms; }
       @keyframes qaIn { to { opacity: 1; transform: none; } }
+      /* v705 (Maxime « plus de motion grâce à Emil x100 ») : la cascade s'applique à TOUTES les grilles
+         de contenu révélées (accueil, lieux, jeux…), pas juste les accès rapides. Filet : .in force la fin. */
+      html body .sm-reveal :is(.grid2, .qm-rail, .cat-rail, .sc-grid, .gp-grid) > * { opacity: 0; transform: translateY(10px); }
+      html body .sm-reveal.in :is(.grid2, .qm-rail, .cat-rail, .sc-grid, .gp-grid) > * { animation: qaIn .46s var(--ease-out, cubic-bezier(.22,1,.36,1)) both; }
+      html body .sm-reveal.in :is(.grid2, .qm-rail, .cat-rail, .sc-grid, .gp-grid) > *:nth-child(1){animation-delay:30ms}
+      html body .sm-reveal.in :is(.grid2, .qm-rail, .cat-rail, .sc-grid, .gp-grid) > *:nth-child(2){animation-delay:70ms}
+      html body .sm-reveal.in :is(.grid2, .qm-rail, .cat-rail, .sc-grid, .gp-grid) > *:nth-child(3){animation-delay:110ms}
+      html body .sm-reveal.in :is(.grid2, .qm-rail, .cat-rail, .sc-grid, .gp-grid) > *:nth-child(4){animation-delay:150ms}
+      html body .sm-reveal.in :is(.grid2, .qm-rail, .cat-rail, .sc-grid, .gp-grid) > *:nth-child(5){animation-delay:185ms}
+      html body .sm-reveal.in :is(.grid2, .qm-rail, .cat-rail, .sc-grid, .gp-grid) > *:nth-child(n+6){animation-delay:215ms}
     }
 
     /* ============================================================

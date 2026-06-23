@@ -1,9 +1,9 @@
 {
-  "candidate": "v704",
+  "candidate": "v705",
   "items": [
-    "🌑 Le dégradé en haut : éliminé pour de bon (la coiffe résiduelle du fond est retirée — fond strictement uni).",
-    "👁️ Lisibilité mode sombre : badges « vérifié », récompenses de quêtes, notes, compteurs et la note Gold étaient illisibles la nuit — corrigés (or clair au lieu d'or foncé).",
-    "🎐 Encore des cartes virées : la « Quête du jour », défis solo, démarrage, coupons, FAQ sécurité… tout à plat.",
-    "📐 Délimitations ajoutées (Profil, Sécurité, détail d'un lieu) + 🗺️ « Explore autour de toi » ne reste plus collé sur la carte en plein écran + 👆 retour tactile au doigt sur mobile."
+    "🌑 L'ombre/bande en haut : le header est maintenant TRANSPARENT en permanence (plus aucun bandeau opaque ni arête, dans tous les modes, à tout moment).",
+    "🗺️ La carte prend plus de place en petite version (380px).",
+    "✨ Beaucoup plus de motion : les grilles de toute l'app (accueil, lieux, jeux) apparaissent en cascade façon Emil.",
+    "(La suite — contraste des popups de carte, Gold jour, fonds recherche/villes, « À débloquer », double flèche, catégories — arrive juste après.)"
   ]
 }
