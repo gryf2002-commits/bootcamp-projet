@@ -5268,9 +5268,11 @@
     html body .qm-head > h3, html.sm-app body .qm-head > h3,
     html body .sp-title, html.sm-app body .sp-title,
     html body .jnav-cap, html.sm-app body .jnav-cap { padding-left: 0 !important; }
-    /* (2) chips & filtres : à la ligne au lieu de défiler horizontalement */
-    html body :is(.chips, .fc-chips, .search-scopes, #homeMapFilters),
-    html.sm-app body :is(.chips, .fc-chips, .search-scopes, #homeMapFilters) {
+    /* (2) chips & filtres : à la ligne au lieu de défiler horizontalement.
+       ⚠️ #homeMapFilters RETIRÉ (v743) : la barre de filtres carte a légitimement
+       besoin de nowrap+scroll (l.1104) ; la forcer en wrap cassait le plein écran. */
+    html body :is(.chips, .fc-chips, .search-scopes),
+    html.sm-app body :is(.chips, .fc-chips, .search-scopes) {
       flex-wrap: wrap !important; overflow-x: visible !important; }
 
     /* ════════════════════════════════════════════════════════════════════════
