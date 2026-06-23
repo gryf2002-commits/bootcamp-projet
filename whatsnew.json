@@ -1,6 +1,6 @@
 {
-  "candidate": "v725",
+  "candidate": "v726",
   "items": [
-    "✈️ Onglet Mes voyages repensé : chaque voyage devient une entrée de carnet — le drapeau du pays en grand à gauche, la ville en élégant (Fraunces), et le pays + les dates en ligne discrète. Plus de jolies séparations entre voyages passés."
+    "🛡️ Onglet Admin peaufiné : la sous-navigation (11 onglets) est plus compacte (pills serrées, moins de rangées), et les chiffres du tableau de bord passent en grand (Fraunces), cohérents avec le reste de l'app."
   ]
 }

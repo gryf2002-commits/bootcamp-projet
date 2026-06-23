@@ -1797,6 +1797,21 @@
     html body .ptrip-head h4 { font-family: "Fraunces", Georgia, serif; font-weight: 800; font-size: 1.02rem; }
 
     /* ============================================================
+       v726 · ADMIN : sous-nav (11 onglets) COMPACTE — pills serrées → moins de rangées,
+       conteneur allégé. + cellules du tableau de bord lisibles.
+       ============================================================ */
+    html body .aseg-nav { gap: .28rem !important; padding: .28rem !important; background: color-mix(in srgb, var(--ink) 4%, transparent) !important; border-color: color-mix(in srgb, var(--ink) 10%, transparent) !important; }
+    html body .aseg-nav button { flex: 0 1 auto !important; padding: .36rem .56rem !important; font-size: .73rem !important; font-weight: 700 !important; border-radius: 9px !important; }
+    html body .aseg-nav button.active { background: var(--accent-grad) !important; color: #fff !important; }
+    /* tableau de bord : VALEUR en Fraunces prominent + libellé discret (cohérent profil/voyages) */
+    html body :is(#adminDash, #adminData, #adminLiveAct) .pcell .v,
+    html body[class*="theme-"] :is(#adminDash, #adminData, #adminLiveAct) .pcell .v {
+      font-family: "Fraunces", Georgia, serif !important; font-weight: 800 !important; font-size: 1.4rem !important; color: var(--ink) !important; line-height: 1.05; }
+    html body :is(#adminDash, #adminData, #adminLiveAct) .pcell .k,
+    html body[class*="theme-"] :is(#adminDash, #adminData, #adminLiveAct) .pcell .k {
+      font-size: .68rem !important; color: var(--muted) !important; letter-spacing: .02em; }
+
+    /* ============================================================
        v708 (liste Maxime, lot 2) : à débloquer retiré, titres moins balèzes, cercle/SOS normé,
        textareas raisonnables + fond non-prune.
        ============================================================ */
