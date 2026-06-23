@@ -3,14 +3,17 @@
 // cache à la volée les libs CDN et les images (avatars, tuiles de carte) en
 // "stale-while-revalidate" (on sert le cache tout de suite, on rafraîchit en fond).
 // Les écritures Supabase (POST/PATCH…) ne sont jamais touchées.
-const VER = "v702";
+const VER = "v703";
 const SHELL_CACHE = "sunmates-shell-" + VER;   // coquille (versionnée → purge à chaque déploiement)
 const RUNTIME = "sunmates-rt-" + VER;          // libs CDN/fonts (regénéré par version, re-précaché à l'install)
-// #15/#8 : cache MÉDIA STABLE (NON versionné) → avatars, photos (quêtes/check-ins), tuiles de carte.
+// #15/#8 : cache MÉDIA STABLE (NON versionné) → avatars, photos (quêtes/check-ins), emojis.
 // Ces URLs sont stables (le contenu ne change pas), donc on les GARDE entre les déploiements :
-// fini le rechargement de toutes les images/tuiles à chaque MAJ de version. Borné en taille (LRU).
-const MEDIA = "sunmates-media";
-const MEDIA_MAX = 350;
+// fini le rechargement de toutes les images à chaque MAJ de version. Borné en taille (LRU).
+// ⚠️ STORAGE (23/06) : renommé "…-v2" pour PURGER l'ancien cache (272 réponses OPAQUES × ~7 Mo
+// de padding Chrome = 1,8 Go fantôme rapporté pour ~16 Mo réels). Désormais on ne cache QUE
+// du non-opaque (fetch forcé en CORS) et les TUILES de carte sont sorties du SW (cf. fetch).
+const MEDIA = "sunmates-media-v2";
+const MEDIA_MAX = 60;
 // Depuis la bascule vitrine (v567) : "./" + "./index.html" = la VITRINE (accueil) ;
 // "./app.html" = l'APPLICATION. Les deux sont précachées → l'app installée marche hors-ligne.
 const SHELL = ["./", "./index.html", "./app.html", "./manifest.json", "./icon.svg", "./styles.css", "./sunmates-badges.js", "./sunmates-icons-v2.js", "./sm_country_stories.js",
@@ -49,7 +52,8 @@ self.addEventListener("activate", (e) => {
   e.waitUntil((async () => {
     const keys = await caches.keys();
     // On garde les caches de la version courante ET le cache MÉDIA stable (#15 : ne pas purger
-    // avatars/photos/tuiles à chaque MAJ → fini le rechargement de toutes les images à chaque deploy).
+    // avatars/photos à chaque MAJ → fini le rechargement de toutes les images à chaque deploy).
+    // Le rename MEDIA → "…-v2" fait que l'ancien "sunmates-media" (1,8 Go opaque) est SUPPRIMÉ ici.
     await Promise.all(keys.filter((k) => k !== SHELL_CACHE && k !== RUNTIME && k !== MEDIA).map((k) => caches.delete(k)));
     await self.clients.claim();
   })());
@@ -59,15 +63,28 @@ self.addEventListener("activate", (e) => {
 async function trimCache(cacheName, max) {
   try { const c = await caches.open(cacheName); const keys = await c.keys(); if (keys.length > max) { for (let i = 0; i < keys.length - max; i++) await c.delete(keys[i]); } } catch (e) {}
 }
+// Récupère une ressource tierce en CORS d'abord → réponse de type "cors" (TAILLE RÉELLE, sans le
+// padding ~7 Mo que Chrome ajoute aux réponses opaques). jsdelivr/unpkg/cartocdn/openfreemap/
+// pravatar/picsum/Supabase Storage envoient tous les en-têtes CORS. Si un tiers ne les renvoie pas,
+// le fetch CORS échoue → REPLI RÉSEAU DIRECT (jamais no-cors) : on sert la ressource mais le
+// garde-fou ci-dessous l'empêchera d'entrer (opaque/erreur) dans le cache.
+async function fetchCorsFirst(req) {
+  try {
+    return await fetch(new Request(req.url, { mode: "cors", credentials: "omit" }));
+  } catch (e) {
+    return fetch(req).catch(() => null);
+  }
+}
 // Réponse depuis le cache, rafraîchie en fond (stale-while-revalidate).
 async function staleWhileRevalidate(req, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(req);
   // Pour les MÉDIAS déjà en cache : on sert le cache et on NE re-fetch PAS (cache-first) → instantané
-  // et zéro requête réseau inutile (avatars/tuiles ne changent pas). Sinon on va chercher + on stocke.
+  // et zéro requête réseau inutile (avatars/emojis ne changent pas). Sinon on va chercher + on stocke.
   if (cached && cacheName === MEDIA) return cached;
-  const network = fetch(req).then((res) => {
-    if (res && (res.ok || res.type === "opaque")) { cache.put(req, res.clone()).then(() => { if (cacheName === MEDIA) trimCache(MEDIA, MEDIA_MAX); }).catch(() => {}); }
+  const network = fetchCorsFirst(req).then((res) => {
+    // GARDE-FOU : ne JAMAIS mettre une réponse OPAQUE en cache (c'était la cause du 1,8 Go fantôme).
+    if (res && res.ok && res.type !== "opaque") { cache.put(req, res.clone()).then(() => { if (cacheName === MEDIA) trimCache(MEDIA, MEDIA_MAX); }).catch(() => {}); }
     return res;
   }).catch(() => null);
   return cached || (await network) || new Response("", { status: 504 });
@@ -78,6 +95,12 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET") return; // ne touche pas aux écritures Supabase
 
   const url = new URL(req.url);
+
+  // 0) TUILES DE CARTE : JAMAIS dans le SW. Elles sont nombreuses, lourdes et varient au
+  // zoom/déplacement → c'était le gros du cache média gonflé (opaques + padding). Le cache HTTP
+  // du navigateur les gère très bien. On laisse passer au réseau sans respondWith (= pas de cache SW).
+  const NO_SW_CACHE = ["tiles.openfreemap.org", "basemaps.cartocdn.com", "tile.openstreetmap.org"];
+  if (NO_SW_CACHE.some((h) => url.host === h || url.host.endsWith("." + h))) return;
 
   // 1) Navigation : réseau d'abord (dernière version), MAIS avec un GARDE-FOU de TIMEOUT.
   // cache:"no-store" → on bypasse le cache HTTP du navigateur + le CDN GitHub Pages/Fastly.
@@ -130,14 +153,13 @@ self.addEventListener("fetch", (e) => {
   // session/token) ne sont JAMAIS servis depuis le cache (données toujours fraîches pour une
   // app temps réel/sécurité). Seules ses IMAGES Storage (avatars) sont cachées via `isImg`.
   const host = url.hostname;
-  // Tuiles de carte + images (avatars Supabase Storage, photos de quêtes/check-ins, picsum, pravatar)
-  // → cache MÉDIA STABLE (survit aux MAJ, cache-first = instantané). #8 carte + #15 photos.
-  // tiles.openfreemap.org = style JSON + glyphes + tuiles vectorielles (.pbf) du fond SunMates.
-  const isTile = /(^|\.)(tile\.openstreetmap\.org|basemaps\.cartocdn\.com|tiles\.openfreemap\.org)$/i.test(host);
+  // Images (avatars Supabase Storage, photos de quêtes/check-ins, emojis Twemoji, picsum, pravatar)
+  // → cache MÉDIA STABLE (survit aux MAJ, cache-first = instantané). #15 photos.
+  // Les TUILES de carte ont déjà été exclues plus haut (NO_SW_CACHE).
   const isImg = req.destination === "image"
     || /(^|\.)(images\.unsplash\.com|picsum\.photos|fastly\.picsum\.photos|i\.pravatar\.cc)$/i.test(host)
     || (/(^|\.)supabase\.co$/i.test(host) && /\/storage\//.test(url.pathname));
-  if (isImg || isTile) { e.respondWith(staleWhileRevalidate(req, MEDIA)); return; }
+  if (isImg) { e.respondWith(staleWhileRevalidate(req, MEDIA)); return; }
   // Libs/fonts CDN (versionnées) → RUNTIME (re-précaché à l'install).
   const isCdn = /(^|\.)(jsdelivr\.net|unpkg\.com|cdnjs\.cloudflare\.com|fonts\.googleapis\.com|fonts\.gstatic\.com)$/i.test(host);
   if (isCdn) { e.respondWith(staleWhileRevalidate(req, RUNTIME)); return; }
