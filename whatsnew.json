@@ -1,6 +1,6 @@
 {
-  "candidate": "v729",
+  "candidate": "v730",
   "items": [
-    "🔎 Dernière passe de cohérence : quelques gros chiffres devenus illisibles en mode nuit dans les pop-ups (série, XP, notes) repassent en or clair ; deux stats oubliées passent en grand (Fraunces) ; un reste de vert hors-charte corrigé en sunset."
+    "🧹 Nettoyage technique (invisible) : suppression de règles CSS en double (titres de section définis 3 fois, fonds de coupons morts). Rendu strictement identique, code plus propre."
   ]
 }

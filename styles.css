@@ -1384,7 +1384,7 @@
     /* titres de section : Fraunces + barre d'accent gauche (::before, ne décale pas) */
     html body .section-head > h3, html body .qm-head > h3, html body .sp-title,
     html body[class*="theme-"] .section-head > h3, html body[class*="theme-"] .qm-head > h3, html body[class*="theme-"] .sp-title {
-      font-family: "Fraunces", Georgia, serif !important; font-size: 1.16rem !important; font-weight: 700 !important; letter-spacing: -.01em !important; line-height: 1.18 !important; color: var(--ink) !important; position: relative; padding-left: .62rem !important; }
+      font-family: "Fraunces", Georgia, serif !important; font-weight: 700 !important; letter-spacing: -.01em !important; line-height: 1.18 !important; color: var(--ink) !important; position: relative; padding-left: .62rem !important; } /* v730 : font-size retiré (autoritaire = 1.04rem plus bas) */
     html body .section-head > h3::before, html body .qm-head > h3::before, html body .sp-title::before {
       content: ""; position: absolute; left: 0; top: .12em; bottom: .12em; width: 3px; border-radius: 3px; background: var(--accent-grad); }
     /* sous-titres / descriptions : calmes et homogènes */
@@ -1614,8 +1614,7 @@
        → on garde UNIQUEMENT taille/poids/interligne, AUCUN color sur les titres. */
     html body h1, html body[class*="theme-"] h1{ font-size:1.5rem !important; font-weight:700 !important; line-height:1.14 !important; letter-spacing:-.02em !important; }
     html body h2, html body[class*="theme-"] h2{ font-size:1.25rem !important; font-weight:700 !important; line-height:1.18 !important; letter-spacing:-.015em !important; }
-    html body :is(.section-head>h3,.qm-head>h3,.sp-title),
-    html body[class*="theme-"] :is(.section-head>h3,.qm-head>h3,.sp-title){ font-size:1.1rem !important; font-weight:700 !important; line-height:1.2 !important; letter-spacing:-.01em !important; }
+    /* (v730 : doublon .section-head>h3 1.1rem RETIRÉ — la règle autoritaire unique vit plus bas, 1.04rem.) */
     html body h3, html body[class*="theme-"] h3{ font-size:1rem !important; font-weight:700 !important; line-height:1.25 !important; letter-spacing:-.01em !important; }
     html body :is(.qs-title,.tz-name,.su-head .su-t,.cstory-bd b,.pf-head),
     html body[class*="theme-"] :is(.qs-title,.tz-name,.su-head .su-t,.cstory-bd b,.pf-head){ font-weight:700 !important; }
@@ -1849,9 +1848,10 @@
        ============================================================ */
     /* 2 · « À débloquer » retiré complètement */
     html body #badgeRailSection, html body[class*="theme-"] #badgeRailSection { display: none !important; }
-    /* 9 · titres affirmés mais MOINS balèzes (étaient trop gros) */
+    /* 9 · titres de section : RÈGLE AUTORITAIRE UNIQUE (taille/poids/interligne/espacement).
+       v730 : complétée (line-height/letter-spacing) pour absorber l'ancien doublon v714 supprimé. */
     html body :is(.section-head > h3, .qm-head > h3, .sp-title),
-    html body[class*="theme-"] :is(.section-head > h3, .qm-head > h3, .sp-title) { font-size: 1.04rem !important; font-weight: 700 !important; }
+    html body[class*="theme-"] :is(.section-head > h3, .qm-head > h3, .sp-title) { font-size: 1.04rem !important; font-weight: 700 !important; line-height: 1.2 !important; letter-spacing: -.01em !important; }
     html body :is(.tab-panel .jnav-cap, .jeux-view .jnav-cap),
     html body[class*="theme-"] :is(.tab-panel .jnav-cap, .jeux-view .jnav-cap) { font-size: .76rem !important; font-weight: 700 !important; }
     html body h1, html body[class*="theme-"] h1 { font-size: 1.5rem !important; }
@@ -3764,7 +3764,7 @@
     body.theme-dusk input, body.theme-dusk textarea, body.theme-dusk select, body.theme-dusk .search input { background: #2E1B4C !important; color: #f3e9f3; }
     body.theme-dusk .feed-card, body.theme-dusk .pcell, body.theme-dusk .pprompt, body.theme-dusk .stat-box,
     body.theme-dusk .dstat, body.theme-dusk .tile, body.theme-dusk .gcard, body.theme-dusk .chip,
-    body.theme-dusk .mseg, body.theme-dusk .coupon, body.theme-dusk .reco { background: #2E1B4C !important; }
+    body.theme-dusk .mseg { background: #2E1B4C !important; } /* v730 : .coupon/.reco retirés (déjà aplatis transparents) */
     /* P2.8 : FIL homogène en nuit · les posts rejoignent la MÊME famille violette que les cartes
        (avant : brun délavé #241b35 posé à côté de cartes #2A1846 = patchwork), un cran plus
        clair que la tuile principale (le composer, dégradé sombre) pour bien les distinguer. */
