@@ -1,7 +1,6 @@
 {
-  "candidate": "v711",
+  "candidate": "v712",
   "items": [
-    "🎮 L'onglet Jeux est de retour dans la barre du bas en mode Lite.",
-    "🌬️ Plus d'aération sur la Lite (espaces entre sections augmentés)."
+    "🛠️ CORRECTIF IMPORTANT : l'onglet Jeux & Quêtes se scrolle de nouveau (ma transition d'onglet laissait un « transform » qui bloquait le défilement tactile sur mobile). Ça touchait potentiellement tous les onglets."
   ]
 }

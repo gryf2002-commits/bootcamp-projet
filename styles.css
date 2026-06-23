@@ -1463,8 +1463,10 @@
        fréquente) + chat à plat (bulle reçue neutre, bulle envoyée accent).
        ============================================================ */
     @media (prefers-reduced-motion: no-preference) {
-      html body main > .tab-panel:not(.hidden) { animation: tabIn .19s var(--ease-out, cubic-bezier(.22,1,.36,1)) both; }
-      @keyframes tabIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+      /* v712 (Maxime « Jeux & Quêtes impossible à scroller ») : mon tabIn utilisait `both` + un translateY →
+         le panneau RESTAIT avec un transform identité (matrix) = containing block qui CASSE le scroll tactile
+         mobile. On repasse en OPACITÉ SEULE (zéro transform sur le conteneur scrollable) → scroll réparé. */
+      html body main > .tab-panel:not(.hidden) { animation: fadeOnly .2s var(--ease-out, cubic-bezier(.22,1,.36,1)); }
     }
     /* CHAT : la bulle REÇUE devient une surface neutre cohérente (au lieu du rose figé), la bulle
        ENVOYÉE garde l'accent (signature). Radius asymétrique conservé. */
