@@ -5,7 +5,7 @@
        =================================================================== */
     :root {
       /* Couleurs */
-      --bg:        #fbeee9;   /* sable chaud */
+      --bg:        #FFF4E6;   /* v697 : ALIGNÉ sur le vrai fond (html=#FFF4E6). Avant #fbeee9 ≠ fond → barre native (theme-color=--bg) ≠ app = LA barre de séparation. Hiver/tropique n'avaient pas ce décalage = parfaits. */
       --bg-grad:   radial-gradient(125% 85% at 50% -12%, #ffe6d2 0%, #fdeee7 40%, #fbe9e4 100%);
       --card:      #ffffff;   /* cartes */
       --accent:    #FF5A4D;   /* corail principal */
@@ -2961,7 +2961,7 @@
       /* #9 : les surfaces nuit passent par --dcard* → les modes « nuit d'hiver » et
          « nuit tropicale » (fin de feuille) n'ont qu'à redéfinir ces 4 variables. */
       --dcard: #2a2140; --dcard2: #241b35; --dcard3: #2c2140; --dcard4: #352a52; --dcard5: #1f1830;
-      --bg: #171026; --card: #221a33; --paper: var(--dcard2,#241b35); --cream: #2b2240;
+      --bg: #190E2E; --card: #221a33; --paper: var(--dcard2,#241b35); --cream: #2b2240;
       --accent: #ff7e72; --accent-2: #ff9a8d; --accent-3: #ffc07a;
       --accent-soft: rgba(255,126,114,.16);
       --accent-grad: linear-gradient(135deg, #ffc07a 0%, #ff9a8d 45%, #ff7e72 100%);
@@ -3001,7 +3001,7 @@
        Couche finale = redéfinit les jetons + affine les composants.
        =================================================================== */
     :root {
-      --bg:        #F4EDE0;            /* ivoire chaud */
+      --bg:        #FFF4E6;            /* v697 : aligné sur le vrai fond */
       --bg-grad:   radial-gradient(120% 80% at 50% -10%, #efe2cc 0%, #f4ede0 55%, #f1e8d8 100%);
       --card:      #FFFCF6;            /* blanc chaud */
       --paper:     #FFFCF6;
@@ -3047,7 +3047,7 @@
 
     /* --- Marque / en-tête --- */
     .brand b { font-weight: 600; letter-spacing: .015em; font-size: 1.2rem; }
-    .brand .mark { background: linear-gradient(150deg, #2a1850 0%, #3a1e57 52%, #7a3f5e 100%); border-radius: 11px; box-shadow: var(--shadow-sm); } /* v696 : ciel crépuscule (couleurs SVG mode sombre) sous le soleil couchant */
+    .brand .mark { background: var(--accent-grad); border-radius: 11px; box-shadow: var(--shadow-sm); }
     .topbar { background: linear-gradient(var(--bg) 62%, rgba(255,244,230,0)); border-bottom: 0; }
 
     /* --- Cartes : épurées, bord fin, ombre douce --- */
@@ -3159,7 +3159,7 @@
     /* 21/06 (Maxime : « je n'en veux plus du tout, faut que ce soit propre ») : AUCUNE ombre sur le logo
        (l'ombre grise rgba(45,38,52,.16) faisait un halo/case gris ; même en corail il en restait un soupçon).
        → box-shadow none = icône orange nette posée sur la page, zéro halo. */
-    .brand .mark { background: linear-gradient(150deg, #2a1850 0%, #3a1e57 52%, #7a3f5e 100%); box-shadow: none !important; } /* v696 : ciel crépuscule */
+    .brand .mark { background: var(--accent-grad); box-shadow: none !important; }
     .section-head a { color: var(--retro-teal); }
 
     /* Cartes chaleureuses */
@@ -3301,7 +3301,7 @@
     body.theme-tropic .brand .mark svg.logo-tropic { display: block; }
     body.theme-winter .brand .mark { background: linear-gradient(135deg, #6FB4E8, #3A8FD9); }
     body.theme-tropic .brand .mark { background: linear-gradient(135deg, #36C495, #0FA37C); }
-    body.theme-dusk .brand .mark { background: linear-gradient(150deg, #2a1850 0%, #3a1e57 52%, #7a3f5e 100%) !important; } /* v696 : ciel crépuscule (couleurs SVG mode sombre) */
+    body.theme-dusk .brand .mark { background: linear-gradient(150deg, #7A2E5E, #C2502E) !important; } /* coucher de soleil sombre */
     body.theme-winter.theme-dusk .brand .mark svg.logo-winter { display: none; }
     body.theme-winter.theme-dusk .brand .mark svg.logo-winter-n { display: block; }
     body.theme-winter.theme-dusk .brand .mark { background: linear-gradient(150deg, #1B3A5E, #0E2740) !important; } /* nuit polaire */

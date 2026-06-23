@@ -1,8 +1,8 @@
 {
-  "candidate": "v696",
+  "candidate": "v697",
   "items": [
-    "🌅 Nouveau logo : un soleil qui se couche au crépuscule, dans les couleurs nuit (ciel prune, soleil crème, horizon doré) — sur le site, l'app et l'icône installée.",
-    "🎐 Encore plus plat : boutique, boosts, objectifs, astuces, stats, check-in… on a retiré les cartes restantes.",
-    "🧭 Délimitation propre : de fines lignes séparent les sections (au lieu de boîtes) pour éviter le fouillis."
+    "✅ La barre du téléphone enfin fondue : elle a maintenant EXACTEMENT la couleur du fond de l'app (jour et nuit) — fini la barre de séparation en haut. La cause était une vieille couleur de fond injectée en double.",
+    "🌅 Icône de l'app installée : nouveau soleil couchant au crépuscule (le logo dans l'app, lui, ne bouge pas).",
+    "🎐 Suite de l'aplatissement : encore des cartes retirées + de fines lignes pour délimiter sans boîtes."
   ]
 }

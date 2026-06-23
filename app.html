@@ -299,7 +299,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=696"></script>
+  <script src="sunmates-badges.js?v=697"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
@@ -2001,9 +2001,8 @@
   <section id="appView" class="app-shell hidden">
     <header class="topbar">
       <div class="brand"><span class="mark">
-        <!-- v696 (retour Maxime) : logo = soleil COUCHANT au crépuscule, couleurs du SVG mode sombre (sun crème, horizon doré). Styles INLINE car le loader DA force le stroke en blanc. -->
-        <svg class="logo-day" viewBox="0 0 64 64" width="22" height="22"><g stroke-width="3" stroke-linecap="round"><line x1="32" y1="9" x2="32" y2="16" style="stroke:#FFD15C"/><line x1="17" y1="16" x2="21" y2="20" style="stroke:#FFD15C"/><line x1="47" y1="16" x2="43" y2="20" style="stroke:#FFD15C"/><line x1="7" y1="30" x2="13" y2="30" style="stroke:#FFD15C"/><line x1="51" y1="30" x2="57" y2="30" style="stroke:#FFD15C"/></g><circle cx="32" cy="33" r="11" style="fill:#fff6e9"/><path d="M9 40h46" stroke-width="3.6" stroke-linecap="round" style="stroke:#FFD15C"/><path d="M18 46h28" stroke-width="2.4" stroke-linecap="round" style="stroke:#fff6e9;opacity:.5"/></svg>
-        <svg class="logo-night" viewBox="0 0 64 64" width="22" height="22"><g stroke-width="3" stroke-linecap="round"><line x1="32" y1="9" x2="32" y2="16" style="stroke:#FFD15C"/><line x1="17" y1="16" x2="21" y2="20" style="stroke:#FFD15C"/><line x1="47" y1="16" x2="43" y2="20" style="stroke:#FFD15C"/><line x1="7" y1="30" x2="13" y2="30" style="stroke:#FFD15C"/><line x1="51" y1="30" x2="57" y2="30" style="stroke:#FFD15C"/></g><circle cx="32" cy="33" r="11" style="fill:#fff6e9"/><path d="M9 40h46" stroke-width="3.6" stroke-linecap="round" style="stroke:#FFD15C"/><path d="M18 46h28" stroke-width="2.4" stroke-linecap="round" style="stroke:#fff6e9;opacity:.5"/></svg>
+        <svg class="logo-day" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="3.4" stroke-linecap="round"><line x1="32" y1="8" x2="32" y2="15"/><line x1="15" y1="16" x2="20" y2="21"/><line x1="49" y1="16" x2="44" y2="21"/><line x1="9" y1="34" x2="16" y2="34"/><line x1="48" y1="34" x2="55" y2="34"/></g><circle cx="32" cy="34" r="11" fill="#fff"/><path d="M13 47h38" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg>
+        <svg class="logo-night" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"><line x1="32" y1="13" x2="32" y2="18"/><line x1="18" y1="20" x2="22" y2="24"/><line x1="46" y1="20" x2="42" y2="24"/></g><circle cx="32" cy="37" r="11" fill="#fff"/><path d="M10 41h44" stroke="#FFD15C" stroke-width="3.6" stroke-linecap="round"/><path d="M17 47h30" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg>
         <!-- Logos SAISON (easter egg hiver/tropiques) : soleil-flocon et soleil-palmier -->
         <!-- Logos saison REDESSINÉS : cristal d'hiver ciselé / palmier-lagon · + vraies variantes NUIT -->
         <svg class="logo-winter" viewBox="0 0 64 64" width="22" height="22"><g stroke="#fff" stroke-width="2.8" stroke-linecap="round"><line x1="32" y1="7" x2="32" y2="57"/><line x1="10.4" y1="19.5" x2="53.6" y2="44.5"/><line x1="53.6" y1="19.5" x2="10.4" y2="44.5"/><path d="M25 12.5l7 7 7-7M25 51.5l7-7 7 7"/><path d="M11 27l9.5 5-9.5 5M53 27l-9.5 5 9.5 5"/></g><circle cx="32" cy="32" r="4.4" fill="#fff"/><g fill="#fff" opacity=".85"><circle cx="14" cy="10" r="1.6"/><circle cx="52" cy="54" r="1.6"/></g></svg>
@@ -20009,7 +20008,7 @@
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->
-  <script src="da-console-overlay.js?v=689"></script>
+  <script src="da-console-overlay.js?v=697"></script>
 
   <!-- 🎨 Twemoji init — emojis cohérents pour tous. Parse au boot + observer idle (childList+characterData),
        déconnecté PENDANT le parse (anti-boucle, car twemoji insère des <img>). Skip champs de saisie. -->

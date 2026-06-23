@@ -21,7 +21,7 @@
     var A=hx(c);var s=A.map(function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});
     return 0.2126*s[0]+0.7152*s[1]+0.0722*s[2];}
 
-  var PAGES={jour:['#fbeee9','#1d2230',''],nuit:['#171026','#f3ecf6','theme-dusk'],
+  var PAGES={jour:['#FFF4E6','#1d2230',''],nuit:['#190E2E','#f3ecf6','theme-dusk'],
     hiver:['#EAF3FB','#1E3A52','theme-winter'],'hiver-nuit':['#0E2036','#EAF6FF','theme-winter theme-dusk'],
     tropiques:['#F7F9EC','#1C3D2E','theme-tropic'],'tropiques-nuit':['#06231B','#DFFAEF','theme-tropic theme-dusk']};
   var MK=['jour','nuit','hiver','hiver-nuit','tropiques','tropiques-nuit'];
