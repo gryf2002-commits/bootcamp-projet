@@ -1803,13 +1803,17 @@
     html body .aseg-nav { gap: .28rem !important; padding: .28rem !important; background: color-mix(in srgb, var(--ink) 4%, transparent) !important; border-color: color-mix(in srgb, var(--ink) 10%, transparent) !important; }
     html body .aseg-nav button { flex: 0 1 auto !important; padding: .36rem .56rem !important; font-size: .73rem !important; font-weight: 700 !important; border-radius: 9px !important; }
     html body .aseg-nav button.active { background: var(--accent-grad) !important; color: #fff !important; }
-    /* tableau de bord : VALEUR en Fraunces prominent + libellé discret (cohérent profil/voyages) */
-    html body :is(#adminDash, #adminData, #adminLiveAct) .pcell .v,
-    html body[class*="theme-"] :is(#adminDash, #adminData, #adminLiveAct) .pcell .v {
+    /* tableau de bord (admin) + stats Espace Pro : VALEUR en Fraunces prominent + libellé discret
+       (cohérent profil/voyages). #proPanel = stats du partenaire. */
+    html body :is(#adminDash, #adminData, #adminLiveAct, #proPanel) .pcell .v,
+    html body[class*="theme-"] :is(#adminDash, #adminData, #adminLiveAct, #proPanel) .pcell .v {
       font-family: "Fraunces", Georgia, serif !important; font-weight: 800 !important; font-size: 1.4rem !important; color: var(--ink) !important; line-height: 1.05; }
-    html body :is(#adminDash, #adminData, #adminLiveAct) .pcell .k,
-    html body[class*="theme-"] :is(#adminDash, #adminData, #adminLiveAct) .pcell .k {
+    html body :is(#adminDash, #adminData, #adminLiveAct, #proPanel) .pcell .k,
+    html body[class*="theme-"] :is(#adminDash, #adminData, #adminLiveAct, #proPanel) .pcell .k {
       font-size: .68rem !important; color: var(--muted) !important; letter-spacing: .02em; }
+    /* Espace Pro : nom de l'établissement en Fraunces (élégance carnet/passeport) */
+    html body #proPanel .card > div > div > b, html body[class*="theme-"] #proPanel .card > div > div > b {
+      font-family: "Fraunces", Georgia, serif !important; letter-spacing: -.01em; }
 
     /* ============================================================
        v708 (liste Maxime, lot 2) : à débloquer retiré, titres moins balèzes, cercle/SOS normé,

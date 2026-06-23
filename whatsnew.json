@@ -1,6 +1,6 @@
 {
-  "candidate": "v726",
+  "candidate": "v727",
   "items": [
-    "🛡️ Onglet Admin peaufiné : la sous-navigation (11 onglets) est plus compacte (pills serrées, moins de rangées), et les chiffres du tableau de bord passent en grand (Fraunces), cohérents avec le reste de l'app."
+    "💼 Espace Pro peaufiné : tes statistiques (check-ins, voyageurs uniques, note) passent en grands chiffres élégants (Fraunces), et le nom de ton établissement aussi — cohérent avec le reste de l'app."
   ]
 }
