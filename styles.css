@@ -1775,6 +1775,28 @@
     html body .trip-cta-duo > :is(.globe-cta, .wrapped-cta) { margin: 0 !important; width: 100% !important; min-width: 0; font-size: .9rem !important; padding: .8rem .6rem !important; }
 
     /* ============================================================
+       v725 · REFONTE « Mes voyages » : chaque voyage = une entrée de CARNET
+       (drapeau du pays en ancre, ville en Fraunces, méta discrète, filet de séparation).
+       ============================================================ */
+    html body .tj-card, html body[class*="theme-"] .tj-card {
+      display: flex !important; align-items: flex-start; gap: .8rem;
+      padding: .8rem .15rem !important; margin: 0 !important;
+      background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important;
+      border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent) !important; }
+    html body .tj-flag { font-size: 2rem; line-height: 1; flex-shrink: 0; margin-top: .05rem; filter: drop-shadow(0 2px 5px rgba(0,0,0,.16)); }
+    html body .tj-body { flex: 1; min-width: 0; }
+    html body .tj-city { font-family: "Fraunces", Georgia, serif; font-weight: 800; font-size: 1.12rem; line-height: 1.15; color: var(--ink); letter-spacing: -.01em; }
+    html body .tj-meta { font-size: .8rem; font-weight: 600; color: var(--muted); margin-top: .15rem; }
+    html body .tj-card .trip-note { margin-top: .35rem; font-style: italic; }
+    html body .tj-card .trip-del { flex-shrink: 0; background: transparent !important; border: 0 !important; box-shadow: none !important; font-size: .9rem; opacity: .45; cursor: pointer; padding: .2rem; }
+    html body .tj-card .trip-del:active { transform: scale(.9); }
+    /* la rangée « voyageurs sur place » garde son style, juste un peu d'air sous la méta */
+    html body .tj-card .trip-matches { margin-top: .5rem; }
+    /* en-tête « Mes voyages passés » : filet + libellé affirmé */
+    html body .ptrip-section { margin-top: 1.2rem; padding-top: .9rem; border-top: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); }
+    html body .ptrip-head h4 { font-family: "Fraunces", Georgia, serif; font-weight: 800; font-size: 1.02rem; }
+
+    /* ============================================================
        v708 (liste Maxime, lot 2) : à débloquer retiré, titres moins balèzes, cercle/SOS normé,
        textareas raisonnables + fond non-prune.
        ============================================================ */

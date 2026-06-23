@@ -1,7 +1,6 @@
 {
-  "candidate": "v724",
+  "candidate": "v725",
   "items": [
-    "⚡ Démarrage allégé (annuaire en lazy-load) : au lancement on ne charge que les 200 voyageurs les plus actifs (assez pour la carte, les suggestions et les conversations) ; le reste de l'annuaire « Découvrir » se charge en fond juste après, sans bloquer.",
-    "(Sans effet visible à petite échelle ; le gain grandit avec le nombre d'utilisateurs.)"
+    "✈️ Onglet Mes voyages repensé : chaque voyage devient une entrée de carnet — le drapeau du pays en grand à gauche, la ville en élégant (Fraunces), et le pays + les dates en ligne discrète. Plus de jolies séparations entre voyages passés."
   ]
 }

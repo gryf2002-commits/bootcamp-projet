@@ -300,13 +300,13 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=724"></script>
+  <script src="sunmates-badges.js?v=725"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
        CSS (SMMotion.* devient no-op). Aucune dépendance dure → l'app marche identiquement sans réseau. -->
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script defer src="sunmates-motion.js?v=724"></script>
+  <script defer src="sunmates-motion.js?v=725"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -6201,14 +6201,19 @@
           const compat = (typeof compatibility === "function" && typeof myMatchProfile !== "undefined" && myMatchProfile) ? compatibility(myMatchProfile, p) : null;
           return `<div class="trip-mate" data-tmate="${escapeHtml(m.user_id)}">${avatarMarkup(p.username, p.avatar_url)}<div class="tmn">${escapeHtml(p.username || "Voyageur")}${p.is_verified ? ' <span class="vchip" title="Vérifié">✓</span>' : ""}<div class="meta">${_fmtTripDates(m.start_date, m.end_date)}</div></div>${compat != null ? `<span class="tm-compat">❤️ ${compat}%</span>` : ""}</div>`;
         }).join("")}</div>` : "";
-        const sub = t.country ? `<div class="trip-note" style="margin-top:.15rem">${escapeHtml(t.country)}</div>` : "";
-        return `<div class="trip-card"><div class="trip-top"><div class="trip-city">📍 ${escapeHtml(t.city)}</div><span class="trip-dates">${_fmtTripDates(t.start_date, t.end_date)}</span><button class="trip-del" data-tdel="${t.id}" title="Supprimer">🗑️</button></div>${sub}${t.note ? `<div class="trip-note">${escapeHtml(t.note)}</div>` : ""}${matesHtml}</div>`;
+        const flag = (t.country && (t.country.match(/^[\u{1F1E6}-\u{1F1FF}]{2}/u) || [])[0]) || "";
+        const countryName = t.country ? escapeHtml(t.country.replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, "")) : "";
+        const dates = _fmtTripDates(t.start_date, t.end_date);
+        const meta = [countryName, dates].filter(Boolean).join(" · ");
+        return `<div class="trip-card tj-card tj-upcoming"><span class="tj-flag">${flag || "📍"}</span><div class="tj-body"><div class="tj-city">${escapeHtml(t.city)}</div>${meta ? `<div class="tj-meta">${meta}</div>` : ""}${t.note ? `<div class="trip-note">${escapeHtml(t.note)}</div>` : ""}${matesHtml}</div><button class="trip-del" data-tdel="${t.id}" title="Supprimer">🗑️</button></div>`;
       };
       // ----- Carte « voyage passé » : journal soigné, SANS matching -----
       const pastCard = (t) => {
         const flag = (t.country && (t.country.match(/^[\u{1F1E6}-\u{1F1FF}]{2}/u) || [])[0]) || "";
-        const sub = t.country ? `<div class="ptrip-country">${flag ? `<span class="ptrip-flag">${flag}</span>` : "🏳️"} ${escapeHtml(t.country.replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, "")) || escapeHtml(t.country)}</div>` : "";
-        return `<div class="trip-card ptrip-card"><div class="trip-top"><div class="trip-city">🧭 ${escapeHtml(t.city)}</div><span class="trip-dates">${_fmtTripDates(t.start_date, t.end_date)}</span><button class="trip-del" data-tdel="${t.id}" title="Supprimer">🗑️</button></div>${sub}${t.note ? `<div class="trip-note">“${escapeHtml(t.note)}”</div>` : ""}</div>`;
+        const countryName = t.country ? (escapeHtml(t.country.replace(/^[\u{1F1E6}-\u{1F1FF}]{2}\s*/u, "")) || escapeHtml(t.country)) : "";
+        const dates = _fmtTripDates(t.start_date, t.end_date);
+        const meta = [countryName, dates].filter(Boolean).join(" · ");
+        return `<div class="trip-card ptrip-card tj-card"><span class="tj-flag">${flag || "🌍"}</span><div class="tj-body"><div class="tj-city">${escapeHtml(t.city)}</div>${meta ? `<div class="tj-meta">${meta}</div>` : ""}${t.note ? `<div class="trip-note">“${escapeHtml(t.note)}”</div>` : ""}</div><button class="trip-del" data-tdel="${t.id}" title="Supprimer">🗑️</button></div>`;
       };
       let html = "";
       if (upcoming.length) html += upcoming.map(upcomingCard).join("");
