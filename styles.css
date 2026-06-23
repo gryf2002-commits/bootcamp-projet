@@ -1816,6 +1816,17 @@
       font-family: "Fraunces", Georgia, serif !important; letter-spacing: -.01em; }
 
     /* ============================================================
+       v728 · MESSAGES : liste de conversations en LISTE ÉPURÉE (séparateurs fins entre
+       conversations, façon messagerie native) + nom un peu plus présent.
+       ============================================================ */
+    html body #convList .person.conv-open, html body[class*="theme-"] #convList .person.conv-open {
+      border-radius: 0 !important; border-bottom: 1px solid color-mix(in srgb, var(--ink) 7%, transparent) !important;
+      padding: .6rem .2rem !important; margin: 0 !important; }
+    html body #convList .person.conv-open:last-child { border-bottom: 0 !important; }
+    html body #convList .conv-open .name, html body[class*="theme-"] #convList .conv-open .name {
+      font-weight: 700 !important; font-size: .95rem !important; color: var(--ink) !important; }
+
+    /* ============================================================
        v708 (liste Maxime, lot 2) : à débloquer retiré, titres moins balèzes, cercle/SOS normé,
        textareas raisonnables + fond non-prune.
        ============================================================ */
