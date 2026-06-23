@@ -300,7 +300,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=740"></script>
+  <script src="sunmates-badges.js?v=741"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
@@ -309,7 +309,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
   <!-- 🎬 DA de Motion « Le mouvement du couchant » : noyau réutilisable (window.SM_MOTION). -->
   <script defer src="sm-motion-da.js?v=740"></script>
-  <script defer src="sunmates-motion.js?v=740"></script>
+  <script defer src="sunmates-motion.js?v=741"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -16979,7 +16979,9 @@
       $("phXpLbl").textContent = "Niveau " + lvl;
       $("phXpCur").textContent = inLvl;
       $("phXpMax").textContent = 100;
-      $("phXpFill").style.width = inLvl + "%";
+      { const _xf = $("phXpFill"), _cur = parseFloat(_xf.style.width) || 0; // DA motion : jauge XP qui se remplit
+        if (window.SM_MOTION) SM_MOTION.fillBar(_xf, inLvl, { from: _cur, duration: _cur === inLvl ? 0 : 0.75 });
+        else _xf.style.width = inLvl + "%"; }
       $("phXpNext").innerHTML = xp === 0 ? "Accomplis une quête pour gagner ton premier niveau"
         : ("Plus que <b>" + (100 - inLvl) + " XP</b> pour le niveau " + (lvl + 1) + " 🚀");
       const av = $("phAvatar"), url = myProfile && myProfile.avatar_url;
@@ -17153,7 +17155,7 @@
       if (allCities.length > 1 && cp && cb) {
         cp.style.display = ""; cb.style.display = "";
         const cc = $("cityCount"); if (cc) cc.textContent = explored.length + "/" + allCities.length;
-        const cf = $("cityFill"); if (cf) cf.style.width = Math.round((explored.length / allCities.length) * 100) + "%";
+        const cf = $("cityFill"); if (cf) { const _p = Math.round((explored.length / allCities.length) * 100), _c = parseFloat(cf.style.width) || 0; if (window.SM_MOTION) SM_MOTION.fillBar(cf, _p, { from: _c, duration: _c === _p ? 0 : 0.7 }); else cf.style.width = _p + "%"; }
         if (explored.length === allCities.length && explored.length > 0 && _lastCities !== -1 && explored.length > _lastCities) {
           if (typeof celebrate === "function") celebrate();
           if (typeof toast === "function") toast("🇫🇷", "Tour de France bouclé, toutes les villes explorées !");
