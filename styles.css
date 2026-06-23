@@ -5353,3 +5353,26 @@
     html body :is(.todo-toggle,.hm-layers-btn,.sm-sel-trigger,.avail-chip,.streak-chip),
     html.sm-app body :is(.todo-toggle,.hm-layers-btn,.sm-sel-trigger,.avail-chip,.streak-chip) {
       border: 1px solid var(--line) !important; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v747 · FLATTEN GLOBAL (suite) — écrans Lieux/Sécurité/Messages + boutons 2e.
+       Couvre les cartes que le 1er scan ne voyait pas (je scanne TOUS les écrans
+       maintenant). Garde les PHOTOS + le CTA principal. Réversible. ════════════ */
+    /* fiches lieux (sauf la photo), carte sécu, stat messages → plats */
+    html body :is(.pcard, .pcard-note, .pcard-chip, .pcard-rate, .mates-stat, .place, .tip-card, .help-cta, .demo-banner, .notif-card),
+    html.sm-app body :is(.pcard, .pcard-note, .pcard-chip, .pcard-rate, .mates-stat, .place, .tip-card, .help-cta, .demo-banner, .notif-card) {
+      background: transparent !important; box-shadow: none !important; }
+    html body :is(.pcard, .pcard-note, .pcard-chip, .pcard-rate, .mates-stat, .tip-card, .help-cta),
+    html.sm-app body :is(.pcard, .pcard-note, .pcard-chip, .pcard-rate, .mates-stat, .tip-card, .help-cta) {
+      border: 0 !important; }
+    /* carte sécu résiduelle (haute spécificité pour battre les overrides #secuHome) */
+    html.sm-app body :is(.secu-view .card, #secuHome > .card, #secuHome .tip-card) {
+      background: transparent !important; box-shadow: none !important; border: 0 !important; }
+    /* boutons SECONDAIRES (ghost/accent/icon/retour) → outline plat, plus de pavé.
+       CTA principal (btn-primary) et danger (SOS) gardent leur fond. */
+    html body :is(.btn-ghost, .btn-accent, .iconbtn, .backbtn),
+    html.sm-app body :is(.btn-ghost, .btn-accent, .iconbtn, .backbtn) {
+      background: transparent !important; box-shadow: none !important;
+      border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent) !important;
+      color: var(--accent-ink, var(--accent)) !important; }
+    html body :is(.iconbtn, .backbtn), html.sm-app body :is(.iconbtn, .backbtn) { border-color: var(--line) !important; color: var(--ink) !important; }

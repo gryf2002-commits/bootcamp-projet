@@ -1,6 +1,6 @@
 {
-  "candidate": "v746",
+  "candidate": "v747",
   "items": [
-    "🧹 Aplatissement GLOBAL : fini les centaines de petites boîtes. Toutes les cartes de contenu, tuiles, stats et chiffres sont désormais à plat — l'app respire. Seul le fonctionnel garde sa surface (champs, interrupteurs, bouton d'action principal, icônes colorées, avatar)."
+    "🧹 Aplatissement étendu à TOUS les écrans : fiches Lieux, carte Sécurité, Messages. Les fiches gardent leur photo mais perdent leur boîte, et les boutons secondaires deviennent des contours fins (plats mais cliquables). Seul le bouton d'action principal garde son fond."
   ]
 }
