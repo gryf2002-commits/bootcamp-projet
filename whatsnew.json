@@ -1,6 +1,7 @@
 {
-  "candidate": "v734",
+  "candidate": "v735",
   "items": [
-    "🗺️ Chargement de la carte enfin agréable : pendant que la carte se prépare, un joli écran d'attente s'affiche (grille façon carte + balayage lumineux + pin animé « On prépare ta carte… ») au lieu d'une zone vide ou figée. Il s'efface en fondu dès que la carte est prête."
+    "✨ Passe premium : l'avatar du profil devient un médaillon coucher-de-soleil, le sceau « Confiance » prend ses vraies couleurs (ambre → orange → teal), l'anneau de niveau brille comme une médaille, et les petits détails (chiffres alignés, barre de progression, titres) gagnent en finesse.",
+    "🎯 Barre de défilement et boutons harmonisés avec la DA (pilule + teinte corail), pour une cohérence joaillerie de bout en bout."
   ]
 }

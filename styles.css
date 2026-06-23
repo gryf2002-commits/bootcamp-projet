@@ -97,13 +97,14 @@
     @media (prefers-reduced-motion: reduce) { #appView:not(.hidden) { animation: none; } }
     /* Barre de défilement thémée DA (fini le blanc système). Firefox + WebKit/Blink.
        Les conteneurs en scrollbar-width:none (chips, etc.) restent masqués (specificité de classe). */
-    /* #7 : JOUR = barre neutre chaude discrète (le corail vif était trop agressif en clair) ;
-       NUIT = corail (rouge), comme demandé. Même couleur partout par thème. */
-    * { scrollbar-width: thin; scrollbar-color: rgba(176,142,116,.42) transparent; }
+    /* v735 (validé Maxime) : scrollbar CORAIL thémée AUSSI en jour (DESIGN §6
+       « scrollbar thémée corail, jamais neutre système »). Opacité contenue (.42)
+       pour rester discrète en clair. Nuit déjà corail (l.107). */
+    * { scrollbar-width: thin; scrollbar-color: rgba(255,90,77,.42) transparent; }
     ::-webkit-scrollbar { width: 9px; height: 9px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(176,142,116,.4); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(176,142,116,.62); background-clip: padding-box; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,90,77,.42); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,90,77,.62); background-clip: padding-box; }
     body.theme-dusk * { scrollbar-color: rgba(255,90,77,.5) transparent; }
     body.theme-dusk ::-webkit-scrollbar-thumb { background: rgba(255,90,77,.45); background-clip: padding-box; }
     body.theme-dusk ::-webkit-scrollbar-thumb:hover { background: rgba(255,90,77,.65); background-clip: padding-box; }
@@ -205,7 +206,7 @@
     button:active { transform: scale(.97); }
     /* Arrondi explicite : ces classes servent aussi sur des <a> (ex. bouton 112) qui
        n'héritent PAS du border-radius du sélecteur button -> on l'impose ici pour une DA cohérente. */
-    .btn-primary, .btn-accent, .btn-ghost, .btn-danger { border-radius: var(--radius-sm); }
+    .btn-primary, .btn-accent, .btn-ghost, .btn-danger { border-radius: 999px; } /* v735 (validé Maxime) : pilule 999px, DESIGN §5 Buttons «Shape: pilule» */
     /* #5 : halo DÉRIVÉ de l'accent du thème (plus de lueur rouge figée dans tous les modes) + adouci */
     .btn-primary { background: var(--accent-grad); color: #fff; box-shadow: 0 4px 10px color-mix(in oklab, var(--accent, #FF5A4D) 16%, transparent); } /* P12 : halo bouton adouci */
     .btn-primary:hover { filter: brightness(1.04); }
@@ -5137,3 +5138,65 @@
     .onb-prev:hover { background: rgba(255,255,255,.18); }
     .onb-prev:active { transform: scale(.97); }
     .onb-skip { color: rgba(255,255,255,.95) !important; }
+
+    /* ════════════════════════════════════════════════════════════════
+       v735 · PASSE PREMIUM (huashu-design) — joaillerie SANS re-bomber.
+       Gains SÛRS uniquement. AUCUNE décision Maxime inversée :
+       NON touché ici = couleur sémantique des tuiles (choix v570 « fini
+       l'arc-en-ciel froid »), scrollbar jour neutre (choix #7 « corail trop
+       agressif en clair »), rayon des boutons. Ces 3 sujets = à valider à part.
+       Ici : matière des VRAIS joyaux + rythme typo + micro-détails. Jour+nuit OK.
+       ════════════════════════════════════════════════════════════════ */
+
+    /* 1 · Avatar profil — état VIDE enfin brandé (médaillon dégradé radial,
+       lumière haut-gauche ~36% 28%, DESIGN §5 « états vides brandés »).
+       Une vraie photo = background-image INLINE → passe DEVANT cette règle,
+       donc rien n'est masqué quand l'avatar a une photo. */
+    html body .prof-photo, html.sm-app body .prof-photo {
+      background-image: radial-gradient(120% 120% at 36% 28%, #FFD15C 0%, #FF8A3D 46%, #FF5A4D 100%);
+      color: #fff; text-shadow: 0 1px 3px rgba(45,38,52,.30); }
+
+    /* 2 · Sceau « Confiance » — le sceau-vérifié SIGNATURE (ambre→orange→teal,
+       DESIGN frontmatter `sceau-verifie`) au lieu d'une pilule corail pâle plate.
+       Le teal est LE vert autorisé (§2). Chiffre en Fraunces (chiffre héros §3). */
+    html body .prof-trust, html.sm-app body .prof-trust {
+      background: linear-gradient(135deg, #FFC93C, #FF8A3D 58%, #11B5A0);
+      color: #fff; box-shadow: 0 3px 10px rgba(45,38,52,.16); }
+    html body .prof-trust b, html.sm-app body .prof-trust b,
+    html body .prof-trust .pt-info, html.sm-app body .prof-trust .pt-info { color: #fff; }
+    html body .prof-trust b, html.sm-app body .prof-trust b { font-family: "Fraunces", Georgia, serif; }
+
+    /* 3 · Anneau de niveau (Jeux) — médaille OR avec rim-light métal (double
+       inset) au lieu d'un sticker plat à bord blanc. DESIGN §1 matières/rim-light. */
+    html body .ph-lvl-ring, html.sm-app body .ph-lvl-ring {
+      box-shadow: 0 3px 8px rgba(184,90,18,.42), inset 0 1px 1px rgba(255,255,255,.92), inset 0 -2px 3px rgba(150,70,8,.45); }
+
+    /* 4 · Barre « Profil complété » — un peu de grain (rim-light qui balaie +
+       ombre de contact douce gris chaud). Texte LAISSÉ en Manrope (une phrase
+       en Fraunces = faute DA Émotion/Information). */
+    html body .completion-bar, html.sm-app body .completion-bar {
+      height: 11px; box-shadow: inset 0 1px 2px rgba(45,38,52,.12); }
+    html body .completion-bar span, html.sm-app body .completion-bar span { position: relative; }
+    html body .completion-bar span::after, html.sm-app body .completion-bar span::after {
+      content: ""; position: absolute; inset: 0; border-radius: inherit;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.42), transparent); pointer-events: none; }
+
+    /* 5 · Indicateur de nav (pilule glissante, vu sur TOUS les écrans) —
+       dégradé signature couchant translucide au lieu d'un aplat corail pâle.
+       DESIGN §5 « l'état sélectionné EST un coucher de soleil ». Opacité basse :
+       le label/icône actif (--accent-ink, z-index 1) reste lisible au-dessus. */
+    html body .nav-ind, html.sm-app body .nav-ind {
+      background: linear-gradient(135deg,
+        color-mix(in oklab, #FFC93C 24%, transparent) 0%,
+        color-mix(in oklab, #FF7A3D 24%, transparent) 46%,
+        color-mix(in oklab, #FF4F6D 24%, transparent) 100%); }
+
+    /* 6 · Stats profil — chiffres tabulaires (alignement de joaillerie : ne
+       « dansent » plus quand les valeurs montent). DESIGN §3 gros chiffres. */
+    html body .stat-box .stat, html.sm-app body .stat-box .stat {
+      font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.015em; }
+
+    /* 7 · Titre héros accueil « Bonjour … » — c'est LE moment d'émotion de
+       l'écran (Fraunces). On lui donne sa présence (DESIGN §3 titres d'écran 800). */
+    html body #homeHello, html.sm-app body #homeHello {
+      font-size: 1.85rem; font-weight: 800; line-height: 1.06; letter-spacing: -.025em; font-optical-sizing: auto; }
