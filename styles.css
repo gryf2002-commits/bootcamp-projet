@@ -5333,3 +5333,23 @@
     html.sm-app body :is(.sp-stat, .avail-chip, .streak-chip):not(.on):not(.active):not(.is-on),
     html body :is(.sp-stat, .avail-chip, .streak-chip):not(.on):not(.active):not(.is-on) {
       background: transparent !important; box-shadow: none !important; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v746 · FLATTEN GLOBAL COMPLET (retour Maxime : « y en a encore énormément »).
+       Approche INVERSÉE : on aplatit TOUTES les surfaces de contenu/tuile/chip/cellule,
+       on EXCLUT seulement le fonctionnel (champs, .sl rail toggle, CTA btn-primary/danger,
+       .cic/.jo-ic joyaux, avatars, modales, .mode-switch, badges notif, carte/skeleton).
+       Fond + ombre retirés partout ; bordure-boîte retirée sur les TUILES (les rangées-
+       listes gardent leur filet de séparation). Réversible. ════════════════════════════ */
+    /* 1 · FOND + OMBRE off sur tout le contenu boîté */
+    html body :is(.card,.feed-card,.pcell,.pprompt,.reco,.prog-card,.prog-split,.prog-tile,.prog-row,.stat-box,.pc-stat,.pr-val,.pb-pill,.sp-stat,.sp-next,.perm-state,.tt-state,.starter-step,.starter-prog,.hsec-chev,.sp-chev,.coll-chev,.pc-chev,.qs-mode-btn,.qs-mode,.sm-badge,.gp-tile,.sa-tile,.wg-card,.wg-goal,.dstat,.coll-stat,.coll-city,.feature,.shop-item,.boost-card,.xpl-card,.reward-card,.tip-card,.qcoll,.jeux-open,.ci-card,.demo-step,.sc-card,.sugg-card,.rit-row,.coupon,.cat-tile,.btn-ghost,.iconbtn,.spot-card,.num-here,.todo-toggle,.hm-layers-btn,.sm-sel-trigger,.avail-chip,.streak-chip,.starterCard,.geoNowCard),
+    html.sm-app body :is(.card,.feed-card,.pcell,.pprompt,.reco,.prog-card,.prog-split,.prog-tile,.prog-row,.stat-box,.pc-stat,.pr-val,.pb-pill,.sp-stat,.sp-next,.perm-state,.tt-state,.starter-step,.starter-prog,.hsec-chev,.sp-chev,.coll-chev,.pc-chev,.qs-mode-btn,.qs-mode,.sm-badge,.gp-tile,.sa-tile,.wg-card,.wg-goal,.dstat,.coll-stat,.coll-city,.feature,.shop-item,.boost-card,.xpl-card,.reward-card,.tip-card,.qcoll,.jeux-open,.ci-card,.demo-step,.sc-card,.sugg-card,.rit-row,.coupon,.cat-tile,.btn-ghost,.iconbtn,.spot-card,.num-here,.todo-toggle,.hm-layers-btn,.sm-sel-trigger,.avail-chip,.streak-chip,.starterCard,.geoNowCard) {
+      background: transparent !important; box-shadow: none !important; }
+    /* 2 · BORDURE-BOÎTE off sur les TUILES (pas les rangées-listes ni les contrôles carte → ils gardent filet/outline) */
+    html body :is(.card,.feed-card,.pcell,.pprompt,.reco,.prog-card,.prog-split,.prog-tile,.stat-box,.pc-stat,.pr-val,.pb-pill,.sp-stat,.sp-next,.perm-state,.tt-state,.starter-step,.starter-prog,.qs-mode-btn,.qs-mode,.sm-badge,.gp-tile,.sa-tile,.wg-card,.wg-goal,.dstat,.coll-stat,.coll-city,.feature,.shop-item,.boost-card,.xpl-card,.reward-card,.tip-card,.qcoll,.jeux-open,.ci-card,.demo-step,.sc-card,.sugg-card,.rit-row,.coupon,.cat-tile,.iconbtn,.spot-card,.starterCard,.geoNowCard),
+    html.sm-app body :is(.card,.feed-card,.pcell,.pprompt,.reco,.prog-card,.prog-split,.prog-tile,.stat-box,.pc-stat,.pr-val,.pb-pill,.sp-stat,.sp-next,.perm-state,.tt-state,.starter-step,.starter-prog,.qs-mode-btn,.qs-mode,.sm-badge,.gp-tile,.sa-tile,.wg-card,.wg-goal,.dstat,.coll-stat,.coll-city,.feature,.shop-item,.boost-card,.xpl-card,.reward-card,.tip-card,.qcoll,.jeux-open,.ci-card,.demo-step,.sc-card,.sugg-card,.rit-row,.coupon,.cat-tile,.iconbtn,.spot-card,.starterCard,.geoNowCard) {
+      border: 0 !important; }
+    /* 3 · contrôles carte (à faire/filtres/ville) : plats MAIS outline fin pour rester cliquables/lisibles */
+    html body :is(.todo-toggle,.hm-layers-btn,.sm-sel-trigger,.avail-chip,.streak-chip),
+    html.sm-app body :is(.todo-toggle,.hm-layers-btn,.sm-sel-trigger,.avail-chip,.streak-chip) {
+      border: 1px solid var(--line) !important; }

@@ -1,6 +1,6 @@
 {
-  "candidate": "v745",
+  "candidate": "v746",
   "items": [
-    "🧹 Gros nettoyage visuel : Gold/Pro/Admin descendent en douceur (smooth réactif), et des dizaines de petites « arrière-cartes » disparaissent — les chiffres ne sont plus enfermés dans des carrés, les flèches de repli, les stats du profil/parcours, les étapes « bien démarrer » et les tuiles de réglages deviennent plates. Les interrupteurs gardent bien leur rail."
+    "🧹 Aplatissement GLOBAL : fini les centaines de petites boîtes. Toutes les cartes de contenu, tuiles, stats et chiffres sont désormais à plat — l'app respire. Seul le fonctionnel garde sa surface (champs, interrupteurs, bouton d'action principal, icônes colorées, avatar)."
   ]
 }
