@@ -1360,6 +1360,49 @@
       border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); padding-top: 1.5rem !important; }
     /* le 1er bloc (juste sous la recherche) n'a pas besoin de filet au-dessus */
     html body .tab-panel[data-panel="accueil"] > .hcust-open + * { border-top: 0; }
+
+    /* ============================================================
+       v698 (Maxime « fonce fait tout ») : REFONTE TYPO + COULEURS + DÉLIMITATION pour la DA PLATE.
+       Pattern haute spécificité (html body / html body[class*=theme-]) pour battre le loader DA.
+       ============================================================ */
+    /* --- TYPOGRAPHIE : échelle claire, titres Fraunces, sous-titres calmes --- */
+    html body h1, html body[class*="theme-"] h1 {
+      font-family: "Fraunces", Georgia, serif; font-size: 1.7rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.12; color: var(--ink); margin: 1.05rem 0 .15rem; }
+    html body h2, html body[class*="theme-"] h2 {
+      font-family: "Fraunces", Georgia, serif; font-size: 1.3rem; font-weight: 700; letter-spacing: -.015em; line-height: 1.16; color: var(--ink); }
+    /* titres de section : Fraunces + barre d'accent gauche (::before, ne décale pas) */
+    html body .section-head > h3, html body .qm-head > h3, html body .sp-title,
+    html body[class*="theme-"] .section-head > h3, html body[class*="theme-"] .qm-head > h3, html body[class*="theme-"] .sp-title {
+      font-family: "Fraunces", Georgia, serif !important; font-size: 1.16rem !important; font-weight: 700 !important; letter-spacing: -.01em !important; line-height: 1.18 !important; color: var(--ink) !important; position: relative; padding-left: .62rem !important; }
+    html body .section-head > h3::before, html body .qm-head > h3::before, html body .sp-title::before {
+      content: ""; position: absolute; left: 0; top: .12em; bottom: .12em; width: 3px; border-radius: 3px; background: var(--accent-grad); }
+    /* sous-titres / descriptions : calmes et homogènes */
+    html body p.muted, html body .hello-row .muted, html body .sc-sub, html body .qm-head + .muted,
+    html body[class*="theme-"] p.muted, html body[class*="theme-"] .hello-row .muted {
+      font-size: .86rem !important; font-weight: 500 !important; line-height: 1.45 !important; color: var(--muted) !important; }
+
+    /* --- COULEURS : on calme les fonds/encadrés dorés-corail résiduels (pins carte gardés) --- */
+    html body :is(.xpl-card, .reward-card, .reward-card.alt, .shop-item, .tip-card, .wg-card, .qcoll, .reward-box, .ci-card),
+    html body[class*="theme-"] :is(.xpl-card, .reward-card, .reward-card.alt, .shop-item, .tip-card, .wg-card, .qcoll, .reward-box, .ci-card) {
+      background: color-mix(in srgb, var(--ink) 5%, transparent) !important; border: 1px solid var(--line) !important; box-shadow: none !important; }
+    /* badges d'action multicolores → accent unifié */
+    html body :is(.act-challenge, .act-bff, .act-block, .act-map, .act-teal, .act-gold, .act-coral),
+    html body[class*="theme-"] :is(.act-challenge, .act-bff, .act-block, .act-map, .act-teal, .act-gold, .act-coral) {
+      background: var(--accent-soft) !important; color: var(--accent-ink, var(--accent)) !important; border-color: transparent !important; }
+
+    /* --- 2e VAGUE CARTES : .feature (héros) à plat, texte lisible --- */
+    html body .feature, html body[class*="theme-"] .feature {
+      background: transparent !important; box-shadow: none !important; min-height: auto !important;
+      border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent) !important; }
+    html body .feature .body, html body[class*="theme-"] .feature .body { background: transparent !important; }
+    html body .feature .body .name, html body .feature .body .sub, html body .feature .tags span,
+    html body[class*="theme-"] .feature .body .name, html body[class*="theme-"] .feature .body .sub { color: var(--ink) !important; text-shadow: none !important; }
+
+    /* --- DÉLIMITATION : filets fins au-dessus des grandes sections des autres onglets --- */
+    html body .tab-panel[data-panel="lieux"] > .section-head, html body .tab-panel[data-panel="lieux"] > details,
+    html body .tab-panel[data-panel="jeux"] > .section-head, html body .tab-panel[data-panel="connexions"] > .section-head,
+    html body .tab-panel[data-panel="profil"] > .section-head, html body .secu-view > .section-head {
+      border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); padding-top: 1.4rem; margin-top: 1.9rem; }
     /* v684 (retour Maxime « les tuiles prennent énormément de place ») : vignette nettement plus
        compacte — l'icône passe de 84px à 50px → la rangée d'accès rapides ne bouffe plus l'écran,
        on en voit beaucoup plus d'un coup d'œil. */

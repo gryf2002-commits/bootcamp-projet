@@ -1,8 +1,9 @@
 {
-  "candidate": "v697",
+  "candidate": "v698",
   "items": [
-    "✅ La barre du téléphone enfin fondue : elle a maintenant EXACTEMENT la couleur du fond de l'app (jour et nuit) — fini la barre de séparation en haut. La cause était une vieille couleur de fond injectée en double.",
-    "🌅 Icône de l'app installée : nouveau soleil couchant au crépuscule (le logo dans l'app, lui, ne bouge pas).",
-    "🎐 Suite de l'aplatissement : encore des cartes retirées + de fines lignes pour délimiter sans boîtes."
+    "🔤 Titres revus partout : titres de section en Fraunces avec une barre d'accent, sous-titres calmés — une hiérarchie claire adaptée à la DA plate.",
+    "🎨 Couleurs homogénéisées : on a calmé les fonds dorés/corail résiduels (cartes d'astuces, récompenses, boutique) au profit d'un accent unique.",
+    "🧭 Mieux délimité : de fines lignes structurent les sections sur tous les écrans, sans réintroduire de boîtes.",
+    "🎐 Encore des cartes retirées (héros, récompenses, astuces)."
   ]
 }
