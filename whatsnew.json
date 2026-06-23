@@ -1,7 +1,7 @@
 {
-  "candidate": "v723",
+  "candidate": "v724",
   "items": [
-    "⚡ Démarrage optimisé : les données « catalogue » (quêtes, badges) — identiques pour tout le monde — sont mises en cache et chargées instantanément à la relance (2 requêtes réseau en moins), rafraîchies en fond.",
-    "📉 Moins de données au lancement : l'historique de messages chargé au boot réduit (300 → 150)."
+    "⚡ Démarrage allégé (annuaire en lazy-load) : au lancement on ne charge que les 200 voyageurs les plus actifs (assez pour la carte, les suggestions et les conversations) ; le reste de l'annuaire « Découvrir » se charge en fond juste après, sans bloquer.",
+    "(Sans effet visible à petite échelle ; le gain grandit avec le nombre d'utilisateurs.)"
   ]
 }

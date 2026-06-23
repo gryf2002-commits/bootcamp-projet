@@ -300,13 +300,13 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=723"></script>
+  <script src="sunmates-badges.js?v=724"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
        CSS (SMMotion.* devient no-op). Aucune dépendance dure → l'app marche identiquement sans réseau. -->
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script defer src="sunmates-motion.js?v=723"></script>
+  <script defer src="sunmates-motion.js?v=724"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -10370,10 +10370,13 @@
       // - matches_connections : uniquement MES lignes (filtre serveur).
       // - profiles : cap à 1000 (les plus récemment actifs) pour l'annuaire Découvrir,
       //   complété ensuite par les profils manquants de mes connexions (toujours exacts).
+      const PROF_INITIAL = 200; // LAZY Découvrir : au démarrage on ne charge que les 200 profils les plus
+      // récemment actifs (assez pour la carte « autour de toi », les suggestions et les conversations) ;
+      // le RESTE de l'annuaire se charge EN FOND juste après (cf. plus bas) → démarrage allégé à l'échelle.
       let profilesRaw, conns, msgs, blk;
       try {
         const _r = await Promise.all([
-          db.from("profiles").select("*").order("last_seen_at", { ascending: false, nullsFirst: false }).limit(1000),
+          db.from("profiles").select("*").order("last_seen_at", { ascending: false, nullsFirst: false }).limit(PROF_INITIAL),
           db.from("matches_connections").select("*").or(`user_a.eq.${myId},user_b.eq.${myId}`),
           db.from("messages").select("sender_id,recipient_id,content,created_at").order("created_at", { ascending: false }).limit(150),
           db.from("blocks").select("blocked").eq("blocker", myId),
@@ -10416,6 +10419,21 @@
       all.forEach((p) => { travelerMap[p.id] = p; });
       myMatchProfile = all.find((p) => p.id === myId) || myProfile;
       const avatarOf = (id) => travelerMap[id]?.avatar_url;
+      // LAZY Découvrir : si le 1er lot est PLEIN (=il y a probablement plus de monde), on charge le RESTE
+      // de l'annuaire EN FOND (non bloquant), on complète travelerMap et on re-rend la carte + Découvrir.
+      // Pour un petit nombre d'utilisateurs (<200), ce bloc ne se déclenche pas (tout est déjà chargé).
+      if ((profilesRaw || []).length >= PROF_INITIAL) {
+        db.from("profiles").select("*").order("last_seen_at", { ascending: false, nullsFirst: false }).range(PROF_INITIAL, PROF_INITIAL + 999)
+          .then(({ data }) => {
+            if (!data || !data.length) return;
+            let added = 0;
+            data.forEach((p) => { if (p && p.id && !travelerMap[p.id] && !(p.banned && p.id !== myId)) { travelerMap[p.id] = p; added++; } });
+            if (added) {
+              try { if (typeof renderTravelers === "function") renderTravelers($("travSearch") ? $("travSearch").value : ""); } catch (e) {}
+              try { if (typeof renderHomeMap === "function") renderHomeMap(); } catch (e) {}
+            }
+          }, () => {});
+      }
 
       // Connexions acceptées (calculées d'abord pour exclure les Mates déjà connectés des demandes)
       const accepted = list.filter((c) => c.status === "accepted" && (c.user_a === myId || c.user_b === myId));
