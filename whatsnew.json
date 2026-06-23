@@ -1,8 +1,8 @@
 {
-  "candidate": "v695",
+  "candidate": "v696",
   "items": [
-    "🎚️ Contrôles unifiés : les petites pastilles/filtres ont un seul style (neutre au repos, accent quand c'est actif) — fini l'arc-en-ciel de contours.",
-    "🧭 Mieux délimité : plus d'air entre les grandes sections, les titres servent de séparateurs — moins fouillis.",
-    "📱 Barre native : couleur de démarrage de l'appli calée sur le mode nuit (on ajuste si besoin)."
+    "🌅 Nouveau logo : un soleil qui se couche au crépuscule, dans les couleurs nuit (ciel prune, soleil crème, horizon doré) — sur le site, l'app et l'icône installée.",
+    "🎐 Encore plus plat : boutique, boosts, objectifs, astuces, stats, check-in… on a retiré les cartes restantes.",
+    "🧭 Délimitation propre : de fines lignes séparent les sections (au lieu de boîtes) pour éviter le fouillis."
   ]
 }

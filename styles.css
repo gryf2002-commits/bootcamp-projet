@@ -1340,6 +1340,26 @@
     html body .tab-panel[data-panel="accueil"] > .section-head,
     html body .tab-panel[data-panel="accueil"] > #homeTravelMap,
     html body .tab-panel[data-panel="accueil"] > #homeQuickAccess { margin-top: 2.1rem !important; }
+    /* ============================================================
+       v696 (Maxime « encore BEAUCOUP de cartes derrière beaucoup de choses ») : 2e vague d'aplatissement
+       d'après audit — boutique/boosts/objectifs/astuces/stats/check-in/plans gardaient un fond+bordure+ombre.
+       On les rend plats. (Modales/champs/cellules interactives toujours préservés.) ============================================================ */
+    html body :is(.feature, .prog-card, .demo-step, .shop-item, .boost-card, .xpl-card, .reward-card, .wg-card, .tip-card, .qcoll, .jeux-open, .ci-card, .sa-tile, .gp-tile, .wg-goal, .dstat, .stat-box, .pc-stat, .sp-stat),
+    html body[class*="theme-"] :is(.feature, .prog-card, .demo-step, .shop-item, .boost-card, .xpl-card, .reward-card, .wg-card, .tip-card, .qcoll, .jeux-open, .ci-card, .sa-tile, .gp-tile, .wg-goal, .dstat, .stat-box, .pc-stat, .sp-stat) {
+      background: transparent !important; box-shadow: none !important; border-color: transparent !important; }
+    html body .hm-plan > summary, html body[class*="theme-"] .hm-plan > summary {
+      background: transparent !important; box-shadow: none !important; border: 0 !important; border-bottom: 1px solid var(--line) !important; border-radius: 0 !important; }
+    /* cartes geo inline (style="...") : on retire fond+bordure */
+    #geoNowCard, #geoPrompt { background: transparent !important; border-color: transparent !important; }
+    /* ===== DÉLIMITATION SANS CARTE (anti-fouillis) : fines lignes de séparation entre les grandes
+       sections de l'accueil + barre d'accent gauche sur les blocs « liste » importants. ===== */
+    html body .tab-panel[data-panel="accueil"] > section,
+    html body .tab-panel[data-panel="accueil"] > .section-head,
+    html body .tab-panel[data-panel="accueil"] > #homeQuickAccess,
+    html body .tab-panel[data-panel="accueil"] > #homeTravelMap {
+      border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); padding-top: 1.5rem !important; }
+    /* le 1er bloc (juste sous la recherche) n'a pas besoin de filet au-dessus */
+    html body .tab-panel[data-panel="accueil"] > .hcust-open + * { border-top: 0; }
     /* v684 (retour Maxime « les tuiles prennent énormément de place ») : vignette nettement plus
        compacte — l'icône passe de 84px à 50px → la rangée d'accès rapides ne bouffe plus l'écran,
        on en voit beaucoup plus d'un coup d'œil. */
@@ -3027,7 +3047,7 @@
 
     /* --- Marque / en-tête --- */
     .brand b { font-weight: 600; letter-spacing: .015em; font-size: 1.2rem; }
-    .brand .mark { background: var(--accent-grad); border-radius: 11px; box-shadow: var(--shadow-sm); }
+    .brand .mark { background: linear-gradient(150deg, #2a1850 0%, #3a1e57 52%, #7a3f5e 100%); border-radius: 11px; box-shadow: var(--shadow-sm); } /* v696 : ciel crépuscule (couleurs SVG mode sombre) sous le soleil couchant */
     .topbar { background: linear-gradient(var(--bg) 62%, rgba(255,244,230,0)); border-bottom: 0; }
 
     /* --- Cartes : épurées, bord fin, ombre douce --- */
@@ -3139,7 +3159,7 @@
     /* 21/06 (Maxime : « je n'en veux plus du tout, faut que ce soit propre ») : AUCUNE ombre sur le logo
        (l'ombre grise rgba(45,38,52,.16) faisait un halo/case gris ; même en corail il en restait un soupçon).
        → box-shadow none = icône orange nette posée sur la page, zéro halo. */
-    .brand .mark { background: var(--accent-grad); box-shadow: none !important; }
+    .brand .mark { background: linear-gradient(150deg, #2a1850 0%, #3a1e57 52%, #7a3f5e 100%); box-shadow: none !important; } /* v696 : ciel crépuscule */
     .section-head a { color: var(--retro-teal); }
 
     /* Cartes chaleureuses */
@@ -3281,7 +3301,7 @@
     body.theme-tropic .brand .mark svg.logo-tropic { display: block; }
     body.theme-winter .brand .mark { background: linear-gradient(135deg, #6FB4E8, #3A8FD9); }
     body.theme-tropic .brand .mark { background: linear-gradient(135deg, #36C495, #0FA37C); }
-    body.theme-dusk .brand .mark { background: linear-gradient(150deg, #7A2E5E, #C2502E) !important; } /* coucher de soleil sombre */
+    body.theme-dusk .brand .mark { background: linear-gradient(150deg, #2a1850 0%, #3a1e57 52%, #7a3f5e 100%) !important; } /* v696 : ciel crépuscule (couleurs SVG mode sombre) */
     body.theme-winter.theme-dusk .brand .mark svg.logo-winter { display: none; }
     body.theme-winter.theme-dusk .brand .mark svg.logo-winter-n { display: block; }
     body.theme-winter.theme-dusk .brand .mark { background: linear-gradient(150deg, #1B3A5E, #0E2740) !important; } /* nuit polaire */
