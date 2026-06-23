@@ -1,8 +1,8 @@
 {
-  "candidate": "v694",
+  "candidate": "v695",
   "items": [
-    "🎐 Design ultra-plat : on a retiré les cartes (rectangles) aussi sur le contenu — l'app respire, tout est homogène, sans boîtes empilées.",
-    "🛡️ On a gardé l'essentiel lisible : les boutons (SOS…), les champs, les fenêtres et la carte gardent leur surface.",
-    "🎯 Header : léger fondu de couleur en haut pour adoucir la jointure avec la barre du téléphone."
+    "🎚️ Contrôles unifiés : les petites pastilles/filtres ont un seul style (neutre au repos, accent quand c'est actif) — fini l'arc-en-ciel de contours.",
+    "🧭 Mieux délimité : plus d'air entre les grandes sections, les titres servent de séparateurs — moins fouillis.",
+    "📱 Barre native : couleur de démarrage de l'appli calée sur le mode nuit (on ajuste si besoin)."
   ]
 }

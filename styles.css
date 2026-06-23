@@ -1321,6 +1321,25 @@
        vers le contenu → jointure adoucie avec la barre native du téléphone. */
     html body .topbar, html body[class*="theme-"] .topbar {
       background: linear-gradient(180deg, var(--bg) 0%, var(--bg) calc(env(safe-area-inset-top, 0px) + 58%), rgba(0,0,0,0) 100%) !important; }
+    /* ============================================================
+       v695 (Maxime « encore plein de cartes et de contours dans TOUTES les couleurs de Radiant Horizon,
+       ça n'a pas de sens ») : on UNIFIE les petits contrôles (pills/chips/toggles). Un seul code :
+       INACTIF = surface neutre discrète + fin bord --line (zéro couleur DA) ; ACTIF = accent. Fini
+       l'arc-en-ciel de contours corail/or/violet/teal qui faisait fouillis. ============================================================ */
+    html body :is(.chip, .sscope, .avail-chip, .streak-chip, .todo-toggle, .hm-layers-btn, .tvt-btn, .fc-kind, .qs-mode-btn, .sp-stat, .pseg, .mseg):not(.active):not(.on):not(.is-on),
+    html body[class*="theme-"] :is(.chip, .sscope, .avail-chip, .streak-chip, .todo-toggle, .hm-layers-btn, .tvt-btn, .fc-kind, .qs-mode-btn, .sp-stat, .pseg, .mseg):not(.active):not(.on):not(.is-on) {
+      background: color-mix(in srgb, var(--ink) 5%, transparent) !important;
+      border: 1px solid var(--line) !important; box-shadow: none !important; color: var(--muted) !important; }
+    /* la bascule Voyage/Maison : conteneur neutre, bouton actif = accent (déjà géré), inactif transparent */
+    html body .mode-switch, html body[class*="theme-"] .mode-switch {
+      background: color-mix(in srgb, var(--ink) 5%, transparent) !important; border: 1px solid var(--line) !important; }
+    html body .mode-switch button:not(.active) { background: transparent !important; color: var(--muted) !important; box-shadow: none !important; }
+    /* DÉLIMITATION (anti-fouillis) : on aère franchement entre les grandes sections de l'accueil,
+       et le titre de section (barre d'accent Fraunces) sert de séparateur visuel — pas de boîte. */
+    html body .tab-panel[data-panel="accueil"] > section,
+    html body .tab-panel[data-panel="accueil"] > .section-head,
+    html body .tab-panel[data-panel="accueil"] > #homeTravelMap,
+    html body .tab-panel[data-panel="accueil"] > #homeQuickAccess { margin-top: 2.1rem !important; }
     /* v684 (retour Maxime « les tuiles prennent énormément de place ») : vignette nettement plus
        compacte — l'icône passe de 84px à 50px → la rangée d'accès rapides ne bouffe plus l'écran,
        on en voit beaucoup plus d'un coup d'œil. */
