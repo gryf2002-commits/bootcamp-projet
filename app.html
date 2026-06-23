@@ -300,13 +300,13 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=722"></script>
+  <script src="sunmates-badges.js?v=723"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
        CSS (SMMotion.* devient no-op). Aucune dépendance dure → l'app marche identiquement sans réseau. -->
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script defer src="sunmates-motion.js?v=722"></script>
+  <script defer src="sunmates-motion.js?v=723"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -10375,7 +10375,7 @@
         const _r = await Promise.all([
           db.from("profiles").select("*").order("last_seen_at", { ascending: false, nullsFirst: false }).limit(1000),
           db.from("matches_connections").select("*").or(`user_a.eq.${myId},user_b.eq.${myId}`),
-          db.from("messages").select("sender_id,recipient_id,content,created_at").order("created_at", { ascending: false }).limit(300),
+          db.from("messages").select("sender_id,recipient_id,content,created_at").order("created_at", { ascending: false }).limit(150),
           db.from("blocks").select("blocked").eq("blocker", myId),
         ]);
         profilesRaw = _r[0].data; conns = _r[1].data; msgs = _r[2].data; blk = _r[3].data;
@@ -11036,15 +11036,30 @@
       window._gameLoadedAt = Date.now(); // PERF : fenêtre de fraîcheur 60 s (cf. goToTab jeux)
       skelFirst("badgeGrid", skelCards(4));
       skelFirst("couponList", skelRows(2));
+      // PERF démarrage : `quests` et `badges_catalog` sont du RÉFÉRENTIEL STATIQUE (identique pour tous).
+      // On le sert depuis le cache localStorage s'il existe (le Promise.all ne bloque alors QUE sur les
+      // requêtes propres à l'utilisateur) et on le rafraîchit en FOND. → 2 allers-retours réseau en moins
+      // au démarrage à chaque relance.
+      let _qc = null, _bc = null;
+      try { _qc = JSON.parse(localStorage.getItem("sm_ref_quests") || "null"); } catch (e) {}
+      try { _bc = JSON.parse(localStorage.getItem("sm_ref_badges") || "null"); } catch (e) {}
+      const _qReq = (_qc && _qc.length) ? Promise.resolve({ data: _qc }) : db.from("quests").select("*").order("sort_order");
+      const _bReq = (_bc && _bc.length) ? Promise.resolve({ data: _bc }) : db.from("badges_catalog").select("*").order("sort_order");
       const [qs, uq, ub, uc, sg, bc, gr] = await Promise.all([
-        db.from("quests").select("*").order("sort_order"),
+        _qReq,
         db.from("user_quests").select("quest_key,status,completed_at").eq("user_id", myUserId),
         db.from("user_badges").select("badge_key,name,emoji,earned_at").eq("user_id", myUserId),
         db.from("user_coupons").select("*").eq("user_id", myUserId).order("earned_at", { ascending: false }),
         db.from("quest_suggestions").select("*").eq("to_user", myUserId).eq("status", "pending").order("created_at", { ascending: false }),
-        db.from("badges_catalog").select("*").order("sort_order"),
+        _bReq,
         db.from("quest_group_runs").select("*").eq("partner", myUserId).eq("status", "pending").order("created_at", { ascending: false }),
       ]);
+      // Référentiel : si servi depuis le CACHE → on rafraîchit en FOND (et on met à jour le rendu) ;
+      // sinon (fetch frais) → on écrit le cache pour la prochaine fois.
+      if (_qc && _qc.length) { db.from("quests").select("*").order("sort_order").then((r) => { if (r.data) { allQuests = r.data; try { localStorage.setItem("sm_ref_quests", JSON.stringify(r.data)); } catch (e) {} if (typeof renderJeux === "function") try { renderJeux(); } catch (e) {} } }, () => {}); }
+      else if (qs.data) { try { localStorage.setItem("sm_ref_quests", JSON.stringify(qs.data)); } catch (e) {} }
+      if (_bc && _bc.length) { db.from("badges_catalog").select("*").order("sort_order").then((r) => { if (r.data) { allBadgeDefs = r.data; try { localStorage.setItem("sm_ref_badges", JSON.stringify(r.data)); } catch (e) {} } }, () => {}); }
+      else if (bc.data) { try { localStorage.setItem("sm_ref_badges", JSON.stringify(bc.data)); } catch (e) {} }
       allBadgeDefs = (bc && bc.data) || []; // catalogue (publics + secrets) ; vide si migration pas lancée
       myGroupRuns = (gr && gr.data) || []; // quêtes de groupe à confirmer (je suis le partenaire)
       allQuests = qs.data || [];

@@ -1,7 +1,7 @@
 {
-  "candidate": "v722",
+  "candidate": "v723",
   "items": [
-    "🚫 Écran de chargement avec logo RETIRÉ : il faisait doublon avec le logo de lancement du téléphone (double écran) et masquait le chargement au lieu de le montrer.",
-    "🌊 Lancement plus fluide : l'app apparaît directement (fondu doux) et se remplit à vue — la carte et le reste se chargent sous tes yeux."
+    "⚡ Démarrage optimisé : les données « catalogue » (quêtes, badges) — identiques pour tout le monde — sont mises en cache et chargées instantanément à la relance (2 requêtes réseau en moins), rafraîchies en fond.",
+    "📉 Moins de données au lancement : l'historique de messages chargé au boot réduit (300 → 150)."
   ]
 }
