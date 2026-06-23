@@ -1,9 +1,6 @@
 {
-  "candidate": "v708",
+  "candidate": "v709",
   "items": [
-    "🗺️ Carte VRAIMENT agrandie (la bonne règle cette fois : 268→400px).",
-    "🧹 « À débloquer » retiré complètement. Halo gris au survol et coloration bizarre au clic : supprimés (juste un enfoncement net au tap).",
-    "⚡ Plus fluide : la cascade d'animations qui re-jouait à chaque clic (depop/repop) est retirée.",
-    "✂️ Titres moins gros, cercle de confiance/SOS normé, textareas raisonnables (auto-grow, fond corrigé)."
+    "✨ Gold enfin lisible en mode JOUR : l'écrin Gold reste sombre avec son texte doré, au lieu de devenir clair (texte invisible). Je l'ai reproduit en testant vraiment le mode clair."
   ]
 }

@@ -1546,6 +1546,15 @@
     /* 2 · Gold lisible en JOUR (et nuit) */
     html body .gold-only-note, html body[class*="theme-"] .gold-only-note { background: var(--accent-soft) !important; color: var(--accent-ink, var(--accent)) !important; border-color: rgba(232,150,31,.5) !important; }
     html body #goldPreviewBanner, html body[class*="theme-"] #goldPreviewBanner { color: #3a2500 !important; }
+    /* v709 (Maxime « Gold illisible en JOUR » — ENFIN VU en rendu mode clair) : en jour le hero Gold
+       passait clair → texte crème invisible. On FORCE l'écrin sombre + texte lisible dans TOUS les modes. */
+    html body .gold-hero, html body[class*="theme-"] .gold-hero,
+    html body.sm-da-on .gold-hero {
+      background: linear-gradient(160deg, #2A1E0E 0%, #44310F 45%, #2A1C08 100%) !important;
+      color: #FFE9B0 !important; border: 1px solid rgba(232,150,31,.5) !important; }
+    html body .gold-hero :is(.gh-title, .gh-tag, .msg, .gh-test, h2, h3),
+    html body[class*="theme-"] .gold-hero :is(.gh-title, .gh-tag, .msg, .gh-test, h2, h3) { color: #FFF3CE !important; }
+    html body .gold-hero .gh-price, html body[class*="theme-"] .gold-hero .gh-price { color: #FFD15C !important; }
     html body .gp-tile span:last-child, html body[class*="theme-"] .gp-tile span:last-child { color: var(--text) !important; }
     /* 3 · barre de recherche : fond neutre cohérent en nuit (fini le prune saturé) */
     html body.theme-dusk .search input, html body[class*="theme-"].theme-dusk .search input { background: var(--dcard2, #241b35) !important; color: var(--ink) !important; border-color: var(--line) !important; }
