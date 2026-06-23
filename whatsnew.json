@@ -1,6 +1,6 @@
 {
-  "candidate": "v733",
+  "candidate": "v734",
   "items": [
-    "⚡ Accueil BEAUCOUP plus rapide à apparaître : la carte (l'élément le plus lourd) est maintenant dessinée pendant un temps libre du navigateur, juste après l'affichage de la page. Le contenu (bonjour, accès rapides, sections) s'affiche instantanément, la carte se remplit ensuite sans figer l'écran."
+    "🗺️ Chargement de la carte enfin agréable : pendant que la carte se prépare, un joli écran d'attente s'affiche (grille façon carte + balayage lumineux + pin animé « On prépare ta carte… ») au lieu d'une zone vide ou figée. Il s'efface en fondu dès que la carte est prête."
   ]
 }

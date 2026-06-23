@@ -1030,6 +1030,22 @@
     .homemap-wrap { position: relative; isolation: isolate; } /* contient les outils carte (z-index) -> ne débordent plus sur la nav du bas */
     /* P9 : la carte est LA star de l'accueil · rehaussée à 300px (zone du dessus dégraissée). */
     .homemap { height: 340px; border-radius: 14px; overflow: hidden; background: var(--cream); position: relative; z-index: 0; isolation: isolate; }
+    /* ===== v734 · État de CHARGEMENT de la carte (UX) : squelette « map-like » pendant l'init lourde ===== */
+    .homemap-wrap { position: relative; }
+    .homemap-skel { position: absolute; inset: 0; z-index: 2; border-radius: 14px; overflow: hidden;
+      background: var(--cream); display: grid; place-items: center; transition: opacity .55s ease; }
+    .homemap-wrap.homemap-ready .homemap-skel { opacity: 0; pointer-events: none; }
+    .homemap-skel .hms-grid { position: absolute; inset: 0;
+      background-image: linear-gradient(color-mix(in srgb, var(--ink) 7%, transparent) 1px, transparent 1px),
+                        linear-gradient(90deg, color-mix(in srgb, var(--ink) 7%, transparent) 1px, transparent 1px);
+      background-size: 30px 30px; }
+    .homemap-skel::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 32%, color-mix(in srgb, #fff 38%, transparent) 50%, transparent 68%); transform: translateX(-100%); animation: hmsShimmer 1.5s linear infinite; }
+    .homemap-skel .hms-center { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: .5rem; }
+    .homemap-skel .hms-pin { font-size: 2.1rem; filter: drop-shadow(0 6px 10px rgba(0,0,0,.18)); animation: hmsBob 1.7s ease-in-out infinite; }
+    .homemap-skel .hms-txt { font-size: .84rem; font-weight: 700; color: var(--muted); }
+    @keyframes hmsShimmer { to { transform: translateX(100%); } }
+    @keyframes hmsBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    @media (prefers-reduced-motion: reduce) { .homemap-skel::after, .homemap-skel .hms-pin { animation: none !important; } }
     /* P7 : pastille « touche la carte » · EN HAUT de la carte (le bas porte déjà Partager/
        Autour de moi/Tout voir), aux couleurs DA (carte + encre, déclinée par mode), avec la
        petite main qui tapote pour l'intuition. */

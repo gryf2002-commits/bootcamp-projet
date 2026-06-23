@@ -300,13 +300,13 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=733"></script>
+  <script src="sunmates-badges.js?v=734"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
        CSS (SMMotion.* devient no-op). Aucune dépendance dure → l'app marche identiquement sans réseau. -->
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script defer src="sunmates-motion.js?v=733"></script>
+  <script defer src="sunmates-motion.js?v=734"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -2241,6 +2241,12 @@
             <button class="chip active cl-mypins" data-layer="mypins">📌 Mes adresses <b data-cnt></b></button>
           </div>
           <div class="homemap-wrap">
+            <!-- État de chargement UX de la carte (shimmer + pin) : visible tant que la carte n'est pas
+                 prête ; retiré par .homemap-ready (cf. _smMapReady). Rend l'attente gracieuse, pas figée. -->
+            <div class="homemap-skel" aria-hidden="true">
+              <div class="hms-grid"></div>
+              <div class="hms-center"><span class="hms-pin">📍</span><span class="hms-txt">On prépare ta carte…</span></div>
+            </div>
             <div id="homeMap" class="homemap"></div>
             <button class="homemap-fsopen" id="hmFullCorner" type="button" title="Plein écran" aria-label="Plein écran"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
             <div class="homemap-capture hidden" id="homeMapCapture"></div>
@@ -5609,6 +5615,12 @@
       } catch (e) { setTimeout(renderHomeMap, 180); }
     }
     window._smRenderMapIdle = _smRenderMapIdle;
+    // Carte prête → on retire le squelette de chargement (idempotent). Appelé par les events de la
+    // carte (load GL / whenReady Leaflet) + un garde-fou de 6 s pour ne JAMAIS laisser le squelette collé.
+    function _smMapReady() {
+      try { var w = document.querySelector(".homemap-wrap"); if (w) w.classList.add("homemap-ready"); } catch (e) {}
+    }
+    window._smMapReady = _smMapReady;
 
     let _renderedUserId = null; // anti-flicker : ne relance PAS tout le pipeline à chaque event auth (TOKEN_REFRESHED, SIGNED_IN répétés…)
     async function render(session) {
@@ -13928,8 +13940,9 @@
           try {
             const m = lyr.getMaplibreMap(); if (!m) return;
             _smGlMaps.push(m);
-            if (m.isStyleLoaded && m.isStyleLoaded()) _smRecolorStyle(m);
-            m.once("load", () => _smRecolorStyle(m));
+            if (m.isStyleLoaded && m.isStyleLoaded()) { _smRecolorStyle(m); _smMapReady(); }
+            m.once("load", () => { _smRecolorStyle(m); _smMapReady(); });
+            m.once("idle", () => _smMapReady()); // tuiles peintes → on retire le squelette
           } catch (e) {}
         }, 0);
         // P2.4 : CHIEN DE GARDE « carte vide » · si le style vectoriel n'est pas chargé au bout
@@ -14404,6 +14417,10 @@
           // #12 : UN seul monde (fini les cartes côte à côte au dézoom) + bords élastiques doux
           minZoom: 2.4, maxBounds: [[-85, -180], [85, 180]], maxBoundsViscosity: 0.8, worldCopyJump: false,
           preferCanvas: true, tap: false, zoomAnimation: !_noMapAnim, markerZoomAnimation: !_noMapAnim, fadeAnimation: !_noMapAnim, inertiaDeceleration: _lmap ? 3400 : 2000 }).setView([46.6, 2.3], 4); /* P6 : inertie plus douce, glisse « à la Plans » */
+        // UX chargement : carte prête (Leaflet ready → couvre aussi le repli raster) → retire le squelette,
+        // + garde-fou 6 s pour ne jamais le laisser collé même si un event manque.
+        try { homeLeaf.whenReady(() => setTimeout(_smMapReady, 400)); } catch (e) {}
+        setTimeout(_smMapReady, 6000);
         // P4 (retour Maxime, remplace le geste P2.7) : TAP-POUR-EXPLORER · la mini-carte dort
         // (1 doigt = la page défile) ; un TAP dessus la RÉVEILLE (drag direct, 100 % réactive,
         // liseré corail discret) ; toucher la page EN DEHORS la rendort → le scroll de
