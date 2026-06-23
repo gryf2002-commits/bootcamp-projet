@@ -90,18 +90,11 @@
        On la NEUTRALISE complètement. */
     #bgFx::after { content: none !important; display: none !important; }
 
-    /* ===== ÉCRAN DE CHARGEMENT brandé (anti-friction « app à moitié chargée ») ===== */
-    #smBoot { position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center;
-      background: var(--bg, #190E2E); transition: opacity .45s ease, visibility .45s; }
-    #smBoot.smb-done { opacity: 0; visibility: hidden; pointer-events: none; }
-    .smb-inner { display: flex; flex-direction: column; align-items: center; gap: .9rem; }
-    .smb-logo { width: 84px; height: 84px; border-radius: 22px; overflow: hidden; box-shadow: 0 14px 44px rgba(0,0,0,.32); animation: smbBreath 2.2s ease-in-out infinite; }
-    .smb-logo img { width: 100%; height: 100%; display: block; }
-    .smb-name { font-family: "Fraunces", Georgia, serif; font-weight: 800; font-size: 1.4rem; color: var(--ink, #FCEFE9); letter-spacing: -.01em; }
-    .smb-ring { width: 30px; height: 30px; border-radius: 50%; border: 3px solid color-mix(in srgb, var(--accent, #FF5A4D) 25%, transparent); border-top-color: var(--accent, #FF5A4D); animation: smbSpin .7s linear infinite; }
-    @keyframes smbBreath { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-    @keyframes smbSpin { to { transform: rotate(360deg); } }
-    @media (prefers-reduced-motion: reduce) { .smb-logo, .smb-ring { animation: none !important; } }
+    /* (Écran de chargement #smBoot retiré v722 : doublon avec le splash OS + masquait le chargement.) */
+    /* Apparition FLUIDE de l'app quand elle se révèle (fondu doux au lieu d'un pop sec). */
+    #appView:not(.hidden) { animation: smAppIn .32s ease both; }
+    @keyframes smAppIn { from { opacity: 0; } to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { #appView:not(.hidden) { animation: none; } }
     /* Barre de défilement thémée DA (fini le blanc système). Firefox + WebKit/Blink.
        Les conteneurs en scrollbar-width:none (chips, etc.) restent masqués (specificité de classe). */
     /* #7 : JOUR = barre neutre chaude discrète (le corail vif était trop agressif en clair) ;

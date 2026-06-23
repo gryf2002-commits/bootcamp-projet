@@ -1,7 +1,7 @@
 {
-  "candidate": "v721",
+  "candidate": "v722",
   "items": [
-    "⚡ Chargement BEAUCOUP plus court : l'écran de chargement se retire dès que ton profil est prêt (1 requête) au lieu d'attendre TOUTES les données de tous les onglets. La carte et le reste se chargent derrière, l'app est utilisable tout de suite.",
-    "⏱️ Garde-fou abaissé à 4 s : on ne reste jamais bloqué longtemps derrière le logo."
+    "🚫 Écran de chargement avec logo RETIRÉ : il faisait doublon avec le logo de lancement du téléphone (double écran) et masquait le chargement au lieu de le montrer.",
+    "🌊 Lancement plus fluide : l'app apparaît directement (fondu doux) et se remplit à vue — la carte et le reste se chargent sous tes yeux."
   ]
 }

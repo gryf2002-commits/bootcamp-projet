@@ -300,13 +300,13 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=721"></script>
+  <script src="sunmates-badges.js?v=722"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
        CSS (SMMotion.* devient no-op). Aucune dépendance dure → l'app marche identiquement sans réseau. -->
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script defer src="sunmates-motion.js?v=721"></script>
+  <script defer src="sunmates-motion.js?v=722"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -1443,16 +1443,8 @@
   <a href="#smMain" class="sm-skip" data-i18n="a11y.skip">Aller au contenu principal</a>
   <!-- #3+#4 : calque de fond FIXE (halo DA chaud, ne défile pas) derrière toute l'app → fond cohérent partout. -->
   <div id="bgFx" aria-hidden="true"></div>
-  <!-- ÉCRAN DE CHARGEMENT brandé (Maxime « ne pas passer derrière le logo tant que tout n'est pas prêt »).
-       Visible par DÉFAUT au boot → on ne révèle l'app QUE quand l'essentiel est chargé (profil + accueil),
-       avec un garde-fou de timeout. Animation perso : logo qui respire + anneau sunset. -->
-  <div id="smBoot" role="status" aria-label="Chargement de SunMates">
-    <div class="smb-inner">
-      <div class="smb-logo"><img src="icon-192.png" alt="" width="84" height="84" /></div>
-      <div class="smb-name">SunMates</div>
-      <div class="smb-ring" aria-hidden="true"></div>
-    </div>
-  </div>
+  <!-- (Écran de chargement #smBoot RETIRÉ v722 : faisait doublon avec le splash OS + masquait le
+       chargement réel des données au lieu de le montrer. On laisse l'app se remplir directement.) -->
   <!-- Bannière d'alerte temps réel (cachée par défaut) -->
   <div id="alertBanner" class="hidden"></div>
 
@@ -5600,18 +5592,12 @@
       setTimeout(() => render(session), 0);
     });
 
-    // Écran de chargement brandé : on le retire (fondu) quand l'essentiel est prêt. Garde-fou 8 s pour
-    // ne JAMAIS piéger l'utilisateur derrière le loader (réseau lent, erreur d'init…).
+    // (#smBoot retiré v722.) Conservé comme HOOK « app prête » : positionne l'indicateur d'onglet
+    // glissant dès que l'app est visible. Plus aucun écran ne masque le chargement.
     function _smBootDone() {
-      var b = document.getElementById("smBoot");
-      if (!b || b.classList.contains("smb-done")) return;
-      b.classList.add("smb-done");
-      setTimeout(function () { try { b.style.display = "none"; } catch (e) {} }, 550);
-      // l'app devient visible → place l'indicateur d'onglet glissant sous l'onglet actif
       setTimeout(function () { try { if (window._smNavInd) _smNavInd(); } catch (e) {} }, 120);
     }
     window._smBootDone = _smBootDone;
-    setTimeout(_smBootDone, 4000); // filet de sécurité : on ne reste JAMAIS plus de 4 s derrière le loader
 
     let _renderedUserId = null; // anti-flicker : ne relance PAS tout le pipeline à chaque event auth (TOKEN_REFRESHED, SIGNED_IN répétés…)
     async function render(session) {
