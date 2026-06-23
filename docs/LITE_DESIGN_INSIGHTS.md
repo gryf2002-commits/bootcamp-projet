@@ -173,4 +173,4 @@ Les 3 protos partagent une intention forte : **clarté éditoriale, hiérarchie 
 2. **Nav** : 5 onglets (sans Profil dans la barre) ou 6 onglets + menu ☰ ?
 3. **Guide des ambiances** : garder l'écran-showcase (nos 6 modes, nos couleurs) en Lite grand public, ou le retirer ?
 
-**Fichiers cibles** : `C:\Users\gryf2\bootcamp-projet\preview.html` (travail), `C:\Users\gryf2\bootcamp-projet\sunmates-lite.css` (CSS scopé `body.sm-lite`), report vers `index.html` au feu vert. Source à NE PLUS lier : `sunmates-app.html`.
+**Fichiers cibles** : `C:\Users\gryf2\sunmates\preview.html` (travail), `C:\Users\gryf2\sunmates\sunmates-lite.css` (CSS scopé `body.sm-lite`), report vers `index.html` au feu vert. Source à NE PLUS lier : `sunmates-app.html`.

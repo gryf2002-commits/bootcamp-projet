@@ -15,7 +15,7 @@ Suis les étapes **dans l'ordre**. Tout se passe dans le dashboard Supabase
   `https://sunmates.app`). C'est la base des liens dans les mails.
 - **Redirect URLs** : ajoute les adresses autorisées après confirmation, par ex. :
   - `https://sunmates.app/*`
-  - `https://gryf2002-commits.github.io/bootcamp-projet/*` (l'ancienne, tant qu'elle sert)
+  - `https://gryf2002-commits.github.io/sunmates/*` (l'ancienne, tant qu'elle sert)
 
 ---
 

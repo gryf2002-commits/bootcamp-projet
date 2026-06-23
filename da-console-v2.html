@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SunMates — Console DA v2 (live)</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#140f1d;--panel:#1d1830;--line:rgba(255,255,255,.10);--ink:#f3ecf6;--muted:#a99fbe;--accent:#FF7A4D;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Manrope',system-ui,sans-serif;
+    background:radial-gradient(120% 80% at 50% -10%,#3a1d4e 0%,#1d1330 38%,#140f1d 100%);color:var(--ink);}
+  .app{display:grid;grid-template-columns:1fr 400px;gap:16px;padding:14px;min-height:100vh;}
+  .stage{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;}
+  .bar{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center;}
+  .bar button{background:rgba(255,255,255,.05);color:var(--ink);border:1px solid var(--line);
+    border-radius:999px;padding:6px 12px;font-size:.76rem;cursor:pointer;}
+  .bar button.on{background:var(--accent);color:#2a160c;border-color:transparent;font-weight:800;}
+  .bar button.edit.on{background:#18E0C8;}
+  .frameWrap{flex:1;width:100%;display:flex;justify-content:center;align-items:flex-start;overflow:auto;}
+  #app{border:1px solid var(--line);border-radius:18px;background:#fff;transition:width .2s;
+    box-shadow:0 30px 70px -22px rgba(0,0,0,.7);height:78vh;}
+  #app.mob{width:390px;border-radius:30px;}
+  #app.desk{width:100%;max-width:1100px;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:12px;
+    height:calc(100vh - 28px);overflow:auto;}
+  .panel h3{margin:.7rem 0 .4rem;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+  .panel h3:first-child{margin-top:.1rem;}
+  .row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.78rem;}
+  .row label{flex:1;color:var(--muted);}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--ink);border:0;padding:5px 9px;font-size:.72rem;cursor:pointer;}
+  .seg button.on{background:var(--accent);color:#2a160c;font-weight:800;}
+  input[type=color]{width:34px;height:26px;border:1px solid var(--line);border-radius:6px;background:none;padding:0;cursor:pointer;}
+  input[type=text],select{background:#0d0a14;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:.76rem;}
+  input[type=range]{flex:1;accent-color:var(--accent);}
+  .hint{font-size:.7rem;color:var(--muted);line-height:1.5;margin:6px 0;}
+  .warn{background:rgba(255,120,77,.14);border:1px solid rgba(255,120,77,.4);border-radius:10px;padding:8px;font-size:.72rem;margin:8px 0;}
+  .pop{position:fixed;z-index:50;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:10px;box-shadow:0 16px 40px -10px rgba(0,0,0,.8);width:220px;}
+  .pop h4{margin:0 0 6px;font-size:.76rem;word-break:break-all;}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px;}
+  .toolbar button{flex:1;min-width:120px;background:var(--accent);color:#2a160c;border:0;border-radius:10px;padding:9px;font-weight:800;cursor:pointer;font-size:.8rem;}
+  .toolbar button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="stage">
+    <div class="bar" id="deviceBar"></div>
+    <div class="bar" id="screenBar"></div>
+    <div class="bar" id="modeBar"></div>
+    <div class="frameWrap"><iframe id="app" class="desk" src="index.html"></iframe></div>
+  </div>
+  <div class="panel">
+    <div id="panelBody"></div>
+    <div class="toolbar">
+      <button id="btnExport">Copier / Envoyer JSON</button>
+      <button class="ghost" id="btnReset">Reset overrides</button>
+    </div>
+    <div class="hint" id="status"></div>
+  </div>
+</div>
+<div id="popHost"></div>
+<script src="da-console-v2.js?v=4"></script>
+</body>
+</html>
