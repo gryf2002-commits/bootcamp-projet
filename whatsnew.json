@@ -1,6 +1,6 @@
 {
-  "candidate": "v752",
+  "candidate": "v753",
   "items": [
-    "🏗️ Reconstruction de la différenciation : l'app plate retrouve une vraie structure SANS revenir aux boîtes — en-têtes de section affirmés (gros titre + pastille-joyau), zones de contenu groupées par un lavis chaud très doux, et plus d'espace entre les groupes. On voit enfin la hiérarchie, proprement, dans tous les modes."
+    "🔧 Vraie racine des « traits noirs » trouvée : le moteur de DA (chargé au runtime) réinjectait les bordures en encre foncée et écrasait tout mon CSS — corrigé à la source (filet chaud et discret). + zones imposantes retirées, différenciation par en-têtes forts à pastille-joyau et espacement. Le moteur de DA était lui aussi figé en cache (bumpé)."
   ]
 }

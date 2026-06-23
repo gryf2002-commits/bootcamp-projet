@@ -131,7 +131,7 @@
         css += '--ink:' + ink + ';--ink-warm:' + ink + ';';
         css += '--text:' + text + ';';
         css += '--muted:' + muted + ';';
-        css += '--line:' + _mix(ink, pg, 0.86) + ';';
+        css += '--line:' + _mix(pg, acc, 0.12) + ';'; /* v753 : filet CHAUD discret (sunset) au lieu de l'encre foncée — fini les « traits noirs ». Suit le preset + le mode. */
         css += '--card:' + card + ';--paper:' + _mix(pg, ink, 0.03) + ';';
         // surfaces "sombres" (cartes/nav/feed en nuit & saison) derivees du preset -> la nuit suit la DA
         css += '--dcard:' + _mix(pg, ink, 0.06) + ';--dcard2:' + _mix(pg, ink, 0.04) + ';--dcard3:' + _mix(pg, ink, 0.10) + ';--dcard4:' + _mix(pg, ink, 0.02) + ';--dcard5:' + pg + ';';

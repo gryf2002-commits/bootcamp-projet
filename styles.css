@@ -5394,73 +5394,18 @@
       background: transparent !important; box-shadow: none !important; }
 
     /* ════════════════════════════════════════════════════════════════════════
-       v749 · SÉPARATEURS SunMates — doctrine « filet sable » (conception impeccable).
-       Token --sep dérivé de --ink → s'adapte AUX 6 MODES sans redéclaration.
-       Filet de rangée SIGNATURE : plein au centre, fondu aux bords (::after dégradé),
-       jamais un hairline gris bord-à-bord. + on RETIRE le sur-clôturage (trait de
-       section + barre accent) : sur app plate, le titre + l'espace séparent, pas un trait.
-       Réversible. ════════════════════════════════════════════════════════════════ */
-    :root, body { --sep: color-mix(in srgb, var(--ink) 7%, transparent); --sep-strong: color-mix(in srgb, var(--ink) 11%, transparent); }
-    body.theme-dusk { --sep: color-mix(in srgb, var(--ink) 9%, transparent); --sep-strong: color-mix(in srgb, var(--ink) 14%, transparent); }
-
-    /* 1 · FILET DE RANGÉE signature (fondu aux extrémités), une seule source */
-    html body :is(.place,.qrow,.person,.te-row,.review-item,.ptl-row,.num-row,.prog-row,.da-comp-row,.trip-matches,.act-search-results li,.set-row,.lb-row),
-    html.sm-app body :is(.place,.qrow,.person,.te-row,.review-item,.ptl-row,.num-row,.prog-row,.da-comp-row,.trip-matches,.act-search-results li,.set-row,.lb-row) {
-      position: relative; border-top: 0 !important; border-bottom: 0 !important; }
-    html body :is(.place,.qrow,.person,.te-row,.review-item,.ptl-row,.num-row,.prog-row,.da-comp-row,.trip-matches,.act-search-results li,.set-row,.lb-row)::after,
-    html.sm-app body :is(.place,.qrow,.person,.te-row,.review-item,.ptl-row,.num-row,.prog-row,.da-comp-row,.trip-matches,.act-search-results li,.set-row,.lb-row)::after {
-      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; pointer-events: none;
-      background: linear-gradient(90deg, transparent 0%, var(--sep) 14%, var(--sep) 86%, transparent 100%); }
-    html body :is(.place,.qrow,.person,.te-row,.review-item,.ptl-row,.num-row,.prog-row,.da-comp-row,.trip-matches,.act-search-results li,.set-row,.lb-row):last-child::after,
-    html.sm-app body :is(.place,.qrow,.person,.te-row,.review-item,.ptl-row,.num-row,.prog-row,.da-comp-row,.trip-matches,.act-search-results li,.set-row,.lb-row):last-child::after { display: none; }
-
-    /* 2 · SECTIONS séparées par l'ESPACE, pas par un trait (retire border-top de section) */
-    html body :is(.section-head, .qm-head), html.sm-app body :is(.section-head, .qm-head) {
-      border-top: 0 !important; padding-top: 0 !important; margin-top: 1.7rem; }
-    /* set-grouptitle (réglages) : avait SON border-top en plus → espace seul */
-    html body .set-grouptitle, html.sm-app body .set-grouptitle { border-top: 0 !important; padding-top: 0 !important; margin-top: 1.3rem; }
-
-    /* 3 · pointillés hors-doctrine restants → filet calme --sep */
-    html body :is(.bubble-tr, .pfield-sep, .cstory-hl), html.sm-app body :is(.bubble-tr, .pfield-sep, .cstory-hl) {
-      border-top: 1px solid var(--sep) !important; border-bottom: 0 !important; }
-
-    /* ════════════════════════════════════════════════════════════════════════
-       v750 · SÉPARATEURS — CORRECTION (retour Maxime : « pas sable, traits noirs »).
-       v749 dérivait --sep de --ink (encre prune = trait FONCÉ/gris). FIX : --sep
-       VRAIMENT CHAUD (sable jour / crème nuit) et VISIBLE. + alias --line=--sep
-       (les 116 bordures var(--line) deviennent chaudes) + écrasement des bordures
-       color-mix(--ink) foncées restantes. Réversible. ════════════════════════════ */
-    :root, body { --sep: color-mix(in srgb, #7a5230 17%, transparent); --sep-strong: color-mix(in srgb, #7a5230 26%, transparent); --line: var(--sep); }
-    body.theme-dusk { --sep: color-mix(in srgb, #FFE0C2 13%, transparent); --sep-strong: color-mix(in srgb, #FFE0C2 20%, transparent); --line: var(--sep); }
-    body.theme-winter { --sep: color-mix(in srgb, #6E8499 18%, transparent); --line: var(--sep); }
-    body.theme-tropic { --sep: color-mix(in srgb, #5E7A52 18%, transparent); --line: var(--sep); }
-    body.theme-winter.theme-dusk, body.theme-tropic.theme-dusk { --sep: color-mix(in srgb, #FFFFFF 11%, transparent); --line: var(--sep); }
-    /* écraser les traits FONCÉS color-mix(--ink) restants → --sep chaud */
-    html body :is(.feature, .ptrip-section, .aseg-nav, .stat-row-3 .stat-box + .stat-box, #convList .person, .set-grouptitle, .da-comp-row, .num-here, .coll-city, .review-item, .te-row, .ptl-row),
-    html.sm-app body :is(.feature, .ptrip-section, .aseg-nav, .stat-row-3 .stat-box + .stat-box, #convList .person, .set-grouptitle, .da-comp-row, .num-here, .coll-city, .review-item, .te-row, .ptl-row) {
-      border-color: var(--sep) !important; }
-
-    /* ════════════════════════════════════════════════════════════════════════
-       v752 · RECONSTRUCTION DIFFÉRENCIATION (retour Maxime, conception 3 agents).
-       App plate = fade/indistinct → on RECONSTRUIT la structure SANS boîtes :
-       en-têtes Fraunces FORTS + marqueur-joyau, espacement marqué (groupage par
-       proximité), zone-wash très douce sur les grands blocs de contenu. Observable
-       + propre + adaptatif (couleurs dérivées des tokens de mode). ════════════════ */
-    /* en-têtes de section = ancres FORTES (Fraunces gros + pastille-joyau) */
+       v753 · DIFFÉRENCIATION ÉPURÉE (retour Maxime : zones=cartes imposantes NON,
+       traits noirs NON). On retire zones+filets ajoutés. La structure vient
+       UNIQUEMENT de : en-têtes Fraunces forts + marqueur-joyau + ESPACE marqué.
+       Les filets eux-mêmes = pilotés à la source (--line dans le DA loader, chaud+discret).
+       ════════════════════════════════════════════════════════════════════════ */
     html body :is(.section-head > h3, .qm-head > h3), html.sm-app body :is(.section-head > h3, .qm-head > h3) {
       font-family: "Fraunces", Georgia, serif !important; font-weight: 700 !important; font-size: 1.34rem !important;
       letter-spacing: -.015em !important; color: var(--ink) !important; display: flex !important; align-items: center; gap: .6rem; }
     html body :is(.section-head > h3, .qm-head > h3)::before, html.sm-app body :is(.section-head > h3, .qm-head > h3)::before {
-      content: "" !important; display: block !important; position: static !important; width: 24px !important; height: 24px !important;
-      border-radius: 8px !important; flex-shrink: 0; background: var(--accent-grad) !important; transform: rotate(-5deg);
-      box-shadow: 0 5px 12px -5px color-mix(in oklab, var(--accent) 60%, transparent) !important; opacity: 1 !important; }
-    /* kickers uppercase (JOUER/PROGRESSER…) plus présents + pastille */
+      content: "" !important; display: block !important; position: static !important; width: 22px !important; height: 22px !important;
+      border-radius: 7px !important; flex-shrink: 0; background: var(--accent-grad) !important; transform: rotate(-5deg);
+      box-shadow: 0 4px 10px -4px color-mix(in oklab, var(--accent) 55%, transparent) !important; opacity: 1 !important; }
     html body .jnav-cap, html.sm-app body .jnav-cap { font-size: .8rem !important; font-weight: 800 !important; letter-spacing: .08em !important; color: var(--ink) !important; }
-    /* espacement marqué entre groupes (la proximité fait la structure) */
-    html body :is(.section-head, .qm-head, .jnav-cap), html.sm-app body :is(.section-head, .qm-head, .jnav-cap) { margin-top: 2.1rem !important; }
-    html body .tab-panel > :first-child, html body .jeux-view > :first-child { margin-top: .6rem !important; }
-    /* zone-wash DOUCE sur les grands blocs de contenu (groupage observable, pas une boîte) */
-    html body :is(#jeuxNav, .cat-row.jnav-primary, .cat-row.jnav-secondary, .qm-rail, .grid2),
-    html.sm-app body :is(#jeuxNav, .cat-row.jnav-primary, .cat-row.jnav-secondary, .qm-rail, .grid2) {
-      background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 6%, transparent), color-mix(in oklab, var(--accent) 2%, transparent)) !important;
-      border-radius: 20px !important; padding: 14px 12px !important; }
+    /* ESPACE = la structure (proximité). Grands gaps entre groupes. */
+    html body :is(.section-head, .qm-head, .jnav-cap), html.sm-app body :is(.section-head, .qm-head, .jnav-cap) { margin-top: 2.3rem !important; }
