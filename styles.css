@@ -1576,6 +1576,23 @@
        adouci, surtout en mode JOUR (scrim clair) pour ne plus avoir ce gros pavé noir. */
     html body .act-overlay, html body[class*="theme-"] .act-overlay { background: rgba(12,7,32,.42) !important; }
     html body:not(.theme-dusk):not([class*="dusk"]) .act-overlay { background: rgba(30,18,46,.28) !important; }
+
+    /* ============================================================
+       v713 (Maxime « aplatis aussi celles que tu appelais bouton et qui pouvaient casser ») :
+       les cellules CLIQUABLES encore en carte → à plat. Listes = filet bas (style liste épurée) ;
+       encarts = transparent. Le press-feedback global (scale) reste l'affordance. Les états (fill de
+       sondage, rituel fait, podium) sont préservés (ce sont des classes séparées).
+       ============================================================ */
+    html body :is(.poll-opt, .lb-row, .ci-card, .jeux-open),
+    html body[class*="theme-"] :is(.poll-opt, .lb-row, .ci-card, .jeux-open) {
+      background: transparent !important; border: 0 !important;
+      border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent) !important;
+      box-shadow: none !important; border-radius: 0 !important; }
+    html body :is(.qcoll, .wg-card, .wg-goal, .prog-card),
+    html body[class*="theme-"] :is(.qcoll, .wg-card, .wg-goal, .prog-card) {
+      background: transparent !important; border-color: transparent !important; box-shadow: none !important; }
+    html body .cat-tile, html body[class*="theme-"] .cat-tile {
+      border-color: transparent !important; box-shadow: none !important; }
     html body .gp-tile span:last-child, html body[class*="theme-"] .gp-tile span:last-child { color: var(--text) !important; }
     /* 3 · barre de recherche : fond neutre cohérent en nuit (fini le prune saturé) */
     html body.theme-dusk .search input, html body[class*="theme-"].theme-dusk .search input { background: var(--dcard2, #241b35) !important; color: var(--ink) !important; border-color: var(--line) !important; }

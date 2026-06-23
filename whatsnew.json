@@ -1,6 +1,6 @@
 {
-  "candidate": "v712",
+  "candidate": "v713",
   "items": [
-    "🛠️ CORRECTIF IMPORTANT : l'onglet Jeux & Quêtes se scrolle de nouveau (ma transition d'onglet laissait un « transform » qui bloquait le défilement tactile sur mobile). Ça touchait potentiellement tous les onglets."
+    "🃏 Encore plus à plat : les cellules cliquables que je gardais en carte (options de sondage, lignes de classement, check-ins, ouvreurs, collections, objectifs) passent en liste épurée (séparateur au lieu de boîte). Les états (résultats de vote, rituel fait, podium) restent visibles."
   ]
 }
