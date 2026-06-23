@@ -5200,3 +5200,42 @@
        l'écran (Fraunces). On lui donne sa présence (DESIGN §3 titres d'écran 800). */
     html body #homeHello, html.sm-app body #homeHello {
       font-size: 1.85rem; font-weight: 800; line-height: 1.06; letter-spacing: -.025em; font-optical-sizing: auto; }
+
+    /* ════════════════════════════════════════════════════════════════
+       v735.1 · LEVIERS SÛRS COMPLÉMENTAIRES (huashu-design).
+       Additifs/micro-détails, 0 réintroduction d'élévation, 0 couleur
+       sémantique de tuile (mono conservé), 0 markup. Jour+nuit OK.
+       ════════════════════════════════════════════════════════════════ */
+
+    /* a · Icône du bandeau d'installation — vraie matière joyau (mono accent :
+       on respecte le choix mono des tuiles, aucune couleur sémantique). */
+    html body .pwa-ic, html.sm-app body .pwa-ic {
+      background: radial-gradient(120% 120% at 36% 28%, #FFD15C 0%, #FF8A3D 46%, #FF5A4D 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -3px 6px rgba(45,38,52,.16), 0 4px 10px rgba(255,138,61,.30);
+      border: 1px solid rgba(255,255,255,.22); }
+
+    /* b · Recherche — la loupe s'allume corail au focus (micro-interaction
+       additive ; on NE dé-ivoirise PAS le champ : fond blanc = choix global). */
+    html body .search:focus-within .ico, html.sm-app body .search:focus-within .ico { color: var(--accent); }
+
+    /* c · Anneau d'avatar — souffle perpétuel TRÈS discret (même grammaire que
+       la plaque niveau Jeux). overflow:visible requis pour que le halo déborde ;
+       la photo reste clippée ronde par le border-radius (sûr). Reduced-motion OK. */
+    @keyframes smAvatarBreath { 0%, 100% { transform: scale(1); opacity: .5; } 50% { transform: scale(1.05); opacity: 0; } }
+    html body .prof-photo, html.sm-app body .prof-photo { overflow: visible; position: relative; }
+    @media (prefers-reduced-motion: no-preference) {
+      html body .prof-photo::after, html.sm-app body .prof-photo::after {
+        content: ""; position: absolute; inset: 0; border-radius: 50%;
+        border: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
+        animation: smAvatarBreath 3.6s ease-in-out infinite; pointer-events: none; }
+    }
+
+    /* d · Rangée de contrôles carte (accueil : ville / À faire / Filtres) —
+       pilule cohérente avec les chips du système (avant : 12-14px disparates).
+       Scopé à la rangée, pas à tous les selects de l'app. */
+    html body .city-pick .sm-sel-trigger, html.sm-app body .city-pick .sm-sel-trigger,
+    html body .todo-toggle, html.sm-app body .todo-toggle,
+    html body .hm-layers-btn, html.sm-app body .hm-layers-btn { border-radius: 999px; }
+
+    /* e · Spot du jour — chevron passe corail à l'ouverture (le pivot existe déjà). */
+    html body .spot-card[open] > summary .sp-chev, html.sm-app body .spot-card[open] > summary .sp-chev { color: var(--accent); }
