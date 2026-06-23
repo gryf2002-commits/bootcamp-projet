@@ -1,6 +1,6 @@
 {
-  "candidate": "v750",
+  "candidate": "v751",
   "items": [
-    "✨ Séparateurs corrigés : un vrai filet sable CHAUD et visible (fini les traits gris/foncés). Teinte adaptée à chaque mode (sable en jour, crème en nuit, ardoise en hiver, vert en tropical). Toutes les bordures de l'app suivent enfin la même signature."
+    "🔧 Correctif majeur : le fichier de styles était servi depuis le cache (figé à une vieille version) — tout le nettoyage visuel des dernières versions (aplatissement complet, séparateurs sable adaptatifs aux 6 modes) arrive ENFIN. Pense à rafraîchir."
   ]
 }
