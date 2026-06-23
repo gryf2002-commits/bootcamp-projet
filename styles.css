@@ -1642,6 +1642,32 @@
       background: transparent !important; border: 0 !important; box-shadow: none !important; }
 
     /* ============================================================
+       v718 · REFONTE onglet JEUX (Maxime « refonds le placement entier ») :
+       1) HUD niveau PLEINE LARGEUR mis à l'honneur (titre centré au-dessus, jauge d'XP large).
+       2) Quête du jour REMONTE juste sous le HUD (le hook quotidien).
+       3) puis Jouer / Progresser, puis les widgets de progression. Réordonné en flex (zéro DOM).
+       ============================================================ */
+    html body #jeuxHome { display: flex; flex-direction: column; }
+    html body #jeuxHome > * { order: 6; }
+    html body #jeuxHome > .jh-head { order: 1; }
+    html body #jeuxHome > p.muted { order: 2; }
+    html body #jeuxHome > .jh-next { order: 3; }
+    html body #jeuxHome > .quest-spotlight { order: 4; margin-top: .3rem; }
+    html body #jeuxHome > #jeuxNav { order: 5; }
+    /* titre centré + HUD niveau pleine largeur (à plat, jauge bien visible) */
+    html body .jh-head { flex-direction: column !important; align-items: stretch !important; gap: .5rem !important; }
+    html body .jh-head > h1 { text-align: center; }
+    html body .jh-head .player-badge.player-hud {
+      width: 100% !important; max-width: none !important; justify-content: flex-start !important;
+      gap: .75rem !important; padding: .15rem .1rem !important; background: transparent !important;
+      border: 0 !important; border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent) !important;
+      padding-bottom: .7rem !important; border-radius: 0 !important; box-shadow: none !important; }
+    html body .jh-head .player-badge.player-hud .pb-av { width: 48px !important; height: 48px !important; font-size: 1.4rem !important; }
+    html body .jh-head .player-badge.player-hud .hud-info { flex: 1; min-width: 0; }
+    html body .jh-head .player-badge.player-hud .hud-bar { width: 100% !important; height: 9px !important; }
+    html body .jh-head .player-badge.player-hud::after { display: none !important; } /* l'anneau pulsé n'a pas de sens sur une pilule pleine largeur */
+
+    /* ============================================================
        v714b · AUDIT EXHAUSTIF cartes résiduelles (agent) : dernières surfaces échappant à v692→v713
        (Admin, Réglages, Sécurité, Jeux). ENCARTS → transparent ; CELLULES répétées → filet bas.
        (.detail-hero NON aplati ici = hero à texte blanc, risque d'illisibilité.)

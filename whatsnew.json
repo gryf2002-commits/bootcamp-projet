@@ -1,7 +1,6 @@
 {
-  "candidate": "v717",
+  "candidate": "v718",
   "items": [
-    "➡️ Double flèche du « spot du jour » : réglée (le texte « Ajouter le tien › » avait sa propre flèche en plus du chevron).",
-    "🔔 Cloche et messages dans le header : juste l'icône, plus de petit pavé gris autour."
+    "🎮 Onglet Jeux repensé : ta progression mise à l'honneur (plaque de niveau + jauge d'XP en pleine largeur, en haut), la Quête du jour remontée juste en dessous (le rendez-vous quotidien), puis Jouer / Progresser, puis tes objectifs. Vérifié jour + nuit."
   ]
 }
