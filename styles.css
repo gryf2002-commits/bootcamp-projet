@@ -5260,3 +5260,86 @@
     html body .tab-panel[data-panel="connexions"] .invite-banner .inv-go,
     html.sm-app body .tab-panel[data-panel="connexions"] .invite-banner .inv-go {
       background: color-mix(in oklab, var(--accent) 14%, transparent); color: var(--accent-ink, var(--accent)); }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v736 · PASSE RADICALE PREMIUM (Maxime « DE VRAIS CHANGEMENTS RADICAUX »).
+       3 directions d'agents (huashu / high-end-visual / emil) fusionnées :
+       « joaillerie du couchant » assumée à fond. CHAUD + lisible jour ET nuit,
+       jamais le sombre-générique. Réversible (ce bloc).
+       ⚠️ ÉVITE les pièges litigieux : atmosphère bloome PAR LE BAS (le haut reste
+       plat var(--bg) = pas de « tache en haut » v686/688/703) ; verre sur la NAV
+       du bas, pas sur le header (« barre noire »).
+       ════════════════════════════════════════════════════════════════════════ */
+
+    /* ---- 1 · ATMOSPHÈRE sunset (bloom bas, le haut reste strictement plat) ---- */
+    html body #bgFx {
+      background:
+        radial-gradient(135% 62% at 50% 121%, rgba(255,138,61,.13), rgba(255,138,61,0) 60%),
+        radial-gradient(120% 55% at 88% 116%, rgba(255,90,77,.10), rgba(255,90,77,0) 58%),
+        radial-gradient(120% 55% at 8% 118%, rgba(122,92,255,.07), rgba(122,92,255,0) 55%),
+        var(--bg) !important; }
+    body.theme-dusk #bgFx {
+      background:
+        radial-gradient(150% 70% at 50% 122%, rgba(255,138,61,.20), rgba(255,138,61,0) 58%),
+        radial-gradient(120% 60% at 12% 116%, rgba(122,92,255,.20), rgba(122,92,255,0) 56%),
+        radial-gradient(110% 55% at 90% 112%, rgba(43,224,176,.10), rgba(43,224,176,0) 55%),
+        var(--bg) !important; }
+
+    /* ---- 2 · VERRE DÉPOLI sur la barre de nav du bas (profondeur premium) ---- */
+    html body .bottom-nav {
+      background: rgba(255,250,244,.7) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(1.5); backdrop-filter: blur(20px) saturate(1.5);
+      box-shadow: 0 -12px 34px rgba(45,38,52,.12), inset 0 1px 0 rgba(255,255,255,.6) !important; }
+    body.theme-dusk .bottom-nav {
+      background: rgba(28,20,40,.62) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(1.5); backdrop-filter: blur(20px) saturate(1.5);
+      box-shadow: 0 -12px 34px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08) !important; }
+
+    /* ---- 3 · SCEAU DE CONFIANCE → vrai JOYAU CHAUD (corrige « hors-DA sombre »).
+       Or→corail émaillé bombé, texte brun-chaud (l'or porte sa lumière → lisible
+       jour ET nuit), glow ambre, rim-light. FINI le teal qui faisait « sombre ». ---- */
+    html body .prof-trust, html.sm-app body .prof-trust {
+      background: radial-gradient(125% 135% at 28% 18%, #FFEFCF 0%, #FFC93C 32%, #FF8A3D 70%, #FF5A4D 106%) !important;
+      color: #5a2c00 !important; border: 1px solid rgba(255,255,255,.34) !important; padding: .5rem 1.1rem !important;
+      box-shadow: 0 12px 24px -9px rgba(232,150,31,.6), 0 0 22px -7px rgba(255,120,60,.5),
+                  inset 0 1.5px 1px rgba(255,255,255,.85), inset 0 -9px 15px -7px rgba(150,55,18,.5) !important; }
+    html body .prof-trust b, html.sm-app body .prof-trust b {
+      color: #4a2400 !important; font-family: "Fraunces", Georgia, serif !important; font-weight: 800 !important; }
+    html body .prof-trust .pt-info, html.sm-app body .prof-trust .pt-info { color: #7a3d05 !important; opacity: .9 !important; }
+
+    /* ---- 4 · TUILES-JOYAUX : on REBRANCHE la matière sémantique (la machinerie
+       --ic1/--ic2 mode-aware existe déjà) + bombé/rim renforcés. Radical & visible.
+       (Si Maxime préfère re-mono : retirer ce bloc 4.) ---- */
+    html body .cic[data-smicon], html body .jo-ic[data-smicon],
+    html.sm-app body .cic[data-smicon], html.sm-app body .jo-ic[data-smicon] {
+      background:
+        radial-gradient(115% 95% at 26% 16%, rgba(255,255,255,.5), rgba(255,255,255,0) 42%),
+        linear-gradient(152deg, var(--ic1, var(--c1, #FF8A3D)), var(--ic2, var(--c2, #FF5A4D))) !important;
+      box-shadow: 0 9px 18px -7px rgba(60,28,14,.34), inset 0 2px 2px rgba(255,255,255,.7),
+                  inset 0 -11px 17px -8px rgba(120,40,20,.5) !important; }
+
+    /* ---- 5 · AVATAR profil : sphère-joyau (renforce le médaillon v735) ---- */
+    html body .prof-photo:not([style*="url"]), html.sm-app body .prof-photo:not([style*="url"]) {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 60%, transparent),
+                  0 0 0 7px color-mix(in srgb, var(--accent) 14%, transparent),
+                  0 16px 30px -12px rgba(255,120,60,.5),
+                  inset 0 3px 4px rgba(255,255,255,.7), inset 0 -16px 26px -10px rgba(150,55,18,.5) !important; }
+
+    /* ---- 6 · CTA principal : glow signature + balayage de gloss ---- */
+    html body .btn-primary, html.sm-app body .btn-primary {
+      position: relative; overflow: hidden;
+      box-shadow: 0 12px 28px -10px rgba(255,90,77,.55), inset 0 1px 0 rgba(255,255,255,.4),
+                  inset 0 -3px 8px rgba(150,40,40,.25) !important; }
+    html body .btn-primary::after, html.sm-app body .btn-primary::after {
+      content: ""; position: absolute; top: 0; left: -60%; width: 45%; height: 100%;
+      background: linear-gradient(105deg, transparent, rgba(255,255,255,.42), transparent);
+      transform: skewX(-18deg); pointer-events: none; }
+    @media (prefers-reduced-motion: no-preference) {
+      html body .btn-primary::after { animation: smGlossSweep 4.2s ease-in-out infinite; }
+      @keyframes smGlossSweep { 0%, 62% { left: -60%; } 86%, 100% { left: 130%; } }
+    }
+
+    /* ---- 7 · Titre héros accueil : encore plus de présence (radical typo) ---- */
+    html body #homeHello, html.sm-app body #homeHello {
+      font-size: 2.15rem !important; font-weight: 800 !important; line-height: 1.02 !important;
+      letter-spacing: -.03em !important; }
