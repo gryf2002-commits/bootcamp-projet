@@ -5239,3 +5239,24 @@
 
     /* e · Spot du jour — chevron passe corail à l'ouverture (le pivot existe déjà). */
     html body .spot-card[open] > summary .sp-chev, html.sm-app body .spot-card[open] > summary .sp-chev { color: var(--accent); }
+
+    /* ════════════════════════════════════════════════════════════════
+       v735.2 · MESSAGES — allègement du haut (Maxime « allège le haut »).
+       La carte d'invitation vif accent-grad volait la vedette aux conversations.
+       → ligne DISCRÈTE sur une seule ligne (transparente + filet, texte accent),
+       la fonction « inviter » reste, le contenu remonte. Scopé connexions, réversible.
+       ════════════════════════════════════════════════════════════════ */
+    html body .tab-panel[data-panel="connexions"] .invite-banner,
+    html.sm-app body .tab-panel[data-panel="connexions"] .invite-banner {
+      background: transparent; color: var(--accent-ink, var(--accent));
+      box-shadow: none; border: 0; border-top: 1px solid var(--line); border-radius: 0;
+      padding: .5rem .15rem; margin: .15rem 0 .45rem; }
+    /* une seule ligne : on masque le sous-texte « Plus on est… » (allège la hauteur) */
+    html body .tab-panel[data-panel="connexions"] .invite-banner .inv-txt span,
+    html.sm-app body .tab-panel[data-panel="connexions"] .invite-banner .inv-txt span { display: none; }
+    html body .tab-panel[data-panel="connexions"] .invite-banner .inv-txt b,
+    html.sm-app body .tab-panel[data-panel="connexions"] .invite-banner .inv-txt b { font-size: .82rem; font-weight: 700; }
+    /* la puce « Partager » : du blanc-sur-gradient → corail discret */
+    html body .tab-panel[data-panel="connexions"] .invite-banner .inv-go,
+    html.sm-app body .tab-panel[data-panel="connexions"] .invite-banner .inv-go {
+      background: color-mix(in oklab, var(--accent) 14%, transparent); color: var(--accent-ink, var(--accent)); }
