@@ -1,8 +1,9 @@
 {
-  "candidate": "v701",
+  "candidate": "v702",
   "items": [
-    "📱 Barre d'ombre sous la barre native : retirée. Elle venait du mode « plein écran » qui faisait dessiner à Android une ombre de protection — l'app n'y passe plus, la barre est un bandeau plein de la couleur du fond (pense à réinstaller).",
-    "🎬 Transitions d'onglets : un fondu doux et rapide à chaque changement d'onglet (façon app native, design Emil).",
-    "💬 Chat à plat : les bulles reçues adoptent une surface neutre et cohérente, les tiennes gardent l'accent."
+    "📱 La barre d'ombre au-dessus de SunMates : SUPPRIMÉE. C'était le dégradé du header qui créait cette bande — le header est maintenant transparent au repos (fond parfaitement uni), et ne se remplit que quand on scrolle.",
+    "🔘 Boutons aplatis : on a retiré les contours (boutons secondaires, icônes) pour coller à la DA plate.",
+    "👁️ Lisibilité : le texte des filtres/onglets inactifs est plus contrasté (fini le gris trop pâle).",
+    "✨ Motion plus présent : effet de survol (léger soulèvement) et apparitions un peu plus marquées (design Emil)."
   ]
 }

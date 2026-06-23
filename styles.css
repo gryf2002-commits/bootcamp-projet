@@ -1316,11 +1316,14 @@
     html body :is(.card, .post, .fpost, .pf-section, .gcard, .pcard, .qm-card, .tcard, .trip-card, .souvenir-card, .solo-prog, .solo-ch, .solo-rit, .hm-souv, .hm-hero, .hm-mateday, .reco, .ban-card, .adm-live, .cstory-fact, .gal-city, .prep-item, .hm-inspo, .badge-rail),
     html body[class*="theme-"] :is(.card, .post, .fpost, .pf-section, .gcard, .pcard, .qm-card, .tcard, .trip-card, .souvenir-card, .solo-prog, .solo-ch, .solo-rit, .hm-souv, .hm-hero, .hm-mateday, .reco, .ban-card, .adm-live, .cstory-fact, .gal-city, .prep-item, .hm-inspo, .badge-rail) {
       background: transparent !important; box-shadow: none !important; border-color: transparent !important; }
-    /* v694 (idée Maxime « un petit fondu de couleur juste au-dessus de SunMates ») : le sommet du header
-       redevient un aplat var(--bg) (= couleur du mode = barre native via theme-color) qui se fond doucement
-       vers le contenu → jointure adoucie avec la barre native du téléphone. */
+    /* v702 (retour Maxime « barre d'ombre sur toute la largeur au-dessus de SunMates ») : le DÉGRADÉ du
+       topbar (v694) créait justement cette bande visible. Au REPOS le topbar est TRANSPARENT → il montre
+       le fond uni var(--bg) (zéro bande, zéro ombre). Il ne devient un aplat var(--bg) que quand on SCROLLE
+       (pour occulter le contenu qui défile dessous). */
     html body .topbar, html body[class*="theme-"] .topbar {
-      background: linear-gradient(180deg, var(--bg) 0%, var(--bg) calc(env(safe-area-inset-top, 0px) + 58%), rgba(0,0,0,0) 100%) !important; }
+      background: transparent !important; box-shadow: none !important; }
+    html body.sm-scrolled .topbar, html body[class*="theme-"].sm-scrolled .topbar {
+      background: var(--bg) !important; }
     /* ============================================================
        v695 (Maxime « encore plein de cartes et de contours dans TOUTES les couleurs de Radiant Horizon,
        ça n'a pas de sens ») : on UNIFIE les petits contrôles (pills/chips/toggles). Un seul code :
@@ -1466,6 +1469,24 @@
       background: color-mix(in srgb, var(--ink) 7%, transparent) !important; color: var(--ink) !important; box-shadow: none !important; }
     html body .bubble.me, html body[class*="theme-"] .bubble.me {
       box-shadow: none !important; }
+
+    /* ============================================================
+       v702 : boutons aplatis (contours retirés) + CONTRASTE corrigé + motion EMIL plus visible.
+       ============================================================ */
+    /* boutons secondaires/ghost : plus de contour, fond subtil (le primaire garde son fill accent) */
+    html body :is(.btn-ghost, .iconbtn, .au-fbtn:not(.active), .btn-secondary, .mappop-btn.ghost),
+    html body[class*="theme-"] :is(.btn-ghost, .iconbtn, .au-fbtn:not(.active), .btn-secondary, .mappop-btn.ghost) {
+      background: color-mix(in srgb, var(--ink) 6%, transparent) !important; border: 0 !important; box-shadow: none !important; color: var(--text) !important; }
+    /* CONTRASTE : le texte des contrôles inactifs (souvent en muted pâle sur fond clair) → --text lisible */
+    html body :is(.chip, .sscope, .fc-kind, .qs-mode-btn, .tvt-btn, .pseg, .mseg):not(.active):not(.on):not(.is-on),
+    html body[class*="theme-"] :is(.chip, .sscope, .fc-kind, .qs-mode-btn, .tvt-btn, .pseg, .mseg):not(.active):not(.on):not(.is-on) {
+      color: var(--text) !important; }
+    /* MOTION (Emil) plus VISIBLE : reveal un peu plus ample + lift au survol des blocs cliquables */
+    html body .sm-reveal { transform: translateY(20px); }
+    @media (hover: hover) and (pointer: fine) {
+      html body :is(.tile, .cat-tile, .qrow, .person, .reward-card, .gp-tile, .trip-card, [data-goto], [data-secuquick]):hover {
+        transform: translateY(-2px); }
+    }
     /* v684 (retour Maxime « les tuiles prennent énormément de place ») : vignette nettement plus
        compacte — l'icône passe de 84px à 50px → la rangée d'accès rapides ne bouffe plus l'écran,
        on en voit beaucoup plus d'un coup d'œil. */
