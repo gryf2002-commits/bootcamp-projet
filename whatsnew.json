@@ -1,6 +1,6 @@
 {
-  "candidate": "v743",
+  "candidate": "v745",
   "items": [
-    "🐛 Chasse aux bugs d'affichage : le switch « En voyage / À la maison » ne clignote plus (pop/depop corrigé), les tuiles qui redirigent (Gold, Pro, Admin) descendent INSTANTANÉMENT au lieu de scroller lentement, les dernières cartes oubliées sont aplaties, et les traits de séparation sont harmonisés (fini les filets dépassants, pointillés ou couleurs incohérentes)."
+    "🧹 Gros nettoyage visuel : Gold/Pro/Admin descendent en douceur (smooth réactif), et des dizaines de petites « arrière-cartes » disparaissent — les chiffres ne sont plus enfermés dans des carrés, les flèches de repli, les stats du profil/parcours, les étapes « bien démarrer » et les tuiles de réglages deviennent plates. Les interrupteurs gardent bien leur rail."
   ]
 }

@@ -5306,3 +5306,30 @@
     html body :is(.stat-row-3 .stat-box + .stat-box, #convList .person.conv-open, .tj-card, .ptrip-section, .pf-section),
     html.sm-app body :is(.stat-row-3 .stat-box + .stat-box, #convList .person.conv-open, .tj-card, .ptrip-section, .pf-section) {
       border-color: var(--line) !important; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v745 · APLATISSEMENT MASSIF des petites surfaces boîtées (« arrière-cartes »
+       partout — retour Maxime). Cible : chiffres dans des carrés, flèches de repli,
+       chips de stats/état, tuiles de réglages. PAS les CTA (btn-primary/danger), PAS
+       les inputs, PAS les icônes-joyaux (.cic). Réversible. Mode-safe. ════════════ */
+    /* — chiffres/stats entourés de carrés → plats (fond + bordure + ombre retirés) — */
+    html body :is(.stat-box, .pc-stat, .pr-val, .pb-pill, .sp-stat, .sp-next, .perm-state, .starter-step, .starter-prog, .pcell, .gp-tile),
+    html.sm-app body :is(.stat-box, .pc-stat, .pr-val, .pb-pill, .sp-stat, .sp-next, .perm-state, .starter-step, .starter-prog, .pcell, .gp-tile) {
+      background: transparent !important; box-shadow: none !important; border-color: transparent !important; }
+    /* — flèches de repli : le chevron ne doit PAS avoir de fond/boîte — */
+    html body :is(.hsec-chev, .sp-chev, .coll-chev, .pc-chev),
+    html.sm-app body :is(.hsec-chev, .sp-chev, .coll-chev, .pc-chev) {
+      background: transparent !important; box-shadow: none !important; border: 0 !important; }
+    /* — chips dispo / série : à plat (texte + icône, plus de pavé) — */
+    html body :is(.avail-chip, .streak-chip), html.sm-app body :is(.avail-chip, .streak-chip) {
+      background: transparent !important; box-shadow: none !important; border-color: color-mix(in oklab, var(--accent) 22%, transparent) !important; }
+    /* — tuiles de RÉGLAGES & PERSONNALISER (ghost dans ces panneaux) → lignes plates + filet.
+       ⚠️ PAS .sl (= le track des interrupteurs Mode sombre/présence, doit garder son fond). — */
+    html body #settingsCard :is(.btn-ghost, .btn-block),
+    html.sm-app body #settingsCard :is(.btn-ghost, .btn-block) {
+      background: transparent !important; box-shadow: none !important; border: 0 !important; border-bottom: 1px solid var(--line) !important; border-radius: 0 !important; }
+    /* résiduels : battre la spécificité du baseline chips (l.1357 + :not) pour les
+       stats/chips d'affichage que Maxime veut plats (garde un filet outline subtil). */
+    html.sm-app body :is(.sp-stat, .avail-chip, .streak-chip):not(.on):not(.active):not(.is-on),
+    html body :is(.sp-stat, .avail-chip, .streak-chip):not(.on):not(.active):not(.is-on) {
+      background: transparent !important; box-shadow: none !important; }
