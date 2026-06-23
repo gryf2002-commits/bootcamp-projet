@@ -1,7 +1,8 @@
 {
-  "candidate": "v714",
+  "candidate": "v715",
   "items": [
-    "🔤 Typographie harmonisée partout : une seule échelle de titres (Fraunces), un seul système de poids, sous-titres et libellés uniformes — fini le « pas pareil d'un écran à l'autre ».",
-    "🌙 Lisibilité nuit : les chiffres de jeu (XP, niveaux, compteurs) en or foncé illisibles passent en or clair."
+    "🃏 Dernières cartes aplaties : Réglages (Visite guidée/Écris-nous/Ton avis), Admin (cellules stats), Sécurité (encarts, contacts), opt-in classement, grille bingo.",
+    "✨ Motion GSAP : les écrans entrent en cascade fluide (façon Emil) à chaque changement d'onglet — sans rejouer au re-clic, sans bloquer le scroll.",
+    "(Couche motion sans dépendance dure : si le réseau manque, tout retombe sur le rendu normal.)"
   ]
 }

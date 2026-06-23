@@ -3,7 +3,7 @@
 // cache à la volée les libs CDN et les images (avatars, tuiles de carte) en
 // "stale-while-revalidate" (on sert le cache tout de suite, on rafraîchit en fond).
 // Les écritures Supabase (POST/PATCH…) ne sont jamais touchées.
-const VER = "v714";
+const VER = "v715";
 const SHELL_CACHE = "sunmates-shell-" + VER;   // coquille (versionnée → purge à chaque déploiement)
 const RUNTIME = "sunmates-rt-" + VER;          // libs CDN/fonts (regénéré par version, re-précaché à l'install)
 // #15/#8 : cache MÉDIA STABLE (NON versionné) → avatars, photos (quêtes/check-ins), emojis.
@@ -16,7 +16,7 @@ const MEDIA = "sunmates-media-v2";
 const MEDIA_MAX = 60;
 // Depuis la bascule vitrine (v567) : "./" + "./index.html" = la VITRINE (accueil) ;
 // "./app.html" = l'APPLICATION. Les deux sont précachées → l'app installée marche hors-ligne.
-const SHELL = ["./", "./index.html", "./app.html", "./manifest.json", "./icon.svg", "./styles.css", "./sunmates-badges.js", "./sunmates-icons-v2.js", "./sm_country_stories.js",
+const SHELL = ["./", "./index.html", "./app.html", "./manifest.json", "./icon.svg", "./styles.css", "./sunmates-badges.js", "./sunmates-icons-v2.js", "./sm_country_stories.js", "./sunmates-motion.js",
   "./icon-192.png", "./icon-512.png", "./icon-180.png", "./icon-maskable-512.png", "./badge-96.png"];
 // Libs CDN précachées dès l'install → carte/QR/etc. dispo INSTANTANÉMENT et hors-ligne (cache plus "lourd" mais + fluide).
 const CDN_PRECACHE = [
@@ -33,6 +33,8 @@ const CDN_PRECACHE = [
   "https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js",
   "https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js",
   "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js",
+  // GSAP (couche motion) précaché → animations dispo hors-ligne aussi.
+  "https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js",
   // Polices SunMates (Fraunces + Manrope) précachées → texte net dès le 1er rendu, même hors-ligne.
   "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap",
 ];

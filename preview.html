@@ -300,9 +300,13 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=714"></script>
+  <script src="sunmates-badges.js?v=715"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
+  <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
+       CSS (SMMotion.* devient no-op). Aucune dépendance dure → l'app marche identiquement sans réseau. -->
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script defer src="sunmates-motion.js?v=715"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -5823,6 +5827,10 @@
     function _smRevealPanel(target) {
       const panel = document.querySelector('.tab-panel[data-panel="' + target + '"]');
       if (!panel) return;
+      // ✨ GSAP (Lot motion) : entrée en cascade lissée si dispo + motion autorisé. La couche n'anime QUE
+      // les blocs jamais révélés (pas de re-jeu au re-clic d'onglet) et nettoie ses transforms (clearProps)
+      // → aucun transform résiduel sur le conteneur scrollable. Sinon, repli sur le reveal CSS ci-dessous.
+      if (window.SMMotion && typeof SMMotion.revealPanel === "function" && SMMotion.revealPanel(panel)) return;
       const blocks = panel.querySelectorAll(':scope > section, :scope > .section-head, :scope > .card, :scope > .grid2, :scope > details, :scope > #homeTravelMap, :scope > .secu-view > section, :scope > .secu-view > .section-head');
       let i = 0;
       blocks.forEach((el) => {

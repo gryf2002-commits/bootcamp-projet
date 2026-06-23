@@ -1621,6 +1621,24 @@
     html body[class*="theme-"] :is(label,.lbl,.jnav-cap,.set-grouptitle,.spot-step){ font-size:.72rem !important; font-weight:700 !important; letter-spacing:.04em !important; }
     /* 4 · LISIBILITÉ MODE SOMBRE : amber gameplay #B5740E -> ambre clair (les ~23 sans override dusk) */
     html body.theme-dusk :is(.xp-banner b,.xpl-lvl,.xpl-xp,.q-inprog,.ci-count,.rate-chip,.qm-xp,.sc-xp,.rit-cnt,.boost-card .boost-meta,.tip-title,.profile-title,.wg-alldone,.tcard-vedette,.mappop-quest .mq-rew,.shop-coins){ color:#FFD79A !important; }
+
+    /* ============================================================
+       v714b · AUDIT EXHAUSTIF cartes résiduelles (agent) : dernières surfaces échappant à v692→v713
+       (Admin, Réglages, Sécurité, Jeux). ENCARTS → transparent ; CELLULES répétées → filet bas.
+       (.detail-hero NON aplati ici = hero à texte blanc, risque d'illisibilité.)
+       ============================================================ */
+    html body :is(.help-cta, .lb-optin, .secu-explain),
+    html body[class*="theme-"] :is(.help-cta, .lb-optin, .secu-explain) {
+      background: transparent !important; border-color: transparent !important; box-shadow: none !important; }
+    html body :is(.pgrid .pcell, .ice-call, .au-fbtn:not(.active), .fb-chip:not(.on)),
+    html body[class*="theme-"] :is(.pgrid .pcell, .ice-call, .au-fbtn:not(.active), .fb-chip:not(.on)) {
+      background: transparent !important; border: 0 !important;
+      border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent) !important;
+      box-shadow: none !important; border-radius: 0 !important; }
+    html body #adminDash .pcell.pcell-jump, html body[class*="theme-"] #adminDash .pcell.pcell-jump {
+      border: 0 !important; border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent) !important; }
+    html body .bingo-cell:not(.on), html body[class*="theme-"] .bingo-cell:not(.on) {
+      background: transparent !important; border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent) !important; box-shadow: none !important; }
     /* 3 · barre de recherche : fond neutre cohérent en nuit (fini le prune saturé) */
     html body.theme-dusk .search input, html body[class*="theme-"].theme-dusk .search input { background: var(--dcard2, #241b35) !important; color: var(--ink) !important; border-color: var(--line) !important; }
     /* 4 · sélecteur de ville : pilule lisible (fini le gris terne) */
