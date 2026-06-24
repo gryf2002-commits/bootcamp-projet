@@ -5472,6 +5472,39 @@
     /* v773 · #21 : désambiguïsation ville homonyme (pays accolé au nom de la ville) */
     .tj-city-co { font-size: .82rem; font-weight: 600; color: var(--muted); }
 
+    /* v778 · #27 (retour Maxime « Solo est écrit blanc sur blanc » dans le toggle Solo/À plusieurs) :
+       un balai « flat » rendait le fond de l'état ACTIF transparent → texte blanc sur carte claire
+       = invisible. On RÉAFFIRME le dégradé sur l'actif (blanc lisible) + encre accent sur l'inactif. */
+    html body .qs-mode-btn.active, html.sm-app body .qs-mode-btn.active {
+      background: var(--accent-grad) !important; color: #fff !important; box-shadow: 0 6px 14px rgba(45,38,52,.16) !important; }
+    html body .qs-mode-btn:not(.active), html.sm-app body .qs-mode-btn:not(.active) {
+      color: var(--accent-ink, var(--accent)) !important; }
+
+    /* v778 · #25 (retour Maxime « l'Espace Pro est mal construit, les cas pas distinguables ») :
+       le flat global (app sociale) avait fondu toutes les cartes/cellules du DASHBOARD partenaire
+       en un mur indistinct. Un tableau de bord a besoin de blocs NETS → on redonne une surface +
+       contour à chaque « case » UNIQUEMENT dans #proPanel (sélecteur d'id → bat le flat global). */
+    #proPanel .card { background: var(--card) !important; border: 1px solid var(--line) !important; box-shadow: var(--shadow-sm) !important; border-radius: 18px !important; }
+    #proPanel .pgrid { display: grid !important; grid-template-columns: 1fr 1fr; gap: .55rem; margin-top: .2rem; }
+    #proPanel .pcell { background: color-mix(in srgb, var(--ink) 4%, transparent) !important; border: 1px solid var(--line) !important; box-shadow: none !important; border-radius: 14px !important; padding: .7rem .75rem !important; display: flex; flex-direction: column; gap: .12rem; text-align: left; }
+    #proPanel .pcell .k { font-size: .72rem; color: var(--muted) !important; font-weight: 700; line-height: 1.2; }
+    #proPanel .pcell .v { font-family: "Fraunces", serif; font-weight: 800; font-size: 1.4rem; color: var(--accent-ink, var(--accent)) !important; line-height: 1.1; }
+
+    /* v778 · HIÉRARCHIE MAISON (retour Maxime « bosse la hiérarchie à la maison, ça fait trop le
+       bordel ») : en mode Maison, l'accueil devient une COLONNE flex et on ORDONNE visuellement —
+       la zone haute (greeting/switch/recherche) garde l'ordre DOM (order:0), puis le CONTENU MAISON
+       (#homeHomeMode, avec Personnaliser en tête = sous la recherche) vient EN PREMIER, et le
+       générique (accès rapides, météo, checklist) passe dessous. CSS order = robuste : le customizer
+       réordonne le DOM, mais l'ordre visuel flex prime. Ne s'applique QU'en Maison → Voyage intact. */
+    body.hm-maison .tab-panel[data-panel="accueil"] { display: flex; flex-direction: column; }
+    body.hm-maison .tab-panel[data-panel="accueil"] > #homeHomeMode { order: 1; }
+    body.hm-maison .tab-panel[data-panel="accueil"] > #homeQuickAccess { order: 2; }
+    body.hm-maison .tab-panel[data-panel="accueil"] > #geoNowCard { order: 3; }
+    body.hm-maison .tab-panel[data-panel="accueil"] > #starterCard { order: 4; }
+    body.hm-maison .tab-panel[data-panel="accueil"] > #homeFeedSection { order: 5; }
+    body.hm-maison .tab-panel[data-panel="accueil"] > #homeTripsSection { order: 6; }
+    body.hm-maison .tab-panel[data-panel="accueil"] > #badgeRailSection { order: 7; }
+
     /* v773 · #11 : « retire l'arrière blanc dans le sélecteur d'ambiance » → lignes du sélecteur
        DA à plat (pas de carte blanche/sombre derrière chaque option). */
     html body :is(.da-sw, .da-band), html.sm-app body :is(.da-sw, .da-band) {
@@ -5547,7 +5580,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 777; }
+    :root { --sm-build: 778; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
