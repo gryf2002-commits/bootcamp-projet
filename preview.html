@@ -300,7 +300,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=774"></script>
+  <script src="sunmates-badges.js?v=776"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
@@ -309,7 +309,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
   <!-- 🎬 DA de Motion « Le mouvement du couchant » : noyau réutilisable (window.SM_MOTION). -->
   <script defer src="sm-motion-da.js?v=740"></script>
-  <script defer src="sunmates-motion.js?v=774"></script>
+  <script defer src="sunmates-motion.js?v=776"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -361,7 +361,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=774">
+  <link rel="stylesheet" href="styles.css?v=776">
   <style id="sm-cloak">html.sm-verifying body{visibility:hidden!important}</style>
   <script>
   /* v767 · AUTO-RÉPARATEUR + CLOAK : on masque la page jusqu'à la vérif de version.
@@ -1458,7 +1458,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=774">
+  <link rel="stylesheet" href="sunmates-lite.css?v=776">
 </head>
 <body>
   <!-- a11y : lien d'évitement (premier élément focalisable) → saute la barre/nav vers le contenu principal. -->
@@ -6601,7 +6601,18 @@
         const cities = new Set();
         (trips || []).forEach((t) => { if (t.city) cities.add(String(t.city).toLowerCase().trim()); });
         const ci = (typeof globeCheckinCount === "number") ? globeCheckinCount : null;
+        // #22 (retour Maxime) : KILOMÈTRES PARCOURUS = somme des distances entre étapes
+        // consécutives, dans l'ordre chronologique (la « route » du voyage).
+        let km = 0;
+        try {
+          const route = withCoords.slice().sort((a, b) => String(a.start_date || "").localeCompare(String(b.start_date || "")));
+          for (let i = 0; i < route.length - 1; i++) {
+            if (typeof haversineKm === "function") km += haversineKm({ lat: route[i].lat, lng: route[i].lng }, { lat: route[i + 1].lat, lng: route[i + 1].lng });
+          }
+        } catch (e) {}
+        const kmTxt = km >= 1000 ? (Math.round(km / 100) / 10).toLocaleString("fr-FR") + "k" : Math.round(km).toLocaleString("fr-FR");
         let html = `<span class="globe-stat"><b>${countries.size}</b> pays</span><span class="globe-stat"><b>${cities.size}</b> ville${cities.size > 1 ? "s" : ""}</span>`;
+        if (km > 0) html += `<span class="globe-stat" title="Distance cumulée entre tes étapes"><b>${kmTxt}</b> km</span>`;
         if (ci != null) html += `<span class="globe-stat"><b>${ci}</b> check-in${ci > 1 ? "s" : ""}</span>`;
         box.innerHTML = html;
       }
@@ -6682,9 +6693,12 @@
           .atmosphereAltitude(0.18)
           .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
           .pointLat("lat").pointLng("lng")
+          // #22 (retour Maxime « le mode pilier n'est pas beau ») : piliers AFFINÉS — colonnes
+          // élégantes et fines (rayon réduit) légèrement surélevées + or chaud lumineux, l'éclat
+          // venant surtout des halos pulsés (rings) → fini les gros plots stubby.
           .pointColor(() => GOLD)
-          .pointAltitude(0.018)
-          .pointRadius(0.42)
+          .pointAltitude(0.05)
+          .pointRadius(0.26)
           .pointLabel((d) => `<div class="globe-pt-label"><b>${escapeHtml(d.city || "")}</b>${d.country ? `<span class="gl-meta">${escapeHtml(cleanCountry(d.country))}</span>` : ""}${d.dates ? `<span class="gl-meta">${escapeHtml(d.dates)}</span>` : ""}</div>`)
           .arcColor(() => [ACCENT, GOLD])
           .arcDashLength(0.45).arcDashGap(0.12).arcDashAnimateTime(2200)
@@ -10571,24 +10585,34 @@
       if (myBffId && convIds.includes(myBffId)) { convIds.splice(convIds.indexOf(myBffId), 1); convIds.unshift(myBffId); }
       // Interlocuteurs avec au moins un message non lu (pastille + aperçu appuyé)
       const unreadPeers = new Set((typeof unreadList !== "undefined" ? unreadList : []).map((u) => u.sender_id));
-      $("convList").innerHTML = convIds.length
-        ? convIds
-            .map((other) => {
-              const lm = lastByPeer[other];
-              const preview = lm ? ((lm.sender_id === myId ? "Toi : " : "") + String(lm.content || "").slice(0, 140)) : "Toucher pour discuter 💬"; // aperçu borné : un message-pavé ne gonfle plus la liste
-              const t = lm ? timeAgo(lm.created_at) : "";
-              const isBff = other === myBffId;
-              const isPinnedConv = pinnedSet.has(String(other));
-              const isUnread = unreadPeers.has(other);
-              const meta = isUnread
-                ? `<div class="conv-meta"><span class="conv-time">${t}</span><span class="conv-dot" title="Non lu"></span></div>`
-                : `<div class="conv-meta"><span class="conv-time">${t}</span><span class="qarrow">›</span></div>`;
-              return `<div class="person conv-open${isBff ? " conv-bff" : ""}${isUnread ? " conv-unread" : ""}" data-chat="${other}" style="cursor:pointer">
-                ${avatarMarkup(nameOf(other), avatarOf(other), null, isActive(travelerMap[other]))}
-                <div class="info"><div class="name">${escapeHtml(nameOf(other))}${isBff ? ' <span class="conv-pin">⭐ BFF</span>' : (isPinnedConv ? ' <span class="conv-pin">📌</span>' : "")}</div><div class="conv-preview">${escapeHtml(preview)}</div></div>
-                ${meta}</div>`;
-            }).join("")
-        : emptyState("💬", "Pas encore de conversation", "Connecte-toi avec des voyageurs pour commencer à discuter en sécurité.", "Découvrir des Mates", "discover");
+      // Gabarit d'une ligne de conversation (réutilisé pour les mates ET les rencontres).
+      const convRow = (other) => {
+        const lm = lastByPeer[other];
+        const preview = lm ? ((lm.sender_id === myId ? "Toi : " : "") + String(lm.content || "").slice(0, 140)) : "Toucher pour discuter 💬"; // aperçu borné : un message-pavé ne gonfle plus la liste
+        const t = lm ? timeAgo(lm.created_at) : "";
+        const isBff = other === myBffId;
+        const isPinnedConv = pinnedSet.has(String(other));
+        const isUnread = unreadPeers.has(other);
+        const meta = isUnread
+          ? `<div class="conv-meta"><span class="conv-time">${t}</span><span class="conv-dot" title="Non lu"></span></div>`
+          : `<div class="conv-meta"><span class="conv-time">${t}</span><span class="qarrow">›</span></div>`;
+        return `<div class="person conv-open${isBff ? " conv-bff" : ""}${isUnread ? " conv-unread" : ""}" data-chat="${other}" style="cursor:pointer">
+          ${avatarMarkup(nameOf(other), avatarOf(other), null, isActive(travelerMap[other]))}
+          <div class="info"><div class="name">${escapeHtml(nameOf(other))}${isBff ? ' <span class="conv-pin">⭐ BFF</span>' : (isPinnedConv ? ' <span class="conv-pin">📌</span>' : "")}</div><div class="conv-preview">${escapeHtml(preview)}</div></div>
+          ${meta}</div>`;
+      };
+      // #18 (retour Maxime) : quand on écrit à quelqu'un depuis la CARTE qui n'est PAS encore
+      // un mate de confiance, la conversation existait (openChat) mais N'APPARAISSAIT PAS ici
+      // (liste = connectedIds only) → on la perdait. On ajoute une section DISTINCTE « Rencontres »
+      // (gens messagés mais pas encore ajoutés), séparée des mates de confiance.
+      const otherConvIds = Object.keys(lastByPeer)
+        .filter((id) => !connectedIds.has(id) && !hiddenConvs.has(id) && !blockedIds.has(id) && !bannedIds.has(id) && id !== myId && !(travelerMap[id] && travelerMap[id].is_demo))
+        .sort((a, b) => (lastByPeer[b]?.created_at || "").localeCompare(lastByPeer[a]?.created_at || ""));
+      const _sectionH = (txt) => `<div class="conv-sec-h" style="font-size:.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:.8rem .35rem .3rem">${txt}</div>`;
+      $("convList").innerHTML = (convIds.length || otherConvIds.length)
+        ? ((convIds.length ? (otherConvIds.length ? _sectionH("🛡️ Tes mates de confiance") : "") + convIds.map(convRow).join("") : "")
+           + (otherConvIds.length ? _sectionH("🌍 Rencontres · pas encore tes mates") + otherConvIds.map(convRow).join("") : ""))
+        : emptyState("💬", "Pas encore de conversation", "Écris à un voyageur depuis la carte ou connecte-toi pour commencer à discuter en sécurité.", "Découvrir des Mates", "discover");
       $("convList").querySelectorAll("[data-chat]").forEach((el) =>
         el.addEventListener("click", () => openChat(el.dataset.chat)));
       if (typeof appendDemoConvs === "function") appendDemoConvs(); // + les conversations IA en cours
@@ -15937,7 +15961,14 @@
         if (window.innerHeight - r.bottom > ph + 26) top = r.bottom + 14;
         else if (r.top > ph + 26) top = r.top - ph - 14;
         else top = window.innerHeight - ph - 16; // élément plein écran → bulle en bas
-        pop.style.bottom = "auto"; pop.style.top = Math.max(8, top) + "px";
+        // #10 (retour Maxime « visite guidée : boutons pas au bon endroit ») : la bulle se posait
+        // SUR le header (cible proche du haut) ou sous la barre du bas. On la borne à la bande
+        // sûre = sous le header sticky, au-dessus de la nav du bas → plus jamais à cheval.
+        const _hdr = document.querySelector(".topbar");
+        const _hb = _hdr ? Math.max(8, _hdr.getBoundingClientRect().bottom) : 64;
+        const _maxTop = Math.max(_hb + 8, window.innerHeight - ph - 84);
+        top = Math.min(Math.max(top, _hb + 8), _maxTop);
+        pop.style.bottom = "auto"; pop.style.top = top + "px";
         spot.style.opacity = "1"; pop.style.opacity = "1"; // placés → on révèle (fondu doux)
         if (isFirst) { void spot.offsetWidth; spot.classList.remove("no-anim"); } // réactive le glissement pour les étapes suivantes
       }));
@@ -20240,7 +20271,7 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
-  <script src="sunmates-da-loader.js?v=774"></script>
+  <script src="sunmates-da-loader.js?v=776"></script>
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->

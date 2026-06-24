@@ -489,10 +489,15 @@ body.sm-lite .su-e,
 body.sm-lite .dh-emoji,
 body.sm-lite .onb-emoji { filter: none !important; }
 
-/* ---- VAGUE C : périmètre MVP — masquer le HUB JEUX entier (décision Maxime :
-   garder badges/collection + stats profil ; on retire seulement Jeux). Le bouton de nav
-   était déjà masqué (l.366) mais le panneau restait atteignable (deep-link/visite guidée). */
-body.sm-lite .tab-panel[data-panel="jeux"] { display: none !important; }
+/* ---- v776 (retour Maxime « travailler l'onglet Jeux dans la version Lite ») : le panneau
+   Jeux n'est PLUS masqué en Lite. Le bouton de nav est déjà réactivé (v711). On garde une
+   version SOBRE : les éléments [data-beta]/.beta-only (gaming pur) restent cachés par les
+   règles Lite générales, et on montre ce qui a du sens en MVP (classement, coupons, badges,
+   série). ⚠️ AVANT : display:none → l'onglet était cliquable mais VIDE (cassé). */
+body.sm-lite .tab-panel[data-panel="jeux"] { display: block; }
+/* gaming pur masqué en Lite (le hub garde classement/coupons/badges/série) */
+body.sm-lite #jeuxHome [data-beta],
+body.sm-lite #jeuxHome .beta-only { display: none !important; }
 
 /* ============================================================
    PEAUFINAGE v534 — homogénéisation + parcours (audit multi-agents).
