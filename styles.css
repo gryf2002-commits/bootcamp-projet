@@ -5580,7 +5580,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 779; }
+    :root { --sm-build: 780; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -5846,3 +5846,30 @@
        bulles de chat, modales, carte). Couvre dusk + winter-dusk + tropic-dusk. ══════ */
     html.sm-app body.theme-dusk :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.avatar):not(.btn-primary):not(.btn-danger):not(.btn-accent):not(.sl):not(.active):not(.on):not(.is-on):not(.epin):not(.epin-cluster):not([class*="leaflet"]):not(.bubble):not(.bubble-me):not(.act-card):not(.picker-card):not(.popinfo-card):not(.modal):not(.chat-input):not(.composer) {
       background: transparent !important; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v780 · AUDIT TOUS-MODES (retour Maxime : « pas cohérent avec les modes », halo trop
+       imposant, fond blanc ambiance, tuiles qui se colorent au clic). Forcé JOUR/NUIT/HIVER/
+       TROPIQUES, spécificité gonflée (html body + :is) pour battre le DA loader injecté.
+       ════════════════════════════════════════════════════════════════════════ */
+    /* #15 · HALO réduit DRASTIQUEMENT : les ombres de cartes/contours pilotées par variables
+       deviennent un filet quasi-imperceptible (au lieu d'un gros halo) dans tous les modes. */
+    :root, body, body.theme-dusk, body.theme-winter, body.theme-tropic,
+    body.theme-winter.theme-dusk, body.theme-tropic.theme-dusk {
+      --card-shadow: 0 1px 2px -1px color-mix(in oklab, var(--ink) 9%, transparent) !important;
+      --contour-shadow: 0 1px 2px -1px color-mix(in oklab, var(--ink) 9%, transparent) !important;
+      --shadow: 0 2px 8px -4px color-mix(in oklab, var(--ink) 12%, transparent) !important;
+      --shadow-sm: 0 1px 3px -2px color-mix(in oklab, var(--ink) 10%, transparent) !important; }
+
+    /* #18 · SÉLECTEUR D'AMBIANCE (et tous les segmentés .seg) : plus de fond BLANC en dur.
+       Piste neutre très discrète, état actif = accent. Tous modes. */
+    html body .seg, html.sm-app body .seg { background: color-mix(in srgb, var(--ink) 5%, transparent) !important; box-shadow: none !important; }
+    html body :is(.da-sw, .da-band, .da-emo:not(.active)), html.sm-app body :is(.da-sw, .da-band, .da-emo:not(.active)) {
+      background: transparent !important; border-color: transparent !important; box-shadow: none !important; }
+
+    /* #14 · plus AUCUNE teinte de fond au clic / survol / focus sur les éléments cliquables
+       (seul le press-scale reste). Couvre les états :active/:hover/:focus dans tous les modes
+       — y compris si le DA loader réinjectait une teinte. */
+    html body :is(.tile,.cat-tile,.gp-tile,.qrow,.lb-row,.person,.reward-card,.trip-card,.stat-click,.sa-tile,.rit-row,.coupon,.jeux-open,.bitem,[data-goto],[data-secuquick],[data-protile],[data-spstat]):is(:hover,:active,:focus,:focus-visible),
+    html.sm-app body :is(.tile,.cat-tile,.gp-tile,.qrow,.lb-row,.person,.reward-card,.trip-card,.stat-click,.sa-tile,.rit-row,.coupon,.jeux-open,.bitem,[data-goto],[data-secuquick],[data-protile],[data-spstat]):is(:hover,:active,:focus,:focus-visible) {
+      background: transparent !important; background-color: transparent !important; outline: none !important; }
