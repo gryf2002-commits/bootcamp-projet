@@ -5466,7 +5466,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 771; }
+    :root { --sm-build: 772; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -5714,4 +5714,13 @@
       box-shadow: inset 0 -8px 16px rgba(0,0,0,.08) !important; }
     /* fonds ARGENTÉS → transparents (sauf états actifs) */
     html.sm-app body :is(.chip, .sscope, .avail-chip, .streak-chip, .todo-toggle, .hm-layers-btn, .tvt-btn, .fc-kind, .qs-mode-btn, .sp-stat, .pseg, .mseg, .mode-switch, .aseg-nav, .aseg-nav button, .lang-seg button, .stat-box, .pc-stat, .sa-tile, .feature, .gp-tile, .gcard):not(.active):not(.on):not(.is-on) {
+      background: transparent !important; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v772 · TUILES GRISES NUIT (Maxime « enleve les tuiles gris arrieres moches »).
+       58 fonds var(--dcard) (surfaces sombres) en mode nuit = les tuiles grises.
+       Nucléaire fonds-nuit : transparent sur tout le contenu sombre SAUF whitelist
+       (champs, joyaux à dégradé, avatars, CTA remplis, interrupteurs, états actifs,
+       bulles de chat, modales, carte). Couvre dusk + winter-dusk + tropic-dusk. ══════ */
+    html.sm-app body.theme-dusk :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.avatar):not(.btn-primary):not(.btn-danger):not(.btn-accent):not(.sl):not(.active):not(.on):not(.is-on):not(.epin):not(.epin-cluster):not([class*="leaflet"]):not(.bubble):not(.bubble-me):not(.act-card):not(.picker-card):not(.popinfo-card):not(.modal):not(.chat-input):not(.composer) {
       background: transparent !important; }

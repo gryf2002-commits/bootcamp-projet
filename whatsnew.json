@@ -1,6 +1,6 @@
 {
-  "candidate": "v771",
+  "candidate": "v772",
   "items": [
-    "🫧 Détails nettoyés : l'anneau carré autour de l'icône sélectionnée devient un halo doux et rond, et les fonds gris/argentés derrière les puces, segments et stats sont retirés. Plus net, plus premium."
+    "🌑 Tuiles grises de nuit retirées : en mode sombre, les cartes ne sont plus posées sur des rectangles gris — elles flottent à plat sur le fond, comme en mode jour. Les icônes-joyaux, boutons et champs gardent leur surface."
   ]
 }
