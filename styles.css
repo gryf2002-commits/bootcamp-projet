@@ -5466,7 +5466,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 770; }
+    :root { --sm-build: 771; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -5700,3 +5700,18 @@
       html.sm-app body .tab-panel:not(.hidden):not([data-panel="accueil"]) :is(.cs-v, .dstat b, .pc-n) {
         display: inline-block; animation: smNumPop .55s var(--ease-out, cubic-bezier(.23,1,.32,1)) .28s backwards; }
     }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v771 · HALOS CARRÉS + ARRIÈRE-TUILES ARGENTÉES (retour Maxime).
+       (A) l'anneau accent carré du joyau actif (0 0 0 2.5px) → glow DOUX et ROND.
+       (B) fonds argentés (color-mix ink + gradients blancs) → transparents. ══════════ */
+    html.sm-app body .cat-tile.active .cic,
+    html.sm-app body .cat-tile.active .cic[data-smicon],
+    html.sm-app body .cat-tile.active .cic[data-smicon] {
+      box-shadow: 0 7px 20px -7px color-mix(in oklab, var(--accent) 55%, transparent), inset 0 -8px 16px rgba(0,0,0,.08) !important; }
+    /* zéro anneau/ombre externe carré sur les autres joyaux (relief interne uniquement) */
+    html.sm-app body :is(.qcoll .cic, .prog-row .cic, .smgem) {
+      box-shadow: inset 0 -8px 16px rgba(0,0,0,.08) !important; }
+    /* fonds ARGENTÉS → transparents (sauf états actifs) */
+    html.sm-app body :is(.chip, .sscope, .avail-chip, .streak-chip, .todo-toggle, .hm-layers-btn, .tvt-btn, .fc-kind, .qs-mode-btn, .sp-stat, .pseg, .mseg, .mode-switch, .aseg-nav, .aseg-nav button, .lang-seg button, .stat-box, .pc-stat, .sa-tile, .feature, .gp-tile, .gcard):not(.active):not(.on):not(.is-on) {
+      background: transparent !important; }
