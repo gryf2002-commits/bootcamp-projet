@@ -1086,3 +1086,17 @@ body.sm-lite #liteMsgSearch:focus { border-color: var(--accent); }
    BANDE de séparation. On force un fond PLAT identique sur les deux → couture invisible en nuit. */
 body.sm-lite.theme-dusk #profMain .prof-head,
 body.sm-lite.theme-dusk #profMain .prof-head + .card { background: #241640 !important; }
+
+/* v785 · #4 (retour Maxime « le mode Jeux est un copier-coller du complet en Lite → version
+   épurée »). En Lite, le hub Jeux garde l'ESSENTIEL (quête du jour + nav + classement/coupons)
+   et masque les couches « jeu vidéo » profondes : collection de quêtes, ville à l'honneur,
+   quête la plus proche, rail de badges. Plus léger, lisible, MVP. */
+body.sm-lite #jeuxHome #questCollection,
+body.sm-lite #jeuxHome #capitaleDuJour,
+body.sm-lite #jeuxHome #nearestQuest,
+body.sm-lite #jeuxHome #badgeRailSection,
+body.sm-lite #jeuxHome .jnav-cap { display: none !important; }
+/* v785b · Lite Jeux épuré (suite) : on masque aussi la liste « Ta progression » (Objectifs de
+   la semaine / Collection / Ville à l'honneur) → reste l'essentiel (niveau + quête du jour + nav). */
+body.sm-lite #jeuxHome .prog-card,
+body.sm-lite #jeuxHome .prog-row { display: none !important; }
