@@ -300,7 +300,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=787"></script>
+  <script src="sunmates-badges.js?v=788"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
@@ -309,7 +309,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
   <!-- 🎬 DA de Motion « Le mouvement du couchant » : noyau réutilisable (window.SM_MOTION). -->
   <script defer src="sm-motion-da.js?v=740"></script>
-  <script defer src="sunmates-motion.js?v=787"></script>
+  <script defer src="sunmates-motion.js?v=788"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -361,7 +361,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=787">
+  <link rel="stylesheet" href="styles.css?v=788">
   <style id="sm-cloak">html.sm-verifying body{visibility:hidden!important}</style>
   <script>
   /* v767 · AUTO-RÉPARATEUR + CLOAK : on masque la page jusqu'à la vérif de version.
@@ -1458,7 +1458,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=787">
+  <link rel="stylesheet" href="sunmates-lite.css?v=788">
 </head>
 <body>
   <!-- a11y : lien d'évitement (premier élément focalisable) → saute la barre/nav vers le contenu principal. -->
@@ -1483,10 +1483,11 @@
     <div class="globe-topbar">
       <div class="globe-title">🌍 <span>Mon globe</span></div>
       <div class="globe-modes" id="globeModes" role="tablist">
-        <button type="button" class="globe-mode is-on" data-gmode="points">Points</button>
-        <button type="button" class="globe-mode" data-gmode="arcs">Arcs</button>
-        <button type="button" class="globe-mode" data-gmode="heat">Heatmap</button>
-        <button type="button" class="globe-mode" data-gmode="countries">Pays</button>
+        <!-- #24 (façon Polarsteps) : la ROUTE (étapes reliées chronologiquement) est l'expérience par défaut -->
+        <button type="button" class="globe-mode is-on" data-gmode="arcs">🧭 Route</button>
+        <button type="button" class="globe-mode" data-gmode="points">📍 Étapes</button>
+        <button type="button" class="globe-mode" data-gmode="heat">🔥 Densité</button>
+        <button type="button" class="globe-mode" data-gmode="countries">🗺️ Pays</button>
       </div>
       <button type="button" id="globeClose" class="globe-close" aria-label="Fermer">✕</button>
     </div>
@@ -6641,7 +6642,7 @@
       let resizeObs = null;
       let onKey = null;
       let lastTrips = [];
-      let mode = "points";
+      let mode = "arcs"; // #24 : Polarsteps-like → la ROUTE par défaut
       // --- Mode « Pays » / passeport ---
       const COUNTRIES_URL = "https://cdn.jsdelivr.net/gh/vasturiano/globe.gl@master/example/datasets/ne_110m_admin_0_countries.geojson";
       let countriesFeatures = null;   // cache mémoire du geojson (chargé 1x)
@@ -6862,9 +6863,12 @@
           .pointAltitude(0.05)
           .pointRadius(0.26)
           .pointLabel((d) => `<div class="globe-pt-label"><b>${escapeHtml(d.city || "")}</b>${d.country ? `<span class="gl-meta">${escapeHtml(cleanCountry(d.country))}</span>` : ""}${d.dates ? `<span class="gl-meta">${escapeHtml(d.dates)}</span>` : ""}</div>`)
-          .arcColor(() => [ACCENT, GOLD])
-          .arcDashLength(0.45).arcDashGap(0.12).arcDashAnimateTime(2200)
-          .arcStroke(0.5).arcAltitudeAutoScale(0.4)
+          // #24 (façon Polarsteps) : la ROUTE = ruban lumineux qui RELIE les étapes chronologiquement.
+          // Dégradé chaud (or → corail → or), trait plus épais, tirets qui DÉFILENT en continu (sens du
+          // voyage), arches plus hautes = lecture nette du trajet sur le globe.
+          .arcColor(() => [GOLD, ACCENT, GOLD])
+          .arcDashLength(0.55).arcDashGap(0.018).arcDashInitialGap(() => Math.random()).arcDashAnimateTime(2600)
+          .arcStroke(0.9).arcAltitudeAutoScale(0.52).arcsTransitionDuration(900)
           // Polarsteps : halos PULSÉS autour de chaque destination (motion fluide + repères nets)
           .ringLat("lat").ringLng("lng")
           .ringColor(() => (t) => `rgba(255,209,92,${Math.sqrt(1 - t)})`)
@@ -20463,7 +20467,7 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
-  <script src="sunmates-da-loader.js?v=787"></script>
+  <script src="sunmates-da-loader.js?v=788"></script>
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->
