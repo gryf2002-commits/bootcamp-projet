@@ -5466,7 +5466,33 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 758; }
+    :root { --sm-build: 759; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v759 · BEAUX CONTOURS ARRONDIS (Maxime : « structures plus arrondies, beaux
+       contours dans tous les modes »). On RE-structure élégamment : contour fin
+       raffiné + grand radius + reflet de biseau (sheen) + fond très subtil. Dérivé
+       des tokens (--ink/--card par mode) → s'adapte AUX 6 MODES. Pas des boîtes
+       lourdes : le CONTOUR + l'arrondi portent la structure. ════════════════════ */
+    :root, body {
+      --contour: color-mix(in oklab, var(--ink) 12%, transparent);
+      --contour-sheen: color-mix(in oklab, #ffffff 55%, transparent);
+      --contour-fill: color-mix(in oklab, var(--ink) 4%, transparent);
+      --contour-shadow: 0 6px 18px -12px color-mix(in oklab, var(--ink) 40%, transparent); }
+    body.theme-dusk {
+      --contour: color-mix(in oklab, #ffffff 15%, transparent);
+      --contour-sheen: color-mix(in oklab, #ffffff 8%, transparent);
+      --contour-fill: color-mix(in oklab, #ffffff 5%, transparent);
+      --contour-shadow: 0 8px 22px -12px rgba(0,0,0,.5); }
+
+    html body :is(.card, .tile, .cat-tile, .gp-tile, .sc-card, .feature, .quest-spotlight, .prog-card, .nq-card, .wg-card, .pcell, .starterCard, .reward-card, .tip-card):not(.gold-hero):not(.hidden),
+    html.sm-app body :is(.card, .tile, .cat-tile, .gp-tile, .sc-card, .feature, .quest-spotlight, .prog-card, .nq-card, .wg-card, .pcell, .starterCard, .reward-card, .tip-card):not(.gold-hero):not(.hidden) {
+      background: var(--contour-fill) !important;
+      border: 1px solid var(--contour) !important;
+      border-radius: 24px !important;
+      box-shadow: inset 0 1px 0 var(--contour-sheen), var(--contour-shadow) !important; }
+    /* tuiles-icônes : un peu moins de radius pour rester nettes */
+    html body :is(.tile, .cat-tile, .gp-tile), html.sm-app body :is(.tile, .cat-tile, .gp-tile) { border-radius: 20px !important; }
