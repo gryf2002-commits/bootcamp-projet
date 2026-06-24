@@ -300,7 +300,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=790"></script>
+  <script src="sunmates-badges.js?v=791"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
@@ -309,7 +309,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
   <!-- 🎬 DA de Motion « Le mouvement du couchant » : noyau réutilisable (window.SM_MOTION). -->
   <script defer src="sm-motion-da.js?v=740"></script>
-  <script defer src="sunmates-motion.js?v=790"></script>
+  <script defer src="sunmates-motion.js?v=791"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -361,7 +361,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=790">
+  <link rel="stylesheet" href="styles.css?v=791">
   <style id="sm-cloak">html.sm-verifying body{visibility:hidden!important}</style>
   <script>
   /* v767 · AUTO-RÉPARATEUR + CLOAK : on masque la page jusqu'à la vérif de version.
@@ -1458,7 +1458,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=790">
+  <link rel="stylesheet" href="sunmates-lite.css?v=791">
 </head>
 <body>
   <!-- a11y : lien d'évitement (premier élément focalisable) → saute la barre/nav vers le contenu principal. -->
@@ -15429,7 +15429,8 @@
           '<span class="gn-tx">' +
             '<span class="gn-eyebrow">' + i18nT("Ici & maintenant") + '</span>' +
             '<span class="gn-where">📍 ' + escapeHtml(where) + '</span>' +
-            '<span class="gn-moment">' + moment + (meteo ? " · " + escapeHtml(meteo) : "") + ' · 👟 ' + _stepCount().toLocaleString("fr-FR") + ' pas</span>' +
+            '<span class="gn-moment">' + moment + (meteo ? " · " + escapeHtml(meteo) : "") + '</span>' +
+            '<span class="gn-steps">👟 <b>' + _stepCount().toLocaleString("fr-FR") + '</b> pas aujourd\'hui</span>' +
           '</span>' +
           '<span class="gn-chev" aria-hidden="true">›</span>' +
         '</button>' +
@@ -15647,7 +15648,8 @@
           '<span class="gn-tx">' +
             '<span class="gn-eyebrow">' + i18nT("Ici & maintenant") + '</span>' +
             '<span class="gn-where">' + i18nT("Active ta position") + '</span>' +
-            '<span class="gn-moment">👟 ' + _stepCount().toLocaleString("fr-FR") + ' ' + i18nT("pas aujourd'hui") + ' · ' + i18nT("active ta position pour voir ton quartier") + '</span>' +
+            '<span class="gn-moment">' + i18nT("active ta position pour voir ton quartier") + '</span>' +
+            '<span class="gn-steps">👟 <b>' + _stepCount().toLocaleString("fr-FR") + '</b> ' + i18nT("pas aujourd'hui") + '</span>' +
           '</span>' +
           '<span class="gn-chev gn-chev-go" aria-hidden="true">›</span>' +
         '</button>';
@@ -16013,13 +16015,17 @@
     })();
 
     // ============ Visite guidée interactive (« balade » dans l'app) ============
+    // #19 (retour Maxime « les tuiles d'explication ne pointent pas au bon endroit ») : chaque
+    // étape vise désormais le CONTENU qu'elle décrit (carte, lieux, quête…) et plus le bouton de
+    // nav du bas. Repli `[data-tab=...]` dans le sel (querySelector prend le 1er présent) pour ne
+    // jamais tomber dans le vide si le contenu n'est pas encore monté.
     const TOUR_STEPS = [
-      { tab: "accueil",    sel: '[data-tab="accueil"]',    emoji: "🗺️", title: "Ta carte vivante",   text: "Vois qui est autour, les spots sympas et les activités du moment. Clique une pastille pour foncer !" },
-      { tab: "lieux",      sel: '[data-tab="lieux"]',      emoji: "📍", title: "Des spots à découvrir", text: "Cafés, co-livings et lieux cools. Fais un check-in quand tu y es, ça te fait gagner des points." },
-      { tab: "jeux",       sel: '[data-tab="jeux"]',       emoji: "🎉", title: "Activités & défis",   text: "Lance des activités, relève des défis, gagne des badges et des coupons." },
-      { tab: "connexions", sel: '[data-tab="connexions"]', emoji: "💬", title: "Messages",          text: "Tes conversations avec tes Mates. Pour rencontrer du monde, c'est sur l'accueil." },
-      { tab: "securite",   sel: '[data-tab="securite"]',   emoji: "🛡️", title: "Toujours serein·e",   text: "SOS et partage de position à portée de main, pour t'amuser l'esprit tranquille." },
-      { tab: "profil",     sel: '[data-tab="profil"]',     emoji: "👤", title: "Ton profil",         text: "Ton score de confiance, tes badges et tes réglages. Tu peux revoir ce tuto ici quand tu veux !" },
+      { tab: "accueil",    sel: '.homemap-card, [data-tab="accueil"]',     emoji: "🗺️", title: "Ta carte vivante",   text: "Vois qui est autour, les spots sympas et les activités du moment. Clique une pastille pour foncer !" },
+      { tab: "lieux",      sel: '#lieuxCats, [data-tab="lieux"]',          emoji: "📍", title: "Des spots à découvrir", text: "Cafés, co-livings et lieux cools. Fais un check-in quand tu y es, ça te fait gagner des points." },
+      { tab: "jeux",       sel: '#questSpotlight, [data-tab="jeux"]',      emoji: "🎉", title: "Activités & défis",   text: "Lance des activités, relève des défis, gagne des badges et des coupons." },
+      { tab: "connexions", sel: '#convList, [data-tab="connexions"]',      emoji: "💬", title: "Messages",          text: "Tes conversations avec tes Mates. Pour rencontrer du monde, c'est sur l'accueil." },
+      { tab: "securite",   sel: '#secuHome, [data-tab="securite"]',        emoji: "🛡️", title: "Toujours serein·e",   text: "SOS et partage de position à portée de main, pour t'amuser l'esprit tranquille." },
+      { tab: "profil",     sel: '#profMain, [data-tab="profil"]',          emoji: "👤", title: "Ton profil",         text: "Ton score de confiance, tes badges et tes réglages. Tu peux revoir ce tuto ici quand tu veux !" },
     ];
     let tourIdx = 0;
     let _activeTour = TOUR_STEPS;   // étapes de la visite en cours (onboarding OU tuto admin)
@@ -20469,7 +20475,7 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
-  <script src="sunmates-da-loader.js?v=790"></script>
+  <script src="sunmates-da-loader.js?v=791"></script>
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->

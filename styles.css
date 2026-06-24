@@ -5580,7 +5580,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 790; }
+    :root { --sm-build: 791; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -5790,7 +5790,7 @@
        cibler par classe). Zéro bordure + zéro ombre-ligne sur TOUT le contenu,
        SAUF whitelist : champs, interrupteurs (.sl), joyaux (.cic/.jo-ic/.smgem),
        avatars, épingles carte, CTA principal/SOS, carte Leaflet. ════════════════ */
-    html.sm-app body :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.sl):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.epin):not(.epin-cluster):not(.avatar):not(.btn-primary):not(.btn-danger):not(.leaflet-container):not([class*="leaflet"]) {
+    html.sm-app body :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.sl):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.epin):not(.epin-cluster):not(.avatar):not(.btn-primary):not(.btn-danger):not(.leaflet-container):not([class*="leaflet"]):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.pcell):not(.pc-stat) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important;
       box-shadow: none !important; }
     /* arrière-tuiles : fonds de cartes/tuiles RETIRÉS (transparent), sauf surfaces utiles */
@@ -5844,7 +5844,7 @@
        Nucléaire fonds-nuit : transparent sur tout le contenu sombre SAUF whitelist
        (champs, joyaux à dégradé, avatars, CTA remplis, interrupteurs, états actifs,
        bulles de chat, modales, carte). Couvre dusk + winter-dusk + tropic-dusk. ══════ */
-    html.sm-app body.theme-dusk :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.avatar):not(.btn-primary):not(.btn-danger):not(.btn-accent):not(.sl):not(.active):not(.on):not(.is-on):not(.epin):not(.epin-cluster):not([class*="leaflet"]):not(.bubble):not(.bubble-me):not(.act-card):not(.picker-card):not(.popinfo-card):not(.modal):not(.chat-input):not(.composer) {
+    html.sm-app body.theme-dusk :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.avatar):not(.btn-primary):not(.btn-danger):not(.btn-accent):not(.sl):not(.active):not(.on):not(.is-on):not(.epin):not(.epin-cluster):not([class*="leaflet"]):not(.bubble):not(.bubble-me):not(.act-card):not(.picker-card):not(.popinfo-card):not(.modal):not(.chat-input):not(.composer):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.gold-beta-note):not(.pcell):not(.pc-stat):not(.stat-box):not(.tgm-bubble):not(.gh-price) {
       background: transparent !important; }
 
     /* ════════════════════════════════════════════════════════════════════════
@@ -5921,3 +5921,46 @@
        (position:fixed, hors de cette liste) ni les conteneurs critiques. */
     html body :is(.fpost, .pcard, .gcard, .tcard, .reward-card, .demo-step, .qrow, .lb-row, .person, .br-item, .conv, .review-item, .notif-card, .notif-item, .trip-card, .tj-card) {
       content-visibility: auto; contain-intrinsic-size: auto 88px; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v791 · AUDIT (retour ferme Maxime) — BARRES FLOUES + MODE SOMBRE + GOLD.
+       ════════════════════════════════════════════════════════════════════════ */
+    /* #2 · BARRES FLOUES DE SÉPARATION : le topbar était un DÉGRADÉ bg→transparent (= bande
+       floue sous le logo). On le rend SOLIDE = var(--bg) (même couleur que la page → AUCUNE
+       bande visible, le logo flotte). Tous modes. + on tue TOUT backdrop-filter (flou) : badges,
+       sheets, etc. = rendu net partout (les modales gardent un scrim solide opaque). */
+    html body .topbar, html.sm-app body .topbar,
+    html body.theme-dusk .topbar, html body.theme-winter .topbar, html body.theme-tropic .topbar,
+    html body.theme-winter.theme-dusk .topbar, html body.theme-tropic.theme-dusk .topbar {
+      background: var(--bg) !important; background-image: none !important; box-shadow: none !important; border-bottom: 0 !important; }
+    html body * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+    /* scrims de modales : on remonte l'opacité (puisque plus de flou) pour bien isoler le fond */
+    html body :is(.popinfo-ov, .sm-selsheet-ov, .hcust-ov, .act-overlay) { background: rgba(14, 8, 24, .66) !important; }
+
+    /* #1 · MODE SOMBRE — les ombres v780 étaient ink-relatives (ink clair en nuit → ombre
+       INVISIBLE, cartes qui « flottent sans relief / sans couleur »). On force des ombres
+       ABSOLUES sombres en nuit (relief lisible) + un filet de contour discret. */
+    body.theme-dusk, body.theme-winter.theme-dusk, body.theme-tropic.theme-dusk {
+      --card-shadow: 0 2px 10px rgba(0,0,0,.42) !important;
+      --contour-shadow: 0 2px 10px rgba(0,0,0,.42) !important;
+      --shadow: 0 6px 22px rgba(0,0,0,.45) !important;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.38) !important; }
+    /* mode sombre : les cellules de stats/segments qui avaient perdu toute surface (balai v772)
+       reprennent un fond TRÈS léger → on voit qu'il y a une case (plus de texte flottant). */
+    html body.theme-dusk :is(.mseg button:not(.active), .pseg button:not(.active), .seg button:not(.active), .aseg-nav button:not(.active), .lang-seg button:not(.active)),
+    html.sm-app body.theme-dusk :is(.mseg button:not(.active), .pseg button:not(.active), .seg button:not(.active), .aseg-nav button:not(.active), .lang-seg button:not(.active)) {
+      background: rgba(255,255,255,.06) !important; }
+
+    /* #11 · GOLD — les tuiles d'avantages étaient quasi invisibles en NUIT (mix 9% sur --card
+       sombre). Surface DORÉE nette + liseré or visible dans tous les modes (le premium se voit). */
+    html body .gold-perks .gp-tile, html.sm-app body .gold-perks .gp-tile {
+      background: linear-gradient(160deg, color-mix(in srgb, #FFD15C 22%, var(--card)) 0%, var(--card) 100%) !important;
+      border: 1px solid color-mix(in srgb, #FFD15C 55%, transparent) !important;
+      box-shadow: 0 2px 10px -4px rgba(232,150,31,.35) !important; }
+    body.theme-dusk .gold-perks .gp-tile { background: linear-gradient(160deg, rgba(255,209,92,.16) 0%, rgba(36,27,53,.95) 72%) !important;
+      border: 1.5px solid rgba(255,209,92,.48) !important; box-shadow: 0 2px 14px -5px rgba(255,209,92,.30), inset 0 1px 0 rgba(255,255,255,.06) !important; }
+    html body .gold-perks .gp-tile b, html body .gold-perks .gp-tile span:last-child { color: var(--ink) !important; }
+
+    /* v791 · #23/#6 compteur de pas RENDU VISIBLE : chip accent distinct (plus noyé dans le muted). */
+    #geoNowCard .gn-steps { display: inline-flex; align-items: center; gap: .3rem; margin-top: .2rem; font-size: .8rem; font-weight: 800; color: var(--accent-ink, var(--accent)); }
+    #geoNowCard .gn-steps b { font-variant-numeric: tabular-nums; }
