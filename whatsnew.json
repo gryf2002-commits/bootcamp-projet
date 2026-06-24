@@ -1,6 +1,6 @@
 {
-  "candidate": "v754",
+  "candidate": "v755",
   "items": [
-    "🧼 Tous les filets de séparation retirés (fini les lignes noires/grises/rouges entre les contenus). La structure tient désormais par l'espace et des en-têtes affirmés. Les champs et boutons gardent un contour neutre très discret."
+    "✨ Nouveaux séparateurs « bandes douces » : un halo chaud couchant remplace les lignes au-dessus de chaque section (option C), adapté aux 6 modes. Et surtout : les vrais coupables des « traits gris et rouge » trouvés — c'étaient les CONTOURS de boutons/puces (le corail des boutons d'action, le gris des toggles) — retirés. Plus de lignes dures, juste de la lumière et de l'espace."
   ]
 }

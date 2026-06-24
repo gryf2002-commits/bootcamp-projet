@@ -5423,3 +5423,27 @@
     html body .stat-row-3 .stat-box + .stat-box, html.sm-app body .stat-row-3 .stat-box + .stat-box { border-left: 0 !important; }
     /* l'espace remplace le filet : un peu d'air dans les rangées */
     html body :is(.place, .qrow, .person, .te-row, .num-row, .review-item, .prog-row), html.sm-app body :is(.place, .qrow, .person, .te-row, .num-row, .review-item, .prog-row) { padding-top: .7rem !important; padding-bottom: .7rem !important; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v755 · LES VRAIES « lignes gris/rouge » = CONTOURS DE BOUTONS/CONTRÔLES
+       (scan DOM : .btn-accent corail ×9, puces --line gris, .badge/.active rouge).
+       On les RETIRE (sauf champs + contrôles flottants sur la carte). PUIS option C :
+       bandes douces (dégradé large et flou) entre les groupes. ════════════════════ */
+    html body :is(.btn-accent, .btn-ghost, .qs-mode-btn, .avail-chip, .streak-chip, .mode-switch, .badge, .sm-reveal, .num-badge, .pb-pill, .tvt-btn, .seg-btn, .pseg button),
+    html.sm-app body :is(.btn-accent, .btn-ghost, .qs-mode-btn, .avail-chip, .streak-chip, .mode-switch, .badge, .sm-reveal, .num-badge, .pb-pill, .tvt-btn, .seg-btn, .pseg button) {
+      border: 0 !important; box-shadow: none !important; }
+    /* sélecteur ville : contour rouge → neutre très discret */
+    html body .sm-sel-trigger, html.sm-app body .sm-sel-trigger { border-color: var(--line) !important; }
+
+    /* ─── C · BANDES DOUCES entre groupes (remplace les filets) ─────────────── */
+    html body :is(.section-head, .qm-head), html.sm-app body :is(.section-head, .qm-head) { position: relative !important; }
+    html body :is(.section-head, .qm-head)::after, html.sm-app body :is(.section-head, .qm-head)::after {
+      content: "" !important; display: block !important; position: absolute !important; left: -6px !important; right: -6px !important;
+      top: -1.35rem !important; height: 1.5rem !important; pointer-events: none !important; z-index: 0 !important;
+      background: radial-gradient(120% 140% at 50% 100%, color-mix(in oklab, var(--accent) 20%, transparent) 0%, color-mix(in oklab, var(--accent) 8%, transparent) 44%, transparent 74%) !important; }
+    /* renfort : puces de contrôle récalcitrantes (bordure en longhand/inline) */
+    html.sm-app body :is(.avail-chip, .streak-chip, .qs-mode-btn, .tvt-btn, .pseg button, .seg-btn),
+    html body #profSegNav button, html.sm-app body #profSegNav button {
+      border-top-width: 0 !important; border-bottom-width: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important; border-style: none !important; }
+    /* la 1re section de chaque écran n'a pas de bande au-dessus */
+    html body .tab-panel > :is(.section-head, .qm-head):first-of-type::after, html.sm-app body .tab-panel > :is(.section-head, .qm-head):first-of-type::after { display: none !important; }
