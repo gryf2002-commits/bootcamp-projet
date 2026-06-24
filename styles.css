@@ -5409,3 +5409,17 @@
     html body .jnav-cap, html.sm-app body .jnav-cap { font-size: .8rem !important; font-weight: 800 !important; letter-spacing: .08em !important; color: var(--ink) !important; }
     /* ESPACE = la structure (proximité). Grands gaps entre groupes. */
     html body :is(.section-head, .qm-head, .jnav-cap), html.sm-app body :is(.section-head, .qm-head, .jnav-cap) { margin-top: 2.3rem !important; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v754 · RETRAIT TOTAL des filets de séparation de contenu (Maxime : « retire-
+       les, place de nouveaux séparateurs »). Plus AUCUNE ligne entre rangées/sections.
+       La séparation = ESPACE généreux + en-têtes Fraunces forts (v753). Les bordures
+       de CHAMPS/boutons (affordance) restent, en --line neutre discret. ════════════ */
+    html body :is(.place, .qrow, .person, .te-row, .num-row, .prog-row, .review-item, .ptl-row, .lb-row, .set-row, .da-comp-row, .trip-matches, .ptrip-section, .pfield-sep, .cstory-hl, .bubble-tr, .num-here, .coll-city, .tj-card, .ptl-row, .act-search-results li, .feature, .set-grouptitle),
+    html.sm-app body :is(.place, .qrow, .person, .te-row, .num-row, .prog-row, .review-item, .ptl-row, .lb-row, .set-row, .da-comp-row, .trip-matches, .ptrip-section, .pfield-sep, .cstory-hl, .bubble-tr, .num-here, .coll-city, .tj-card, .ptl-row, .act-search-results li, .feature, .set-grouptitle) {
+      border-top: 0 !important; border-bottom: 0 !important; }
+    html body :is(.section-head, .qm-head), html.sm-app body :is(.section-head, .qm-head) { border-top: 0 !important; border-bottom: 0 !important; }
+    html body #convList .person, html.sm-app body #convList .person { border-bottom: 0 !important; }
+    html body .stat-row-3 .stat-box + .stat-box, html.sm-app body .stat-row-3 .stat-box + .stat-box { border-left: 0 !important; }
+    /* l'espace remplace le filet : un peu d'air dans les rangées */
+    html body :is(.place, .qrow, .person, .te-row, .num-row, .review-item, .prog-row), html.sm-app body :is(.place, .qrow, .person, .te-row, .num-row, .review-item, .prog-row) { padding-top: .7rem !important; padding-bottom: .7rem !important; }

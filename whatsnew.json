@@ -1,6 +1,6 @@
 {
-  "candidate": "v753",
+  "candidate": "v754",
   "items": [
-    "🔧 Vraie racine des « traits noirs » trouvée : le moteur de DA (chargé au runtime) réinjectait les bordures en encre foncée et écrasait tout mon CSS — corrigé à la source (filet chaud et discret). + zones imposantes retirées, différenciation par en-têtes forts à pastille-joyau et espacement. Le moteur de DA était lui aussi figé en cache (bumpé)."
+    "🧼 Tous les filets de séparation retirés (fini les lignes noires/grises/rouges entre les contenus). La structure tient désormais par l'espace et des en-têtes affirmés. Les champs et boutons gardent un contour neutre très discret."
   ]
 }
