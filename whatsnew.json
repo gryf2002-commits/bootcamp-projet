@@ -1,6 +1,6 @@
 {
-  "candidate": "v756",
+  "candidate": "v757",
   "items": [
-    "🧹 Derniers contours retirés à la source : puces (À faire, Filtres, modes de jeu), segments du profil (Gold/Pro/Admin), sélecteur de ville, bandeau d'invitation — tous débarrassés de leur trait gris/corail, remplacés par un fond doux. Scan complet : ne restent que les contours légitimes (champs, épingles de carte, anneaux d'avatar, contrôles de carte, sélection active)."
+    "🧹 TOUS les séparateurs de contenu retirés (et pas seulement les contours de boutons) : fil d'actu, listes, conversations, classement, rangées — partout, gris comme rouges. La séparation tient par l'espace, les en-têtes et les bandes douces. Bandes refaites : pleine largeur, symétriques, bien intégrées."
   ]
 }

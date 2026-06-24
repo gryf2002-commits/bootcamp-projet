@@ -5438,9 +5438,9 @@
     /* ─── C · BANDES DOUCES entre groupes (remplace les filets) ─────────────── */
     html body :is(.section-head, .qm-head), html.sm-app body :is(.section-head, .qm-head) { position: relative !important; }
     html body :is(.section-head, .qm-head)::after, html.sm-app body :is(.section-head, .qm-head)::after {
-      content: "" !important; display: block !important; position: absolute !important; left: -6px !important; right: -6px !important;
-      top: -1.35rem !important; height: 1.5rem !important; pointer-events: none !important; z-index: 0 !important;
-      background: radial-gradient(120% 140% at 50% 100%, color-mix(in oklab, var(--accent) 20%, transparent) 0%, color-mix(in oklab, var(--accent) 8%, transparent) 44%, transparent 74%) !important; }
+      content: "" !important; display: block !important; position: absolute !important; left: -24px !important; right: -24px !important;
+      top: -1.55rem !important; height: 1.9rem !important; pointer-events: none !important; z-index: 0 !important;
+      background: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--accent) 7%, transparent) 50%, transparent 100%) !important; }
     /* renfort : puces de contrôle récalcitrantes (bordure en longhand/inline) */
     html.sm-app body :is(.avail-chip, .streak-chip, .qs-mode-btn, .tvt-btn, .pseg button, .seg-btn),
     html body #profSegNav button, html.sm-app body #profSegNav button {
@@ -5450,3 +5450,17 @@
 
     /* v756 · derniers contours résiduels retirés (scan _lines.js) */
     html body .invite-banner, html.sm-app body .invite-banner { border: 0 !important; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v757 · TOUS LES SÉPARATEURS DE CONTENU RETIRÉS (Maxime : « bcp de séparateurs
+       pas les contours »). Scan grep des 38 `border-bottom/top:1px` + listes peuplées
+       (fil d'actu .feed-card, convs, classement, badges…) invisibles sur compte vide.
+       On neutralise border-top/bottom partout sur les rangées/items. La séparation =
+       espace + en-têtes + bandes douces. Réversible. ════════════════════════════════ */
+    html body :is(.prog-row,.trip-matches,.bubble-tr,.set-grouptitle,.te-row,.trust-explain,.place,.act-search-results li,.cstory-hl,.ptrip-section,.person,.qrow,.reviews-form,.review-item,.chat-header,.ptl-row,.pfield-sep,.num-row,.da-comp-row,.feed-card,.fpost,.conv,.conv-row,.convrow,.lb-row,.set-row,.notif,.notif-row,.notifrow,.coll-row,.coll-city,.num-here,.tj-card,.match-row,.vouch-row,.report-row,.qcoll,.fc-row,.sc-row,.sugg-row,.act-row,.req-row,.grp-row,.member-row,.fr-row,.hist-row,.rit-row,.ci-row,.lead-row,.rank-row,.badge-row,.bdg-row),
+    html.sm-app body :is(.prog-row,.trip-matches,.bubble-tr,.set-grouptitle,.te-row,.trust-explain,.place,.act-search-results li,.cstory-hl,.ptrip-section,.person,.qrow,.reviews-form,.review-item,.chat-header,.ptl-row,.pfield-sep,.num-row,.da-comp-row,.feed-card,.fpost,.conv,.conv-row,.convrow,.lb-row,.set-row,.notif,.notif-row,.notifrow,.coll-row,.coll-city,.num-here,.tj-card,.match-row,.vouch-row,.report-row,.qcoll,.fc-row,.sc-row,.sugg-row,.act-row,.req-row,.grp-row,.member-row,.fr-row,.hist-row,.rit-row,.ci-row,.lead-row,.rank-row,.badge-row,.bdg-row) {
+      border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
+    /* + balai large : tout enfant direct de liste/panel avec UNIQUEMENT un filet haut/bas (séparateur) */
+    html.sm-app body .tab-panel :is(ul, ol, .list, .rows, [class*="-list"], [class*="-rows"]) > li,
+    html.sm-app body .tab-panel :is(.list, .rows, [class*="-list"]) > :is(div, button, a) {
+      border-top-width: 0 !important; border-bottom-width: 0 !important; }
