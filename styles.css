@@ -5466,7 +5466,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 760; }
+    :root { --sm-build: 761; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -5549,3 +5549,45 @@
       html.sm-app body :is(.tile,.cat-tile,.gp-tile,.sc-card,.feature,.quest-spotlight,.prog-card,.nq-card,.pcell):not(.gold-hero):hover { transform: translateY(-1px); } }
     @media (prefers-reduced-motion: reduce) {
       html body :is(.card,.tile,.cat-tile,.gp-tile,.sc-card,.feature,.quest-spotlight,.prog-card,.nq-card,.pcell):active { transform: none !important; } }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v761 · MOTION — REVEAL D'ENTRÉE (couche CSS fiable, indépendante de GSAP).
+       Les .tab-panel cachés sont display:none → l'anim REJOUE à chaque changement
+       d'onglet. Les blocs montent+apparaissent en cascade (stagger). fill=backwards
+       → AUCUN transform résiduel (ne casse pas le scroll, leçon v712). 6 modes.
+       ════════════════════════════════════════════════════════════════════════ */
+    @keyframes smRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    html body .tab-panel:not(.hidden):not([data-panel="accueil"]) > *:not([class*="-view"]):not(.hidden):not(script),
+    html body .tab-panel:not(.hidden):not([data-panel="accueil"]) > [class*="-view"] > *:not(.hidden):not(script) {
+      animation: smRise .52s var(--ease-out, cubic-bezier(.23,1,.32,1)) backwards; }
+    html body .tab-panel:not(.hidden) > *:nth-child(1), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(1) { animation-delay: 0ms; }
+    html body .tab-panel:not(.hidden) > *:nth-child(2), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(2) { animation-delay: 45ms; }
+    html body .tab-panel:not(.hidden) > *:nth-child(3), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(3) { animation-delay: 90ms; }
+    html body .tab-panel:not(.hidden) > *:nth-child(4), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(4) { animation-delay: 135ms; }
+    html body .tab-panel:not(.hidden) > *:nth-child(5), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(5) { animation-delay: 180ms; }
+    html body .tab-panel:not(.hidden) > *:nth-child(6), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(6) { animation-delay: 225ms; }
+    html body .tab-panel:not(.hidden) > *:nth-child(7), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(7) { animation-delay: 270ms; }
+    html body .tab-panel:not(.hidden) > *:nth-child(8), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(8) { animation-delay: 315ms; }
+    html body .tab-panel:not(.hidden) > *:nth-child(9), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(9) { animation-delay: 360ms; }
+    html body .tab-panel:not(.hidden) > *:nth-child(10), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(10) { animation-delay: 405ms; }
+    html body .tab-panel:not(.hidden) > *:nth-child(11), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(11) { animation-delay: 450ms; }
+    html body .tab-panel:not(.hidden) > *:nth-child(12), html body .tab-panel:not(.hidden) > [class*="-view"] > *:nth-child(12) { animation-delay: 495ms; }
+    @media (prefers-reduced-motion: reduce) {
+      html body .tab-panel:not(.hidden) > *, html body .tab-panel:not(.hidden) > [class*="-view"] > * { animation: none !important; } }
+
+    /* v761b · profil : contenu dans #profMain (pas une -view) → on anime ses enfants en stagger */
+    html body .tab-panel:not(.hidden) > #profMain { animation: none !important; }
+    html body .tab-panel:not(.hidden) > #profMain > *:not(.hidden):not(script) { animation: smRise .52s var(--ease-out, cubic-bezier(.23,1,.32,1)) backwards; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(1) { animation-delay: 0ms; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(2) { animation-delay: 45ms; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(3) { animation-delay: 90ms; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(4) { animation-delay: 135ms; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(5) { animation-delay: 180ms; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(6) { animation-delay: 225ms; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(7) { animation-delay: 270ms; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(8) { animation-delay: 315ms; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(9) { animation-delay: 360ms; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(10) { animation-delay: 405ms; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(11) { animation-delay: 450ms; }
+    html body .tab-panel:not(.hidden) > #profMain > *:nth-child(12) { animation-delay: 495ms; }
+    @media (prefers-reduced-motion: reduce) { html body .tab-panel:not(.hidden) > #profMain > * { animation: none !important; } }

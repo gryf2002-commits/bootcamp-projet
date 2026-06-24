@@ -17,6 +17,7 @@
   // ni de « depop/repop »). clearProps:"all" à la fin → AUCUN transform résiduel sur les sections
   // (évite de re-créer un containing block qui casserait le scroll tactile).
   SM.revealPanel = function (panel) {
+    return false; /* v761 : reveal d'entrée géré en CSS (@keyframes smRise, fiable sans GSAP) → on évite le doublon/conflit */
     var g = G();
     if (!g || reduce || !panel) return false;
     var all = panel.querySelectorAll(
