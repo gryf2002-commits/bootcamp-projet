@@ -300,7 +300,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=781"></script>
+  <script src="sunmates-badges.js?v=782"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
@@ -309,7 +309,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
   <!-- 🎬 DA de Motion « Le mouvement du couchant » : noyau réutilisable (window.SM_MOTION). -->
   <script defer src="sm-motion-da.js?v=740"></script>
-  <script defer src="sunmates-motion.js?v=781"></script>
+  <script defer src="sunmates-motion.js?v=782"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -361,7 +361,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=781">
+  <link rel="stylesheet" href="styles.css?v=782">
   <style id="sm-cloak">html.sm-verifying body{visibility:hidden!important}</style>
   <script>
   /* v767 · AUTO-RÉPARATEUR + CLOAK : on masque la page jusqu'à la vérif de version.
@@ -1458,7 +1458,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=781">
+  <link rel="stylesheet" href="sunmates-lite.css?v=782">
 </head>
 <body>
   <!-- a11y : lien d'évitement (premier élément focalisable) → saute la barre/nav vers le contenu principal. -->
@@ -6236,6 +6236,22 @@
       } catch (e) {}
       return null;
     }
+    // #7 (retour Maxime « la ville même s'il en existe plusieurs dans le monde on ne peut pas choisir ») :
+    // on remonte PLUSIEURS correspondances pour laisser choisir entre les villes homonymes.
+    async function geocodeCityOptions(city) {
+      try {
+        const r = await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=8&addressdetails=1&accept-language=fr&q=" + encodeURIComponent(city), { headers: { "Accept-Language": "fr" } });
+        const j = await r.json();
+        return (j || []).map((o) => {
+          const a = o.address || {}; const cc = (a.country_code || "").toUpperCase();
+          const country = a.country || ""; const region = a.state || a.region || a.county || "";
+          const cityName = a.city || a.town || a.village || a.municipality || a.hamlet || city;
+          const flag = _flagEmoji(cc) ? _flagEmoji(cc) + " " : "";
+          return { lat: parseFloat(o.lat), lng: parseFloat(o.lon), country: country ? (flag + country) : null,
+                   label: [cityName, region, country].filter(Boolean).join(", "), key: (cityName + "|" + region + "|" + country).toLowerCase() };
+        }).filter((o) => isFinite(o.lat) && isFinite(o.lng));
+      } catch (e) { return []; }
+    }
     async function loadMyTrips() { try { return (await db.from("trips").select("*").eq("user_id", myUserId).order("start_date")).data || []; } catch (e) { return null; } }
     async function addTrip(t) { return db.from("trips").insert({ user_id: myUserId, ...t }); }
     async function deleteTrip(id) { return db.from("trips").delete().eq("id", id); }
@@ -6492,7 +6508,29 @@
       if (end < start) return fail("La date de fin doit être après le début.");
       const btn = $("tripSave"); if (btn) { btn.disabled = true; btn.textContent = "Enregistrement…"; }
       if (msg) { msg.style.color = "var(--muted)"; msg.textContent = "Localisation de la ville…"; }
-      const geo = await geocodeCity(city); // best-effort : coords + pays
+      // #7 : plusieurs villes homonymes → on laisse CHOISIR (inline, sans modale imbriquée).
+      let opts = await geocodeCityOptions(city);
+      const seen = new Set(); opts = opts.filter((o) => { if (seen.has(o.key)) return false; seen.add(o.key); return true; });
+      if (opts.length > 1) {
+        if (btn) { btn.disabled = false; btn.textContent = "Enregistrer"; }
+        if (msg) {
+          msg.style.color = "var(--ink)";
+          msg.innerHTML = "Plusieurs villes <b>« " + escapeHtml(city) + " »</b> — laquelle ?<div id='tripCityChoices' style='display:flex;flex-direction:column;gap:.4rem;margin-top:.5rem'></div>";
+          const wrap = $("tripCityChoices");
+          opts.slice(0, 6).forEach((o) => {
+            const cb = document.createElement("button"); cb.type = "button"; cb.className = "btn-ghost"; cb.style.cssText = "text-align:left;width:100%;justify-content:flex-start";
+            cb.textContent = o.label; cb.addEventListener("click", () => _finalizeTrip(city, start, end, note, o)); wrap.appendChild(cb);
+          });
+        }
+        return;
+      }
+      await _finalizeTrip(city, start, end, note, opts[0] || await geocodeCity(city));
+    }
+    async function _finalizeTrip(city, start, end, note, geo) {
+      const msg = $("tripMsg"); const btn = $("tripSave");
+      if (btn) { btn.disabled = true; btn.textContent = "Enregistrement…"; }
+      if (msg) { msg.style.color = "var(--muted)"; msg.textContent = "Enregistrement…"; }
+      const fail = (txt) => { if (msg) { msg.style.color = "var(--danger)"; msg.textContent = txt; } };
       const row = { city, start_date: start, end_date: end, note: note || null };
       if (geo) { row.lat = geo.lat; row.lng = geo.lng; row.country = geo.country; }
       const { error } = await addTrip(row);
@@ -16568,7 +16606,9 @@
       const { error } = await db.from("profiles").update({ bff_id: next }).eq("id", myUserId);
       if (error) { toast("⚠️", errFr(error)); return; }
       myBffId = next; if (myProfile) myProfile.bff_id = next;
-      toast("⭐", next ? "BFF du moment défini !" : "BFF retiré");
+      // #22 (retour Maxime) : le choix de BFF est PERSONNEL et à SENS UNIQUE — on n'écrit que sur
+      // MON profil, l'autre n'est ni notifié·e ni impacté·e (on ne peut pas imposer son choix).
+      toast("⭐", next ? "BFF du moment défini ! <span style='opacity:.85'>(ton choix perso, l'autre n'est pas notifié·e)</span>" : "BFF retiré");
       renderBff();
       if (currentTravelerId) openTravelerProfile(travelerMap[currentTravelerId]);
     }
@@ -20326,7 +20366,7 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
-  <script src="sunmates-da-loader.js?v=781"></script>
+  <script src="sunmates-da-loader.js?v=782"></script>
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->
