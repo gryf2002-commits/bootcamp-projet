@@ -5580,7 +5580,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 788; }
+    :root { --sm-build: 790; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -5902,3 +5902,22 @@
     .tgm-who { font-size: .7rem; color: var(--muted); margin: 0 0 .15rem .35rem; font-weight: 700; }
     .tgm-bubble { padding: .5rem .72rem; border-radius: 14px; background: var(--card); border: 1px solid var(--line); font-size: .9rem; color: var(--ink); line-height: 1.35; word-break: break-word; }
     .tgm-row.me .tgm-bubble { background: var(--accent-grad); color: #fff; border: 0; }
+
+    /* v790 · #20 (retour Maxime « flash à l'affichage des photos dans jeux/quêtes ») :
+       (a) fond CHAUD sous chaque photo → plus de flash blanc le temps du chargement ;
+       (b) apparition en FONDU doux → masque le swap « filet local → photo distante ». Tous modes. */
+    .detail-hero, .pcard-photo, .card-photo, .qs-hero, .gal-city, .place-photo,
+    [data-lazybg] { background-color: var(--cream, #F2DCC2); }
+    body.theme-dusk :is(.detail-hero, .pcard-photo, .qs-hero, .gal-city, .place-photo, [data-lazybg]) { background-color: var(--dcard, #2a2140); }
+    @keyframes smPhotoFade { from { opacity: .35; } to { opacity: 1; } }
+    @media (prefers-reduced-motion: no-preference) {
+      .detail-hero.has-photo, .pcard-photo, .card-photo, .place-photo { animation: smPhotoFade .42s ease both; }
+    }
+
+    /* v790 · #12 (retour Maxime « l'appli lag dans sa globalité ») : PERF SCROLL — les éléments
+       répétés lourds (posts du fil, cartes, rangées de listes) ne sont PAS rendus tant qu'ils sont
+       hors-écran (content-visibility) → bien moins de style/layout/paint à calculer, scroll fluide.
+       contain-intrinsic-size = taille de réserve (pas de saut de scroll). Ne touche PAS la carte
+       (position:fixed, hors de cette liste) ni les conteneurs critiques. */
+    html body :is(.fpost, .pcard, .gcard, .tcard, .reward-card, .demo-step, .qrow, .lb-row, .person, .br-item, .conv, .review-item, .notif-card, .notif-item, .trip-card, .tj-card) {
+      content-visibility: auto; contain-intrinsic-size: auto 88px; }

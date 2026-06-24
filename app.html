@@ -300,7 +300,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=788"></script>
+  <script src="sunmates-badges.js?v=790"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
@@ -309,7 +309,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
   <!-- 🎬 DA de Motion « Le mouvement du couchant » : noyau réutilisable (window.SM_MOTION). -->
   <script defer src="sm-motion-da.js?v=740"></script>
-  <script defer src="sunmates-motion.js?v=788"></script>
+  <script defer src="sunmates-motion.js?v=790"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -361,7 +361,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=788">
+  <link rel="stylesheet" href="styles.css?v=790">
   <style id="sm-cloak">html.sm-verifying body{visibility:hidden!important}</style>
   <script>
   /* v767 · AUTO-RÉPARATEUR + CLOAK : on masque la page jusqu'à la vérif de version.
@@ -1458,7 +1458,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=788">
+  <link rel="stylesheet" href="sunmates-lite.css?v=790">
 </head>
 <body>
   <!-- a11y : lien d'évitement (premier élément focalisable) → saute la barre/nav vers le contenu principal. -->
@@ -11427,12 +11427,16 @@
       return UNSPLASH_POOLS.city.concat(UNSPLASH_POOLS.cafe); // défaut : ville + café (variété)
     }
     function _unsplash(id) { return "https://images.unsplash.com/photo-" + id + "?w=640&h=360&fit=crop&q=70"; }
-    function flickrImg(keywords, seed) {
-      const POOL = _photoPool(keywords);
-      const s = String(seed || "") + "|" + String(keywords || ""); let n = 0;
-      for (let i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) >>> 0;
-      return _unsplash(POOL[n % POOL.length]);
+    // #16 (retour Maxime « encore trop de photos similaires, impossible de mettre des doublons ») :
+    // loremflickr par MOTS-CLÉS + lock UNIQUE (dérivé de la clé) → chaque lieu/quête a SA photo,
+    // variée et thématique, déterministe (même clé → même image, jamais de doublon entre voisins).
+    // source.unsplash étant mort, loremflickr est la source fiable par mots-clés (filet local en dessous).
+    function _lflickr(keywords, seed) {
+      let kw = String(keywords || "travel").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9, ]/g, " ").trim().split(/[\s,]+/).filter(Boolean).slice(0, 3).join(",") || "travel";
+      let n = 0; const s = String(seed || "") + "|" + kw; for (let i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) >>> 0;
+      return "https://loremflickr.com/640/360/" + encodeURIComponent(kw) + "?lock=" + (n % 100000);
     }
+    function flickrImg(keywords, seed) { return _lflickr(keywords, seed); }
     // v773 (retour Maxime « les photos ne s'affichent pas » + « dans le dossier sunmates comme d'hab ») :
     // images locales EMBARQUÉES du dossier (toujours dispo, même si Unsplash est bloqué/HS sur le
     // réseau de l'utilisateur). Servent de FILET via background-image empilé : url(distante), url(locale)
@@ -11481,12 +11485,10 @@
     // collisions → « photos similaires » sur les check-ins) et elle ne change plus jamais.
     function cafeImage(c) {
       if (c.image_url) return c.image_url;
-      // VRAIE photo Unsplash de la banque, pool selon le NOM du lieu (café/bar/auberge), ancrée par
-      // id séquentiel → deux lieux voisins n'ont jamais la même photo, et elle ne change plus jamais.
-      const POOL = _photoPool((c.category || "") + " " + (c.name || ""));
-      let n = Number(c.id);
-      if (!isFinite(n)) { const s = String(c.name || c.id || ""); n = 0; for (let i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) >>> 0; }
-      return _unsplash(POOL[n % POOL.length]);
+      // #16 : photo loremflickr par MOTS-CLÉS (catégorie + ville) + lock UNIQUE = l'id du lieu →
+      // chaque lieu a SA propre photo, jamais de doublon entre voisins. Filet local en dessous.
+      const kw = (c.category || "cafe") + " " + (c.city || "");
+      return _lflickr(kw, "cafe-" + (c.id || c.name || ""));
     }
 
     // ---- JEUX POPULAIRES : mini-jeux INTÉGRÉS, jouables tout de suite (indépendants de la BDD) ----
@@ -20467,7 +20469,7 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
-  <script src="sunmates-da-loader.js?v=788"></script>
+  <script src="sunmates-da-loader.js?v=790"></script>
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->
