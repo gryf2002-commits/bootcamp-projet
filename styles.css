@@ -1357,10 +1357,10 @@
     html body :is(.chip, .sscope, .avail-chip, .streak-chip, .todo-toggle, .hm-layers-btn, .tvt-btn, .fc-kind, .qs-mode-btn, .sp-stat, .pseg, .mseg):not(.active):not(.on):not(.is-on),
     html.sm-app body :is(.chip, .sscope, .avail-chip, .streak-chip, .todo-toggle, .hm-layers-btn, .tvt-btn, .fc-kind, .qs-mode-btn, .sp-stat, .pseg, .mseg):not(.active):not(.on):not(.is-on) {
       background: color-mix(in srgb, var(--ink) 5%, transparent) !important;
-      border: 1px solid var(--line) !important; box-shadow: none !important; color: var(--muted) !important; }
+      border: 0 !important; box-shadow: none !important; color: var(--muted) !important; } /* v756 : contour gris retiré, fond subtil = l'affordance */
     /* la bascule Voyage/Maison : conteneur neutre, bouton actif = accent (déjà géré), inactif transparent */
     html body .mode-switch, html.sm-app body .mode-switch {
-      background: color-mix(in srgb, var(--ink) 5%, transparent) !important; border: 1px solid var(--line) !important; }
+      background: color-mix(in srgb, var(--ink) 5%, transparent) !important; border: 0 !important; } /* v756 : contour gris retiré */
     html body .mode-switch button:not(.active) { background: transparent !important; color: var(--muted) !important; box-shadow: none !important; }
     /* DÉLIMITATION (anti-fouillis) : on aère franchement entre les grandes sections de l'accueil,
        et le titre de section (barre d'accent Fraunces) sert de séparateur visuel — pas de boîte. */
@@ -1723,7 +1723,7 @@
     /* 3 · barre de recherche : fond neutre cohérent en nuit (fini le prune saturé) */
     html body.theme-dusk .search input, html.sm-app body.theme-dusk .search input { background: var(--dcard2, #241b35) !important; color: var(--ink) !important; border-color: var(--line) !important; }
     /* 4 · sélecteur de ville : pilule lisible (fini le gris terne) */
-    html body .city-pick .sm-sel-trigger, html.sm-app body .city-pick .sm-sel-trigger { background: var(--accent-soft) !important; border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent) !important; color: var(--ink) !important; }
+    html body .city-pick .sm-sel-trigger, html.sm-app body .city-pick .sm-sel-trigger { background: var(--accent-soft) !important; border: 0 !important; color: var(--ink) !important; } /* v756 : contour corail retiré, fond accent-soft = l'affordance */
     html body.theme-dusk .city-pick .sm-sel-trigger, html.sm-app body.theme-dusk .city-pick .sm-sel-trigger { background: var(--dcard, #2a2140) !important; border-color: rgba(255,209,92,.28) !important; }
     /* 5 · « À débloquer » : masquer si le rail est vide + médaille de secours */
     html body #badgeRailSection:not(:has(.br-item)) { display: none !important; }
@@ -3370,7 +3370,7 @@
     /* #profSegNav (Premium / Admin) : 2 vrais boutons-cartes DISTINCTS et bien séparés
        (avant : 2 libellés texte flottant dans un bandeau beige = « pas scindé / moche »). */
     #profSegNav { background: transparent !important; border: 0 !important; padding: 0 !important; gap: .55rem; margin: .7rem 0 .2rem; }
-    #profSegNav button { flex: 1; border-radius: 13px; padding: .62rem .5rem; font-size: .82rem; font-weight: 800; border: 1.5px solid var(--line); background: var(--card); box-shadow: var(--shadow-sm); }
+    #profSegNav button { flex: 1; border-radius: 13px; padding: .62rem .5rem; font-size: .82rem; font-weight: 800; border: 0; background: var(--card); box-shadow: none; } /* v756 : contour gris retiré */
     /* Premium = doré (spécial) ; Admin = FRAMBOISE SUNSET (retour Maxime : le terracotta
        faisait « marron morose/terreux » hors DA) → rose-corail profond, vivant, distinct
        du Premium or ET du corail global de l'app. */
@@ -5447,3 +5447,6 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important; border-style: none !important; }
     /* la 1re section de chaque écran n'a pas de bande au-dessus */
     html body .tab-panel > :is(.section-head, .qm-head):first-of-type::after, html.sm-app body .tab-panel > :is(.section-head, .qm-head):first-of-type::after { display: none !important; }
+
+    /* v756 · derniers contours résiduels retirés (scan _lines.js) */
+    html body .invite-banner, html.sm-app body .invite-banner { border: 0 !important; }
