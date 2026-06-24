@@ -5580,7 +5580,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 786; }
+    :root { --sm-build: 787; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -5884,3 +5884,21 @@
       border-radius: 16px !important; display: flex !important; flex-direction: column; gap: .15rem; align-items: flex-start; }
     html body .gold-perks .gp-tile .gp-ic, html.sm-app body .gold-perks .gp-tile .gp-ic { font-size: 1.55rem; }
     html body .gold-perks .gp-tile b, html.sm-app body .gold-perks .gp-tile b { color: var(--ink) !important; font-size: .92rem; }
+
+    /* v787 · #23 Salon de groupe par voyage (façon TripBFF) */
+    #tripGroupOverlay { position: fixed; inset: 0; z-index: 6400; background: var(--bg); display: flex; flex-direction: column; }
+    #tripGroupOverlay.hidden { display: none; }
+    .tgo-head { display: flex; align-items: center; gap: .6rem; padding: calc(.7rem + env(safe-area-inset-top, 0px)) .9rem .7rem; border-bottom: 1px solid var(--line); }
+    .tgo-head .backbtn { background: none; border: 0; font-size: 1.6rem; color: var(--ink); cursor: pointer; line-height: 1; padding: 0 .2rem; }
+    .tgo-title { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
+    .tgo-title b { font-size: 1rem; color: var(--ink); }
+    .tgo-title span { font-size: .74rem; }
+    .tgo-body { flex: 1; overflow-y: auto; padding: .9rem; display: flex; flex-direction: column; gap: .45rem; }
+    .tgo-input { display: flex; gap: .5rem; padding: .7rem .9rem calc(.7rem + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); }
+    .tgo-input input { flex: 1; }
+    .tgo-input .btn-primary { flex-shrink: 0; padding: .7rem 1rem; }
+    .tgm-row { max-width: 84%; align-self: flex-start; }
+    .tgm-row.me { align-self: flex-end; }
+    .tgm-who { font-size: .7rem; color: var(--muted); margin: 0 0 .15rem .35rem; font-weight: 700; }
+    .tgm-bubble { padding: .5rem .72rem; border-radius: 14px; background: var(--card); border: 1px solid var(--line); font-size: .9rem; color: var(--ink); line-height: 1.35; word-break: break-word; }
+    .tgm-row.me .tgm-bubble { background: var(--accent-grad); color: #fff; border: 0; }

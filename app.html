@@ -300,7 +300,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=786"></script>
+  <script src="sunmates-badges.js?v=787"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
@@ -309,7 +309,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
   <!-- 🎬 DA de Motion « Le mouvement du couchant » : noyau réutilisable (window.SM_MOTION). -->
   <script defer src="sm-motion-da.js?v=740"></script>
-  <script defer src="sunmates-motion.js?v=786"></script>
+  <script defer src="sunmates-motion.js?v=787"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -361,7 +361,7 @@
       });
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=786">
+  <link rel="stylesheet" href="styles.css?v=787">
   <style id="sm-cloak">html.sm-verifying body{visibility:hidden!important}</style>
   <script>
   /* v767 · AUTO-RÉPARATEUR + CLOAK : on masque la page jusqu'à la vérif de version.
@@ -1458,7 +1458,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=786">
+  <link rel="stylesheet" href="sunmates-lite.css?v=787">
 </head>
 <body>
   <!-- a11y : lien d'évitement (premier élément focalisable) → saute la barre/nav vers le contenu principal. -->
@@ -1494,6 +1494,20 @@
     <div class="globe-passport hidden" id="globePassport" aria-live="polite"></div>
     <div id="globeStage" class="globe-stage">
       <div id="globeState" class="globe-state">Chargement du globe…</div>
+    </div>
+  </div>
+
+  <!-- #23 · Salon de groupe par voyage (façon TripBFF) -->
+  <div id="tripGroupOverlay" class="hidden" role="dialog" aria-modal="true" aria-label="Salon de groupe de voyage">
+    <div class="tgo-head">
+      <button class="backbtn" id="tgoBack" aria-label="Retour">‹</button>
+      <div class="tgo-title"><b id="tgoTitle">Groupe</b><span class="muted" id="tgoSub"></span></div>
+      <button class="iconbtn" id="tgoLeave" title="Quitter ce groupe" aria-label="Quitter ce groupe">🚪</button>
+    </div>
+    <div class="tgo-body" id="tgoBody"></div>
+    <div class="tgo-input">
+      <input id="tgoInput" type="text" maxlength="2000" placeholder="Écris au groupe…" />
+      <button class="btn-primary" id="tgoSend">Envoyer</button>
     </div>
   </div>
 
@@ -2223,6 +2237,14 @@
             <summary>🌍 Qui part bientôt ?</summary>
             <p class="muted" style="margin:.4rem 0 .5rem;font-size:.8rem">Les prochains départs des voyageur·ses SunMates. Touche quelqu'un pour voir son profil et lui écrire.</p>
             <div class="card" id="communityTripsCard"></div>
+          </details>
+
+          <!-- #23 (retour Maxime, façon TripBFF) : salons de groupe AUTO par voyage (ville + mois).
+               Tu rejoins le groupe en ajoutant un voyage ; tu y discutes avec tous ceux qui y vont. -->
+          <details class="hm-plan" id="tripGroupsDetails">
+            <summary>💬 Tes groupes de voyage</summary>
+            <p class="muted" style="margin:.4rem 0 .5rem;font-size:.8rem">Un salon par destination·période : discute avec tous les Mates qui partent au même endroit en même temps. Ajoute un voyage pour rejoindre le groupe.</p>
+            <div class="card" id="tripGroupsCard"></div>
           </details>
 
           <!-- Voyageurs de passage dans ta ville (v687 : enveloppé → masquable via Personnaliser, masqué par défaut) -->
@@ -6286,6 +6308,68 @@
       }).join("");
       box.querySelectorAll("[data-cttrav]").forEach((el) => el.addEventListener("click", () => { const p = profById[el.dataset.cttrav] || travelerMap[el.dataset.cttrav]; if (p && typeof openTravelerProfile === "function") { goToTab("connexions"); openTravelerProfile(p); } }));
     }
+    // ===== #23 · CHATS DE GROUPE PAR VOYAGE (façon TripBFF) =====
+    // Clé de groupe = ville normalisée + mois de départ (ex. « lisbonne|2026-07»). Tout dégrade
+    // proprement si la migration sql/supabase_migration_trip_groups.sql n'est pas encore appliquée.
+    function _tgMonthLabel(d) { try { const dt = new Date(String(d) + "T00:00:00"); return dt.toLocaleDateString("fr-FR", { month: "long", year: "numeric" }); } catch (e) { return ""; } }
+    function _tripGroupKey(city, startDate) {
+      const c = (city || "").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+      const ym = (startDate || "").slice(0, 7);
+      return { key: c + "|" + ym, period: _tgMonthLabel(startDate) };
+    }
+    async function joinTripGroup(city, startDate) {
+      try { const k = _tripGroupKey(city, startDate); const { data } = await db.rpc("sm_join_trip_group", { p_city: city, p_key: k.key, p_period: k.period }); return data; } catch (e) { return null; }
+    }
+    async function loadMyTripGroups() {
+      try {
+        const { data: mem, error } = await db.from("trip_group_members").select("group_id").eq("user_id", myUserId);
+        if (error) return null; // tables pas encore créées
+        const ids = (mem || []).map((m) => m.group_id); if (!ids.length) return [];
+        const { data: gs } = await db.from("trip_groups").select("*").in("id", ids).order("created_at", { ascending: false });
+        return gs || [];
+      } catch (e) { return null; }
+    }
+    async function renderTripGroups() {
+      const box = $("tripGroupsCard"); if (!box || !myUserId) return;
+      const groups = await loadMyTripGroups();
+      if (groups === null) { box.innerHTML = '<p class="muted" style="text-align:center;padding:.7rem">Les groupes de voyage arrivent très vite ✈️</p>'; return; }
+      if (!groups.length) { box.innerHTML = '<p class="muted" style="text-align:center;padding:.7rem">Aucun groupe pour l\'instant. Ajoute un voyage pour rejoindre les Mates qui y vont ✈️</p>'; return; }
+      box.innerHTML = groups.map((g) => `<div class="trip-mate" data-tgopen="${g.id}" style="cursor:pointer;align-items:center"><span class="tj-flag" style="font-size:1.4rem;flex-shrink:0">💬</span><div class="tmn" style="flex:1;min-width:0"><b>${escapeHtml(g.city)}</b><div class="meta" style="font-size:.74rem;color:var(--muted)">${escapeHtml(g.period || "")}</div></div><span class="tm-compat" aria-hidden="true">›</span></div>`).join("");
+      box.querySelectorAll("[data-tgopen]").forEach((el) => el.addEventListener("click", () => openTripGroupChat(groups.find((g) => String(g.id) === el.dataset.tgopen))));
+    }
+    let _tgCurrent = null, _tgChannel = null;
+    async function openTripGroupChat(g) {
+      if (!g) return; _tgCurrent = g;
+      const t = $("tgoTitle"); if (t) t.textContent = "💬 " + g.city;
+      const s = $("tgoSub"); if (s) s.textContent = g.period || "Groupe de voyage";
+      const ov = $("tripGroupOverlay"); if (ov) ov.classList.remove("hidden");
+      await _tgLoadMessages(); _tgSubscribe();
+    }
+    async function _tgLoadMessages() {
+      const body = $("tgoBody"); if (!body || !_tgCurrent) return;
+      let msgs = [];
+      try { const { data } = await db.from("trip_group_messages").select("*").eq("group_id", _tgCurrent.id).order("created_at", { ascending: true }).limit(200); msgs = data || []; } catch (e) {}
+      const ids = [...new Set(msgs.map((m) => m.user_id))]; const names = {};
+      if (ids.length) { try { const { data } = await db.from("profiles").select("id,username").in("id", ids); (data || []).forEach((p) => names[p.id] = p); } catch (e) {} }
+      if (!msgs.length) { body.innerHTML = '<p class="muted" style="text-align:center;margin-top:2rem">Sois le·la premier·ère à dire bonjour 👋</p>'; return; }
+      body.innerHTML = msgs.map((m) => { const me = m.user_id === myUserId; const p = names[m.user_id] || {}; return `<div class="tgm-row ${me ? "me" : ""}">${me ? "" : `<div class="tgm-who">${escapeHtml(p.username || "Voyageur")}</div>`}<div class="tgm-bubble">${escapeHtml(m.content)}</div></div>`; }).join("");
+      body.scrollTop = body.scrollHeight;
+    }
+    async function _tgSend() {
+      const inp = $("tgoInput"); if (!inp || !_tgCurrent) return; const txt = (inp.value || "").trim(); if (!txt) return;
+      inp.value = "";
+      try { const { error } = await db.from("trip_group_messages").insert({ group_id: _tgCurrent.id, user_id: myUserId, content: txt }); if (error) throw error; } catch (e) { if (typeof toast === "function") toast("⚠️", "Envoi impossible (groupe pas encore actif)"); return; }
+      await _tgLoadMessages();
+    }
+    function _tgSubscribe() {
+      try { if (_tgChannel) db.removeChannel(_tgChannel);
+        _tgChannel = db.channel("tg:" + _tgCurrent.id).on("postgres_changes", { event: "INSERT", schema: "public", table: "trip_group_messages", filter: "group_id=eq." + _tgCurrent.id }, () => _tgLoadMessages()).subscribe();
+      } catch (e) {}
+    }
+    { const b = $("tgoBack"); if (b) b.addEventListener("click", () => { const ov = $("tripGroupOverlay"); if (ov) ov.classList.add("hidden"); try { if (_tgChannel) db.removeChannel(_tgChannel); } catch (e) {} }); }
+    { const s = $("tgoSend"); if (s) s.addEventListener("click", _tgSend); }
+    { const i = $("tgoInput"); if (i) i.addEventListener("keydown", (e) => { if (e.key === "Enter") _tgSend(); }); }
+    { const l = $("tgoLeave"); if (l) l.addEventListener("click", () => { if (!_tgCurrent) return; if (typeof smConfirm === "function") smConfirm("🚪", "Quitter ce groupe ?", "Tu ne verras plus ses messages.", "Quitter", async () => { try { await db.from("trip_group_members").delete().eq("group_id", _tgCurrent.id).eq("user_id", myUserId); } catch (e) {} const ov = $("tripGroupOverlay"); if (ov) ov.classList.add("hidden"); renderTripGroups(); }); }); }
     async function renderTrips() {
       const box = $("myTrips"); if (!box || !myUserId) return;
       const trips = await loadMyTrips();
@@ -6535,6 +6619,8 @@
       if (typeof closePopInfo === "function") closePopInfo();
       if (typeof celebrate === "function") celebrate();
       try { if (typeof track === "function") track("trip_added", {}); } catch (e) {}
+      // #23 : rejoindre AUTO le salon de groupe du voyage (ville + mois), puis rafraîchir la liste.
+      try { if (typeof joinTripGroup === "function") { await joinTripGroup(city, start); if (typeof renderTripGroups === "function") renderTripGroups(); } } catch (e) {}
       await renderTrips();
       // Feedback immédiat : combien de voyageurs chevauchent déjà ce voyage ?
       try {
@@ -7277,6 +7363,7 @@
         if (typeof renderSoloHome === "function") renderSoloHome();
         renderInspo(); renderNextTrip(); renderTripPrep(); renderWishlist(); renderTripsDone(); renderVisitors(); renderHost();
         if (typeof renderCommunityTrips === "function") renderCommunityTrips(); // #9 : prochains départs de la communauté
+        if (typeof renderTripGroups === "function") renderTripGroups(); // #23 : mes salons de groupe de voyage
         if (typeof renderHomeMates === "function") renderHomeMates();
         // Jour 0 : un compte tout neuf voit un mode Maison presque vide → mot d'accueil + cap sur le mode Voyage.
         try {
@@ -20376,7 +20463,7 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
-  <script src="sunmates-da-loader.js?v=786"></script>
+  <script src="sunmates-da-loader.js?v=787"></script>
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->
