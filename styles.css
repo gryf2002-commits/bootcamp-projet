@@ -408,7 +408,7 @@
     .trip-dates { flex-shrink: 0; font-size: .74rem; font-weight: 800; color: #6b3d00; background: linear-gradient(135deg, #FFD15C, #FF9F1C); border-radius: 999px; padding: .18rem .55rem; }
     .trip-del { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: .95rem; flex-shrink: 0; }
     .trip-note { font-size: .82rem; color: var(--muted); margin-top: .35rem; }
-    .trip-matches { margin-top: .55rem; border-top: 1px dashed var(--line); padding-top: .5rem; }
+    .trip-matches { margin-top: .7rem; border-top: 0; padding-top: .2rem; }
     .trip-matches .tm-lbl { font-size: .76rem; font-weight: 800; color: var(--accent-ink, var(--accent)); margin-bottom: .35rem; }
     .trip-mate { display: flex; align-items: center; gap: .55rem; padding: .35rem .15rem; cursor: pointer; border-radius: 10px; }
     .trip-mate:active { background: var(--accent-soft); }
@@ -677,7 +677,8 @@
     body.theme-dusk .lang-seg button:not(.active) { background: #2b2240; color: #ede6f2; }
     body.theme-dusk .spot-emoji-pick button:not(.active) { background: rgba(255,255,255,.08); }
     body.theme-dusk .spot-chip { color: #f3e9f3; }
-    .set-grouptitle { font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink, var(--accent)); margin: 1.1rem 0 .5rem; padding-top: .9rem; border-top: 1px solid var(--line); }
+    /* v807 · DA plate (Maxime « tjrs des barres de séparation ») : filet retiré, l'espacement seul groupe. */
+    .set-grouptitle { font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink, var(--accent)); margin: 1.3rem 0 .5rem; padding-top: 0; border-top: 0; }
     .set-grouptitle:first-of-type { border-top: 0; padding-top: 0; margin-top: .8rem; }
     .set-toggle { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .7rem 0; }
     .set-toggle .st-lbl { font-weight: 600; color: var(--ink); }
@@ -1860,6 +1861,18 @@
     html.sm-app body :is(.popinfo-card, .act-card) [style*="#2a9d5c"] { color: var(--accent-ink, var(--accent)) !important; }
 
     /* ============================================================
+       v807 · CONTRASTE NUIT (mandat Maxime 25/06 « contraste qui dérive selon les mondes »).
+       Or/vert codés en dur INLINE HORS .popinfo-card/.act-card (donc non couverts par v729) :
+       récap hebdo, note resto, XP/niveau profil, modale Gold, tendance classement.
+       Illisibles en dusk (or foncé/vert sombre sur fond prune). On élargit l'override à TOUT
+       le mode sombre. ⚠️ Scopé theme-dusk UNIQUEMENT → le mode JOUR garde l'or foncé (lisible
+       sur fond clair). Pure addition, n'enlève rien.
+       ============================================================ */
+    html body.theme-dusk [style*="#B5740E"], html.sm-app body.theme-dusk [style*="#B5740E"],
+    html body.theme-dusk [style*="#C98A1E"], html.sm-app body.theme-dusk [style*="#C98A1E"] { color: #FFD79A !important; }
+    html body.theme-dusk [style*="#1E7A5A"], html.sm-app body.theme-dusk [style*="#1E7A5A"] { color: var(--accent-ink, #FFD79A) !important; }
+
+    /* ============================================================
        v708 (liste Maxime, lot 2) : à débloquer retiré, titres moins balèzes, cercle/SOS normé,
        textareas raisonnables + fond non-prune.
        ============================================================ */
@@ -2156,9 +2169,9 @@
     .star-input span:active { transform: scale(1.2); }
     body.theme-dusk .star-input span { color: #4a4360; }
     body.theme-dusk .star-input span.on { color: #FFC93C; }
-    .reviews-form { border-top: 1px solid var(--line); padding-top: .6rem; }
+    .reviews-form { border-top: 0; padding-top: .2rem; margin-top: .6rem; }
     .reviews-form textarea { margin-top: .7rem; } /* espace sous les étoiles */
-    .review-item { display: flex; gap: .6rem; padding: .55rem 0; border-bottom: 1px solid var(--line); }
+    .review-item { display: flex; gap: .6rem; padding: .5rem 0; border-bottom: 0; }
     .review-item:last-child { border-bottom: 0; }
     .review-item .avatar { width: 36px; height: 36px; }
     .review-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
@@ -5304,7 +5317,7 @@
     /* B1 · filet qui DÉPASSE sous la dernière entrée du carnet de voyages */
     html body .tj-card:last-child, html.sm-app body .tj-card:last-child { border-bottom: 0 !important; }
     /* B2 · pointillés hors-doctrine → filets pleins thémés */
-    html body .trip-matches, html.sm-app body .trip-matches { border-top: 1px solid var(--line) !important; }
+    html body .trip-matches, html.sm-app body .trip-matches { border-top: 0 !important; }
     html body .da-comp-row, html.sm-app body .da-comp-row { border-bottom: 1px solid var(--line) !important; }
     html body .pfield-sep, html.sm-app body .pfield-sep { border-top: 1px solid var(--line) !important; border-bottom: 0 !important; }
     /* B3 · prog-row : couleur ad-hoc legacy → --line (l'override nuit devient inutile) */
@@ -5582,7 +5595,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 805; }
+    :root { --sm-build: 807; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }

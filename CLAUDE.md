@@ -18,24 +18,28 @@ action/question à la fois.
 - **Carte / liste des lieux sûrs** : lieux validés pour des rencontres en sécurité.
 - **Connexions sûres** : mise en relation non ambiguë entre voyageurs.
 
-## Stack imposée (NE PAS CHANGER)
-- **Front-end** : un **seul fichier `index.html`** en HTML / CSS / JavaScript
-  « vanilla ». **Aucun framework** (pas de React/Vue), **aucun outil de build**,
-  **aucun serveur Node.js**.
-- **Backend = Supabase directement** : la base PostgreSQL + Supabase Auth + les
-  règles RLS jouent le rôle du backend. `index.html` appelle Supabase via le client
-  JavaScript chargé par **CDN**.
-- **Hébergement** : **GitHub Pages** (site statique), branche `main`, dossier racine.
-  ⚠️ GitHub Pages ne peut PAS exécuter de serveur Node/Express : tout passe par
-  Supabase côté client.
+## Stack — vanilla NON imposée (décision Maxime, 25/06/2026)
+> ⚠️ CHANGEMENT : la contrainte « un seul `index.html` vanilla, aucun framework, aucun
+> build » est **levée** par Maxime. Les frameworks (React/Vue/Svelte…) et les outils de
+> build sont désormais **autorisés**. But : pouvoir upgrader la vitrine, toutes les pages
+> et l'app au-delà de ce que le vanilla permettait, **en restant dans la DA sunset doux
+> raffiné**.
 
-> Note d'historique : un prompt initial proposait un backend Node.js/Express en
-> couches (controllers/services/repositories). Abandonné car **incompatible avec
-> GitHub Pages et la stack imposée**. La vision produit et le schéma Supabase (avec
-> RLS) ont été conservés ; l'architecture est devenue « front vanilla → Supabase ».
+**Garde-fous (pour ne PAS casser la prod en route) :**
+- La **prod actuelle est encore vanilla** : `index.html` (vitrine) + `app.html` (app, ~1,7 Mo
+  monofichier) + `sw.js`/`manifest.json`, servis en **statique par GitHub Pages** sur
+  `sunmatesapp.com`. Tant qu'on n'a pas migré explicitement, on **ne casse pas** ce qui tourne.
+- Toute migration off-vanilla doit soit **produire un build statique** déployable sur GitHub
+  Pages (Vite/Astro/Next export…), soit s'accompagner d'un **changement d'hébergement décidé
+  avec Maxime**. Pas de serveur Node permanent côté Pages.
+- **Backend = Supabase directement** (PostgreSQL + Auth + RLS), appelé côté client. La sécurité
+  repose sur les **règles RLS**, jamais sur un secret.
+- Migrer = par étapes vérifiées (build qui marche, app qui marche, SEO préservé), jamais un
+  big-bang qui met la prod par terre.
 
 ## Structure du projet
-- `index.html` — toute l'application (HTML + CSS + JS dans ce seul fichier).
+- `index.html` — **vitrine** (page d'accueil sunmatesapp.com, SEO).
+- `app.html` — **l'application** (monofichier HTML+CSS+JS, ~1,7 Mo) + `sw.js` (PWA) + `manifest.json`.
 - `supabase_schema.sql` — schéma des tables + règles RLS + données de démo (à
   exécuter dans le SQL Editor de Supabase).
 - `.gitignore` — fichiers à ne jamais publier.

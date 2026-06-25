@@ -499,6 +499,14 @@ body.sm-lite .tab-panel[data-panel="jeux"] { display: block; }
 body.sm-lite #jeuxHome [data-beta],
 body.sm-lite #jeuxHome .beta-only { display: none !important; }
 
+/* v807 (Maxime « refonte Jeux sur la Lite ») : Boutique (data-beta) masquée en Lite → la rangée
+   secondaire 4 colonnes laissait une COLONNE VIDE et les 3 tuiles flottaient déséquilibrées.
+   On passe à 3 colonnes : Badges / Coupons / Classement remplissent la ligne proprement. */
+body.sm-lite #jeuxNav .jnav-secondary { grid-template-columns: repeat(3, 1fr) !important; }
+/* rythme vertical resserré : la nav ne flotte plus loin sous la quête du jour */
+body.sm-lite #jeuxHome > .quest-spotlight { margin-top: .2rem !important; }
+body.sm-lite #jeuxHome > #jeuxNav { margin-top: .5rem !important; }
+
 /* ============================================================
    PEAUFINAGE v534 — homogénéisation + parcours (audit multi-agents).
    Décisions Maxime : emoji retirés des CTA/titres · Premium masqué · CTA arrondi 14px ·

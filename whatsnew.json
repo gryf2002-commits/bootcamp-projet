@@ -1,11 +1,11 @@
 {
-  "candidate": "v798",
+  "candidate": "v807",
   "items": [
-    "✨ Fini les traits de séparation : listes, cartes et sections à plat, sur tous les écrans et tous les modes (jour, nuit, hiver, tropical).",
-    "🎨 Couleurs des tuiles homogènes partout — accueil, sécurité, jeux : la même teinte coucher de soleil, même en mode sombre.",
-    "🖼️ Photos plus nettes et plus rapides : chaque lieu a son image unique, sans rechargement ni clignotement, et elles s'affichent enfin en mode sombre.",
-    "👟 Compteur de pas en tuile cliquable, juste à côté de la météo, sous la carte.",
-    "🗺️ Carte d'accueil qui ne fait plus attendre : l'écran « on prépare ta carte » ne traîne plus.",
-    "🌍 Pages de villes immersives : grande photo plein écran, format façon page principale, et une ambiance sonore propre à chaque ville."
+    "💬 Nouveau : tes salons de voyage apparaissent sur la carte ! Un repère 💬 par ville, l'aperçu du dernier message, et un clic pour ouvrir le chat du groupe.",
+    "🌙 Mode nuit plus lisible : les chiffres dorés (XP, niveau, prix, notes) et indicateurs ne se perdent plus sur le fond sombre.",
+    "🖼️ Photos qui s'affichent partout : les lieux gardent leur image même quand le réseau traîne, fini les cartes vides.",
+    "➖ Derniers traits de séparation retirés (réglages, voyages, avis) : encore plus à plat, fidèle à la DA.",
+    "🎮 Onglet Jeux en version Lite réorganisé : les raccourcis ne flottent plus, tout est aligné proprement.",
+    "🗺️ Pages de villes entièrement réécrites (Paris, Lisbonne, Barcelone, Lyon et 10 autres) : vrais quartiers, conseils sécurité du soir et bonnes adresses, propres à chaque ville."
   ]
 }
