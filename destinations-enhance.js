@@ -92,6 +92,27 @@
     ".dest-sticky-in{max-width:var(--maxw,900px);margin:0 auto;display:flex;align-items:center;gap:.8rem}" +
     ".dest-sticky-tx{flex:1;min-width:0;font-size:.86rem;color:var(--muted,#C9B7E0)}" +
     ".dest-sticky-tx b{color:#fff}" +
+    /* TÉMOIGNAGES (carrousel) — repris d'index.html, défilement auto */
+    ".dest-testi{width:100vw;margin-left:calc(50% - 50vw);padding:clamp(48px,7vw,90px) 0;overflow:hidden}" +
+    ".dest-testi-head{text-align:center;max-width:1140px;margin:0 auto 34px;padding:0 24px}" +
+    ".dest-testi-head .seclabel{color:" + prof.grad[0] + ";text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;font-weight:800}" +
+    ".dest-testi-head h2{font-family:'Fraunces',Georgia,serif;font-size:clamp(1.8rem,4vw,2.8rem);margin:.3rem 0 0}" +
+    ".dest-testi-track{display:flex;gap:20px;width:max-content;animation:destMarquee 46s linear infinite}" +
+    ".dest-testi:hover .dest-testi-track{animation-play-state:paused}" +
+    "@keyframes destMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}" +
+    ".dest-tcard{width:clamp(270px,30vw,350px);flex:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:24px}" +
+    ".dest-tcard q{display:block;font-family:'Fraunces',Georgia,serif;font-size:1.12rem;line-height:1.45;color:var(--ink,#f3e9e0)}" +
+    ".dest-tcard .who{margin-top:16px;display:flex;align-items:center;gap:.7rem;color:var(--muted,#c9b7e0);font-size:.9rem;font-weight:600}" +
+    ".dest-tcard .av{width:34px;height:34px;border-radius:50%;background:" + G + ";display:grid;place-items:center;color:#2a0d12;font-weight:900;font-family:'Fraunces',serif;flex:none}" +
+    ".dest-tcard .who b{color:var(--ink,#fff);font-weight:800}" +
+    "@media (prefers-reduced-motion:reduce){.dest-testi-track{animation:none;flex-wrap:wrap;justify-content:center;width:auto}}" +
+    /* BANDE CTA FINALE — image plein cadre + scrim, repris d'index.html */
+    ".dest-final{position:relative;width:100vw;margin-left:calc(50% - 50vw);min-height:64vh;display:flex;align-items:center;overflow:hidden;text-align:center;background:#120720}" +
+    ".dest-final-bg{position:absolute;inset:0;background-size:cover;background-position:center}" +
+    ".dest-final-scrim{position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,9,38,.92),rgba(20,9,38,.5) 55%,rgba(20,9,38,.8))}" +
+    ".dest-final-in{position:relative;z-index:2;width:100%;max-width:1140px;margin:0 auto;padding:80px 24px}" +
+    ".dest-final-in h2{font-family:'Fraunces',Georgia,serif;font-size:clamp(2rem,5.2vw,3.6rem);font-weight:900;color:#fff;margin:0}" +
+    ".dest-final-in p{color:#ECE2F5;margin:1rem auto 1.8rem;max-width:44ch;font-size:1.08rem}" +
     /* lecteur d'ambiance sonore — MÊME composant que la vitrine principale (index.html) */
     ".player{position:fixed;right:18px;bottom:84px;z-index:31;display:inline-flex;align-items:center;gap:.65rem;padding:.5rem .7rem;border-radius:999px;background:rgba(15,10,25,.92);border:1px solid rgba(255,255,255,.18);color:#fff;box-shadow:0 12px 30px rgba(8,4,18,.5);font-size:.85rem}" +
     ".player button{background:none;border:0;color:inherit;cursor:pointer;font:inherit}" +
@@ -156,6 +177,29 @@
     // le contenu n'est JAMAIS masqué pour de bon.
     setTimeout(function () { document.querySelectorAll(".reveal-d:not(.in)").forEach(function (e) { e.classList.add("in"); }); }, 2800);
   }
+
+  // --- Sections façon vitrine principale : TÉMOIGNAGES (carrousel) + CTA FINALE pleine largeur ---
+  // (#26 « même niveau de détail / même format qu'index.html »). Injectées avant le pied de page.
+  var anchor = document.querySelector("main") ? document.querySelector("main").lastElementChild : null;
+  var footer = document.querySelector("footer");
+  var TESTI = [
+    ["Partie seule à " + CITY + ", rentrée avec un groupe encore actif six mois après. Je sais toujours pas comment.", "Léa, 26 ans", "L"],
+    ["J'avais prévu un musée. J'ai fini sur un toit avec trois inconnus et une guitare désaccordée. Aucun regret.", "Karim, 31 ans", "K"],
+    ["Premier voyage solo, je flippais un peu. Au final j'ai surtout flippé de devoir rentrer.", "Chloé, 23 ans", "C"],
+    ["À mon âge on se fait plus d'amis, paraît-il. Quelqu'un a oublié de prévenir SunMates.", "Antoine, 38 ans", "A"],
+    ["Je voulais juste savoir où boire un verre correct. Repartie avec une coloc de vacances.", "Inès, 28 ans", "I"],
+    ["L'appli te dit qui est dans le coin, pas qui est célibataire. Franchement, reposant.", "Mathéo, 24 ans", "M"]
+  ];
+  function tcard(t) { return "<div class='dest-tcard'><q>" + t[0] + "</q><div class='who'><span class='av' aria-hidden='true'>" + t[2] + "</span><span><b>" + t[1] + "</b></span></div></div>"; }
+  var testi = document.createElement("section"); testi.className = "dest-testi";
+  // cartes DOUBLÉES pour un défilement en boucle continue (translateX -50%)
+  testi.innerHTML = "<div class='dest-testi-head'><span class='seclabel'>Ils sont partis seuls à " + CITY + "</span><h2>On te laisse lire la suite.</h2></div>" +
+    "<div class='dest-testi-track'>" + TESTI.map(tcard).join("") + TESTI.map(tcard).join("") + "</div>";
+  var fin = document.createElement("section"); fin.className = "dest-final";
+  fin.innerHTML = "<div class='dest-final-bg' style=\"background-image:" + cityPhoto(7, 1280, 800) + "\"></div><div class='dest-final-scrim'></div>" +
+    "<div class='dest-final-in'><h2>Ta place est déjà gardée à " + CITY + ".</h2><p>Télécharge, arrive seul·e, et vois ce que la ville a prévu pour toi.</p><a href='app.html' class='btn'>Réserve ta place</a></div>";
+  if (footer && footer.parentNode) { footer.parentNode.insertBefore(testi, footer); footer.parentNode.insertBefore(fin, footer); }
+  else if (anchor && anchor.parentNode) { anchor.parentNode.appendChild(testi); anchor.parentNode.appendChild(fin); }
 
   // --- Bande CTA collante -----------------------------------------------------------------------
   var sticky = document.createElement("div"); sticky.className = "dest-sticky";
