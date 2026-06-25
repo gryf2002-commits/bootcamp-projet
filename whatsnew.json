@@ -1,9 +1,9 @@
 {
-  "candidate": "v829",
+  "candidate": "v830",
   "items": [
-    "🌑 Ombres autour des emojis/icônes ENFIN supprimées : c'était un filtre (--relief), pas une box-shadow — d'où les ombres restantes (quête du jour, icône maison…). Mises à néant.",
-    "🔘 Switchs : couleurs d'ORIGINE (dégradé) de retour, apparition en FONDU doux, figés sur une ligne, texte jamais coupé ni illisible.",
-    "🎯 Titres centrés + action (Ajouter/Partager/compteur) passée juste en dessous → aucun chevauchement, aucun texte coupé.",
-    "🧱 Demi-contours moches supprimés (les bordures n'étaient coupées qu'en haut/bas) + toggle « à faire » lisible quand décoché."
+    "📸 PHOTOS RÉPARÉES (la vraie cause) : un conflit de guillemets dans le code (url('...') dans un style='...') vidait l'URL → AUCUNE photo ne s'affichait au clic, peu importe la donnée. Corrigé à la source — les photos des lieux s'affichent enfin.",
+    "🌑 Ombres d'emojis/icônes supprimées (c'était un filtre, pas une box-shadow).",
+    "🔘 Switchs : couleurs d'origine + fondu doux, figés sur une ligne, texte lisible.",
+    "🧱 Demi-contours supprimés, titres centrés (action en dessous), toggle « à faire » lisible."
   ]
 }
