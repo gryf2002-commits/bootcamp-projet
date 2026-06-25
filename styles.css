@@ -5645,7 +5645,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 826; }
+    :root { --sm-build: 827; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -6191,7 +6191,7 @@
     html.sm-app body .homemap-card.fs .epin, html.sm-app body .homemap-card.fs .epin-cluster { border: 2.5px solid #fff !important; }
     html.sm-app body .homemap-fsopen { border: 1.5px solid rgba(255,255,255,.9) !important; }
 
-    :root { --sm-build: 826; }
+    :root { --sm-build: 827; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v818 · 2e lot retours Maxime (25/06). LEÇON CLÉ (re-confirmée) : les balais
@@ -6241,7 +6241,7 @@
     html.sm-app body .weather-chip > * { min-width: 0; }
     html.sm-app body .weather-chip .wc-temp, html.sm-app body .weather-chip .wc-hint { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    :root { --sm-build: 826; }
+    :root { --sm-build: 827; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v820 · 3e lot retours Maxime (25/06). ════════════════════════════════ */
@@ -6302,7 +6302,7 @@
        UNIQUEMENT un garde-fou anti-débordement d'images (sans toucher la largeur de l'app). */
     html body img, html body video, html body canvas { max-width: 100%; }
 
-    :root { --sm-build: 826; }
+    :root { --sm-build: 827; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v821 · 4e lot Maxime — flèches repliage uniformes + titres centrés. ════ */
@@ -6326,7 +6326,7 @@
       color: var(--accent-ink, var(--accent)) !important; font-weight: 800 !important; font-size: 1.15rem !important;
       line-height: 1; opacity: .9; }
 
-    :root { --sm-build: 826; }
+    :root { --sm-build: 827; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v822 · 5e lot Maxime — halos (vraie source), mot « Gold » (WCAG), contraste. */
@@ -6358,7 +6358,7 @@
     html.sm-app body.theme-winter.theme-dusk [style*="#B5740E"], html.sm-app body.theme-tropic.theme-dusk [style*="#B5740E"] {
       color: #FFD79A !important; }
 
-    :root { --sm-build: 826; }
+    :root { --sm-build: 827; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v823 · 6e lot Maxime — TYPO uniforme (logique UX/UI pro) + tuiles Mes voyages
@@ -6389,7 +6389,7 @@
     html.sm-app body :is(.trip-passport, .globe-passport, .tj-passport, .trip-cta-duo) {
       background: transparent !important; box-shadow: none !important; }
 
-    :root { --sm-build: 826; }
+    :root { --sm-build: 827; }
 
     /* v823b · SWITCH QUI GLISSE (générique, posé par _smSegInd sur .seg/.mseg non-wrap). */
     html.sm-app body .sm-seg-slide { position: relative; }
@@ -6456,7 +6456,7 @@
       flex: 0 0 auto !important; margin-left: .5rem !important; color: var(--accent-ink, var(--accent)) !important;
       font-weight: 800 !important; font-size: 1.15rem !important; line-height: 1 !important; }
 
-    :root { --sm-build: 826; }
+    :root { --sm-build: 827; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v826 · CORRECTION DES RÉGRESSIONS (priorité : NE RIEN CASSER). ══════════ */
@@ -6500,4 +6500,35 @@
     :root, body, body.theme-dusk, body.theme-winter, body.theme-tropic,
     body.theme-winter.theme-dusk, body.theme-tropic.theme-dusk { --shadow: none !important; }
 
-    :root { --sm-build: 826; }
+    :root { --sm-build: 827; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v827 · REPREND TOUT (Maxime furieux). Bulletproof : halos, switch, contraste.
+       Vérifié VISUELLEMENT avant push. ════════════════════════════════════════ */
+
+    /* (1) HALOS — NUCLÉAIRE : zéro ombre sur TOUT le contenu (sauf pulse SOS, overlays,
+       focus a11y). Plus aucune ombre ne peut subsister, peu importe la source/DA. */
+    html.sm-app body :is(.tab-panel, .secu-view, .mates-view, .jeux-view, .prof-seg, #smMain) *:not(.su-sos):not(.modal-card):not(.popinfo-card):not(.act-card):not(.picker-card):not(.sm-selsheet):not(:focus-visible) {
+      box-shadow: none !important; }
+
+    /* (2) SWITCHS — FIGÉS SUR UNE LIGNE (jamais de wrap / saut / remontée), lisibles,
+       et transition DOUCE (crossfade du fond, pas de pilule transparente qui buggue). */
+    html.sm-app body :is(.mode-switch, .qs-mode, .fc-kinds, .search-scopes, .trip-vtoggle, .seg, .mseg) {
+      flex-wrap: nowrap !important; overflow: hidden; align-items: stretch; }
+    html.sm-app body :is(.mode-switch, .qs-mode, .fc-kinds, .search-scopes, .trip-vtoggle) > button {
+      flex: 1 1 0 !important; min-width: 0 !important; width: auto !important;
+      white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+      font-weight: 700 !important;                      /* poids CONSTANT → aucune variation de largeur */
+      transition: background-color .22s ease, color .22s ease !important;
+      box-shadow: none !important; }
+    /* actif = fond PLEIN coloré (transition douce) + texte blanc + ombre de texte pour la lisibilité */
+    html.sm-app body :is(.mode-switch, .qs-mode, .fc-kinds, .search-scopes, .trip-vtoggle) > :is(button.active, button.on, button.is-on) {
+      background: var(--accent) !important; background-image: none !important; color: #fff !important;
+      text-shadow: 0 1px 2px rgba(0,0,0,.28) !important; }
+    /* inactif = fond neutre lisible + encre (jamais blanc sur blanc / gris illisible) */
+    html.sm-app body :is(.mode-switch, .qs-mode, .fc-kinds, .search-scopes, .trip-vtoggle) > button:not(.active):not(.on):not(.is-on) {
+      background: color-mix(in srgb, var(--ink) 9%, transparent) !important; color: var(--ink) !important; text-shadow: none !important; }
+    /* le conteneur ne change pas de hauteur / ne remonte pas */
+    html.sm-app body :is(.mode-switch, .qs-mode, .fc-kinds, .search-scopes, .trip-vtoggle) { min-height: 2.5rem; }
+
+    :root { --sm-build: 827; }

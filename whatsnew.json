@@ -1,9 +1,9 @@
 {
-  "candidate": "v826",
+  "candidate": "v827",
   "items": [
-    "🛟 RÉGRESSIONS CORRIGÉES : le switch ne fait plus disparaître le texte (bouton actif plein + lisible, plus de blanc sur blanc), les titres ne se chevauchent plus, le « + Ajouter » ne se coupe plus, le compteur de villes des voyages passés réapparaît.",
-    "📱 L'app reprend toute la largeur de l'écran (un réglage cassait le plein écran).",
-    "✨ Halos : icônes des tuiles 100% plates (ombre du pictogramme retirée aussi).",
-    "🆙 (rappel v825) XP/niveau resynchronisé serveur après quête/rituel/jeu."
+    "🔘 Switchs FIGÉS sur une seule ligne (ne bougent plus, ne remontent plus), transition douce, bouton actif plein + texte lisible (fini le texte qui bug / blanc sur blanc).",
+    "✨ Halos : flatten NUCLÉAIRE — zéro ombre sur tout le contenu, peu importe la source.",
+    "📸 Vraies photos sur tes 8 lieux (en base) : elles s'affichent au prochain chargement.",
+    "⏱️ Note : après un déploiement, GitHub Pages met 2-5 min à diffuser — recharge un peu après."
   ]
 }
