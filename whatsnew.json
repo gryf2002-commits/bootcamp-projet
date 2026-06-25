@@ -1,9 +1,8 @@
 {
-  "candidate": "v832",
+  "candidate": "v833",
   "items": [
-    "🟠 Halo orange autour de l'icône des popups (ex. à l'ouverture d'un check-in / lieu) SUPPRIMÉ — il venait d'une ombre que mon nettoyage épargnait sur les modales.",
-    "🔆 Contrastes : éléments inactifs (admin, segments, toggles) toujours lisibles (plus de blanc sur blanc / gris illisible).",
-    "📐 Textes moins collés (un filet d'air entre titres/sous-titres et rangées).",
-    "🔘 (rappel v831) Switch avec pilule qui glisse, flèche de repli cliquable à droite, photos des lieux réparées."
+    "📐 Formes de tuiles harmonisées dans la zone « ma journée » : météo et « Lancer ma journée » = même gabarit (pleine largeur, même rayon).",
+    "🧳 Mes voyages : compteur villes/pays et cartes qui suivent bien le thème (jour/nuit).",
+    "🟠 (rappel v832) Halo orange des popups retiré, photos des lieux réparées, switch qui glisse, flèche de repli cliquable."
   ]
 }

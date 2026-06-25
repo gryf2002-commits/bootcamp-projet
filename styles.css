@@ -5647,7 +5647,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -6193,7 +6193,7 @@
     html.sm-app body .homemap-card.fs .epin, html.sm-app body .homemap-card.fs .epin-cluster { border: 2.5px solid #fff !important; }
     html.sm-app body .homemap-fsopen { border: 1.5px solid rgba(255,255,255,.9) !important; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v818 · 2e lot retours Maxime (25/06). LEÇON CLÉ (re-confirmée) : les balais
@@ -6243,7 +6243,7 @@
     html.sm-app body .weather-chip > * { min-width: 0; }
     html.sm-app body .weather-chip .wc-temp, html.sm-app body .weather-chip .wc-hint { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v820 · 3e lot retours Maxime (25/06). ════════════════════════════════ */
@@ -6304,7 +6304,7 @@
        UNIQUEMENT un garde-fou anti-débordement d'images (sans toucher la largeur de l'app). */
     html body img, html body video, html body canvas { max-width: 100%; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v821 · 4e lot Maxime — flèches repliage uniformes + titres centrés. ════ */
@@ -6328,7 +6328,7 @@
       color: var(--accent-ink, var(--accent)) !important; font-weight: 800 !important; font-size: 1.15rem !important;
       line-height: 1; opacity: .9; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v822 · 5e lot Maxime — halos (vraie source), mot « Gold » (WCAG), contraste. */
@@ -6360,7 +6360,7 @@
     html.sm-app body.theme-winter.theme-dusk [style*="#B5740E"], html.sm-app body.theme-tropic.theme-dusk [style*="#B5740E"] {
       color: #FFD79A !important; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v823 · 6e lot Maxime — TYPO uniforme (logique UX/UI pro) + tuiles Mes voyages
@@ -6391,7 +6391,7 @@
     html.sm-app body :is(.trip-passport, .globe-passport, .tj-passport, .trip-cta-duo) {
       background: transparent !important; box-shadow: none !important; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* v823b · SWITCH QUI GLISSE (générique, posé par _smSegInd sur .seg/.mseg non-wrap). */
     html.sm-app body .sm-seg-slide { position: relative; }
@@ -6458,7 +6458,7 @@
       flex: 0 0 auto !important; margin-left: .5rem !important; color: var(--accent-ink, var(--accent)) !important;
       font-weight: 800 !important; font-size: 1.15rem !important; line-height: 1 !important; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v826 · CORRECTION DES RÉGRESSIONS (priorité : NE RIEN CASSER). ══════════ */
@@ -6502,7 +6502,7 @@
     :root, body, body.theme-dusk, body.theme-winter, body.theme-tropic,
     body.theme-winter.theme-dusk, body.theme-tropic.theme-dusk { --shadow: none !important; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v827 · REPREND TOUT (Maxime furieux). Bulletproof : halos, switch, contraste.
@@ -6533,7 +6533,7 @@
     /* le conteneur ne change pas de hauteur / ne remonte pas */
     html.sm-app body :is(.mode-switch, .qs-mode, .fc-kinds, .search-scopes, .trip-vtoggle) { min-height: 2.5rem; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v828 · flèches repliage UNIFORMES (glyphe › partout + rotation) + titres nus
@@ -6550,7 +6550,7 @@
     html.sm-app body .card > h3:first-child, html.sm-app body .card[data-coll] > h3 {
       text-align: center !important; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v829 · Maxime point par point (j'écoute, je vérifie). ════════════════════ */
@@ -6600,7 +6600,7 @@
       border-color: color-mix(in srgb, var(--ink) 16%, transparent) !important; }
     html.sm-app body .todo-toggle:not(.active) .tt-state { color: var(--muted) !important; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v831 · SWITCH = vraie pilule qui GLISSE (snappy) + flèche repliage INLINE
@@ -6636,7 +6636,7 @@
     /* le chevron reste assez grand pour être cliqué */
     html.sm-app body .coll-chev { min-width: 1.6rem; min-height: 1.6rem; display: inline-flex; align-items: center; justify-content: center; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v832 · halo orange du popup (pin) + contrastes restants + espacements. ════ */
@@ -6659,4 +6659,28 @@
     html.sm-app body :is(.t-meta, .pr-sub, .tj-meta, .qm-sub, .pf-sub, .su-head .su-s) { margin-top: .15rem !important; }
     html.sm-app body :is(.prog-row, .pr-tx, .sugg-row, .te-row, .num-row) { line-height: 1.4 !important; }
 
-    :root { --sm-build: 832; }
+    :root { --sm-build: 833; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v833 · cohérence des formes de tuiles (météo / journée) + finitions trips. ═ */
+
+    /* (1) FORMES UNIFORMES dans la zone « ma journée » : météo + lancer ma journée =
+       même gabarit (pleine largeur, même rayon, même hauteur, empilés proprement). */
+    html.sm-app body #daySessionCard, html.sm-app body .day-chips { width: 100%; }
+    html.sm-app body .day-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+    html.sm-app body .day-chips .weather-chip {
+      flex: 1 1 100% !important; width: 100% !important; max-width: 100% !important;
+      justify-content: center !important; min-height: 2.6rem; border-radius: 999px !important;
+      padding: .5rem 1rem !important; }
+    /* le bouton « lancer ma journée » (CTA dans #daySessionCard) : même rayon/hauteur */
+    html.sm-app body #daySessionCard > button, html.sm-app body #daySessionCard .btn-primary,
+    html.sm-app body #daySessionCard [class*="cta"], html.sm-app body #daySessionCard .js-cta {
+      width: 100% !important; min-height: 2.6rem !important; border-radius: 999px !important; }
+
+    /* (2) TRIPS — compteur « X villes · X pays » thémé (suit la DA), drapeau lisible. */
+    html.sm-app body .ptrip-count {
+      background: color-mix(in srgb, var(--ink) 8%, transparent) !important;
+      color: var(--ink) !important; border: 0 !important; }
+    html.sm-app body :is(.tj-card, .ptrip-card, .trip-card) { color: var(--ink) !important; }
+
+    :root { --sm-build: 833; }
