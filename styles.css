@@ -5607,12 +5607,15 @@
     /* sélecteur ville : contour rouge → neutre très discret */
     html body .sm-sel-trigger, html.sm-app body .sm-sel-trigger { border-color: var(--line) !important; }
 
-    /* ─── C · BANDES DOUCES entre groupes (remplace les filets) ─────────────── */
-    html body :is(.section-head, .qm-head), html.sm-app body :is(.section-head, .qm-head) { position: relative !important; }
-    html body :is(.section-head, .qm-head)::after, html.sm-app body :is(.section-head, .qm-head)::after {
-      content: "" !important; display: block !important; position: absolute !important; left: -24px !important; right: -24px !important;
-      top: -1.55rem !important; height: 1.9rem !important; pointer-events: none !important; z-index: 0 !important;
-      background: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--accent) 7%, transparent) 50%, transparent 100%) !important; }
+    /* ─── C · BANDES DOUCES entre groupes — RETIRÉES v816 ───────────────────────
+       Maxime : « séparateur de catégories = traits noir/gris/rouge que tu as étalés en HALO ROUGE
+       décliné dans tous les modes ». C'ÉTAIT CE ::after (introduit v755 « bandes douces ») : une bande
+       teintée var(--accent) (donc orange en défaut, gris-bleu en hiver, vert tropiques) au-dessus de
+       CHAQUE en-tête de section. Jamais retiré par v810-v815 (qui visaient bordures/fonds, pas ce ::after).
+       → SUPPRIMÉ. La séparation reste assurée par l'espacement + les titres Fraunces. Fond 100% uni. */
+    html body :is(.section-head, .qm-head)::after, html.sm-app body :is(.section-head, .qm-head)::after,
+    html body :is(.section-head, .qm-head)::before, html.sm-app body :is(.section-head, .qm-head)::before {
+      content: none !important; display: none !important; background: none !important; }
     /* renfort : puces de contrôle récalcitrantes (bordure en longhand/inline) */
     html.sm-app body :is(.avail-chip, .streak-chip, .qs-mode-btn, .tvt-btn, .pseg button, .seg-btn),
     html body #profSegNav button, html.sm-app body #profSegNav button {
@@ -5638,7 +5641,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 815; }
+    :root { --sm-build: 816; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
