@@ -2674,13 +2674,17 @@
     .tp-hero { height: 280px; }
     /* v776 (retour Maxime #19 « les 5 tuiles côte à côte sous un mate ne sont pas lisibles ») :
        grille qui S'ENROULE (~3 par rangée) au lieu de 5 boutons serrés sur une seule ligne. */
-    .tp-actions2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: .5rem; margin-top: .7rem; }
-    .tpa-btn { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .2rem; padding: .6rem .3rem; border: 0; border-radius: 14px; color: #fff; font-size: .78rem; font-weight: 800; cursor: pointer; box-shadow: var(--shadow-sm); }
+    /* v818 : flex CENTRÉ (au lieu de grid auto-fit) → quand le nombre de boutons est
+       impair (5), la dernière rangée est CENTRÉE = symétrie (retour Maxime). */
+    .tp-actions2 { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; margin-top: .7rem; }
+    .tpa-btn { flex: 1 1 88px; max-width: 116px; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .2rem; padding: .6rem .3rem; border: 0; border-radius: 14px; color: #fff; font-size: .78rem; font-weight: 800; cursor: pointer; box-shadow: var(--shadow-sm); }
     .tpa-btn .tpa-ic { font-size: 1.35rem; }
     .tpa-btn:active { transform: scale(.96); }
-    /* Peps : chaque action a sa couleur (dans la DA) */
+    /* Peps : chaque action a sa couleur (dans la DA, sunset + bijou) — fini les tuiles grises */
     .tpa-btn.tpa-chal { background: linear-gradient(135deg,#FF9E4D,#FF6F3D); }
     .tpa-btn.tpa-bff { background: linear-gradient(135deg,#FFCF5C,#FF9F1C); color: #5a3d00; }
+    .tpa-btn.tpa-mid { background: linear-gradient(135deg,#7AA8FF,#4E73E8); }   /* Mi-chemin : indigo (lieu) */
+    .tpa-btn.tpa-verif { background: linear-gradient(135deg,#3DCBB4,#17A99B); } /* On s'est vus : turquoise bijou */
     .tpa-btn span { line-height: 1.1; }
     .tpa-btn.tpa-danger { background: linear-gradient(135deg,#FF7A6B,#E0463B); }
 
@@ -4797,8 +4801,8 @@
        les lignes VISIBLES disparaissent, le layout ne bouge pas. On PRÉSERVE les bordures utiles :
        champs de saisie, recherche, chat, modales.
        ============================================================ */
-    html body :is(.tab-panel, .secu-view, #placeDetail) *:not(input):not(textarea):not(select):not(.search):not(.chat-header):not(.tgo-head):not(.tgo-input):not(.bubble):not(.modal-card):not(.sm-selsheet):not(.popinfo-card):not(.act-card):not(.hcust-ov):not(.hcust-sheet):not(.epin):not(.epin-cluster):not(.epin-wrap):not([class*="leaflet"]):not(.homemap-fsopen):not(.homemap-fsclose):not(.su-call):not(.su-sos),
-    html.sm-app body :is(.tab-panel, .secu-view, #placeDetail) *:not(input):not(textarea):not(select):not(.search):not(.chat-header):not(.tgo-head):not(.tgo-input):not(.bubble):not(.modal-card):not(.sm-selsheet):not(.popinfo-card):not(.act-card):not(.hcust-ov):not(.hcust-sheet):not(.epin):not(.epin-cluster):not(.epin-wrap):not([class*="leaflet"]):not(.homemap-fsopen):not(.homemap-fsclose):not(.su-call):not(.su-sos) {
+    html body :is(.tab-panel, .secu-view, #placeDetail) *:not(input):not(textarea):not(select):not(.search):not(.chat-header):not(.tgo-head):not(.tgo-input):not(.bubble):not(.modal-card):not(.sm-selsheet):not(.popinfo-card):not(.act-card):not(.hcust-ov):not(.hcust-sheet):not(.epin):not(.epin-cluster):not(.epin-wrap):not([class*="leaflet"]):not(.homemap-fsopen):not(.homemap-fsclose):not(.su-call):not(.su-sos):not(.tpa-btn),
+    html.sm-app body :is(.tab-panel, .secu-view, #placeDetail) *:not(input):not(textarea):not(select):not(.search):not(.chat-header):not(.tgo-head):not(.tgo-input):not(.bubble):not(.modal-card):not(.sm-selsheet):not(.popinfo-card):not(.act-card):not(.hcust-ov):not(.hcust-sheet):not(.epin):not(.epin-cluster):not(.epin-wrap):not([class*="leaflet"]):not(.homemap-fsopen):not(.homemap-fsclose):not(.su-call):not(.su-sos):not(.tpa-btn) {
       border-top-color: transparent !important;
       border-bottom-color: transparent !important;
     }
@@ -5641,7 +5645,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 818; }
+    :root { --sm-build: 819; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -5851,7 +5855,7 @@
        cibler par classe). Zéro bordure + zéro ombre-ligne sur TOUT le contenu,
        SAUF whitelist : champs, interrupteurs (.sl), joyaux (.cic/.jo-ic/.smgem),
        avatars, épingles carte, CTA principal/SOS, carte Leaflet. ════════════════ */
-    html.sm-app body :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.sl):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.epin):not(.epin-cluster):not(.avatar):not(.btn-primary):not(.btn-danger):not(.su-btn):not(.su-call):not(.su-sos):not(.leaflet-container):not([class*="leaflet"]):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.pcell):not(.pc-stat):not(.thumb) {
+    html.sm-app body :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.sl):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.epin):not(.epin-cluster):not(.avatar):not(.btn-primary):not(.btn-danger):not(.su-btn):not(.su-call):not(.su-sos):not(.tpa-btn):not(.leaflet-container):not([class*="leaflet"]):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.pcell):not(.pc-stat):not(.thumb) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important;
       box-shadow: none !important; }
     /* arrière-tuiles : fonds de cartes/tuiles RETIRÉS (transparent), sauf surfaces utiles */
@@ -5905,7 +5909,7 @@
        Nucléaire fonds-nuit : transparent sur tout le contenu sombre SAUF whitelist
        (champs, joyaux à dégradé, avatars, CTA remplis, interrupteurs, états actifs,
        bulles de chat, modales, carte). Couvre dusk + winter-dusk + tropic-dusk. ══════ */
-    html.sm-app body.theme-dusk :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.avatar):not(.btn-primary):not(.btn-danger):not(.btn-accent):not(.su-btn):not(.su-call):not(.su-sos):not(.sl):not(.active):not(.on):not(.is-on):not(.epin):not(.epin-cluster):not([class*="leaflet"]):not(.bubble):not(.bubble-me):not(.act-card):not(.picker-card):not(.popinfo-card):not(.modal):not(.chat-input):not(.composer):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.gold-beta-note):not(.pcell):not(.pc-stat):not(.stat-box):not(.tgm-bubble):not(.gh-price):not(.pcard-photo):not(.card-photo):not(.place-photo):not(.detail-hero):not(.gal-city):not(.qs-hero):not(.hmg-av):not(.hmg-cell):not(.ghead):not([data-photo]):not([data-lazybg]):not(.thumb) {
+    html.sm-app body.theme-dusk :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.avatar):not(.btn-primary):not(.btn-danger):not(.btn-accent):not(.tpa-btn):not(.su-btn):not(.su-call):not(.su-sos):not(.sl):not(.active):not(.on):not(.is-on):not(.epin):not(.epin-cluster):not([class*="leaflet"]):not(.bubble):not(.bubble-me):not(.act-card):not(.picker-card):not(.popinfo-card):not(.modal):not(.chat-input):not(.composer):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.gold-beta-note):not(.pcell):not(.pc-stat):not(.stat-box):not(.tgm-bubble):not(.gh-price):not(.pcard-photo):not(.card-photo):not(.place-photo):not(.detail-hero):not(.gal-city):not(.qs-hero):not(.hmg-av):not(.hmg-cell):not(.ghead):not([data-photo]):not([data-lazybg]):not(.thumb) {
       background: transparent !important; }
 
     /* ════════════════════════════════════════════════════════════════════════
@@ -6187,7 +6191,7 @@
     html.sm-app body .homemap-card.fs .epin, html.sm-app body .homemap-card.fs .epin-cluster { border: 2.5px solid #fff !important; }
     html.sm-app body .homemap-fsopen { border: 1.5px solid rgba(255,255,255,.9) !important; }
 
-    :root { --sm-build: 818; }
+    :root { --sm-build: 819; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v818 · 2e lot retours Maxime (25/06). LEÇON CLÉ (re-confirmée) : les balais
@@ -6237,4 +6241,4 @@
     html.sm-app body .weather-chip > * { min-width: 0; }
     html.sm-app body .weather-chip .wc-temp, html.sm-app body .weather-chip .wc-hint { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    :root { --sm-build: 818; }
+    :root { --sm-build: 819; }

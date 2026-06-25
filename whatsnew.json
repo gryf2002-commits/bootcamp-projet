@@ -1,14 +1,13 @@
 {
-  "candidate": "v818",
+  "candidate": "v819",
   "items": [
-    "📍 Contours blancs des pins de la carte ENFIN de retour : ils étaient effacés par une règle anti-traits — corrigé à la source (petite carte ET plein écran). Bouton plein écran nettoyé.",
-    "✨ Halos retirés autour de BEAUCOUP plus de tuiles + le carré orange qui glissait en bas de la barre d'onglets passe en neutre.",
-    "🚨 Le « pulse » de la tuile Alerte d'urgence est de retour (il était neutralisé).",
-    "🎯 Sélection d'une tuile : plus de contour/cadre (juste l'icône + le libellé).",
-    "🆙 Bug de niveau corrigé : fini la notif « Niveau 3 » en boucle alors que tu es déjà niveau 4.",
-    "🖼️ Photos des check-ins : on utilise la vraie source d'image (comme la liste des lieux), elles s'affichent au clic.",
-    "↔️ Grilles de tuiles : quand le nombre est impair, la dernière tuile se centre (symétrie).",
-    "📐 Écarts entre catégories resserrés + l'en-tête ne disparaît plus / ne réapparaît plus au scroll.",
-    "👋 Tu peux te déconnecter d'un Mate (depuis sa fiche)."
+    "👋 Tu peux maintenant te DÉCONNECTER d'un Mate : depuis sa fiche, le bouton « ✅ Connecté » propose la déconnexion (avec confirmation).",
+    "🎨 Les 5 actions sur la fiche d'un Mate (Défi, Mi-chemin, On s'est vus, BFF, Bloquer) : fini les tuiles grises — chacune a sa couleur, et la rangée du bas est centrée (symétrie).",
+    "📍 Contours blancs des pins de la carte ENFIN de retour (petite carte ET plein écran), bouton plein écran nettoyé.",
+    "✨ Halos retirés autour de beaucoup plus de tuiles + le carré orange de la barre d'onglets passe en neutre.",
+    "🚨 Le « pulse » de la tuile Alerte d'urgence est de retour.",
+    "🆙 Fini la notif « Niveau 3 » en boucle alors que tu es déjà niveau 4.",
+    "🖼️ Photos des check-ins affichées au clic (vraie source d'image).",
+    "📐 Écarts entre catégories resserrés + l'en-tête ne clignote plus au scroll + tuile impaire centrée."
   ]
 }
