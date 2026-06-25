@@ -1,7 +1,7 @@
 {
-  "candidate": "v811",
+  "candidate": "v812",
   "items": [
-    "🟧 Fini la barre orange sur les titres de section : la petite barre d'accent orange devant « Explore autour de toi », « Accès rapides », « Mes voyages », « En cas d'urgence »… est retirée partout. Elle restait orange même en thème bleu/vert, elle jurait. Titres à plat, propres.",
+    "➖ Plus AUCUNE ligne de séparation qui traverse l'écran : ni au-dessus des sections (Explore, Accès rapides, le fil, Mes voyages, En cas d'urgence…), ni dans les listes. Elles suivaient le thème (orange en clair, gris-bleu en hiver) — toutes neutralisées. Écrans 100% à plat.",
     "➖ Plus aucune ligne de séparation au-dessus des sections : tout est délimité par l'espacement seul.",
     "🎨 Fond parfaitement uni : plus de bande de couleur en mode nuit (hiver/tropiques compris). Fond, topbar et chargement de la carte suivent exactement la couleur du thème.",
     "💬 Nouveau : tes salons de voyage apparaissent sur la carte ! Un repère 💬 par ville, l'aperçu du dernier message, et un clic pour ouvrir le chat du groupe.",

@@ -4788,6 +4788,20 @@
       content: none !important; display: none !important; background: none !important; width: 0 !important; }
     html body :is(.section-head > h3, .qm-head > h3, .sp-title),
     html.sm-app body :is(.section-head > h3, .qm-head > h3, .sp-title) { padding-left: 0 !important; }
+
+    /* ============================================================
+       v812 — Maxime « LA LIGNE qui parcourt l'écran à plein d'endroits, À TOUT PRIX ».
+       Lignes = border-top/bottom (var(--line) OU color-mix(var(--ink))) sur sections ET listes,
+       qui SUIVENT le thème (orange en défaut, gris-bleu en hiver). Impossible de cibler un seul
+       élément (DA perso) → on met la COULEUR de bordure à TRANSPARENT sur TOUT le contenu : seules
+       les lignes VISIBLES disparaissent, le layout ne bouge pas. On PRÉSERVE les bordures utiles :
+       champs de saisie, recherche, chat, modales.
+       ============================================================ */
+    html body :is(.tab-panel, .secu-view, #placeDetail) *:not(input):not(textarea):not(select):not(.search):not(.chat-header):not(.tgo-head):not(.tgo-input):not(.bubble):not(.modal-card):not(.sm-selsheet):not(.popinfo-card):not(.act-card):not(.hcust-ov):not(.hcust-sheet),
+    html.sm-app body :is(.tab-panel, .secu-view, #placeDetail) *:not(input):not(textarea):not(select):not(.search):not(.chat-header):not(.tgo-head):not(.tgo-input):not(.bubble):not(.modal-card):not(.sm-selsheet):not(.popinfo-card):not(.act-card):not(.hcust-ov):not(.hcust-sheet) {
+      border-top-color: transparent !important;
+      border-bottom-color: transparent !important;
+    }
     /* Un peu plus d'air avant chaque bloc « Accès rapides / Trouver de l'aide »
        en Sécurité → la longue page respire et se segmente visuellement. */
     .secu-view .section-head { margin-top: 1.5rem; margin-bottom: .55rem; }
@@ -5608,7 +5622,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 811; }
+    :root { --sm-build: 812; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
