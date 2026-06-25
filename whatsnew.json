@@ -1,6 +1,7 @@
 {
-  "candidate": "v807",
+  "candidate": "v808",
   "items": [
+    "🎨 Fond enfin parfaitement uni : fini la bande de couleur (plus clair en haut, plus foncé en bas) visible en mode nuit, surtout en thème hiver. La topbar se fond dans le fond, dans tous les thèmes.",
     "💬 Nouveau : tes salons de voyage apparaissent sur la carte ! Un repère 💬 par ville, l'aperçu du dernier message, et un clic pour ouvrir le chat du groupe.",
     "🌙 Mode nuit plus lisible : les chiffres dorés (XP, niveau, prix, notes) et indicateurs ne se perdent plus sur le fond sombre.",
     "🖼️ Photos qui s'affichent partout : les lieux gardent leur image même quand le réseau traîne, fini les cartes vides.",

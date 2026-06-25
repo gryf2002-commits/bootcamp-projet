@@ -2969,7 +2969,7 @@
        toute façon le fond est masqué par l'app-shell qui prend toute la largeur).
        Sur DESKTOP, on FIXE le fond → les marges gauche/droite restent statiques (plus de scroll
        bizarre de "longue page web"). Le desktop gère le fixed sans souci de FPS. */
-    body { background: var(--bg-grad); }
+    body { background: var(--bg); } /* v808 : fond PLAT (était var(--bg-grad) = dégradé clair->foncé → bande visible, surtout en hiver-nuit). Le fond suit #bgFx, uniforme. */
     @media (min-width: 480px) { body { background-attachment: fixed !important; } }
     /* Taps instantanés (supprime le délai/zoom mobile) sur tout ce qui est interactif. */
     button, a, label, input[type=range], .tile, .cat-tile, .chip, .qrow, .fc-chip, .spot-quick button, .stat-box, .stat-click, [role="button"], [data-goto], [data-jeuxnav], [data-jeuxopen] { touch-action: manipulation; }
@@ -2981,7 +2981,7 @@
     /* Header & nav en verre dépoli */
     /* Pas de backdrop-filter sur les barres fixes (topbar/nav) : il repeint à CHAQUE frame de
        scroll = jank mobile. Fonds plus opaques à la place → bien plus fluide. */
-    .topbar { background: linear-gradient(#fbeee9 62%, rgba(251,238,233,0)); border-bottom: 0; }
+    .topbar { background: linear-gradient(var(--bg) 62%, transparent); border-bottom: 0; } /* v808 : suit var(--bg) (fini le liseré #fbeee9 != #FFF4E6) */
     .bottom-nav { background: rgba(255,255,255,.97); box-shadow: 0 -10px 34px rgba(20,20,40,.10); }
     .bottom-nav button { transition: color .2s; }
     .bottom-nav button .ni { transition: transform .22s cubic-bezier(.2,.8,.3,1), filter .2s; }
@@ -3520,7 +3520,7 @@
     body.theme-dusk .mseg, body.theme-dusk .chip { background: var(--dcard,#2a2140) !important; border-color: rgba(255,255,255,.08) !important; }
     body.theme-dusk .chip.active, body.theme-dusk .mseg button.active { background: var(--accent-grad) !important; color: #fff !important; }
     body.theme-dusk .notif-card, body.theme-dusk .picker-card { background: #221a34; }
-    body.theme-dusk .topbar { background: linear-gradient(#171026 62%, rgba(23,16,38,0)); border-bottom: 0; }
+    body.theme-dusk .topbar { background: linear-gradient(var(--bg) 62%, transparent); border-bottom: 0; } /* v808 : suit var(--bg) (#190E2E), fini le liseré #171026 */
     body.theme-dusk .bottom-nav { background: #1c1428 !important; }
     body.theme-dusk .iconbtn { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.13); }
     body.theme-dusk .bubble.them { background: #2c2342; color: #ede6f2; }
@@ -3569,7 +3569,7 @@
     }
 
     /* --- Typographie : Manrope (interface) + Fraunces (titres) --- */
-    body { font-family: "Manrope", system-ui, -apple-system, sans-serif; background: var(--bg-grad); color: var(--text); }
+    body { font-family: "Manrope", system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); } /* v808 : fond plat (cf. note --bg-grad) */
     h1, h2, h3, h4, .brand b, .logo-text, #homeHello, .auth-title h1,
     .stat, .feature h2, .detail-hero h2, .dh-name, .reco-name, .pb-title, .ph-name {
       font-family: "Fraunces", Georgia, serif; font-optical-sizing: auto;
@@ -5595,7 +5595,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 807; }
+    :root { --sm-build: 808; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
