@@ -1,9 +1,9 @@
 {
-  "candidate": "v827",
+  "candidate": "v828",
   "items": [
-    "🔘 Switchs FIGÉS sur une seule ligne (ne bougent plus, ne remontent plus), transition douce, bouton actif plein + texte lisible (fini le texte qui bug / blanc sur blanc).",
-    "✨ Halos : flatten NUCLÉAIRE — zéro ombre sur tout le contenu, peu importe la source.",
-    "📸 Vraies photos sur tes 8 lieux (en base) : elles s'affichent au prochain chargement.",
-    "⏱️ Note : après un déploiement, GitHub Pages met 2-5 min à diffuser — recharge un peu après."
+    "🔽 Flèches de repliage ENFIN identiques partout : même chevron « › » qui pivote (à droite = replié, vers le bas = déplié).",
+    "🎯 Titres « nus » de carte centrés aussi (Mes contacts d'urgence, Cercle de confiance…).",
+    "✅ Vérifié par audit automatique : 0 ombre sur les tuiles, switch fluide (0,22 s), photos des lieux qui chargent.",
+    "⏱️ IMPORTANT : attends 3-5 min après une mise à jour (le temps que GitHub diffuse), puis recharge."
   ]
 }
