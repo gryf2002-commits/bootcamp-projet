@@ -300,7 +300,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=824"></script>
+  <script src="sunmates-badges.js?v=825"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
@@ -309,7 +309,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
   <!-- 🎬 DA de Motion « Le mouvement du couchant » : noyau réutilisable (window.SM_MOTION). -->
   <script defer src="sm-motion-da.js?v=740"></script>
-  <script defer src="sunmates-motion.js?v=824"></script>
+  <script defer src="sunmates-motion.js?v=825"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -384,13 +384,13 @@
       } catch (e) {}
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=824">
+  <link rel="stylesheet" href="styles.css?v=825">
   <style id="sm-cloak">html.sm-verifying body{visibility:hidden!important}</style>
   <script>
   /* v767 · AUTO-RÉPARATEUR + CLOAK : on masque la page jusqu'à la vérif de version.
      Appareil à jour → révélé tout de suite ; appareil périmé → purge caches+SW et reload
      EN RESTANT MASQUÉ (fini le flash d'« ancien design qui se charge avant »). Failsafe 2.5s. */
-  (function(){try{var EXPECT="824",H=document.documentElement;H.classList.add("sm-verifying");
+  (function(){try{var EXPECT="825",H=document.documentElement;H.classList.add("sm-verifying");
     var revealed=false,reveal=function(){if(revealed)return;revealed=true;try{H.classList.remove("sm-verifying");}catch(e){}};
     setTimeout(reveal,2500);
     document.addEventListener("DOMContentLoaded",function(){try{
@@ -1486,7 +1486,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=824">
+  <link rel="stylesheet" href="sunmates-lite.css?v=825">
 </head>
 <body>
   <!-- a11y : lien d'évitement (premier élément focalisable) → saute la barre/nav vers le contenu principal. -->
@@ -5941,7 +5941,7 @@
       if (btns.length > 1 && btns[0].offsetParent && Math.abs(btns[0].offsetTop - btns[btns.length - 1].offsetTop) > 4) return;
       var ind = c.querySelector(":scope > .sm-seg-ind");
       if (!ind) { ind = document.createElement("div"); ind.className = "sm-seg-ind"; ind.setAttribute("aria-hidden", "true"); c.insertBefore(ind, c.firstChild); c.classList.add("sm-seg-slide"); }
-      var act = c.querySelector(":scope > button.active, :scope > .active");
+      var act = c.querySelector(":scope > button.active, :scope > button.on, :scope > button.is-on, :scope > .active, :scope > .on, :scope > .is-on");
       if (!act || act === ind || act.offsetParent === null) { ind.style.opacity = "0"; return; }
       var firstRun = !ind._init; ind._init = 1;
       if (firstRun) ind.style.transition = "none";
@@ -5951,12 +5951,15 @@
       try { ind.style.borderRadius = getComputedStyle(act).borderRadius || "999px"; } catch (e) {}
       if (firstRun) requestAnimationFrame(function () { ind.style.transition = ""; });
     }
-    function _smSegIndAll() { document.querySelectorAll(".seg, .mseg").forEach(function (c) { try { _smSegInd(c); } catch (e) {} }); }
+    // v825 : tous les segments « switch » de l'app (Maxime : humeur/spot/cherche/sondage =
+    // .fc-kinds, carte/frise = .trip-vtoggle, quête du jour = .qs-mode, recherche = .search-scopes).
+    var SEG_SEL = ".seg, .mseg, .qs-mode, .fc-kinds, .search-scopes, .trip-vtoggle";
+    function _smSegIndAll() { document.querySelectorAll(SEG_SEL).forEach(function (c) { try { _smSegInd(c); } catch (e) {} }); }
     window._smSegIndAll = _smSegIndAll;
-    document.addEventListener("click", function (e) { var c = e.target.closest && e.target.closest(".seg, .mseg"); if (c) requestAnimationFrame(function () { requestAnimationFrame(function () { _smSegInd(c); }); }); }, true);
+    document.addEventListener("click", function (e) { var c = e.target.closest && e.target.closest(SEG_SEL); if (c) requestAnimationFrame(function () { requestAnimationFrame(function () { _smSegInd(c); }); }); }, true);
     try {
-      var _segObs = new MutationObserver(function (muts) { var seen = []; muts.forEach(function (m) { var c = m.target.closest && m.target.closest(".seg, .mseg"); if (c && seen.indexOf(c) < 0) { seen.push(c); _smSegInd(c); } }); });
-      setTimeout(function () { document.querySelectorAll(".seg, .mseg").forEach(function (c) { try { _segObs.observe(c, { subtree: true, attributes: true, attributeFilter: ["class"] }); _smSegInd(c); } catch (e) {} }); }, 350);
+      var _segObs = new MutationObserver(function (muts) { var seen = []; muts.forEach(function (m) { var c = m.target.closest && m.target.closest(SEG_SEL); if (c && seen.indexOf(c) < 0) { seen.push(c); _smSegInd(c); } }); });
+      setTimeout(function () { document.querySelectorAll(SEG_SEL).forEach(function (c) { try { _segObs.observe(c, { subtree: true, attributes: true, attributeFilter: ["class"] }); _smSegInd(c); } catch (e) {} }); }, 350);
     } catch (e) {}
     window.addEventListener("resize", function () { try { _smSegIndAll(); } catch (e) {} });
     setTimeout(_smSegIndAll, 700); setTimeout(_smSegIndAll, 2000);
@@ -15703,7 +15706,19 @@
 
     // ===== « Aujourd'hui » : rituel quotidien (Question / Quiz / Mate / Mot du jour) — backend session41 =====
     let _tbBuilt = false;
-    function _tbXp(key) { try { db.rpc("grant_solo_xp", { p_key: key }).then(function () {}, function () {}); } catch (e) {} } // best-effort, XP only
+    // v825 : crédite l'XP serveur PUIS relit le total autoritaire + rafraîchit le niveau
+    // (avant : best-effort sans MAJ locale → le niveau ne bougeait pas après un mini-jeu).
+    function _tbXp(key) {
+      try {
+        db.rpc("grant_solo_xp", { p_key: key }).then(function (r) {
+          if (r && r.data && r.data.ok && myUserId && myProfile) {
+            db.from("profiles").select("xp").eq("id", myUserId).maybeSingle().then(function (p) {
+              if (p && p.data && typeof p.data.xp === "number") { myProfile.xp = p.data.xp; if (typeof renderGameHub === "function") try { renderGameHub(); } catch (e) {} }
+            }, function () {});
+          }
+        }, function () {});
+      } catch (e) {}
+    }
     async function renderTodayBand() {
       const band = $("todayBand"); if (!band || !myUserId || _tbBuilt) return;
       _tbBuilt = true;
@@ -17918,7 +17933,18 @@
         if (!error && data && data.ok === false && /inconnue/i.test(data.message || "")) {
           return { ok: true, xp: 0, soft: i18nT("Coché ✓, l'XP arrivera après la synchro de la base") };
         }
-        if (!error && data) { if (data.ok && myProfile) myProfile.xp = (myProfile.xp || 0) + (data.xp || 0); return { ok: !!data.ok, xp: data.xp || 0, message: data.message }; }
+        if (!error && data) {
+          // v825 — BUG XP/NIVEAU corrigé : avant on faisait un incrément LOCAL optimiste
+          // (myProfile.xp += data.xp). Si le cache local était périmé (xp gagné ailleurs / autre
+          // session pas rechargée), le total affiché DÉSYNCHRONISAIT → niveau qui « repasse à 3 ».
+          // Désormais on relit le TOTAL AUTORITAIRE depuis le serveur après le crédit.
+          if (data.ok && myUserId && myProfile) {
+            try { const { data: pr } = await db.from("profiles").select("xp").eq("id", myUserId).maybeSingle(); if (pr && typeof pr.xp === "number") myProfile.xp = pr.xp; else myProfile.xp = (myProfile.xp || 0) + (data.xp || 0); }
+            catch (e) { myProfile.xp = (myProfile.xp || 0) + (data.xp || 0); }
+            if (typeof renderGameHub === "function") try { renderGameHub(); } catch (e) {}
+          }
+          return { ok: !!data.ok, xp: data.xp || 0, message: data.message };
+        }
       } catch (e) {}
       try { if (myUserId && myProfile) { const nx = (myProfile.xp || 0) + amount; const { error } = await db.from("profiles").update({ xp: nx }).eq("id", myUserId); if (!error) { myProfile.xp = nx; return { ok: true, xp: amount }; } } } catch (e) {}
       return { ok: false, message: "Action impossible" };
@@ -20704,7 +20730,7 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
-  <script src="sunmates-da-loader.js?v=824"></script>
+  <script src="sunmates-da-loader.js?v=825"></script>
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->

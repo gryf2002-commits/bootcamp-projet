@@ -1,9 +1,10 @@
 {
-  "candidate": "v824",
+  "candidate": "v825",
   "items": [
-    "↔️ Le switch qui GLISSE est maintenant PARTOUT : la pilule suit le bouton actif sur tous les sélecteurs (Gold/Pro/Admin, jour/nuit, etc.), pas seulement maison/voyage.",
-    "🔤 Titres de section uniformisés dans toute l'app (même police/taille/graisse).",
-    "🧳 Tuiles « Mes voyages » (globe/année) adaptées à tous les modes + halos retirés.",
-    "🖼️ Photos des check-ins plus robustes (repli propre) + photo ajoutée sur les check-ins de la carte."
+    "🆙 BUG XP/NIVEAU corrigé : le total d'XP se resynchronise avec le serveur après chaque quête, rituel ET mini-jeu (avant, un cache périmé faisait « repasser » au niveau 3).",
+    "✨ Halos : FLATTEN total — zéro ombre portée sur toutes les tuiles/cartes (méthode design system).",
+    "↔️ Le switch qui glisse est partout : Humeur/Spot/Cherche/Sondage, Cartes/Frise, quête du jour, recherche… (10 sélecteurs), et il ne fait plus sauter le contenu.",
+    "🎯 Titres de section centrés de façon cohérente, l'action de droite abaissée → fini les collisions « Tes souvenirs / Partager ».",
+    "🔽 Flèches de repliage uniformes et dans le flux (plus jamais superposées à une tuile)."
   ]
 }
