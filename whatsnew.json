@@ -1,8 +1,8 @@
 {
-  "candidate": "v833",
+  "candidate": "v834",
   "items": [
-    "📐 Formes de tuiles harmonisées dans la zone « ma journée » : météo et « Lancer ma journée » = même gabarit (pleine largeur, même rayon).",
-    "🧳 Mes voyages : compteur villes/pays et cartes qui suivent bien le thème (jour/nuit).",
-    "🟠 (rappel v832) Halo orange des popups retiré, photos des lieux réparées, switch qui glisse, flèche de repli cliquable."
+    "🎮 Quête du jour (Solo / À deux) : le switch reçoit maintenant la pilule qui glisse + la bonne couleur, comme les autres (il était rendu trop tard pour l'attraper).",
+    "🔘 Tous les switchs rendus dynamiquement (détails de quête, etc.) ont enfin le glissement fluide.",
+    "📐 (rappel v833) Formes de tuiles harmonisées, photos des lieux, halos retirés, flèches uniformes."
   ]
 }
