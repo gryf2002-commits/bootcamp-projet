@@ -1,8 +1,9 @@
 {
-  "candidate": "v834",
+  "candidate": "v835",
   "items": [
-    "🎮 Quête du jour (Solo / À deux) : le switch reçoit maintenant la pilule qui glisse + la bonne couleur, comme les autres (il était rendu trop tard pour l'attraper).",
-    "🔘 Tous les switchs rendus dynamiquement (détails de quête, etc.) ont enfin le glissement fluide.",
-    "📐 (rappel v833) Formes de tuiles harmonisées, photos des lieux, halos retirés, flèches uniformes."
+    "⚡ GROS LAGS corrigés (chargement, pliage/dépliage) : j'avais ajouté une surveillance trop gourmande qui recalculait les switchs à chaque changement — retirée.",
+    "🎨 Couleurs des switchs alignées sur la DA de chaque mode (conteneur qui suit le fond, pilule = accent, texte lisible).",
+    "🎯 Centrage des titres re-fiabilisé.",
+    "🔽 Rotation des flèches de repliage re-fiabilisée (fermé = à droite, ouvert = vers le bas)."
   ]
 }
