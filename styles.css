@@ -5580,7 +5580,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 796; }
+    :root { --sm-build: 797; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -5790,7 +5790,7 @@
        cibler par classe). Zéro bordure + zéro ombre-ligne sur TOUT le contenu,
        SAUF whitelist : champs, interrupteurs (.sl), joyaux (.cic/.jo-ic/.smgem),
        avatars, épingles carte, CTA principal/SOS, carte Leaflet. ════════════════ */
-    html.sm-app body :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.sl):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.epin):not(.epin-cluster):not(.avatar):not(.btn-primary):not(.btn-danger):not(.leaflet-container):not([class*="leaflet"]):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.pcell):not(.pc-stat) {
+    html.sm-app body :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.sl):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.epin):not(.epin-cluster):not(.avatar):not(.btn-primary):not(.btn-danger):not(.leaflet-container):not([class*="leaflet"]):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.pcell):not(.pc-stat):not(.thumb) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important;
       box-shadow: none !important; }
     /* arrière-tuiles : fonds de cartes/tuiles RETIRÉS (transparent), sauf surfaces utiles */
@@ -5844,7 +5844,7 @@
        Nucléaire fonds-nuit : transparent sur tout le contenu sombre SAUF whitelist
        (champs, joyaux à dégradé, avatars, CTA remplis, interrupteurs, états actifs,
        bulles de chat, modales, carte). Couvre dusk + winter-dusk + tropic-dusk. ══════ */
-    html.sm-app body.theme-dusk :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.avatar):not(.btn-primary):not(.btn-danger):not(.btn-accent):not(.sl):not(.active):not(.on):not(.is-on):not(.epin):not(.epin-cluster):not([class*="leaflet"]):not(.bubble):not(.bubble-me):not(.act-card):not(.picker-card):not(.popinfo-card):not(.modal):not(.chat-input):not(.composer):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.gold-beta-note):not(.pcell):not(.pc-stat):not(.stat-box):not(.tgm-bubble):not(.gh-price):not(.pcard-photo):not(.card-photo):not(.place-photo):not(.detail-hero):not(.gal-city):not(.qs-hero):not(.hmg-av):not(.hmg-cell):not(.ghead):not([data-photo]):not([data-lazybg]) {
+    html.sm-app body.theme-dusk :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.avatar):not(.btn-primary):not(.btn-danger):not(.btn-accent):not(.sl):not(.active):not(.on):not(.is-on):not(.epin):not(.epin-cluster):not([class*="leaflet"]):not(.bubble):not(.bubble-me):not(.act-card):not(.picker-card):not(.popinfo-card):not(.modal):not(.chat-input):not(.composer):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.gold-beta-note):not(.pcell):not(.pc-stat):not(.stat-box):not(.tgm-bubble):not(.gh-price):not(.pcard-photo):not(.card-photo):not(.place-photo):not(.detail-hero):not(.gal-city):not(.qs-hero):not(.hmg-av):not(.hmg-cell):not(.ghead):not([data-photo]):not([data-lazybg]):not(.thumb) {
       background: transparent !important; }
 
     /* ════════════════════════════════════════════════════════════════════════
