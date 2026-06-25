@@ -1,8 +1,8 @@
 {
-  "candidate": "v838",
+  "candidate": "v839",
   "items": [
-    "🔔 Notifications (cloche) ENFIN lisibles : une optimisation (content-visibility) cassait le rendu du panneau → fond/contraste bugés. Retirée pour ce panneau → fond plein + texte lisible.",
-    "🗺️ La carte garde son écran « on prépare ta carte… » jusqu'à ce qu'elle soit VRAIMENT prête (tuiles chargées), au lieu de s'afficher à moitié et ramer.",
-    "⚡ (rappel v837) Lags du pliage/dépliage retirés (sélecteurs lourds supprimés)."
+    "🔽 Flèches de repliage : une seule logique cohérente partout — fermé = pointe à droite, ouvert = pointe vers le bas (sections classiques ET volets dépliables type feed/voyages).",
+    "🏡 « Tes souvenirs SunMates » : rendu différé (hors du chemin critique) → le mode Maison ne fige plus à l'affichage.",
+    "🔔 (rappel v838) Notifications lisibles + carte qui attend d'être vraiment prête."
   ]
 }
