@@ -4802,6 +4802,22 @@
       border-top-color: transparent !important;
       border-bottom-color: transparent !important;
     }
+
+    /* ============================================================
+       v813 — Maxime « les arrière-plans des modes ne sont PAS unis, bandes pleine largeur ».
+       La bande s'étend sur PLUSIEURS sections (Personnaliser + Explore, parents différents) → ce
+       n'est pas un fond de bloc mais un HALO/DÉGRADÉ sur une couche de fond (ex. .app-shell dusk
+       l.3512 = radial-gradient orange qui s'efface à 58% → bande claire en haut). Le DA perso le
+       révèle. ON TUE TOUT background-image sur les couches de fond → fond STRICTEMENT plat var(--bg),
+       TOUS thèmes. Spécificité + !important pour battre le loader DA et les règles statiques.
+       ============================================================ */
+    html.sm-app body, html.sm-app, html.sm-app body #bgFx {
+      background-color: var(--bg) !important; background-image: none !important; }
+    html.sm-app body .app-shell, html.sm-app body #smMain,
+    html.sm-app body .tab-panel, html.sm-app body #homeTravelMap,
+    html.sm-app body #homeHomeMode, html.sm-app body #homeQuickAccess,
+    html.sm-app body .homemap-wrap, html.sm-app body #homeFeed, html.sm-app body .secu-view {
+      background-color: transparent !important; background-image: none !important; }
     /* Un peu plus d'air avant chaque bloc « Accès rapides / Trouver de l'aide »
        en Sécurité → la longue page respire et se segmente visuellement. */
     .secu-view .section-head { margin-top: 1.5rem; margin-bottom: .55rem; }
@@ -5622,7 +5638,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 812; }
+    :root { --sm-build: 813; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
