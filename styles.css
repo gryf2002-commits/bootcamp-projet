@@ -208,7 +208,7 @@
        n'héritent PAS du border-radius du sélecteur button -> on l'impose ici pour une DA cohérente. */
     .btn-primary, .btn-accent, .btn-ghost, .btn-danger { border-radius: 999px; } /* v735 (validé Maxime) : pilule 999px, DESIGN §5 Buttons «Shape: pilule» */
     /* #5 : halo DÉRIVÉ de l'accent du thème (plus de lueur rouge figée dans tous les modes) + adouci */
-    .btn-primary { background: var(--accent-grad); color: #fff; box-shadow: 0 4px 10px color-mix(in oklab, var(--accent, #FF5A4D) 16%, transparent); } /* P12 : halo bouton adouci */
+    .btn-primary { background: var(--accent-grad); color: #fff; text-shadow: 0 1px 2px rgba(120,40,10,.28); box-shadow: 0 4px 10px color-mix(in oklab, var(--accent, #FF5A4D) 16%, transparent); } /* P12 : halo bouton adouci ; a11y : ombre de texte = blanc lisible sur le dégradé pâle (contraste) */
     .btn-primary:hover { filter: brightness(1.04); }
     .btn-accent  { background: var(--accent-soft); color: var(--accent-ink, var(--accent)); font-weight: 700; }
     .btn-ghost   { background: #fff; color: var(--text); border: 1.5px solid var(--line); }
@@ -1991,7 +1991,7 @@
     }
     .bottom-nav button {
       background: transparent; border: 0; padding: .4rem .6rem; margin: 0; display: flex; flex-direction: column;
-      align-items: center; gap: .15rem; color: var(--muted); font-size: .62rem; font-weight: 600; flex: 1;
+      align-items: center; justify-content: center; gap: .15rem; color: var(--muted); font-size: .64rem; font-weight: 600; flex: 1; min-height: 48px; /* a11y : cible tactile ≥44px garantie */
     }
     /* Barre du bas SOBRE : icônes calmes/monochromes au repos, onglet actif discret (pas de halo) */
     /* Barre du bas : icônes TRAIT (line-art) qui suivent la couleur (gris au repos → accent actif) */
@@ -5582,7 +5582,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 802; }
+    :root { --sm-build: 803; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -5874,7 +5874,7 @@
        — y compris si le DA loader réinjectait une teinte. */
     html body :is(.tile,.cat-tile,.gp-tile,.qrow,.lb-row,.person,.reward-card,.trip-card,.stat-click,.sa-tile,.rit-row,.coupon,.jeux-open,.bitem,[data-goto],[data-secuquick],[data-protile],[data-spstat]):is(:hover,:active,:focus,:focus-visible),
     html.sm-app body :is(.tile,.cat-tile,.gp-tile,.qrow,.lb-row,.person,.reward-card,.trip-card,.stat-click,.sa-tile,.rit-row,.coupon,.jeux-open,.bitem,[data-goto],[data-secuquick],[data-protile],[data-spstat]):is(:hover,:active,:focus,:focus-visible) {
-      background: transparent !important; background-color: transparent !important; outline: none !important; }
+      background: transparent !important; background-color: transparent !important; }
 
     /* v784 · #11 Gold = QUE des tuiles premium (retour Maxime « affichage gold buggé, je ne veux
        que des tuiles »). Le flat global avait vidé les tuiles d'avantages Gold (→ bare/« buggé »).
