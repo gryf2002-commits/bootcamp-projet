@@ -1,14 +1,13 @@
 {
-  "candidate": "v816",
+  "candidate": "v817",
   "items": [
-    "➖ Plus AUCUNE ligne de séparation qui traverse l'écran : ni au-dessus des sections (Explore, Accès rapides, le fil, Mes voyages, En cas d'urgence…), ni dans les listes. Elles suivaient le thème (orange en clair, gris-bleu en hiver) — toutes neutralisées. Écrans 100% à plat.",
-    "➖ Plus aucune ligne de séparation au-dessus des sections : tout est délimité par l'espacement seul.",
-    "🎨 Fond parfaitement uni : plus de bande de couleur en mode nuit (hiver/tropiques compris). Fond, topbar et chargement de la carte suivent exactement la couleur du thème.",
-    "💬 Nouveau : tes salons de voyage apparaissent sur la carte ! Un repère 💬 par ville, l'aperçu du dernier message, et un clic pour ouvrir le chat du groupe.",
-    "🌙 Mode nuit plus lisible : les chiffres dorés (XP, niveau, prix, notes) et indicateurs ne se perdent plus sur le fond sombre.",
-    "🖼️ Photos qui s'affichent partout : les lieux gardent leur image même quand le réseau traîne, fini les cartes vides.",
-    "➖ Derniers traits de séparation retirés (réglages, voyages, avis) : encore plus à plat, fidèle à la DA.",
-    "🎮 Onglet Jeux en version Lite réorganisé : les raccourcis ne flottent plus, tout est aligné proprement.",
-    "🗺️ Pages de villes entièrement réécrites (Paris, Lisbonne, Barcelone, Lyon et 10 autres) : vrais quartiers, conseils sécurité du soir et bonnes adresses, propres à chaque ville."
+    "🌙 Fond enfin uni en mode nuit : le bas des pages (accès rapides, profil, Gold, voyages…) ne s'affiche plus sur un fond crème — tout le fond suit la couleur du thème, partout.",
+    "🚨 Tuiles d'urgence (Appeler le 112 / Alerte d'urgence) : la couleur danger revient dans tous les modes, fini les boutons fades en nuit.",
+    "✨ Halos retirés autour des tuiles et de la barre d'onglets du bas (y compris le halo orange) : tout est net et à plat.",
+    "🖼️ Photos des check-ins de retour : la photo du lieu s'affiche dans la liste et au clic sur un check-in.",
+    "🎨 Sélecteur d'ambiance (filtres Lieux) : plus de tuile grise de fond, présentation à plat.",
+    "🛟 Cercle de confiance / SOS : taille figée, il ne change plus de taille d'un écran à l'autre.",
+    "📍 Pins de la carte : contour blanc franc restauré, identique en petite carte et en plein écran.",
+    "⚡ Démarrage accéléré : suppression d'un rechargement/purge inutile à chaque ouverture ; check-ins du démarrage allégés."
   ]
 }

@@ -2134,7 +2134,7 @@
     .ci-list { display: flex; flex-direction: column; gap: .5rem; }
     .ci-card { display: flex; align-items: center; gap: .7rem; background: var(--cream); border: 1px solid var(--line); border-radius: 14px; padding: .7rem .8rem; cursor: pointer; transition: transform .1s, box-shadow .15s; }
     .ci-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
-    .ci-ic { width: 38px; height: 38px; min-width: 38px; border-radius: 11px; background: var(--accent-soft); display: grid; place-items: center; font-size: 18px; }
+    .ci-ic { width: 38px; height: 38px; min-width: 38px; border-radius: 11px; background: var(--accent-soft); display: grid; place-items: center; font-size: 18px; overflow: hidden; }
     .ci-info { flex: 1; min-width: 0; }
     .ci-name { font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ci-meta { font-size: .78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -5641,7 +5641,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 816; }
+    :root { --sm-build: 817; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -5905,7 +5905,7 @@
        Nucléaire fonds-nuit : transparent sur tout le contenu sombre SAUF whitelist
        (champs, joyaux à dégradé, avatars, CTA remplis, interrupteurs, états actifs,
        bulles de chat, modales, carte). Couvre dusk + winter-dusk + tropic-dusk. ══════ */
-    html.sm-app body.theme-dusk :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.avatar):not(.btn-primary):not(.btn-danger):not(.btn-accent):not(.sl):not(.active):not(.on):not(.is-on):not(.epin):not(.epin-cluster):not([class*="leaflet"]):not(.bubble):not(.bubble-me):not(.act-card):not(.picker-card):not(.popinfo-card):not(.modal):not(.chat-input):not(.composer):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.gold-beta-note):not(.pcell):not(.pc-stat):not(.stat-box):not(.tgm-bubble):not(.gh-price):not(.pcard-photo):not(.card-photo):not(.place-photo):not(.detail-hero):not(.gal-city):not(.qs-hero):not(.hmg-av):not(.hmg-cell):not(.ghead):not([data-photo]):not([data-lazybg]):not(.thumb) {
+    html.sm-app body.theme-dusk :is(.tab-panel:not([data-panel="accueil"]), #settingsCard, .mates-view) *:not(input):not(textarea):not(select):not(.cic):not(.jo-ic):not(.smgem):not(.pb-av):not(.prof-photo):not(.avatar):not(.btn-primary):not(.btn-danger):not(.btn-accent):not(.su-btn):not(.su-call):not(.su-sos):not(.sl):not(.active):not(.on):not(.is-on):not(.epin):not(.epin-cluster):not([class*="leaflet"]):not(.bubble):not(.bubble-me):not(.act-card):not(.picker-card):not(.popinfo-card):not(.modal):not(.chat-input):not(.composer):not(.gp-tile):not(.gold-perks):not(.gold-hero):not(.gold-beta-note):not(.pcell):not(.pc-stat):not(.stat-box):not(.tgm-bubble):not(.gh-price):not(.pcard-photo):not(.card-photo):not(.place-photo):not(.detail-hero):not(.gal-city):not(.qs-hero):not(.hmg-av):not(.hmg-cell):not(.ghead):not([data-photo]):not([data-lazybg]):not(.thumb) {
       background: transparent !important; }
 
     /* ════════════════════════════════════════════════════════════════════════
@@ -6125,3 +6125,66 @@
     @media (hover:hover) { .player-badge:hover { background: color-mix(in srgb, var(--accent) 9%, transparent); } }
     /* Accueil : bouton de mode INACTIF ne doit pas paraître invisible/non-cliquable en nuit */
     body.theme-dusk .mode-switch button:not(.active) { background: rgba(255,255,255,.05) !important; color: var(--ink) !important; }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       v817 · CORRECTIFS Maxime (25/06). Liste : fond <html> thémé (bas de page
+       crème en nuit), tuiles d'urgence sans couleur en nuit, halos orange autour
+       des tuiles + switch d'onglets, sélecteur « Ton ambiance » à fond gris,
+       cercle/SOS qui change de taille, contours des pins. Spécificité gonflée
+       (html.sm-app body) + !important pour passer APRÈS le DA loader injecté et
+       les balais « épure » (v766/v772/v780). Rouge réservé danger/SOS (DA). ══ */
+
+    /* (1) FOND <html> SUIT LE THÈME. Le thème est porté par <body> (.theme-dusk…) ;
+       <html> garde donc le --bg JOUR (#FFF4E6 crème) → tout le contenu transparent
+       (tuiles/cartes/gold/voyages) s'affiche sur du crème en bas de page, dans
+       tous les modes sombres. On lit l'état du body via :has() et on force la
+       couleur de fond du <html> = le vrai fond du mode. */
+    html.sm-app:has(body.theme-dusk)  { background-color: #190E2E !important; }
+    html.sm-app:has(body.theme-winter):not(:has(body.theme-dusk)) { background-color: #EAF3FB !important; }
+    html.sm-app:has(body.theme-tropic):not(:has(body.theme-dusk)) { background-color: #F7F9EC !important; }
+    html.sm-app:has(body.theme-winter.theme-dusk) { background-color: #0F1B2B !important; }
+    html.sm-app:has(body.theme-tropic.theme-dusk) { background-color: #0C1D17 !important; }
+
+    /* (2) TUILES D'URGENCE (Appeler le 112 / Alerte d'urgence). Le balai nuit
+       (styles.css ~5908 : background:transparent sur le contenu nuit hors
+       whitelist) les vidait de leur couleur → dégradé danger reforcé TOUS modes. */
+    html.sm-app body .su-call { background-image: linear-gradient(135deg,#FF8A3D,#FF5A4D) !important; background-color: transparent !important; }
+    html.sm-app body .su-sos  { background-image: linear-gradient(135deg,#FF6A6A,#E11D2E) !important; background-color: transparent !important; }
+    html.sm-app body.theme-dusk .su-call { background-image: linear-gradient(135deg,#FF8A5C,#FF6A6A) !important; }
+    html.sm-app body.theme-dusk .su-sos  { background-image: linear-gradient(135deg,#FF7A6A,#E11D2E) !important; }
+
+    /* (3) HALOS RETIRÉS autour des tuiles + switch d'onglets du bas (orange compris).
+       On garde l'affordance active (bordure accent + relief INTERNE), on supprime
+       tous les glows colorés/portés qui « débordent » de la tuile. */
+    html.sm-app body .cat-tile.active { box-shadow: none !important; }
+    html.sm-app body .cat-tile.active .cic,
+    html.sm-app body .cat-tile.active .cic[data-smicon] { box-shadow: inset 0 -8px 16px rgba(0,0,0,.08) !important; }
+    html.sm-app body .bottom-nav button.active svg { box-shadow: none !important; }
+    /* pastille de nav active : dégradé conservé mais SANS halo porté */
+    html.sm-app body .nav-ind { box-shadow: none !important; }
+    /* icônes accueil/sécurité : drop-shadow porté retiré (plus de halo flottant) */
+    html.sm-app body .tab-panel[data-panel="accueil"] .tile .thumb,
+    html.sm-app body .tab-panel[data-panel="securite"] .tile .thumb {
+      filter: saturate(1.04) brightness(1.01) !important; }
+
+    /* (4) SÉLECTEUR « 🌈 Ton ambiance » (filtres Lieux, #lieuxCats) : plus de tuile
+       grise de fond (var(--card)) → à plat, l'accent ne s'exprime que sur l'actif. */
+    html.sm-app body #lieuxCats .cat-tile { background: transparent !important; border-color: color-mix(in srgb, var(--ink) 12%, transparent) !important; }
+    html.sm-app body #lieuxCats .cat-tile.active { border-color: var(--accent) !important; }
+
+    /* (5) CERCLE DE CONFIANCE / SOS : taille FIGÉE. Le 🆘 avait 4 règles de taille
+       concurrentes (2.8 / 2.6 / 2.1 / 3rem) → il « sautait » selon le contexte.
+       Une seule source de vérité, spécificité la plus haute, !important. */
+    html.sm-app body .secu-view #secuHome .sos-logo,
+    html.sm-app body .secu-view #secuHome > .card:first-of-type .sos-logo { font-size: 2.1rem !important; }
+    html.sm-app body .prof-trust { font-size: .85rem !important; padding: .35rem .8rem !important; }
+    html.sm-app body .prof-trust b { font-size: 1rem !important; }
+
+    /* (6) CONTOURS DES PINS — liseré blanc franc, IDENTIQUE petite carte ET plein
+       écran (« remets les pareil pour celui pour agrandir la carte »). Le bouton
+       d'agrandissement garde aussi son liseré blanc. */
+    html.sm-app body .epin, html.sm-app body .epin-cluster,
+    html.sm-app body .homemap-card.fs .epin, html.sm-app body .homemap-card.fs .epin-cluster { border: 2.5px solid #fff !important; }
+    html.sm-app body .homemap-fsopen { border: 1.5px solid rgba(255,255,255,.9) !important; }
+
+    :root { --sm-build: 817; }
