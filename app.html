@@ -300,7 +300,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script src="sunmates-badges.js?v=830"></script>
+  <script src="sunmates-badges.js?v=831"></script>
   <script src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
@@ -309,7 +309,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
   <!-- 🎬 DA de Motion « Le mouvement du couchant » : noyau réutilisable (window.SM_MOTION). -->
   <script defer src="sm-motion-da.js?v=740"></script>
-  <script defer src="sunmates-motion.js?v=830"></script>
+  <script defer src="sunmates-motion.js?v=831"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -384,13 +384,13 @@
       } catch (e) {}
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=830">
+  <link rel="stylesheet" href="styles.css?v=831">
   <style id="sm-cloak">html.sm-verifying body{visibility:hidden!important}</style>
   <script>
   /* v767 · AUTO-RÉPARATEUR + CLOAK : on masque la page jusqu'à la vérif de version.
      Appareil à jour → révélé tout de suite ; appareil périmé → purge caches+SW et reload
      EN RESTANT MASQUÉ (fini le flash d'« ancien design qui se charge avant »). Failsafe 2.5s. */
-  (function(){try{var EXPECT="830",H=document.documentElement;H.classList.add("sm-verifying");
+  (function(){try{var EXPECT="831",H=document.documentElement;H.classList.add("sm-verifying");
     var revealed=false,reveal=function(){if(revealed)return;revealed=true;try{H.classList.remove("sm-verifying");}catch(e){}};
     setTimeout(reveal,2500);
     document.addEventListener("DOMContentLoaded",function(){try{
@@ -1486,7 +1486,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=830">
+  <link rel="stylesheet" href="sunmates-lite.css?v=831">
 </head>
 <body>
   <!-- a11y : lien d'évitement (premier élément focalisable) → saute la barre/nav vers le contenu principal. -->
@@ -5934,12 +5934,9 @@
     // un slider unique n'a pas de sens). Repositionné au clic + sur changement programmatique
     // de .active (MutationObserver) + au resize.
     function _smSegInd(c) {
-      // v826 DÉSACTIVÉ — la pilule glissante rendait le bouton actif TRANSPARENT pendant le
-      // glissement → texte qui disparaît / blanc sur blanc / saut de ligne (régressions Maxime).
-      // On revient au bouton actif PLEIN (instantané, lisible). Le slider est neutralisé ici +
-      // en CSS (v826). Si on veut un vrai slide plus tard, il faudra garder un fond plein constant.
-      return;
-      // eslint-disable-next-line no-unreachable
+      // v831 RÉACTIVÉ proprement : la pilule (accent-grad) GLISSE via transform (snappy, GPU).
+      // Clé pour éviter le « texte qui s'illumine en retard » : le texte NE CHANGE PAS de couleur
+      // (blanc + ombre de texte partout) → seule la pilule bouge → motion fluide, zéro retard.
       if (!c) return;
       var btns = c.querySelectorAll(":scope > button");
       if (btns.length > 1 && btns[0].offsetParent && Math.abs(btns[0].offsetTop - btns[btns.length - 1].offsetTop) > 4) return;
@@ -5950,14 +5947,16 @@
       var firstRun = !ind._init; ind._init = 1;
       if (firstRun) ind.style.transition = "none";
       ind.style.opacity = "1";
-      ind.style.left = act.offsetLeft + "px"; ind.style.top = act.offsetTop + "px";
+      // GLISSEMENT via transform (translate) = fluide GPU, pas de saccade.
+      ind.style.left = "0"; ind.style.top = "0";
       ind.style.width = act.offsetWidth + "px"; ind.style.height = act.offsetHeight + "px";
+      ind.style.transform = "translate(" + act.offsetLeft + "px," + act.offsetTop + "px)";
       try { ind.style.borderRadius = getComputedStyle(act).borderRadius || "999px"; } catch (e) {}
       if (firstRun) requestAnimationFrame(function () { ind.style.transition = ""; });
     }
     // v825 : tous les segments « switch » de l'app (Maxime : humeur/spot/cherche/sondage =
     // .fc-kinds, carte/frise = .trip-vtoggle, quête du jour = .qs-mode, recherche = .search-scopes).
-    var SEG_SEL = ".seg, .mseg, .qs-mode, .fc-kinds, .search-scopes, .trip-vtoggle";
+    var SEG_SEL = ".mode-switch, .seg, .mseg, .qs-mode, .fc-kinds, .search-scopes, .trip-vtoggle";
     function _smSegIndAll() { document.querySelectorAll(SEG_SEL).forEach(function (c) { try { _smSegInd(c); } catch (e) {} }); }
     window._smSegIndAll = _smSegIndAll;
     document.addEventListener("click", function (e) { var c = e.target.closest && e.target.closest(SEG_SEL); if (c) requestAnimationFrame(function () { requestAnimationFrame(function () { _smSegInd(c); }); }); }, true);
@@ -20738,7 +20737,7 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
-  <script src="sunmates-da-loader.js?v=830"></script>
+  <script src="sunmates-da-loader.js?v=831"></script>
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY (se gate sur window.isAdmin/myProfile).
        Édite la vraie app en direct. Bac à essai preview. ⚠️ À la promotion vers index.html :
        décider si les admins prod la gardent, et retirer tout ?daforce. -->
