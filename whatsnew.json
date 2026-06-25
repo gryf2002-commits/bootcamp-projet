@@ -1,9 +1,9 @@
 {
-  "candidate": "v828",
+  "candidate": "v829",
   "items": [
-    "🔽 Flèches de repliage ENFIN identiques partout : même chevron « › » qui pivote (à droite = replié, vers le bas = déplié).",
-    "🎯 Titres « nus » de carte centrés aussi (Mes contacts d'urgence, Cercle de confiance…).",
-    "✅ Vérifié par audit automatique : 0 ombre sur les tuiles, switch fluide (0,22 s), photos des lieux qui chargent.",
-    "⏱️ IMPORTANT : attends 3-5 min après une mise à jour (le temps que GitHub diffuse), puis recharge."
+    "🌑 Ombres autour des emojis/icônes ENFIN supprimées : c'était un filtre (--relief), pas une box-shadow — d'où les ombres restantes (quête du jour, icône maison…). Mises à néant.",
+    "🔘 Switchs : couleurs d'ORIGINE (dégradé) de retour, apparition en FONDU doux, figés sur une ligne, texte jamais coupé ni illisible.",
+    "🎯 Titres centrés + action (Ajouter/Partager/compteur) passée juste en dessous → aucun chevauchement, aucun texte coupé.",
+    "🧱 Demi-contours moches supprimés (les bordures n'étaient coupées qu'en haut/bas) + toggle « à faire » lisible quand décoché."
   ]
 }
