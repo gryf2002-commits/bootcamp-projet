@@ -1,9 +1,9 @@
 {
-  "candidate": "v831",
+  "candidate": "v832",
   "items": [
-    "🔘 Switch : VRAIE pilule qui GLISSE (fluide, GPU). Le texte reste blanc + lisible en permanence (il ne change plus de couleur → fini l'illumination en retard / la motion pourrie).",
-    "🔽 Flèche de repliage : de retour à DROITE en ligne (cliquable), plus en dessous du titre.",
-    "📸 (rappel v830) Photos des lieux réparées à la source (bug de guillemets).",
-    "⏱️ Attends 3-5 min après la mise à jour (propagation), puis recharge."
+    "🟠 Halo orange autour de l'icône des popups (ex. à l'ouverture d'un check-in / lieu) SUPPRIMÉ — il venait d'une ombre que mon nettoyage épargnait sur les modales.",
+    "🔆 Contrastes : éléments inactifs (admin, segments, toggles) toujours lisibles (plus de blanc sur blanc / gris illisible).",
+    "📐 Textes moins collés (un filet d'air entre titres/sous-titres et rangées).",
+    "🔘 (rappel v831) Switch avec pilule qui glisse, flèche de repli cliquable à droite, photos des lieux réparées."
   ]
 }
