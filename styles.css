@@ -3237,7 +3237,7 @@
 
     /* --- Fond : ciel solaire + GRAIN photographique (réalisme analogique) --- */
     body {
-      background: radial-gradient(130% 80% at 50% -8%, #ffe6b8 0%, #ffd2b0 26%, #fce2d8 56%, #f9eee7 100%);
+      background: var(--bg);
     }
     body::after {
       content: ""; position: fixed; inset: 0; pointer-events: none; z-index: var(--z-nav);
@@ -3246,7 +3246,7 @@
     }
     /* Halo de soleil chaud en haut du « téléphone » */
     .app-shell {
-      background: radial-gradient(120% 55% at 50% -12%, rgba(255,188,116,.55) 0%, rgba(255,188,116,0) 58%), var(--bg) !important;
+      background: var(--bg) !important;
     }
 
     /* --- Écran de connexion : ciel coucher de soleil + rayons rétro --- */
@@ -3507,9 +3507,9 @@
       --ink: #f3ecf6; --ink-warm: #f6eef8; --text: #ded3e6; --muted: #a99fbe;
       --line: rgba(255,255,255,.09); --retro-teal: #4fd6c4;
       color: var(--text);
-      background: radial-gradient(130% 80% at 50% -8%, #3b2550 0%, #2a1c3e 34%, #20182f 64%, #171026 100%);
+      background: var(--bg);
     }
-    body.theme-dusk .app-shell { background: radial-gradient(120% 55% at 50% -12%, rgba(255,150,110,.30) 0%, rgba(255,150,110,0) 58%), var(--bg) !important; }
+    body.theme-dusk .app-shell { background: var(--bg) !important; }
     body.theme-dusk .card { background: linear-gradient(180deg, var(--dcard2,#241b36) 0%, var(--dcard5,#1f1830) 100%) !important; border-color: rgba(255,255,255,.07) !important; box-shadow: 0 14px 34px rgba(0,0,0,.42) !important; }
     body.theme-dusk input, body.theme-dusk textarea, body.theme-dusk select,
     body.theme-dusk .search input { background: #2b2240 !important; color: #ede6f2; border-color: rgba(255,255,255,.13) !important; }
@@ -4525,7 +4525,7 @@
       --accent-grad:linear-gradient(135deg, #BFD9F0 0%, #8CC4F2 20%, #3A77B8 52%);
       --dcard:#1B2C42; --dcard2:#152436; --dcard3:#1D3048; --dcard4:#243954; --dcard5:#12202F;
       color: var(--text);
-      background: radial-gradient(130% 80% at 50% -8%, #1C3149 0%, #14253A 40%, #0F1B2B 100%);
+      background: var(--bg);
     }
     body.theme-winter.theme-dusk .topbar { background: linear-gradient(#0F1B2B 62%, rgba(15,27,43,0)); border-bottom: 0; }
     body.theme-winter.theme-dusk #bgFx { background: var(--bg); } /* v688 : fond uniforme */
@@ -4542,7 +4542,7 @@
       --accent-grad:linear-gradient(135deg, #FFC23D 0%, #5CD8A8 22%, #1FA67A 52%);
       --dcard:#17332A; --dcard2:#122A21; --dcard3:#1A3A2E; --dcard4:#21453A; --dcard5:#0F241C;
       color: var(--text);
-      background: radial-gradient(130% 80% at 50% -8%, #16352A 0%, #102A20 40%, #0C1D17 100%);
+      background: var(--bg);
     }
     body.theme-tropic.theme-dusk .topbar { background: linear-gradient(#0C1D17 62%, rgba(12,29,23,0)); border-bottom: 0; }
     /* Bandeau du haut « VERRE DÉPOLI » (retour Maxime : le rendu semi-transparent laissait voir le texte
@@ -5638,7 +5638,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 813; }
+    :root { --sm-build: 814; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
