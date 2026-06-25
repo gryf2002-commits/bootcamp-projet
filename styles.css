@@ -234,7 +234,7 @@
     .act-block { background: #fef2f2; color: #dc2626; border-color: #fbd5d5; }
     .act-block .ic { background: #fbd5d5; }
     .act-block:hover { box-shadow: 0 8px 18px rgba(45,38,52,.16); } /* Lot C : ombre dé-rougie → gris chaud (doctrine) */
-    body.theme-dusk .act-challenge { background: rgba(122,92,255,.18); color: #c9bcff; border-color: rgba(122,92,255,.34); }
+    body.theme-dusk .act-challenge { background: rgba(255,138,61,.16); color: #ffce9b; border-color: rgba(255,138,61,.34); }
     body.theme-dusk .act-challenge .ic { background: rgba(122,92,255,.34); }
     body.theme-dusk .act-bff { background: rgba(255,178,116,.16); color: #ffce9b; border-color: rgba(255,178,116,.32); }
     body.theme-dusk .act-bff .ic { background: rgba(255,178,116,.32); }
@@ -712,7 +712,7 @@
     /* ---- Bannière « compte de démonstration (IA) » ---- */
     .demo-banner { background: rgba(122,92,255,.12); color: #6a4ad8; border: 1px solid rgba(122,92,255,.25);
       border-radius: 12px; padding: .5rem .7rem; font-size: .78rem; margin-bottom: .7rem; text-align: center; line-height: 1.35; }
-    body.theme-dusk .demo-banner { background: rgba(122,92,255,.2); color: #c9bcff; }
+    body.theme-dusk .demo-banner { background: rgba(255,138,61,.2); color: #ffce9b; }
 
     /* ---- Séparateur de jour dans le chat ---- */
     .chat-daysep { text-align: center; margin: .85rem 0 .5rem; }
@@ -920,7 +920,7 @@
     .kb-search .kb-clear { position: absolute; right: .5rem; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; border: 0; border-radius: 50%; background: var(--cream); color: var(--muted); cursor: pointer; }
     body.theme-dusk .kb-search .kb-clear { background: var(--dcard,#2a2140); }
     .admin-only-cat > summary { list-style: none; } .admin-only-cat > summary::-webkit-details-marker { display: none; }
-    body.theme-dusk .popinfo-x { background: var(--dcard,#2a2140); color: #ccc; }
+    body.theme-dusk .popinfo-x { background: var(--dcard,#2a2140); color: var(--ink,#f3e9d8); }
     .popinfo-ic { width: 58px; height: 58px; margin: 0 auto .7rem; border-radius: 18px; display: grid; place-items: center; font-size: 1.9rem; background: var(--accent-grad); box-shadow: 0 8px 20px rgba(255,138,61,.32); }
     .popinfo-t { margin: 0 0 .5rem; font-size: 1.08rem; }
     .popinfo-b { font-size: .9rem; color: var(--muted); line-height: 1.5; }
@@ -3382,10 +3382,12 @@
     #profSegNav button[data-pseg="premium"] { background: linear-gradient(135deg,#FFDD8A,#F0AD3A); border-color: rgba(200,130,20,.6); color: #5f3e00; }
     #profSegNav button[data-pseg="admin"] { background: linear-gradient(135deg,#FFC2CC,#F4798F); border-color: rgba(220,60,100,.55); color: #7a1230; }
     /* P14 : bouton Espace Pro = lagon professionnel */
-    #profSegNav button[data-pseg="pro"] { background: linear-gradient(135deg,#BFEFE2,#6BD0B8); border-color: rgba(20,158,140,.5); color: #0b5e50; }
-    #profSegNav button[data-pseg="pro"].active { background: linear-gradient(135deg,#4ED8B8,#149E8C) !important; color: #fff !important; box-shadow: 0 6px 16px rgba(20,158,140,.3); }
-    body.theme-dusk #profSegNav button[data-pseg="pro"] { background: linear-gradient(135deg,#143C33,#1B5246); border-color: rgba(78,216,184,.4); color: #8FE8D2; }
-    body.theme-dusk #profSegNav button[data-pseg="pro"].active { background: linear-gradient(135deg,#1FA68A,#147A66) !important; color: #EAFBF5 !important; }
+    /* DA coucher de soleil : « pro » passe du TEAL (hors-DA, vert/turquoise) à un TERRACOTTA chaud,
+       distinct de l'or (Gold) et de la framboise (Admin), mais dans la famille sunset. */
+    #profSegNav button[data-pseg="pro"] { background: linear-gradient(135deg,#FFD9C2,#FFAE86); border-color: rgba(200,80,46,.45); color: #9C4326; }
+    #profSegNav button[data-pseg="pro"].active { background: linear-gradient(135deg,#FF9A56,#E0631C) !important; color: #fff !important; box-shadow: 0 6px 16px rgba(200,80,46,.3); }
+    body.theme-dusk #profSegNav button[data-pseg="pro"] { background: linear-gradient(135deg,#3E2417,#4E3019); border-color: rgba(255,154,86,.4); color: #FFC79B; }
+    body.theme-dusk #profSegNav button[data-pseg="pro"].active { background: linear-gradient(135deg,#E0631C,#B8480F) !important; color: #FFF3E9 !important; }
     /* État ACTIF : chaque tuile garde SA couleur (avant : tout passait corail → le Premium
        n'était plus jaune). Premium actif = OR franc, Admin actif = framboise profond. */
     #profSegNav button.active { background: var(--accent-grad) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 6px 16px rgba(45,38,52,.28); }
@@ -4702,7 +4704,7 @@
       .topbar-actions { gap: .3rem; }
       .brand { font-size: 1.05rem; letter-spacing: .3px; }
       .brand .mark { width: 28px; height: 28px; }
-      .iconbtn { min-width: 38px; min-height: 38px; padding: .4rem .5rem; }
+      .iconbtn { min-width: 44px; min-height: 44px; padding: .35rem; } /* WCAG : cible tactile ≥44px même sur petit écran */
       #logoutBtn { padding: .42rem .55rem !important; font-size: .76rem !important; }
     }
 
@@ -5580,7 +5582,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 797; }
+    :root { --sm-build: 799; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
