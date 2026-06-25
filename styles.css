@@ -4775,6 +4775,19 @@
       content: ""; position: absolute; left: 0; top: .14em; bottom: .14em;
       width: 3px; border-radius: 999px; background: var(--accent-grad); opacity: .85;
     }
+    /* ============================================================
+       v811 — Maxime « fucking ligne orange au-dessus d'Explore autour de toi, à plusieurs endroits ».
+       C'était la BARRE D'ACCENT ORANGE (::before var(--accent-grad)) sur CHAQUE en-tête de section
+       (Explore, Accès rapides, Mes voyages, En cas d'urgence, légendes Jeux…). --accent-grad reste
+       orange même en thème hiver/tropiques → trait orange qui jure partout. ON LA RETIRE TOTALEMENT.
+       Haute spécificité + !important pour battre le loader DA. ============================================================ */
+    html body :is(.section-head > h3, .qm-head > h3, .sp-title)::before,
+    html.sm-app body :is(.section-head > h3, .qm-head > h3, .sp-title)::before,
+    html body :is(.tab-panel, .jeux-view, .secu-view) .jnav-cap::before,
+    html.sm-app body :is(.tab-panel, .jeux-view, .secu-view) .jnav-cap::before {
+      content: none !important; display: none !important; background: none !important; width: 0 !important; }
+    html body :is(.section-head > h3, .qm-head > h3, .sp-title),
+    html.sm-app body :is(.section-head > h3, .qm-head > h3, .sp-title) { padding-left: 0 !important; }
     /* Un peu plus d'air avant chaque bloc « Accès rapides / Trouver de l'aide »
        en Sécurité → la longue page respire et se segmente visuellement. */
     .secu-view .section-head { margin-top: 1.5rem; margin-bottom: .55rem; }
@@ -5595,7 +5608,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 810; }
+    :root { --sm-build: 811; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
