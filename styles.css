@@ -2145,7 +2145,7 @@
     .lb-segs button { flex: 1 1 auto; background: var(--cream); border: 1.5px solid var(--line); color: var(--text); border-radius: 999px; padding: .45rem .7rem; font-weight: 700; font-size: .8rem; cursor: pointer; white-space: nowrap; }
     .lb-segs button.active { background: var(--accent-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 14px rgba(45,38,52,.16); }
     .lb-row { display: flex; align-items: center; gap: .7rem; padding: .6rem .7rem; border-radius: 14px; margin-bottom: .4rem; background: var(--card); border: 1px solid var(--line); }
-    .lb-row .avatar { width: 38px; height: 38px; }
+    .lb-row .avatar { width: 42px; height: 42px; }
     .lb-rank { width: 26px; text-align: center; font-weight: 800; font-size: 1rem; color: var(--muted); flex-shrink: 0; }
     .lb-info { flex: 1; min-width: 0; }
     .lb-name { font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -2173,7 +2173,7 @@
     .reviews-form textarea { margin-top: .7rem; } /* espace sous les étoiles */
     .review-item { display: flex; gap: .6rem; padding: .5rem 0; border-bottom: 0; }
     .review-item:last-child { border-bottom: 0; }
-    .review-item .avatar { width: 36px; height: 36px; }
+    .review-item .avatar { width: 42px; height: 42px; }
     .review-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
     .review-stars { color: #FFB52E; font-size: .82rem; letter-spacing: 1px; flex-shrink: 0; }
     .review-txt { font-size: .85rem; color: var(--text); line-height: 1.4; margin-top: .15rem; }
@@ -4109,7 +4109,7 @@
     .da-emo { width: 38px; height: 38px; display: grid; place-items: center; font-size: 1.15rem; background: var(--cream, #faf3ec); border: 1px solid var(--line); border-radius: 14px; cursor: pointer; padding: 0; }
     .da-emo:active { transform: scale(.92); }
     body.theme-dusk .da-emo { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.1); }
-    .adm-live { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .65rem .7rem; margin-bottom: .7rem; box-shadow: var(--shadow-sm); }
+    .adm-live { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .65rem .7rem; margin-bottom: .7rem; box-shadow: none; }
     body.theme-dusk .adm-live { background: var(--dcard, #2a2140); border-color: rgba(255,255,255,.09); }
     .adm-live .al-head { display: flex; align-items: center; gap: .4rem; font-size: .72rem; font-weight: 800; letter-spacing: .06em; color: var(--muted); }
     .adm-live .al-dot { width: 9px; height: 9px; border-radius: 50%; background: #2BC48A; box-shadow: 0 0 0 0 rgba(43,196,138,.5); animation: alPulse 1.8s ease-out infinite; }
@@ -5647,7 +5647,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -6191,7 +6191,7 @@
     html.sm-app body .homemap-card.fs .epin, html.sm-app body .homemap-card.fs .epin-cluster { border: 2.5px solid #fff !important; }
     html.sm-app body .homemap-fsopen { border: 1.5px solid rgba(255,255,255,.9) !important; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v818 · 2e lot retours Maxime (25/06). LEÇON CLÉ (re-confirmée) : les balais
@@ -6241,7 +6241,7 @@
     html.sm-app body .weather-chip > * { min-width: 0; }
     html.sm-app body .weather-chip .wc-temp, html.sm-app body .weather-chip .wc-hint { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v820 · 3e lot retours Maxime (25/06). ════════════════════════════════ */
@@ -6295,7 +6295,7 @@
        UNIQUEMENT un garde-fou anti-débordement d'images (sans toucher la largeur de l'app). */
     html body img, html body video, html body canvas { max-width: 100%; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v821 · 4e lot Maxime — flèches repliage uniformes + titres centrés. ════ */
@@ -6319,7 +6319,7 @@
       color: var(--accent-ink, var(--accent)) !important; font-weight: 800 !important; font-size: 1.15rem !important;
       line-height: 1; opacity: .9; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v822 · 5e lot Maxime — halos (vraie source), mot « Gold » (WCAG), contraste. */
@@ -6352,7 +6352,7 @@
     html.sm-app body.theme-winter.theme-dusk [style*="#B5740E"], html.sm-app body.theme-tropic.theme-dusk [style*="#B5740E"] {
       color: #FFD79A !important; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v823 · 6e lot Maxime — TYPO uniforme (logique UX/UI pro) + tuiles Mes voyages
@@ -6383,7 +6383,7 @@
     html.sm-app body :is(.trip-passport, .globe-passport, .tj-passport, .trip-cta-duo) {
       background: transparent !important; box-shadow: none !important; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* v823b · SWITCH QUI GLISSE (générique, posé par _smSegInd sur .seg/.mseg non-wrap). */
     html.sm-app body .sm-seg-slide { position: relative; }
@@ -6450,7 +6450,7 @@
       flex: 0 0 auto !important; margin-left: .5rem !important; color: var(--accent-ink, var(--accent)) !important;
       font-weight: 800 !important; font-size: 1.15rem !important; line-height: 1 !important; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v826 · CORRECTION DES RÉGRESSIONS (priorité : NE RIEN CASSER). ══════════ */
@@ -6494,7 +6494,7 @@
     :root, body, body.theme-dusk, body.theme-winter, body.theme-tropic,
     body.theme-winter.theme-dusk, body.theme-tropic.theme-dusk { --shadow: none !important; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v827 · REPREND TOUT (Maxime furieux). Bulletproof : halos, switch, contraste.
@@ -6531,7 +6531,7 @@
     /* le conteneur ne change pas de hauteur / ne remonte pas */
     html.sm-app body :is(.mode-switch, .qs-mode, .fc-kinds, .search-scopes, .trip-vtoggle) { min-height: 2.5rem; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v828 · flèches repliage UNIFORMES (glyphe › partout + rotation) + titres nus
@@ -6548,7 +6548,7 @@
     html.sm-app body .card > h3:first-child, html.sm-app body .card[data-coll] > h3 {
       text-align: center !important; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v829 · Maxime point par point (j'écoute, je vérifie). ════════════════════ */
@@ -6604,7 +6604,7 @@
       border-color: color-mix(in srgb, var(--ink) 16%, transparent) !important; }
     html.sm-app body .todo-toggle:not(.active) .tt-state { color: var(--muted) !important; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v831 · SWITCH = vraie pilule qui GLISSE (snappy) + flèche repliage INLINE
@@ -6634,7 +6634,7 @@
       flex: 0 0 auto !important; margin: 0 !important; align-self: center !important; }
     html.sm-app body .coll-chev { min-width: 1.6rem; min-height: 1.6rem; display: inline-flex; align-items: center; justify-content: center; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v832 · halo orange du popup (pin) + contrastes restants + espacements. ════ */
@@ -6657,7 +6657,7 @@
     html.sm-app body :is(.t-meta, .pr-sub, .tj-meta, .qm-sub, .pf-sub, .su-head .su-s) { margin-top: .15rem !important; }
     html.sm-app body :is(.prog-row, .pr-tx, .sugg-row, .te-row, .num-row) { line-height: 1.4 !important; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v833 · cohérence des formes de tuiles (météo / journée) + finitions trips. ═ */
@@ -6681,7 +6681,7 @@
       color: var(--ink) !important; border: 0 !important; }
     html.sm-app body :is(.tj-card, .ptrip-card, .trip-card) { color: var(--ink) !important; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v835 · switch aux couleurs DA + centrage/flèches re-fiabilisés. ══════════ */
@@ -6708,7 +6708,7 @@
     html.sm-app body :is(.spot-card[open] .sp-chev, details[open] > summary .sp-chev) { transform: rotate(90deg) !important; }
     html.sm-app body :is(.spot-card:not([open]) .sp-chev, details:not([open]) > summary .sp-chev) { transform: rotate(0deg) !important; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v838 · panneau de notifs (cloche) lisible + carte qui charge jusqu'au bout. */
@@ -6720,7 +6720,7 @@
     html.sm-app body :is(.notif-item .meta, .notif-item .muted) { color: var(--muted) !important; }
     html.sm-app body .notif-item:hover { background: color-mix(in srgb, var(--ink) 8%, transparent) !important; }
 
-    :root { --sm-build: 848; }
+    :root { --sm-build: 849; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v839 · CHEVRONS — une seule logique cohérente PARTOUT : fermé = › pointe à
@@ -6769,3 +6769,14 @@ body.theme-dusk .navbadge, body.theme-dusk .conv-unread, body.theme-dusk .sugg-c
   .qarrow, .gi-arrow, .gn-chev, .sm-sel-chev, .pr-chev, .pf-head .chev { transition: none; }
   .qrow:active .qarrow, :is([data-goto],[data-secuquick],[data-protile]):active .qarrow { transform: none; }
 }
+
+/* ============================================================================
+   v849 · SWITCHS plus clairs, alignés DA (Maxime : « plus foncé que la DA des
+   modes » — En voyage/Maison, humeur…). Track = recess subtil au lieu de cream/
+   #2a2140 (trop foncé). Le segment actif (accent-grad) et le texte restent. Append.
+   ============================================================================ */
+.mode-switch, .feed-composer .fc-kinds, .seg, .qs-mode, .trip-vtoggle {
+  background: rgba(45,38,52,.05) !important; }
+body.theme-dusk .mode-switch, body.theme-dusk .feed-composer .fc-kinds,
+body.theme-dusk .seg, body.theme-dusk .qs-mode, body.theme-dusk .trip-vtoggle {
+  background: rgba(255,255,255,.06) !important; }
