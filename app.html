@@ -300,7 +300,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script defer src="sunmates-badges.js?v=842"></script>
+  <script defer src="sunmates-badges.js?v=843"></script>
   <script defer src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script defer src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
@@ -309,7 +309,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
   <!-- 🎬 DA de Motion « Le mouvement du couchant » : noyau réutilisable (window.SM_MOTION). -->
   <script defer src="sm-motion-da.js?v=740"></script>
-  <script defer src="sunmates-motion.js?v=842"></script>
+  <script defer src="sunmates-motion.js?v=843"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -384,13 +384,13 @@
       } catch (e) {}
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=842">
+  <link rel="stylesheet" href="styles.css?v=843">
   <style id="sm-cloak">html.sm-verifying body{visibility:hidden!important}</style>
   <script>
   /* v767 · AUTO-RÉPARATEUR + CLOAK : on masque la page jusqu'à la vérif de version.
      Appareil à jour → révélé tout de suite ; appareil périmé → purge caches+SW et reload
      EN RESTANT MASQUÉ (fini le flash d'« ancien design qui se charge avant »). Failsafe 2.5s. */
-  (function(){try{var EXPECT="842",H=document.documentElement;H.classList.add("sm-verifying");
+  (function(){try{var EXPECT="843",H=document.documentElement;H.classList.add("sm-verifying");
     var revealed=false,reveal=function(){if(revealed)return;revealed=true;try{H.classList.remove("sm-verifying");}catch(e){}};
     setTimeout(reveal,2500);
     document.addEventListener("DOMContentLoaded",function(){try{
@@ -520,7 +520,7 @@
     }
     .globe-pt-label {
       font: 600 .78rem/1.35 "Manrope", system-ui, sans-serif; color: #2a1640;
-      background: linear-gradient(135deg, #FFD15C, #ff9a8d); padding: .35rem .55rem; border-radius: 12px;
+      background: linear-gradient(135deg, #FFD15C, #ff9a8d); padding: .35rem .55rem; border-radius: 14px;
       box-shadow: 0 6px 18px -8px rgba(0,0,0,.6); max-width: 200px;
     }
     .globe-pt-label b { color: #2a1640; }
@@ -545,7 +545,7 @@
     .gp-figs { display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap; }
     .gp-fig {
       flex: 1 1 0; min-width: 76px; max-width: 150px; text-align: center;
-      padding: .35rem .4rem; border-radius: 12px;
+      padding: .35rem .4rem; border-radius: 14px;
       background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
     }
     .gp-fig b {
@@ -592,7 +592,7 @@
     #starterCard .starter-x { background: none; border: 0; font-size: 1rem; color: var(--muted); cursor: pointer; padding: .1rem .2rem; line-height: 1; }
     #starterCard .starter-steps { display: flex; flex-direction: column; gap: .35rem; }
     #starterCard .starter-step { display: flex; align-items: center; gap: .6rem; width: 100%; text-align: left;
-      background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .55rem .65rem; cursor: pointer;
+      background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .55rem .65rem; cursor: pointer;
       font: inherit; color: var(--text); transition: transform .1s ease, border-color .15s ease, background .15s ease; }
     #starterCard .starter-step:hover { border-color: var(--accent); }
     #starterCard .starter-step:active { transform: scale(.99); }
@@ -657,7 +657,7 @@
     #geoNowCard .gn-chev-go { color: var(--accent-ink, var(--accent)); font-weight: 800; }
     #geoNowCard .geo-idea .gi-arrow { color: var(--accent-ink, var(--accent)); font-weight: 800; }
     /* Bulle de suggestion « Ici, maintenant » (contenu réel : défi / voyageurs / lieu) */
-    #geoNowCard .geo-result { display: flex; align-items: center; gap: .5rem; margin-top: .55rem; padding: .55rem .65rem; border-radius: 12px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 6px 14px -10px rgba(120,40,30,.5); animation: geoPop .22s ease; }
+    #geoNowCard .geo-result { display: flex; align-items: center; gap: .5rem; margin-top: .55rem; padding: .55rem .65rem; border-radius: 14px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 6px 14px -10px rgba(120,40,30,.5); animation: geoPop .22s ease; }
     @keyframes geoPop { from { opacity: 0; transform: translateY(-4px) scale(.98); } to { opacity: 1; transform: none; } }
     #geoNowCard .geo-result-txt { flex: 1; min-width: 0; font-size: .85rem; line-height: 1.35; color: var(--text); }
     #geoNowCard .geo-result-txt b { color: var(--ink); }
@@ -677,7 +677,7 @@
     .perm-state.state-prompt { color: var(--accent-ink, var(--accent)); background: var(--accent-soft); }
     .perm-state.state-unsupported { color: var(--muted); background: var(--line, rgba(20,18,40,.06)); }
     /* Messages — recherche dans les conversations (filtre client, façon Insta) */
-    .conv-search { display: flex; align-items: center; gap: .5rem; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .5rem .7rem; margin: 0 0 .5rem; }
+    .conv-search { display: flex; align-items: center; gap: .5rem; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .5rem .7rem; margin: 0 0 .5rem; }
     .conv-search .ico { opacity: .6; font-size: .95rem; }
     .conv-search input { flex: 1; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: .9rem; outline: none; }
     /* Messages — réactions emoji sur les bulles */
@@ -698,7 +698,7 @@
     #seasonCtl .seg { display: flex; gap: .4rem; margin-top: .4rem; }
     /* Fond/bordure DÉRIVÉS de --ink (et non var(--card)) : les tuiles restent visibles
        même posées sur la carte Réglages (elle aussi en --card). Marche sur tout thème. */
-    #seasonCtl .seg button { flex: 1; min-width: 0; padding: .55rem .3rem; border-radius: 12px;
+    #seasonCtl .seg button { flex: 1; min-width: 0; padding: .55rem .3rem; border-radius: 14px;
       border: 1.5px solid color-mix(in oklab, var(--ink) 22%, transparent);
       background: color-mix(in oklab, var(--ink) 7%, transparent);
       color: var(--ink); font-weight: 700; font-size: .8rem; white-space: nowrap; cursor: pointer;
@@ -1007,7 +1007,7 @@
     .ttl-dot.past   { background: var(--accent, #ff6a5d); border-color: color-mix(in oklab, var(--accent) 60%, white); }
     .ttl-dot.future { background: var(--gold, #FFD15C);   border-color: color-mix(in oklab, var(--gold) 55%, white); }
     .ttl-card {
-      border-radius: 12px; padding: .5rem .65rem;
+      border-radius: 14px; padding: .5rem .65rem;
       background: color-mix(in oklab, var(--ink) 5%, transparent);
       border: 1px solid color-mix(in oklab, var(--ink) 11%, transparent);
       transition: transform .14s ease, border-color .16s ease, background .16s ease;
@@ -1345,7 +1345,7 @@
     #authView .lp-nav { position: sticky; top: 0; z-index: 30; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(28,20,44,.82); border-bottom: 1px solid var(--lp-line); }
     #authView .lp-nav-inner { width: min(1080px, 90vw); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem 0; }
     #authView .lp-brand { display: flex; align-items: center; gap: .5rem; font-family: "Fraunces", serif; font-weight: 700; font-size: 1.25rem; color: var(--lp-ink); }
-    #authView .lp-brand .lp-logo { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: var(--lp-grad); box-shadow: var(--lp-shadow); font-size: 1.05rem; }
+    #authView .lp-brand .lp-logo { width: 34px; height: 34px; border-radius: 14px; display: grid; place-items: center; background: var(--lp-grad); box-shadow: var(--lp-shadow); font-size: 1.05rem; }
     #authView .lp-nav-links { display: flex; align-items: center; gap: 1.1rem; }
     #authView .lp-link { font-weight: 600; color: var(--lp-text); font-size: .95rem; }
     #authView .lp-link:hover { color: var(--lp-accent); }
@@ -1486,7 +1486,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=842">
+  <link rel="stylesheet" href="sunmates-lite.css?v=843">
 </head>
 <body>
   <!-- a11y : lien d'évitement (premier élément focalisable) → saute la barre/nav vers le contenu principal. -->
@@ -2124,7 +2124,7 @@
         <div id="geoPrompt" class="hidden" style="margin:.55rem 0 .2rem;padding:.7rem .85rem;border-radius:14px;background:var(--accent-soft,rgba(255,209,92,.12));border:1px solid var(--line,rgba(0,0,0,.08));display:flex;align-items:center;gap:.6rem">
           <span style="font-size:1.3rem">📍</span>
           <div style="flex:1;font-size:.84rem;line-height:1.35">Active ta position pour voir les lieux sûrs et les voyageur·ses <b>autour de toi</b>.</div>
-          <button id="geoPromptBtn" class="btn-accent" style="flex-shrink:0;padding:.5rem .8rem;border-radius:12px">Activer</button>
+          <button id="geoPromptBtn" class="btn-accent" style="flex-shrink:0;padding:.5rem .8rem;border-radius:14px">Activer</button>
           <button id="geoPromptX" aria-label="Fermer" style="flex-shrink:0;background:none;border:0;font-size:1.1rem;color:var(--muted);cursor:pointer">✕</button>
         </div>
 
@@ -2198,7 +2198,7 @@
             .hm-mateday .hmd-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .05rem; }
             .hm-mateday .hmd-tx b { font-size: .88rem; }
             .hm-mateday .hmd-tx span { font-size: .74rem; color: var(--muted); }
-            .hm-mateday .hmd-btn { flex: 0 0 auto; padding: .45rem .7rem; border-radius: 12px; }
+            .hm-mateday .hmd-btn { flex: 0 0 auto; padding: .45rem .7rem; border-radius: 14px; }
             body.theme-dusk .hm-mateday { background: rgba(255,255,255,.05); }
             /* Squelette de carte : shimmer chaud derrière Leaflet, visible tant que les tuiles n'ont pas peint */
             /* v809 : shimmer de chargement carte THÉMÉ via var(--cream) → suit le thème (bleu hiver, vert tropiques, prune nuit, crème jour). Fini le violet codé en dur qui jurait sur le fond bleu/vert. */
@@ -3420,7 +3420,7 @@
           <button class="btn-ghost btn-block" id="installAppBtn">📲 Installer l'app sur mon téléphone</button>
           <button class="btn-ghost btn-block" id="replayOnbBtn" style="margin-top:.5rem" data-i18n="profile.replay">🚀 Revoir la présentation</button>
           <div class="set-grouptitle">Compte</div>
-          <button class="btn-block" id="logoutBtn" style="margin-top:.4rem;border:1.6px solid var(--danger);background:color-mix(in oklab, var(--danger) 8%, transparent);color:var(--danger);font-weight:800;border-radius:12px;padding:.85rem">🚪 Se déconnecter</button>
+          <button class="btn-block" id="logoutBtn" style="margin-top:.4rem;border:1.6px solid var(--danger);background:color-mix(in oklab, var(--danger) 8%, transparent);color:var(--danger);font-weight:800;border-radius:14px;padding:.85rem">🚪 Se déconnecter</button>
 
           <!-- (doublon « Compte » retiré : email/mot de passe restent sous le même groupe Compte ci-dessus) -->
           <label data-i18n="set.newEmail" style="margin-top:.8rem">Nouvel email</label>
@@ -3517,7 +3517,7 @@
                 <div style="display:flex;align-items:center;gap:.45rem;margin-top:.45rem;flex-wrap:wrap"><span class="qs-xp" id="qsXp">+0</span><span class="qs-dot">·</span><span class="qs-badge-hint" style="font-size:.78rem">🏅 <b id="qsBadge">—</b></span></div>
               </div>
             </div>
-            <div class="qs-mode" style="display:flex;gap:.3rem;margin:.7rem 0 .55rem;background:rgba(255,138,61,.1);border-radius:12px;padding:.25rem">
+            <div class="qs-mode" style="display:flex;gap:.3rem;margin:.7rem 0 .55rem;background:rgba(255,138,61,.1);border-radius:14px;padding:.25rem">
               <button type="button" class="qs-mode-btn active" data-qsmode="solo">🧭 Solo</button>
               <button type="button" class="qs-mode-btn" data-qsmode="group">👥 À deux <i>+bonus</i></button>
             </div>
@@ -6652,7 +6652,7 @@
       });
     }
     { const tg = $("tripViewToggle"); if (tg) tg.addEventListener("click", (e) => { const b = e.target.closest(".tvt-btn"); if (b) _setTripView(b.dataset.tview); }); }
-    const _trIn = "width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.5rem .6rem;font:inherit;background:var(--card);color:var(--ink);margin-top:.15rem";
+    const _trIn = "width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:14px;padding:.5rem .6rem;font:inherit;background:var(--card);color:var(--ink);margin-top:.15rem";
     const _trLbl = "font-size:.76rem;font-weight:700;color:var(--muted);margin-top:.5rem;display:block";
     function openAddTrip() {
       popInfo("✈️", "Ajouter un voyage", `<div style="text-align:left">
@@ -8398,7 +8398,7 @@
         "<div style='font-size:.84rem;color:var(--muted);margin-bottom:.5rem'>" + escapeHtml(c.category || "Lieu sûr") + ", " + escapeHtml(c.city || "") + (km != null ? ", 📍 à " + _fmtDist(km) : "") + "</div>" +
         "<div style='font-size:.88rem;line-height:1.7'>" +
           // P14 (Espace Pro) : l'OFFRE DU MOMENT du partenaire, mise en avant sur sa fiche
-          (c.offer ? "<div style='background:var(--accent-soft);border-radius:12px;padding:.4rem .6rem;margin-bottom:.4rem;font-weight:700'>🎁 " + escapeHtml(c.offer) + "</div>" : "") +
+          (c.offer ? "<div style='background:var(--accent-soft);border-radius:14px;padding:.4rem .6rem;margin-bottom:.4rem;font-weight:700'>🎁 " + escapeHtml(c.offer) + "</div>" : "") +
           (c.is_eco ? "🌱 Éco-responsable<br>" : "") +
           (c.hours ? "🕐 " + escapeHtml(c.hours) + "<br>" : "") +
           (c.price_range ? "💶 " + escapeHtml(c.price_range) + "<br>" : "") +
@@ -8713,7 +8713,7 @@
         // pas), hauteur réservée + onerror qui retombe sur l'emoji si l'image ne charge pas
         // (« rien n'apparaît à l'endroit des photos » = image vide/échouée).
         const hero = g.img
-          ? `<img src="${escapeHtml(g.img)}" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:12px;margin-bottom:.5rem;background:var(--cream)" onerror="this.outerHTML='&lt;div style=&quot;font-size:3rem&quot;&gt;📍&lt;/div&gt;'">`
+          ? `<img src="${escapeHtml(g.img)}" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:14px;margin-bottom:.5rem;background:var(--cream)" onerror="this.outerHTML='&lt;div style=&quot;font-size:3rem&quot;&gt;📍&lt;/div&gt;'">`
           : `<div style="font-size:3rem">📍</div>`;
         showInfo("Check-in", `<div style="text-align:center;padding:.4rem 0">
             ${hero}
@@ -9000,7 +9000,7 @@
           lg.innerHTML = LOGOS.map(([cls, label]) => {
             const src = document.querySelector(".brand .mark ." + cls);
             const svg = src ? src.outerHTML.replace(/width="22" height="22"/, 'width="30" height="30"').replace(/class="[^"]*"/, "") : "";
-            return `<div style="text-align:center"><span style="display:grid;place-items:center;width:46px;height:46px;border-radius:12px;background:${BGS[cls]}">${svg}</span><div class="muted" style="font-size:.62rem;font-weight:700;margin-top:.2rem">${label}</div></div>`;
+            return `<div style="text-align:center"><span style="display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:${BGS[cls]}">${svg}</span><div class="muted" style="font-size:.62rem;font-weight:700;margin-top:.2rem">${label}</div></div>`;
           }).join("");
         }
       }
@@ -10134,7 +10134,7 @@
           let prev = null; try { prev = parseInt(localStorage.getItem(tk) || "", 10) || null; } catch (e) {}
           try { localStorage.setItem(tk, String(rk)); } catch (e) {}
           const trend = (prev && prev !== rk) ? (rk < prev ? ' <span style="color:#1E7A5A;font-weight:800">📈 +' + (prev - rk) + "</span>" : ' <span style="color:var(--danger);font-weight:800">📉 −' + (rk - prev) + "</span>") : "";
-          meLine = '<div class="lb-meline" style="text-align:center;font-weight:800;font-size:.9rem;background:linear-gradient(135deg,rgba(255,201,60,.16),rgba(255,138,61,.1));border:1px solid rgba(232,150,31,.25);border-radius:12px;padding:.5rem .7rem;margin-bottom:.55rem">🌟 ' + i18nT("Tu es {r} dans ce classement", { r: "#" + rk }) + trend + "</div>";
+          meLine = '<div class="lb-meline" style="text-align:center;font-weight:800;font-size:.9rem;background:linear-gradient(135deg,rgba(255,201,60,.16),rgba(255,138,61,.1));border:1px solid rgba(232,150,31,.25);border-radius:14px;padding:.5rem .7rem;margin-bottom:.55rem">🌟 ' + i18nT("Tu es {r} dans ce classement", { r: "#" + rk }) + trend + "</div>";
         }
       }
       box.innerHTML = optIn + meLine + (rows.length ? rows.map((r, i) => {
@@ -10715,7 +10715,7 @@
       showInfo("📞 Configurer le faux appel", `
         <div style="text-align:left">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem"><label style="font-weight:700;font-size:.85rem">Nom de l'appelant</label><button class="btn-ghost" id="fcManage" style="padding:.25rem .6rem;font-size:.74rem">⚙️ Gérer</button></div>
-          <input id="fcNameInput" type="text" maxlength="24" placeholder="Ex : Maman, Le boulot…" value="${escapeHtml(saved)}" autocomplete="off" autocapitalize="words" autocorrect="off" name="sm-fake-caller" data-lpignore="true" data-1p-ignore data-form-type="other" style="width:100%;box-sizing:border-box;padding:.6rem;border:1px solid var(--line);border-radius:12px;margin:.3rem 0 .6rem" />
+          <input id="fcNameInput" type="text" maxlength="24" placeholder="Ex : Maman, Le boulot…" value="${escapeHtml(saved)}" autocomplete="off" autocapitalize="words" autocorrect="off" name="sm-fake-caller" data-lpignore="true" data-1p-ignore data-form-type="other" style="width:100%;box-sizing:border-box;padding:.6rem;border:1px solid var(--line);border-radius:14px;margin:.3rem 0 .6rem" />
           <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.7rem">${names.map((n) => `<button class="btn-ghost fc-pickname" data-n="${escapeHtml(n)}" style="flex:0 0 auto;padding:.35rem .7rem;font-size:.82rem">${escapeHtml(n)}</button>`).join("")}</div>
           <label style="font-weight:700;font-size:.85rem">Sonne dans</label>
           <div style="display:flex;gap:.4rem;margin:.3rem 0 .7rem">${FC_DELAYS.map(([s, l]) => `<button class="btn-ghost fc-delay${s === curDelay ? " active" : ""}" data-s="${s}" style="flex:1;padding:.42rem .2rem;font-size:.82rem${s === curDelay ? ";background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink, var(--accent));font-weight:800" : ""}">${l}</button>`).join("")}</div>
@@ -12148,7 +12148,7 @@
           localStorage.setItem(key, r.replied_at);
           // #5 : réponse PERSISTANTE (modale qui reste jusqu'à fermeture) + texte complet,
           // fini le bandeau toast de quelques secondes.
-          if (typeof showInfo === "function") showInfo("✅ Réponse de l'équipe SunMates", '<div style="line-height:1.6"><p class="muted" style="font-size:.82rem;margin:0 0 .6rem">Ton message au support a été traité 💛</p><div style="background:var(--accent-soft);border-radius:12px;padding:.75rem .85rem;color:var(--ink);font-size:.92rem">« ' + escapeHtml(r.admin_reply || "Merci pour ton retour !") + ' »</div></div>');
+          if (typeof showInfo === "function") showInfo("✅ Réponse de l'équipe SunMates", '<div style="line-height:1.6"><p class="muted" style="font-size:.82rem;margin:0 0 .6rem">Ton message au support a été traité 💛</p><div style="background:var(--accent-soft);border-radius:14px;padding:.75rem .85rem;color:var(--ink);font-size:.92rem">« ' + escapeHtml(r.admin_reply || "Merci pour ton retour !") + ' »</div></div>');
           else if (typeof toast === "function") toast("✅", "Ton retour a été traité 💛");
           if (window.SMSound) SMSound.play("notify");
         }
@@ -13110,7 +13110,7 @@
       popInfo("🧪", "App en bêta · ton avis compte", `
         <p class="muted" style="font-size:.82rem;margin:0 0 .7rem;text-align:center">SunMates est en <b>bêta</b> : chaque retour file droit à l'équipe 💛</p>
         <div class="fb-chips" style="display:flex;gap:.4rem;margin-bottom:.7rem">${chips}</div>
-        <textarea id="fbText" rows="4" maxlength="2000" placeholder="Décris le bug, l'idée ou le détail visuel à corriger…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.6rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea>
+        <textarea id="fbText" rows="4" maxlength="2000" placeholder="Décris le bug, l'idée ou le détail visuel à corriger…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:14px;padding:.6rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea>
         <button class="btn-primary btn-block" id="fbSend" style="margin-top:.7rem">Envoyer mon retour</button>
         <p class="muted" style="font-size:.7rem;margin:.5rem 0 0;text-align:center">Anonymisé si tu n'es pas connecté</p>`);
       setTimeout(() => {
@@ -13166,7 +13166,7 @@
       _fbType = "question"; _fbFlavor = "support";
       popInfo("💬", "Support SunMates", `
         <p class="muted" style="font-size:.82rem;margin:0 0 .7rem;text-align:center">Une question, un souci, une idée ? Écris-nous : l'équipe te répond <b>directement dans l'app</b> 💛</p>
-        <textarea id="fbText" rows="4" maxlength="2000" placeholder="Explique-nous en quelques mots…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.6rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea>
+        <textarea id="fbText" rows="4" maxlength="2000" placeholder="Explique-nous en quelques mots…" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:14px;padding:.6rem;font:inherit;resize:none;background:var(--card);color:var(--ink)"></textarea>
         <button class="btn-primary btn-block" id="fbSend" style="margin-top:.7rem">Envoyer à l'équipe</button>
         <p style="font-size:.78rem;margin:.7rem 0 0;text-align:center">En cas d'<b>urgence</b> : le <b>112</b>, tes <b>contacts d'urgence</b> ou ton <b>cercle de confiance</b>.</p>
         <p class="muted" style="font-size:.7rem;margin:.4rem 0 0;text-align:center">Ta réponse arrivera par une notif dans l'app 💛</p>`);
@@ -13598,7 +13598,7 @@
       const midGuess = (myPos && otherPos) ? i18nT("à mi-chemin entre vous") : i18nT("près de l'un·e de vous");
       showInfo("📍 " + i18nT("Se retrouver à mi-chemin"),
         "<div style='text-align:center'><p class='muted' style='margin:0 0 .5rem;font-size:.84rem'>" + i18nT("Un lieu sûr partenaire") + " " + midGuess + " :</p>" +
-        "<div style='background:var(--accent-soft);border-radius:12px;padding:.7rem .8rem;margin-bottom:.7rem'><b>🛟 " + escapeHtml(place.name) + "</b><br><span class='muted' style='font-size:.82rem'>" + escapeHtml(place.city || "") + (place.address ? " · " + escapeHtml(place.address) : "") + "</span></div>" +
+        "<div style='background:var(--accent-soft);border-radius:14px;padding:.7rem .8rem;margin-bottom:.7rem'><b>🛟 " + escapeHtml(place.name) + "</b><br><span class='muted' style='font-size:.82rem'>" + escapeHtml(place.city || "") + (place.address ? " · " + escapeHtml(place.address) : "") + "</span></div>" +
         "<button class='btn-primary btn-block' id='midPropose'>💬 " + i18nT("Proposer ce lieu") + "</button>" +
         "<a class='btn-ghost btn-block' href='" + maps + "' target='_blank' rel='noopener' style='margin-top:.4rem;display:inline-block'>🗺️ " + i18nT("Voir sur la carte") + "</a></div>");
       setTimeout(() => { const b = $("midPropose"); if (b) b.onclick = async () => {
@@ -15757,7 +15757,7 @@
     function _openDailyQuestion(q, repaint) {
       popInfo(q.emoji || "💬", i18nT("La question du jour"),
         "<p style='text-align:center;font-weight:600;margin:0 0 .6rem'>" + escapeHtml(q.question) + "</p>" +
-        "<textarea id='dqInput' rows='2' maxlength='240' placeholder='" + i18nT("Ta réponse…") + "' style='width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:.55rem .7rem;font:inherit;resize:none;background:var(--card);color:var(--ink)'>" + escapeHtml(q.my_answer || "") + "</textarea>" +
+        "<textarea id='dqInput' rows='2' maxlength='240' placeholder='" + i18nT("Ta réponse…") + "' style='width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:14px;padding:.55rem .7rem;font:inherit;resize:none;background:var(--card);color:var(--ink)'>" + escapeHtml(q.my_answer || "") + "</textarea>" +
         "<button class='btn-primary btn-block' id='dqSave' style='margin-top:.6rem'>" + (q.my_answer ? i18nT("Modifier ma réponse") : i18nT("Répondre")) + "</button>" +
         "<button class='btn-ghost btn-block' id='dqFeed' style='margin-top:.4rem'>👀 " + i18nT("Voir les réponses") + "</button>");
       setTimeout(() => {
@@ -15802,7 +15802,7 @@
           if (!r) return;
           z.done = true; z.was_correct = r.correct; if (r.correct) _tbXp("daily_quiz");
           document.querySelectorAll(".quiz-choice").forEach((x, xi) => { x.disabled = true; if (xi === r.answer_index) x.style.borderColor = "var(--accent)"; if (xi === i && !r.correct) x.style.opacity = ".5"; });
-          const res = $("quizResult"); if (res) res.innerHTML = "<div style='background:var(--accent-soft);border-radius:12px;padding:.6rem .7rem;font-size:.86rem'>" + (r.correct ? "✅ " + i18nT("Bravo !") : "❌ " + i18nT("Raté.")) + " " + escapeHtml(r.explanation || "") + "</div>";
+          const res = $("quizResult"); if (res) res.innerHTML = "<div style='background:var(--accent-soft);border-radius:14px;padding:.6rem .7rem;font-size:.86rem'>" + (r.correct ? "✅ " + i18nT("Bravo !") : "❌ " + i18nT("Raté.")) + " " + escapeHtml(r.explanation || "") + "</div>";
           if (typeof repaint === "function") repaint();
           if (window.SMSound) SMSound.play(r.correct ? "success" : "tap");
         });
@@ -16892,7 +16892,7 @@
         + "<div style='font-size:3rem;filter:var(--relief)'>🎟️</div>"
         + "<b style='font-size:1.05rem'>" + escapeHtml((c && c.title) || "Coupon") + "</b>"
         + (c && c.descr ? "<div class='muted' style='font-size:.85rem;margin-top:.25rem'>" + escapeHtml(c.descr) + "</div>" : "")
-        + "<div style='margin:.7rem 0;padding:.55rem;border:1.5px dashed var(--accent);border-radius:12px;font-weight:800;color:var(--accent-ink, var(--accent))'>" + i18nT("Montre cet écran au partenaire 😎") + "</div>"
+        + "<div style='margin:.7rem 0;padding:.55rem;border:1.5px dashed var(--accent);border-radius:14px;font-weight:800;color:var(--accent-ink, var(--accent))'>" + i18nT("Montre cet écran au partenaire 😎") + "</div>"
         + "<button class='btn-primary btn-block' id='couponMarkUsed'>" + i18nT("✅ C'est validé · marquer utilisé") + "</button>"
         + "<p class='muted' style='font-size:.72rem;margin:.5rem 0 0'>" + i18nT("Une fois marqué utilisé, le coupon ne peut plus servir.") + "</p></div>");
       setTimeout(() => { const b = $("couponMarkUsed"); if (b) b.onclick = () => once("usecoupon:" + id, async () => {
@@ -18017,8 +18017,8 @@
       popInfo("✍️", "Mon rituel à moi",
         "<p style='font-size:.84rem;margin:0 0 .6rem'>Crée <b>ta</b> routine quotidienne, ce qui compte pour toi.</p>" +
         "<div style='display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center;margin-bottom:.6rem'>" + suggs.map((sg, i) => "<button type='button' class='cre-sugg' data-si='" + i + "' style='font-size:.76rem;font-weight:700;padding:.35rem .6rem;border:1px solid var(--line);border-radius:999px;background:var(--cream);cursor:pointer'>" + sg[0] + " " + escapeHtml(i18nT(sg[1])) + "</button>").join("") + "</div>" +
-        "<input id='custRitTitle' type='text' maxlength='40' placeholder='Ex : Boire 1,5 L d'eau' value=\"" + (cur.title ? escapeHtml(cur.title).replace(/"/g, "&quot;") : "") + "\" style='width:100%;box-sizing:border-box;padding:.6rem;border:1px solid var(--line);border-radius:12px;margin-bottom:.6rem'>" +
-        "<div id='custRitEmos' style='display:flex;flex-wrap:wrap;gap:.3rem;justify-content:center'>" + emos.map((e) => "<button type='button' class='cre-emo' data-e='" + e + "' style='font-size:1.3rem;padding:.25rem .4rem;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer'>" + e + "</button>").join("") + "</div>" +
+        "<input id='custRitTitle' type='text' maxlength='40' placeholder='Ex : Boire 1,5 L d'eau' value=\"" + (cur.title ? escapeHtml(cur.title).replace(/"/g, "&quot;") : "") + "\" style='width:100%;box-sizing:border-box;padding:.6rem;border:1px solid var(--line);border-radius:14px;margin-bottom:.6rem'>" +
+        "<div id='custRitEmos' style='display:flex;flex-wrap:wrap;gap:.3rem;justify-content:center'>" + emos.map((e) => "<button type='button' class='cre-emo' data-e='" + e + "' style='font-size:1.3rem;padding:.25rem .4rem;border:1px solid var(--line);border-radius:14px;background:var(--card);cursor:pointer'>" + e + "</button>").join("") + "</div>" +
         "<button class='btn-primary btn-block' id='custRitSave' style='margin-top:.9rem'>Enregistrer mon rituel</button>" +
         (cur.title ? "<button class='btn-ghost btn-block' id='custRitDel' style='margin-top:.4rem'>Supprimer</button>" : ""));
       setTimeout(() => {
@@ -18228,7 +18228,7 @@
       const cur = _souvGet(c);
       popInfo("📖", "Souvenir · " + c,
         "<p style='font-size:.84rem;margin:0 0 .6rem'>Un moment, une rencontre, une émotion à " + escapeHtml(c) + "…</p>" +
-        "<textarea id='souvInput' maxlength='140' rows='3' placeholder='Ton plus beau souvenir ici…' style='width:100%;box-sizing:border-box;padding:.6rem;border:1px solid var(--line);border-radius:12px;resize:none;font:inherit'>" + (cur ? escapeHtml(cur) : "") + "</textarea>" +
+        "<textarea id='souvInput' maxlength='140' rows='3' placeholder='Ton plus beau souvenir ici…' style='width:100%;box-sizing:border-box;padding:.6rem;border:1px solid var(--line);border-radius:14px;resize:none;font:inherit'>" + (cur ? escapeHtml(cur) : "") + "</textarea>" +
         "<button class='btn-primary btn-block' id='souvSave' style='margin-top:.7rem'>Enregistrer</button>" +
         (cur ? "<button class='btn-ghost btn-block' id='souvDel' style='margin-top:.4rem'>Effacer</button>" : ""));
       setTimeout(() => {
@@ -20747,7 +20747,7 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
-  <script src="sunmates-da-loader.js?v=842"></script>
+  <script src="sunmates-da-loader.js?v=843"></script>
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY. Le script (49 Ko) n'est CHARGÉ
        QUE pour un vrai admin (ou ?daforce sur preview) → 0 Ko pour les visiteurs normaux.
        Le script lui-même re-gate ensuite la bulle sur window.myProfile.is_admin. -->
@@ -20829,7 +20829,7 @@
     /* v686 (retour Maxime « flèches pas optimales, pas cliquables partout ») : l'en-tête ENTIER est la
        zone de tap (géré en JS : clic sur le head replie, sauf vrais liens/boutons), et la flèche devient
        une vraie pastille ronde dans l'accent DA → repère clair et confortable. */
-    .hsec-toggle { cursor: pointer; -webkit-tap-highlight-color: transparent; border-radius: 12px; transition: background .15s ease; }
+    .hsec-toggle { cursor: pointer; -webkit-tap-highlight-color: transparent; border-radius: 14px; transition: background .15s ease; }
     .hsec-toggle:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
     .hsec-toggle:active { opacity: .82; }
     .hsec-chev { margin-left: auto; flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%;
@@ -20885,7 +20885,7 @@
     .hc2-row.is-off { opacity: .62; }
     .hc2-drag { flex: 0 0 auto; width: 22px; text-align: center; color: var(--muted); font-size: 1.15rem; line-height: 1; cursor: grab; touch-action: none; user-select: none; }
     .hc2-drag-off { visibility: hidden; }
-    .hc2-ic { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 1.25rem;
+    .hc2-ic { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; font-size: 1.25rem;
       background: var(--card, #fff); box-shadow: inset 0 0 0 1px var(--line); }
     body.theme-dusk .hc2-ic { background: rgba(255,255,255,.06); }
     .hc2-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .08rem; }
@@ -20906,7 +20906,7 @@
     .hcust-row.is-hidden .hcust-name { opacity: .45; text-decoration: line-through; }
     .hcust-name { flex: 1; min-width: 0; font-weight: 700; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .hcust-mv { display: inline-flex; gap: .25rem; }
-    .hcust-mv button, .hcust-eye { width: 34px; height: 34px; border-radius: 12px; border: 1px solid var(--line); background: var(--card, #fff); display: grid; place-items: center; cursor: pointer; color: var(--text); font-size: 1rem; line-height: 1; padding: 0; }
+    .hcust-mv button, .hcust-eye { width: 34px; height: 34px; border-radius: 14px; border: 1px solid var(--line); background: var(--card, #fff); display: grid; place-items: center; cursor: pointer; color: var(--text); font-size: 1rem; line-height: 1; padding: 0; }
     .hcust-mv button:active, .hcust-eye:active { transform: scale(.92); }
     .hcust-mv button:disabled { opacity: .3; cursor: default; }
     .hcust-eye.off { opacity: .5; }
@@ -20915,7 +20915,7 @@
     .hcust-reset:hover { background: var(--accent-soft); color: var(--accent-ink, var(--accent)); }
     .hcust-reset:active { transform: scale(.98); }
     .hcust-drag { flex: 0 0 auto; color: var(--muted); font-size: 1.1rem; line-height: 1; cursor: grab; touch-action: none; padding: 0 .15rem; user-select: none; }
-    .hcust-row.dragging { opacity: .7; background: var(--accent-soft); border-radius: 12px; cursor: grabbing; }
+    .hcust-row.dragging { opacity: .7; background: var(--accent-soft); border-radius: 14px; cursor: grabbing; }
     /* Masquage utilisateur (Personnaliser) — via classe pour coexister avec le .hidden géré par l'app. */
     .hcust-userhidden { display: none !important; }
     /* (héritage : anciens sur-conteneurs .vb-shell désormais dé-enveloppés au runtime — CSS gardé inerte) */
