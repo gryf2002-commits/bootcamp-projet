@@ -1,8 +1,9 @@
 {
-  "candidate": "v839",
+  "candidate": "v840",
   "items": [
-    "🔽 Flèches de repliage : une seule logique cohérente partout — fermé = pointe à droite, ouvert = pointe vers le bas (sections classiques ET volets dépliables type feed/voyages).",
-    "🏡 « Tes souvenirs SunMates » : rendu différé (hors du chemin critique) → le mode Maison ne fige plus à l'affichage.",
-    "🔔 (rappel v838) Notifications lisibles + carte qui attend d'être vraiment prête."
+    "🔒 Sécurité & anti-spam : toutes les demandes (connexions, vouches, avis, feed, messages) sont protégées contre le spam et les doublons ; économie SunCoins verrouillée côté serveur.",
+    "👀 Lisibilité (mode jour) : l'ambre du jeu (XP, série, badges), les pastilles de compteur et quelques textes passent au contraste AA — plus aucun texte pâle illisible.",
+    "⚡ Démarrage un peu plus vif : scripts non essentiels chargés en différé.",
+    "🔽 (rappel v839) Flèches de repliage cohérentes partout."
   ]
 }
