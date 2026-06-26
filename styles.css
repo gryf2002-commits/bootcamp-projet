@@ -454,7 +454,7 @@
     /* « Sois le·la 1er·ère à checker ! » = vrai bouton (lance le check-in), plus un texte gris décoratif */
     .pcard-firstck { border: 0; background: none; padding: 0; font: inherit; font-weight: 800; color: var(--accent-ink, var(--accent)); cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
     .pcard-top { background: linear-gradient(135deg,#FFC93C,#FF8A3D); color: #4A2A08; } /* texte ambre foncé ≥5:1 (avant : blanc ~1.6:1, échec AA) · ANNONCÉ */
-    .pcard-rate { background: rgba(255,255,255,.96); color: #B5740E; }
+    .pcard-rate { background: rgba(255,255,255,.96); color: #8A5800; }
     .pcard-rate b { opacity: .6; font-weight: 700; }
     .pcard-new { background: rgba(255,255,255,.92); color: var(--muted); }
     .pcard .pcard-titlewrap { position: absolute; left: .85rem; right: .85rem; bottom: .55rem; z-index: 2; }
@@ -568,7 +568,7 @@
     body.theme-dusk .pdot { border-color: var(--dcard2,#241b35); }
     .pdot.lg { width: 15px; height: 15px; border-width: 2.5px; }
     .presence-pill { display: inline-flex; align-items: center; gap: .28rem; font-size: .72rem; font-weight: 700;
-      color: #B5740E; background: rgba(255,193,77,.18); padding: .08rem .45rem; border-radius: 999px; }
+      color: #8A5800; background: rgba(255,193,77,.18); padding: .08rem .45rem; border-radius: 999px; }
     .presence-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #F5A623; }
     body.theme-dusk .presence-pill { color: #ffce8a; background: rgba(255,193,77,.16); }
 
@@ -762,7 +762,7 @@
 
     /* ----------------------------- Badges --------------------------- */
     .badge { display: inline-flex; align-items: center; gap: .25rem; padding: .25rem .65rem; border-radius: 999px; font-size: .78rem; font-weight: 700; }
-    .badge.ok { background: rgba(255,177,60,.16); color: #B5740E; } /* validé/vérifié : ton sunset (DA), plus de vert */
+    .badge.ok { background: rgba(255,177,60,.16); color: #8A5800; } /* validé/vérifié : ton sunset (DA), plus de vert */
     .badge.no { background: #f1f2f5; color: var(--muted); }
     .badge.warn { background: var(--accent-soft); color: var(--accent-ink, var(--accent)); } /* Lot A2 : encre foncée sur corail pâle */
 
@@ -879,7 +879,7 @@
     .parcours-card .pc-head b { display: inline-flex; align-items: center; gap: .35rem; }
     .pc-stat { background: linear-gradient(160deg, rgba(255,209,92,.16), rgba(255,154,61,.06)); border: 1px solid rgba(232,150,31,.26); }
     body.theme-dusk .pc-stat { background: rgba(255,201,60,.10); border-color: rgba(255,209,92,.18); }
-    .pc-stat .pc-n { color: #B5740E; }
+    .pc-stat .pc-n { color: #8A5800; }
     body.theme-dusk .pc-stat .pc-n { color: #FFD79A; }
     /* #12 : « Mes badges » en jolies pilules dorées (au lieu de mini-ronds anonymes) */
     .prof-badges .pb-pill { display: inline-flex; align-items: center; gap: .32rem; padding: .26rem .58rem .26rem .3rem; border-radius: 999px;
@@ -891,7 +891,7 @@
     .pc-stat[data-pc]:active { transform: scale(.95); }
     /* #13 : conversation BFF épinglée (case dorée en tête des messages) */
     .conv-bff { background: linear-gradient(135deg, rgba(255,209,92,.16), rgba(255,154,61,.08)); border: 1px solid rgba(232,150,31,.32) !important; border-radius: 14px; }
-    .conv-bff .conv-pin { font-size: .64rem; font-weight: 800; color: #B5740E; background: rgba(255,209,92,.32); border-radius: 999px; padding: .08rem .45rem; vertical-align: 1px; }
+    .conv-bff .conv-pin { font-size: .64rem; font-weight: 800; color: #8A5800; background: rgba(255,209,92,.32); border-radius: 999px; padding: .08rem .45rem; vertical-align: 1px; }
     body.theme-dusk .conv-bff { background: linear-gradient(135deg, rgba(255,209,92,.12), rgba(255,154,61,.05)); border-color: rgba(255,209,92,.22) !important; }
     body.theme-dusk .conv-bff .conv-pin { color: #FFD79A; background: rgba(255,209,92,.16); }
     /* #11 : badges à l'honneur en tête de la fiche voyageur */
@@ -1292,7 +1292,7 @@
     .mappop-mini { text-align: center; }
     .mappop-mini b { font-size: .9rem; }
     .mappop-quest .mq-tag { display:inline-block; font-weight:800; font-size:.68rem; color:#fff; background:linear-gradient(135deg,#FFC93C,#FF8A3D); padding:.12rem .5rem; border-radius:999px; margin-bottom:.25rem; }
-    .mappop-quest .mq-rew { margin:.35rem 0 .1rem; font-weight:800; font-size:.78rem; color:#B5740E; }
+    .mappop-quest .mq-rew { margin:.35rem 0 .1rem; font-weight:800; font-size:.78rem; color:#8A5800; }
     /* Carte #5 : « fait/histoire » du lieu ou du pays dans la bulle (CITY/COUNTRY facts) */
     .mappop-fact { margin: 6px 0 2px; padding: .4rem .55rem; border-radius: 9px; background: var(--accent-soft); color: var(--accent-ink, var(--ink)); font-size: .76rem; line-height: 1.35; text-align: left; }
     .mappop-btn { display: block; width: 100%; margin-top: 6px; background: var(--accent); color: #fff; border: 0; border-radius: 8px; padding: .4rem .6rem; cursor: pointer; font-weight: 700; font-size: .8rem; }
@@ -2050,19 +2050,19 @@
     /* Ligne XP DISCRÈTE (plus de gros bandeau) */
     .xp-banner { display: flex; align-items: center; gap: .3rem; margin: .3rem 0 .1rem; font-size: .8rem; color: var(--muted); }
     .xp-banner .xp-ic { font-size: .9rem; }
-    .xp-banner b { color: #B5740E; font-size: .85rem; }
+    .xp-banner b { color: #8A5800; font-size: .85rem; }
     .xp-banner .xp-sub { color: var(--muted); font-size: .72rem; }
     .xp-banner .xp-info { margin-left: auto; background: none; border: 0; color: var(--muted); cursor: pointer; font-size: .9rem; padding: .1rem .3rem; }
     /* Strip de niveau XP (hub de jeu, compact mais premium) */
     .xpl-card { display: block !important; background: linear-gradient(135deg, rgba(255,201,60,.16), rgba(255,138,61,.12)); border: 1px solid rgba(201,138,30,.2); border-radius: 14px; padding: .7rem .85rem; margin: .4rem 0 .2rem; }
     .xpl-top { display: flex; align-items: center; gap: .5rem; }
-    .xpl-lvl { font-weight: 800; font-size: .92rem; color: #B5740E; }
+    .xpl-lvl { font-weight: 800; font-size: .92rem; color: #8A5800; }
     .xpl-xp { font-weight: 800; font-size: .8rem; color: var(--accent-ink, var(--accent)); }
     .xpl-top .xp-info { margin-left: auto; background: none; border: 0; color: var(--muted); cursor: pointer; font-size: .95rem; padding: .1rem .3rem; }
     .xpl-bar { height: 7px; background: rgba(0,0,0,.08); border-radius: 999px; margin: .45rem 0 .3rem; overflow: hidden; }
     .xpl-bar span { display: block; height: 100%; background: var(--accent-grad); border-radius: 999px; transition: width .5s cubic-bezier(.2,.8,.3,1); }
     .xpl-next { font-size: .72rem; color: var(--muted); }
-    .xpl-next b { color: #B5740E; }
+    .xpl-next b { color: #8A5800; }
     body.theme-dusk .xpl-card { background: linear-gradient(135deg, rgba(255,201,60,.14), rgba(255,138,61,.1)); border-color: rgba(255,201,60,.2); }
     body.theme-dusk .xpl-lvl, body.theme-dusk .xpl-next b { color: #ffce8a; }
     body.theme-dusk .xpl-bar { background: rgba(255,255,255,.1); }
@@ -2105,7 +2105,7 @@
     /* Défis reçus : carte qui ressort (accent corail + halo) pour ne plus être noyée */
     .sugg-card { border: 1.5px solid rgba(45,38,52,.16); box-shadow: 0 8px 22px rgba(45,38,52,.16); }
     .sugg-count { background: var(--accent); color: #fff; font-size: .7rem; font-weight: 800; min-width: 18px; height: 18px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; padding: 0 .3rem; }
-    .q-inprog { margin-left: .4rem; font-size: .68rem; font-weight: 700; color: #B5740E; background: rgba(255,177,60,.18); padding: .08rem .45rem; border-radius: 999px; }
+    .q-inprog { margin-left: .4rem; font-size: .68rem; font-weight: 700; color: #8A5800; background: rgba(255,177,60,.18); padding: .08rem .45rem; border-radius: 999px; }
     .quest-counter { font-size: .76rem; color: var(--muted); font-weight: 600; }
     .quest-counter b { color: var(--accent-ink, var(--accent)); }
     /* Tuiles « ouvrir en feuille » (Quêtes / Jeux), anti-scroll */
@@ -2138,7 +2138,7 @@
     .ci-info { flex: 1; min-width: 0; }
     .ci-name { font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ci-meta { font-size: .78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ci-count { flex-shrink: 0; font-weight: 800; font-size: .82rem; color: #B5740E; background: rgba(255,177,60,.18); padding: .2rem .55rem; border-radius: 999px; }
+    .ci-count { flex-shrink: 0; font-weight: 800; font-size: .82rem; color: #8A5800; background: rgba(255,177,60,.18); padding: .2rem .55rem; border-radius: 999px; }
     /* Classement (onglet Lieux) */
     .lb-segs { display: flex; flex-wrap: wrap; gap: .4rem; padding-bottom: .2rem; margin-bottom: .6rem; }
     .lb-segs::-webkit-scrollbar { display: none; }
@@ -2158,7 +2158,7 @@
     .admin-mhead { display: flex; align-items: center; gap: .8rem; background: var(--accent-grad); border-radius: 14px; padding: .8rem .9rem; margin-bottom: .3rem; }
     .admin-mhead .avatar.lg { width: 56px; height: 56px; font-size: 22px; border: 2px solid rgba(255,255,255,.6); }
     /* Avis sur les lieux */
-    .rate-chip { display: inline-flex; align-items: center; gap: .15rem; font-size: .76rem; font-weight: 800; color: #B5740E; background: rgba(255,177,60,.18); padding: .05rem .4rem; border-radius: 999px; white-space: nowrap; }
+    .rate-chip { display: inline-flex; align-items: center; gap: .15rem; font-size: .76rem; font-weight: 800; color: #8A5800; background: rgba(255,177,60,.18); padding: .05rem .4rem; border-radius: 999px; white-space: nowrap; }
     .rate-chip.empty { color: var(--muted); background: var(--cream); font-weight: 600; }
     .rate-chip b { font-weight: 700; opacity: .7; }
     .rate-top { display: inline-flex; align-items: center; font-size: .7rem; font-weight: 800; color: #4A2A08; background: linear-gradient(135deg,#FFC93C,#FF8A3D); padding: .05rem .4rem; border-radius: 999px; white-space: nowrap; } /* texte ambre foncé ≥5:1 (loi de contraste, ANNONCÉ) */
@@ -2240,18 +2240,18 @@
     .wg-bar span { display: block; height: 100%; background: var(--accent-grad); border-radius: 999px; transition: width .4s ease; }
     .wg-val { font-size: .74rem; font-weight: 800; color: var(--muted); flex-shrink: 0; font-variant-numeric: tabular-nums; }
     .wg-goal.done .wg-val { color: var(--accent-ink, var(--accent)); }
-    .wg-alldone { margin-top: .6rem; text-align: center; font-size: .8rem; font-weight: 700; color: #B5740E; }
+    .wg-alldone { margin-top: .6rem; text-align: center; font-size: .8rem; font-weight: 700; color: #8A5800; }
     body.theme-dusk .wg-alldone { color: #ffce8a; }
     /* Conseil sécurité du jour */
     .tip-card { display: flex; gap: .8rem; align-items: flex-start;
       background: linear-gradient(135deg, rgba(255,201,60,.14), rgba(255,138,61,.10)); border: 1px solid rgba(201,138,30,.22); }
     body.theme-dusk .tip-card { background: linear-gradient(135deg, rgba(255,201,60,.12), rgba(255,138,61,.08)); border-color: rgba(255,201,60,.2); }
     .tip-ic { font-size: 1.5rem; flex-shrink: 0; line-height: 1.2; }
-    .tip-title { font-weight: 800; font-size: .82rem; color: #B5740E; }
+    .tip-title { font-weight: 800; font-size: .82rem; color: #8A5800; }
     body.theme-dusk .tip-title { color: #ffce8a; }
     .tip-text { font-size: .84rem; color: var(--ink); line-height: 1.4; margin-top: .1rem; }
     /* Titre de profil (boutique XP) */
-    .profile-title { font-size: .78rem; font-weight: 700; color: #B5740E; margin-top: .12rem; }
+    .profile-title { font-size: .78rem; font-weight: 700; color: #8A5800; margin-top: .12rem; }
     body.theme-dusk .profile-title { color: #ffce8a; }
     /* Boutique XP */
     .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; }
@@ -2275,9 +2275,9 @@
     .shop-meta { font-size: .72rem; color: var(--muted); }
     .shop-item.on .shop-meta { color: var(--accent-ink, var(--accent)); font-weight: 700; }
     /* SunCoins (P2.17) : solde dans la bannière + états achetable/verrouillé des items. */
-    .shop-coins { font-weight: 800; color: #B5740E; } .shop-coins b { font-family: "Fraunces", serif; }
+    .shop-coins { font-weight: 800; color: #8A5800; } .shop-coins b { font-family: "Fraunces", serif; }
     body.theme-dusk .shop-coins { color: #ffce8a; }
-    .shop-item.buyable .shop-meta { color: #B5740E; font-weight: 800; } /* prix abordable = mis en avant */
+    .shop-item.buyable .shop-meta { color: #8A5800; font-weight: 800; } /* prix abordable = mis en avant */
     body.theme-dusk .shop-item.buyable .shop-meta { color: #ffd58a; }
     .shop-item.locked .shop-meta { color: var(--muted); } /* pas assez de coins → prix grisé (item reste teasé) */
     /* P2.16+ : en mode NUIT, voile sunset chaud sur les cartes (fini le rendu sombre/terne hors-DA). */
@@ -2295,10 +2295,10 @@
     .boost-card .boost-txt { flex: 1; min-width: 0; }
     .boost-card .boost-name { font-weight: 800; color: var(--ink); font-size: .92rem; }
     .boost-card .boost-desc { color: var(--muted); font-size: .76rem; line-height: 1.3; margin-top: .1rem; }
-    .boost-card .boost-meta { flex-shrink: 0; font-weight: 800; color: #B5740E; font-size: .82rem; white-space: nowrap; align-self: flex-start; }
+    .boost-card .boost-meta { flex-shrink: 0; font-weight: 800; color: #8A5800; font-size: .82rem; white-space: nowrap; align-self: flex-start; }
     body.theme-dusk .boost-card .boost-meta { color: #ffd58a; }
     /* « En vedette » (profil boosté) dans Découvrir */
-    .tcard-vedette { display: inline-flex; align-items: center; gap: .2rem; font-size: .68rem; font-weight: 800; color: #B5740E;
+    .tcard-vedette { display: inline-flex; align-items: center; gap: .2rem; font-size: .68rem; font-weight: 800; color: #8A5800;
       background: linear-gradient(135deg, rgba(255,201,60,.3), rgba(255,138,61,.22)); padding: .1rem .45rem; border-radius: 999px; margin-left: .35rem; }
     body.theme-dusk .tcard-vedette { color: #ffd58a; background: rgba(255,201,60,.18); }
     /* Cadres d'avatar (appliqués à .avatar) */
@@ -2521,7 +2521,7 @@
       display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .qs-desc{ margin:0; font-size:.83rem; line-height:1.4; color:var(--text); }
     .qs-reward{ display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; margin:.6rem .4rem .65rem; font-size:.82rem; color:var(--text); }
-    .qs-xp{ font-weight:800; color:#B5740E; background:linear-gradient(135deg, rgba(255,209,92,.28), rgba(255,138,61,.18)); padding:.22rem .55rem; border-radius:999px; }
+    .qs-xp{ font-weight:800; color:#8A5800; background:linear-gradient(135deg, rgba(255,209,92,.28), rgba(255,138,61,.18)); padding:.22rem .55rem; border-radius:999px; }
     /* Mode nuit : l'ocre foncé était illisible sur fond sombre */
     body.theme-dusk .qs-xp{ color:#ffce8a; background:linear-gradient(135deg, rgba(255,201,60,.16), rgba(255,138,61,.12)); }
     body.theme-dusk .qs-timer{ color:#cbbfdc; }
@@ -2553,7 +2553,7 @@
     .qm-teal .qm-ic, .qm-gold .qm-ic, .qm-violet .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.22), rgba(255,255,255,0) 55%), var(--accent-grad); } /* v570 : cohérence RH */
     .qm-coral .qm-ic{ background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.22), rgba(255,255,255,0) 55%), var(--accent-grad); }
     .qm-name{ font-weight:800; font-size:.8rem; line-height:1.15; color:var(--ink); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-    .qm-xp{ margin-top:auto; font-weight:800; font-size:.74rem; color:#B5740E; background:rgba(255,209,92,.22); padding:.12rem .45rem; border-radius:999px; }
+    .qm-xp{ margin-top:auto; font-weight:800; font-size:.74rem; color:#8A5800; background:rgba(255,209,92,.22); padding:.12rem .45rem; border-radius:999px; }
     body.theme-dusk .qm-card{ background:var(--dcard,#2a2140); border-color:rgba(255,255,255,.08); } body.theme-dusk .qm-xp{ color:#FFD79A; background:rgba(255,209,92,.14); }
     .br-item{ flex:0 0 auto; width:92px; display:flex; flex-direction:column; align-items:center; gap:.35rem; scroll-snap-align:start; cursor:pointer; } .br-item:active{ transform:scale(.96); }
     .br-medal{ width:64px; height:64px; display:grid; place-items:center; font-size:30px; }
@@ -2571,7 +2571,7 @@
     .sp-head{ display:flex; align-items:center; justify-content:space-between; gap:.6rem; }
     .sp-title{ font-family:"Fraunces",serif; font-weight:800; font-size:1.12rem; margin:0; color:var(--ink); }
     .sp-streak{ display:inline-flex; align-items:center; gap:.25rem; min-height:34px; padding:.25rem .6rem; border:0; cursor:pointer;
-      font-weight:800; font-size:.84rem; color:#B5740E; border-radius:999px; background:linear-gradient(135deg, rgba(255,201,60,.30), rgba(255,138,61,.20)); }
+      font-weight:800; font-size:.84rem; color:#8A5800; border-radius:999px; background:linear-gradient(135deg, rgba(255,201,60,.30), rgba(255,138,61,.20)); }
     .sp-streak:active{ transform:scale(.96); } .sp-fire{ font-size:.95rem; }
     .sp-stats{ display:flex; gap:.5rem; margin:.85rem 0 .9rem; }
     .sp-stat{ flex:1; text-align:center; padding:.55rem .3rem; border-radius:var(--radius-sm); background:rgba(255,255,255,.55); border:1px solid rgba(201,138,30,.14); }
@@ -2579,7 +2579,7 @@
     .sp-stat span{ display:block; margin-top:.2rem; font-size:.7rem; font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .sp-next{ display:flex; align-items:center; gap:.7rem; padding:.6rem .65rem; border-radius:var(--radius-sm); background:rgba(255,138,61,.10); border:1px solid rgba(255,138,61,.20); }
     .sp-next-bdg{ font-size:1.7rem; line-height:1; flex-shrink:0; filter:drop-shadow(0 3px 6px rgba(255,90,77,.25)); }
-    .sp-next-txt{ flex:1; min-width:0; } .sp-next-lbl{ font-size:.68rem; font-weight:800; letter-spacing:.02em; text-transform:uppercase; color:#B5740E; }
+    .sp-next-txt{ flex:1; min-width:0; } .sp-next-lbl{ font-size:.68rem; font-weight:800; letter-spacing:.02em; text-transform:uppercase; color:#8A5800; }
     .sp-next-name{ font-weight:800; font-size:.92rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .sp-bar{ height:9px; margin-top:.4rem; border-radius:999px; background:rgba(120,40,10,.18); overflow:hidden; }
     .sp-bar span{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#FFF2C2,#FFD15C 60%,#FFE9A8); box-shadow:0 0 8px rgba(255,209,92,.6); transition:width .6s cubic-bezier(.22,1,.36,1); }
@@ -2604,13 +2604,13 @@
     .sc-body{ flex:1; min-width:0; display:flex; flex-direction:column; gap:.12rem; }
     .sc-name{ font-weight:800; font-size:.95rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .sc-desc{ font-size:.8rem; color:var(--text); line-height:1.25; }
-    .sc-xp{ flex-shrink:0; align-self:flex-start; font-weight:800; font-size:.82rem; color:#B5740E; padding:.18rem .5rem; border-radius:999px; background:rgba(255,209,92,.22); }
+    .sc-xp{ flex-shrink:0; align-self:flex-start; font-weight:800; font-size:.82rem; color:#8A5800; padding:.18rem .5rem; border-radius:999px; background:rgba(255,209,92,.22); }
     .sc-card .sc-xp::after{ content:" XP"; font-size:.64rem; opacity:.8; }
     .sc-check{ position:absolute; top:.5rem; right:.6rem; width:24px; height:24px; display:none; place-items:center; font-size:.85rem; font-weight:900; color:#fff; border-radius:999px; background:linear-gradient(135deg,#34c98f,#1f9e8c); box-shadow:0 3px 8px rgba(31,158,140,.4); }
     .sc-card.is-done{ opacity:.62; } .sc-card.is-done .sc-check{ display:grid; } .sc-card.is-done .sc-xp{ display:none; } #scReroll{ cursor:pointer; user-select:none; }
     body.theme-dusk .sc-card{ background:var(--dcard,#2a2140); border-color:rgba(255,255,255,.08); } body.theme-dusk .sc-xp{ color:#FFD79A; background:rgba(255,209,92,.16); }
     .solo-rit{ margin:.2rem 0 1.1rem; }
-    .rit-cnt{ flex-shrink:0; font-weight:800; font-size:.82rem; color:#B5740E; padding:.18rem .55rem; border-radius:999px; background:rgba(255,209,92,.22); }
+    .rit-cnt{ flex-shrink:0; font-weight:800; font-size:.82rem; color:#8A5800; padding:.18rem .55rem; border-radius:999px; background:rgba(255,209,92,.22); }
     .rit-list{ display:flex; flex-direction:column; gap:.5rem; }
     .rit-row{ display:flex; align-items:center; gap:.7rem; width:100%; min-height:52px; padding:.55rem .8rem; cursor:pointer; text-align:left; border-radius:var(--radius); background:var(--card); border:1px solid rgba(201,138,30,.14); box-shadow:var(--shadow-sm); transition:transform .16s ease; }
     .rit-row:active{ transform:scale(.98); }
@@ -2692,7 +2692,7 @@
     .chat-header { display: flex; align-items: center; gap: .5rem; padding: .2rem 0 1rem; border-bottom: 1px solid var(--line); margin-bottom: 1rem; flex-shrink: 0; }
     .chat-flame { display: inline-flex; align-items: center; gap: .15rem; font-weight: 800; font-size: .82rem; color: #b4480e; flex-shrink: 0; background: linear-gradient(135deg, #fff1e0, #ffe2c4); border: 1px solid #ffcfa0; padding: .12rem .5rem .12rem .42rem; border-radius: 999px; box-shadow: 0 1px 4px rgba(214,108,32,.18); cursor: default; }
     .chat-flame.flame-done { filter: saturate(.7); opacity: .85; } /* poc déjà envoyé aujourd'hui */
-    .chat-flame.flame-done::after { content: "✓"; font-size: .7rem; margin-left: .1rem; color: #B5740E; font-weight: 900; }
+    .chat-flame.flame-done::after { content: "✓"; font-size: .7rem; margin-left: .1rem; color: #8A5800; font-weight: 900; }
     body.theme-dusk .chat-flame { background: linear-gradient(135deg, #3a2417, #4a2c15); border-color: #6b3d1c; color: #ffcaa0; }
     .chat-menu { position: absolute; top: 110%; right: 0; z-index: 50; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-pop); padding: .3rem; min-width: 210px; display: flex; flex-direction: column; }
     .chat-menu button { text-align: left; background: none; border: 0; padding: .6rem .7rem; border-radius: 10px; font-size: .85rem; color: var(--ink); cursor: pointer; }
@@ -3095,7 +3095,7 @@
     .hello-row { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-top: .1rem; flex-wrap: nowrap; } /* v570 ergo : nowrap → le chip « Dispo ? » reste stable à droite (fini le wrap désordonné) */
     .hello-row #homeSubtitle { min-width: 0; flex: 1; }
     .streak-chip { flex-shrink: 0; display: inline-flex; align-items: center; gap: .25rem; font-size: .76rem; font-weight: 800;
-      color: #B5740E; background: linear-gradient(135deg, rgba(255,201,60,.22), rgba(255,138,61,.18));
+      color: #8A5800; background: linear-gradient(135deg, rgba(255,201,60,.22), rgba(255,138,61,.18));
       border: 1px solid rgba(201,138,30,.3); border-radius: 999px; padding: .28rem .6rem; cursor: pointer; white-space: nowrap; }
     .streak-chip:active { transform: scale(.96); }
     body.theme-dusk .streak-chip { color: #ffce8a; background: linear-gradient(135deg, rgba(255,201,60,.16), rgba(255,138,61,.12)); border-color: rgba(255,201,60,.28); }
@@ -3290,7 +3290,7 @@
       text-transform: uppercase; letter-spacing: .06em; font-size: .66rem;
       border-radius: 7px; border: 1.5px solid currentColor;
     }
-    .badge.ok   { background: rgba(255,177,60,.16); color: #B5740E; box-shadow: inset 0 0 0 1px rgba(255,177,60,.28) !important; }
+    .badge.ok   { background: rgba(255,177,60,.16); color: #8A5800; box-shadow: inset 0 0 0 1px rgba(255,177,60,.28) !important; }
     .badge.warn { background: var(--accent-soft); color: var(--accent-ink, var(--accent)); } /* Lot A2 : encre foncée sur corail pâle */
     .badge.no   { border-color: #d9d3cc; }
 
@@ -3375,7 +3375,7 @@
     .pf-head { display: flex; align-items: center; justify-content: space-between; padding: .85rem 1rem; cursor: pointer; font-weight: 700; color: var(--ink-warm); font-family: "Fraunces", serif; font-size: 1rem; }
     /* % de complétion par catégorie (ce qui reste à remplir) */
     .pf-pct { margin-left: auto; margin-right: .55rem; font-size: .68rem; font-weight: 800; font-family: "Manrope", sans-serif; color: var(--muted); background: var(--cream); padding: .08rem .45rem; border-radius: 999px; }
-    .pf-pct.done { color: #B5740E; background: rgba(255,177,60,.18); }
+    .pf-pct.done { color: #8A5800; background: rgba(255,177,60,.18); }
     .pf-head .chev { transition: transform .2s; color: var(--muted); }
     .pf-section.open .pf-head .chev { transform: rotate(90deg); }
     .pf-body { max-height: 0; overflow: hidden; padding: 0 1rem; transition: max-height .24s cubic-bezier(.4, 0, .2, 1); }
@@ -3616,7 +3616,7 @@
     /* --- Chips / pastilles --- */
     .chip { background: var(--cream); border: 1px solid var(--line); color: var(--text); font-weight: 600; }
     .chip.active { background: var(--accent) !important; color: #fff !important; border-color: transparent; }
-    .badge.ok { background: rgba(255,177,60,.16); color: #B5740E; border-color: rgba(255,177,60,.45); }
+    .badge.ok { background: rgba(255,177,60,.16); color: #8A5800; border-color: rgba(255,177,60,.45); }
 
     /* --- Navigation basse : icônes en traits --- */
     .bottom-nav { background: rgba(255,252,246,.86); box-shadow: 0 -8px 28px rgba(70,45,20,.08); }
@@ -3727,7 +3727,7 @@
     /* Pastilles & vignettes colorées */
     .chip { background: var(--cream); border: 1px solid var(--line); color: var(--text); font-weight: 600; }
     .chip.active { background: var(--accent-grad) !important; color: #fff !important; border-color: transparent; }
-    .badge.ok { background: rgba(255,177,60,.16); color: #B5740E; border-color: rgba(255,177,60,.45); }
+    .badge.ok { background: rgba(255,177,60,.16); color: #8A5800; border-color: rgba(255,177,60,.45); }
     .tile, .gcard { background: var(--card) !important; border: 1px solid var(--line) !important; }
     /* Mode nuit : contour NEUTRE (le --line chaud créait un liseré orange bizarre autour des tuiles) */
     body.theme-dusk .tile, body.theme-dusk .gcard { border-color: rgba(255,255,255,.09) !important; }
@@ -3888,7 +3888,7 @@
     #advFilters .row { gap: .5rem; margin-top: 0; }
     .num-row { padding: .55rem 0; border-bottom: 1px solid var(--line); }
     .num-row.num-here { background: linear-gradient(135deg, rgba(255,201,60,.14), rgba(255,138,61,.1)); border: 1px solid rgba(201,138,30,.22); border-radius: 12px; padding: .55rem .7rem; margin-bottom: .4rem; }
-    .num-badge { margin-left: auto; font-size: .68rem; font-weight: 800; color: #B5740E; background: rgba(255,201,60,.3); border-radius: 999px; padding: .15rem .5rem; }
+    .num-badge { margin-left: auto; font-size: .68rem; font-weight: 800; color: #8A5800; background: rgba(255,201,60,.3); border-radius: 999px; padding: .15rem .5rem; }
     .num-row:last-child { border-bottom: 0; }
     .num-head { display: flex; align-items: center; gap: .5rem; font-size: .92rem; color: var(--ink); margin-bottom: .4rem; }
     .num-flag { font-size: 1.2rem; }
@@ -4125,7 +4125,7 @@
       display: flex; align-items: center; gap: .55rem; padding: .3rem .8rem .3rem .32rem;
       background: linear-gradient(135deg, #FFF6E0, #FFE7BC); border: 1.5px solid rgba(232,150,31,.5);
       box-shadow: 0 3px 8px rgba(200,130,40,.12), inset 0 1px 0 rgba(255,255,255,.7); } /* P9 : halo plaque adouci */
-    .player-badge.player-hud .hud-lvl { color: #B5740E; }
+    .player-badge.player-hud .hud-lvl { color: #8A5800; }
     .player-badge.player-hud .hud-xp { color: rgba(140,90,20,.85); }
     .player-badge.player-hud .hud-bar { background: rgba(181,116,14,.18); }
     /* P14 (« la tuile à droite de Jeux, hors DA en sombre ») : la plaque niveau quittait la DA
