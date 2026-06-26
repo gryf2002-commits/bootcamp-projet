@@ -6733,3 +6733,17 @@
     html.sm-app body :is(.sp-chev) { transform: rotate(0deg) !important; }
     html.sm-app body details:not([open]) :is(.coll-chev, .sp-chev) { transform: rotate(0deg) !important; }
     html.sm-app body details[open] :is(.coll-chev, .sp-chev) { transform: rotate(90deg) !important; }
+
+/* ============================================================================
+   QA Audit juin 2026 — Bloc C : contrastes WCAG AA restants (append-only,
+   gagne par ordre de cascade ; jour ET nuit gérés). Validé in-browser.
+   ============================================================================ */
+/* petit texte rouge (compteur de caractères) : --danger #F0384E 3.90 → #D81F36 (5.04 jour / 4.64 nuit) */
+.char-count.over { color: #D81F36; }
+/* fuseau « il est Xh » : --ok en TEXTE = 2.58 jour (échec) → --ok-ink ; nuit garde --ok (clair, ~10.8) */
+.tz-check { color: var(--ok-ink); }
+body.theme-dusk .tz-check { color: var(--ok); }
+/* pastilles COMPTEUR (blanc sur --accent plein = 3.08 jour / 2.81 nuit, échec) → même traitement que .nbadge
+   (déjà AA "Lot A") : on assombrit vers l'encre en jour, vers le fond en nuit. */
+.navbadge, .conv-unread, .sugg-count { background: var(--accent-ink); }
+body.theme-dusk .navbadge, body.theme-dusk .conv-unread, body.theme-dusk .sugg-count { background: color-mix(in srgb, var(--accent) 65%, var(--bg)); }
