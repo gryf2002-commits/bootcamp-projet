@@ -5647,7 +5647,7 @@
       border-top-width: 0 !important; border-bottom-width: 0 !important; }
 
     /* v758 · marqueur de version lu par l'auto-réparateur cache (app.html) */
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
     /* notifs (listes peuplées) — séparateurs retirés */
     html body :is(.notif-card, .notif-item), html.sm-app body :is(.notif-card, .notif-item) {
       border-top-width: 0 !important; border-bottom-width: 0 !important; border-top-style: none !important; border-bottom-style: none !important; }
@@ -6191,7 +6191,7 @@
     html.sm-app body .homemap-card.fs .epin, html.sm-app body .homemap-card.fs .epin-cluster { border: 2.5px solid #fff !important; }
     html.sm-app body .homemap-fsopen { border: 1.5px solid rgba(255,255,255,.9) !important; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v818 · 2e lot retours Maxime (25/06). LEÇON CLÉ (re-confirmée) : les balais
@@ -6241,7 +6241,7 @@
     html.sm-app body .weather-chip > * { min-width: 0; }
     html.sm-app body .weather-chip .wc-temp, html.sm-app body .weather-chip .wc-hint { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v820 · 3e lot retours Maxime (25/06). ════════════════════════════════ */
@@ -6295,7 +6295,7 @@
        UNIQUEMENT un garde-fou anti-débordement d'images (sans toucher la largeur de l'app). */
     html body img, html body video, html body canvas { max-width: 100%; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v821 · 4e lot Maxime — flèches repliage uniformes + titres centrés. ════ */
@@ -6319,7 +6319,7 @@
       color: var(--accent-ink, var(--accent)) !important; font-weight: 800 !important; font-size: 1.15rem !important;
       line-height: 1; opacity: .9; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v822 · 5e lot Maxime — halos (vraie source), mot « Gold » (WCAG), contraste. */
@@ -6352,7 +6352,7 @@
     html.sm-app body.theme-winter.theme-dusk [style*="#B5740E"], html.sm-app body.theme-tropic.theme-dusk [style*="#B5740E"] {
       color: #FFD79A !important; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v823 · 6e lot Maxime — TYPO uniforme (logique UX/UI pro) + tuiles Mes voyages
@@ -6383,7 +6383,7 @@
     html.sm-app body :is(.trip-passport, .globe-passport, .tj-passport, .trip-cta-duo) {
       background: transparent !important; box-shadow: none !important; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* v823b · SWITCH QUI GLISSE (générique, posé par _smSegInd sur .seg/.mseg non-wrap). */
     html.sm-app body .sm-seg-slide { position: relative; }
@@ -6450,7 +6450,7 @@
       flex: 0 0 auto !important; margin-left: .5rem !important; color: var(--accent-ink, var(--accent)) !important;
       font-weight: 800 !important; font-size: 1.15rem !important; line-height: 1 !important; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v826 · CORRECTION DES RÉGRESSIONS (priorité : NE RIEN CASSER). ══════════ */
@@ -6494,7 +6494,7 @@
     :root, body, body.theme-dusk, body.theme-winter, body.theme-tropic,
     body.theme-winter.theme-dusk, body.theme-tropic.theme-dusk { --shadow: none !important; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v827 · REPREND TOUT (Maxime furieux). Bulletproof : halos, switch, contraste.
@@ -6531,7 +6531,7 @@
     /* le conteneur ne change pas de hauteur / ne remonte pas */
     html.sm-app body :is(.mode-switch, .qs-mode, .fc-kinds, .search-scopes, .trip-vtoggle) { min-height: 2.5rem; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v828 · flèches repliage UNIFORMES (glyphe › partout + rotation) + titres nus
@@ -6548,7 +6548,7 @@
     html.sm-app body .card > h3:first-child, html.sm-app body .card[data-coll] > h3 {
       text-align: center !important; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v829 · Maxime point par point (j'écoute, je vérifie). ════════════════════ */
@@ -6604,7 +6604,7 @@
       border-color: color-mix(in srgb, var(--ink) 16%, transparent) !important; }
     html.sm-app body .todo-toggle:not(.active) .tt-state { color: var(--muted) !important; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v831 · SWITCH = vraie pilule qui GLISSE (snappy) + flèche repliage INLINE
@@ -6634,7 +6634,7 @@
       flex: 0 0 auto !important; margin: 0 !important; align-self: center !important; }
     html.sm-app body .coll-chev { min-width: 1.6rem; min-height: 1.6rem; display: inline-flex; align-items: center; justify-content: center; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v832 · halo orange du popup (pin) + contrastes restants + espacements. ════ */
@@ -6657,7 +6657,7 @@
     html.sm-app body :is(.t-meta, .pr-sub, .tj-meta, .qm-sub, .pf-sub, .su-head .su-s) { margin-top: .15rem !important; }
     html.sm-app body :is(.prog-row, .pr-tx, .sugg-row, .te-row, .num-row) { line-height: 1.4 !important; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v833 · cohérence des formes de tuiles (météo / journée) + finitions trips. ═ */
@@ -6681,7 +6681,7 @@
       color: var(--ink) !important; border: 0 !important; }
     html.sm-app body :is(.tj-card, .ptrip-card, .trip-card) { color: var(--ink) !important; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v835 · switch aux couleurs DA + centrage/flèches re-fiabilisés. ══════════ */
@@ -6708,7 +6708,7 @@
     html.sm-app body :is(.spot-card[open] .sp-chev, details[open] > summary .sp-chev) { transform: rotate(90deg) !important; }
     html.sm-app body :is(.spot-card:not([open]) .sp-chev, details:not([open]) > summary .sp-chev) { transform: rotate(0deg) !important; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v838 · panneau de notifs (cloche) lisible + carte qui charge jusqu'au bout. */
@@ -6720,7 +6720,7 @@
     html.sm-app body :is(.notif-item .meta, .notif-item .muted) { color: var(--muted) !important; }
     html.sm-app body .notif-item:hover { background: color-mix(in srgb, var(--ink) 8%, transparent) !important; }
 
-    :root { --sm-build: 853; }
+    :root { --sm-build: 854; }
 
     /* ════════════════════════════════════════════════════════════════════════
        v839 · CHEVRONS — une seule logique cohérente PARTOUT : fermé = › pointe à
@@ -6821,3 +6821,14 @@ body.theme-dusk .completion-bar, body.theme-dusk .xpl-bar { background: rgba(255
    ============================================================================ */
 body.theme-dusk :is(.fc-kind, .lang-seg button, .qs-mode-btn, .seg button, .mode-switch button):not(.active):not(.on):not(.is-on) {
   background: transparent !important; color: var(--text) !important; border-color: transparent !important; }
+
+/* ============================================================================
+   v854 · TUILES/LIGNES qui se colorent au TOUCHÉ (sticky :hover sur tactile).
+   Sur pointeur grossier (tactile), pas de teinte de fond collante sur les lignes
+   tappables (fond transparent au repos). La teinte reste à la SOURIS uniquement.
+   ============================================================================ */
+@media (hover: none), (pointer: coarse) {
+  html.sm-app body :is(.qrow, .person, .matepick, .notif-item, .sresult, .prog-row,
+    .trip-mate, .act-search-results li, .chat-menu button, .onb-prev):hover {
+    background: transparent !important; }
+}
