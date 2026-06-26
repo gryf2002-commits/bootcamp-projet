@@ -300,7 +300,7 @@
   <script defer src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <!-- Badges sur-mesure SunMates (identité « joaillerie » : 1 DA par famille, emblèmes dessinés main) -->
-  <script defer src="sunmates-badges.js?v=849"></script>
+  <script defer src="sunmates-badges.js?v=850"></script>
   <script defer src="sm_country_stories.js?v=638"></script><!-- 🌍 histoires de pays (Découvrir) -->
   <script defer src="sunmates-icons-v2.js?v=541"></script>
   <!-- ✨ MOTION : GSAP (best-effort, defer) + couche SunMates. Si GSAP ne charge pas, tout retombe sur le
@@ -309,7 +309,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
   <!-- 🎬 DA de Motion « Le mouvement du couchant » : noyau réutilisable (window.SM_MOTION). -->
   <script defer src="sm-motion-da.js?v=740"></script>
-  <script defer src="sunmates-motion.js?v=849"></script>
+  <script defer src="sunmates-motion.js?v=850"></script>
   <!-- 🎨 Twemoji : emojis IDENTIQUES pour tous les appareils (au lieu du rendu natif Apple/Google/Samsung
        qui change d'un utilisateur à l'autre). SVG mis en cache via jsDelivr. Init + observer en bas de page. -->
   <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script>
@@ -384,13 +384,13 @@
       } catch (e) {}
     }
   </script>
-  <link rel="stylesheet" href="styles.css?v=849">
+  <link rel="stylesheet" href="styles.css?v=850">
   <style id="sm-cloak">html.sm-verifying body{visibility:hidden!important}</style>
   <script>
   /* v767 · AUTO-RÉPARATEUR + CLOAK : on masque la page jusqu'à la vérif de version.
      Appareil à jour → révélé tout de suite ; appareil périmé → purge caches+SW et reload
      EN RESTANT MASQUÉ (fini le flash d'« ancien design qui se charge avant »). Failsafe 2.5s. */
-  (function(){try{var EXPECT="849",H=document.documentElement;H.classList.add("sm-verifying");
+  (function(){try{var EXPECT="850",H=document.documentElement;H.classList.add("sm-verifying");
     var revealed=false,reveal=function(){if(revealed)return;revealed=true;try{H.classList.remove("sm-verifying");}catch(e){}};
     setTimeout(reveal,2500);
     document.addEventListener("DOMContentLoaded",function(){try{
@@ -1486,7 +1486,7 @@
     .cic[data-smicon] svg, .jo-ic[data-smicon] svg, .smgem svg, .thumb svg { position: relative; z-index: 1; filter: drop-shadow(0 2px 2px rgba(30,14,6,.34)); }
   </style>
   <!-- Version lissée (beta OFF) : garde la DA sunset, calme les effets, masque [data-beta]. Inerte sans body.sm-lite. -->
-  <link rel="stylesheet" href="sunmates-lite.css?v=849">
+  <link rel="stylesheet" href="sunmates-lite.css?v=850">
 </head>
 <body>
   <!-- a11y : lien d'évitement (premier élément focalisable) → saute la barre/nav vers le contenu principal. -->
@@ -20747,7 +20747,7 @@
     db.auth.getSession().then(({ data }) => render(data.session));
   </script>
   <!-- Loader DA : INERTE tant qu'aucun token n'est publié (getTokens()===null → sort). Permet l'aperçu DA admin en preview. -->
-  <script src="sunmates-da-loader.js?v=849"></script>
+  <script src="sunmates-da-loader.js?v=850"></script>
   <!-- Console DA LIVE (bouton flottant ✦ DA) : ADMIN ONLY. Le script (49 Ko) n'est CHARGÉ
        QUE pour un vrai admin (ou ?daforce sur preview) → 0 Ko pour les visiteurs normaux.
        Le script lui-même re-gate ensuite la bulle sur window.myProfile.is_admin. -->
