@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr" class="sm-app">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>SunMates — Styleguide (cohérence UX/UI)</title>
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* page-local : neutre, n'impacte PAS l'app. Les swatches lisent les VRAIS tokens via var(). */
+  html,body{min-height:100%}
+  body{margin:0;color:var(--text);font-family:var(--font-body,"Manrope",system-ui,sans-serif);padding:0 0 80px}
+  /* fond plein-écran fixe (indépendant de :has(), robuste tous moteurs) */
+  #sgBg{position:fixed;inset:0;z-index:-1;background:var(--bg)}
+  body.theme-dusk #sgBg{background:#190E2E}
+  .sg-top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--card);box-shadow:var(--shadow-sm,0 8px 18px rgba(45,38,52,.08))}
+  .sg-top h1{font-family:"Fraunces",Georgia,serif;font-size:1.25rem;margin:0;color:var(--ink);flex:1}
+  .sg-top button{font:600 .85rem "Manrope",sans-serif;border:0;border-radius:999px;padding:.5rem 1rem;background:var(--accent);color:#fff;cursor:pointer}
+  .sg-wrap{max-width:920px;margin:0 auto;padding:20px 16px}
+  .sg-sec{margin:28px 0}
+  .sg-sec > h2{font-family:"Fraunces",Georgia,serif;font-size:1.1rem;color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:6px;margin:0 0 14px}
+  .sg-grid{display:flex;flex-wrap:wrap;gap:14px}
+  .sw{width:120px}
+  .sw .chip{height:56px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+  .sw .lab{font-size:.72rem;margin-top:6px;color:var(--text)}
+  .sw .val{font-size:.66rem;color:var(--muted);font-family:ui-monospace,monospace}
+  .demo{background:var(--card);border-radius:var(--radius-sm,14px);padding:16px;box-shadow:var(--shadow-sm,0 8px 18px rgba(45,38,52,.08))}
+  .rad-box{width:84px;height:64px;background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+  .sha-box{width:120px;height:64px;background:var(--card);border-radius:14px}
+  .row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+  .note{font-size:.78rem;color:var(--muted);margin:.4rem 0 0}
+  .btn-pri{background:var(--accent);color:#fff;border:0;border-radius:999px;padding:.7rem 1.4rem;font:600 .9rem "Manrope";cursor:pointer}
+  .btn-sec{background:var(--accent-soft);color:var(--accent-ink);border:0;border-radius:999px;padding:.7rem 1.4rem;font:600 .9rem "Manrope";cursor:pointer}
+  .btn-txt{background:none;color:var(--accent-ink);border:0;padding:.7rem .6rem;font:600 .9rem "Manrope";cursor:pointer}
+  .av{border-radius:999px;background:var(--accent-grad);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+  .pill{display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .6rem;border-radius:999px;font-size:.74rem;font-weight:700}
+  .type-row{display:flex;align-items:baseline;gap:14px;margin:6px 0;color:var(--ink)}
+  .type-row span:first-child{font-family:ui-monospace,monospace;font-size:.66rem;color:var(--muted);width:120px}
+</style>
+</head>
+<body>
+  <div id="sgBg"></div>
+  <script>if(/dusk/.test(location.search)){document.body.classList.add('theme-dusk');}</script>
+  <div class="sg-top">
+    <h1>SunMates · Styleguide</h1>
+    <span class="note" id="modeLbl">Jour</span>
+    <button onclick="var d=document.body.classList.toggle('theme-dusk');document.documentElement.style.background=d?'#190E2E':'#FFF4E6';document.getElementById('modeLbl').textContent=d?'Nuit':'Jour'">Jour / Nuit</button>
+  </div>
+  <div class="sg-wrap">
+    <p class="note">Référence vivante de la grammaire visuelle (cf. <b>UI-GUIDE.md</b>). Chaque pastille lit le <b>vrai token</b> de <code>styles.css</code> → bascule jour/nuit pour vérifier la cohérence des deux thèmes. Page autonome, <b>n'impacte pas l'app</b>.</p>
+
+    <section class="sg-sec"><h2>1 · Couleurs par rôle</h2>
+      <div class="sg-grid" id="swatches"></div>
+      <p class="note">Règle « même format = même couleur » : succès=<code>--ok/--ok-ink</code>, erreur=<code>--danger</code>, attente=<code>--gold</code>, pièces/XP=<code>--gold/--accent</code>.</p>
+    </section>
+
+    <section class="sg-sec"><h2>2 · Rayons (marque = arrondie)</h2>
+      <div class="row" id="radii"></div>
+      <p class="note">Réels : <code>--radius-sm 14px</code> · <code>--radius 22px</code> · <code>--radius-lg 28px</code> · pill 999px · cercle 50%. (Drift 6/7/9/10/11/13/15px supprimé v842.)</p>
+    </section>
+
+    <section class="sg-sec"><h2>3 · Ombres</h2>
+      <div class="row" id="shadows"></div>
+    </section>
+
+    <section class="sg-sec"><h2>4 · Échelle typographique</h2>
+      <div id="type"></div>
+      <p class="note">Fraunces (titres) · Manrope (corps). Graisses 400/600/700. Plancher 12px.</p>
+    </section>
+
+    <section class="sg-sec"><h2>5 · Boutons (3 niveaux)</h2>
+      <div class="demo row">
+        <button class="btn-pri">Primaire</button>
+        <button class="btn-sec">Secondaire</button>
+        <button class="btn-txt">Texte</button>
+      </div>
+    </section>
+
+    <section class="sg-sec"><h2>6 · Avatars</h2>
+      <div class="demo row">
+        <span class="av" style="width:24px;height:24px;font-size:.6rem">24</span>
+        <span class="av" style="width:32px;height:32px;font-size:.7rem">32</span>
+        <span class="av" style="width:40px;height:40px;font-size:.8rem">40</span>
+        <span class="av" style="width:56px;height:56px;font-size:1rem">56</span>
+      </div>
+    </section>
+
+    <section class="sg-sec"><h2>7 · Chips & statuts (même couleur partout)</h2>
+      <div class="demo row">
+        <span class="pill" style="background:rgba(255,177,60,.16);color:var(--ok-ink)">✅ Validé</span>
+        <span class="pill" style="background:var(--accent-soft);color:var(--accent-ink)">⏳ En attente</span>
+        <span class="pill" style="background:rgba(240,56,78,.12);color:var(--danger)">⛔ Refusé</span>
+        <span class="pill" style="background:rgba(255,201,60,.22);color:var(--gold)">🪙 120</span>
+        <span class="pill" style="background:rgba(255,201,60,.22);color:var(--accent-ink)">⭐ 320 XP</span>
+      </div>
+    </section>
+
+    <section class="sg-sec"><h2>8 · Carte (composant de base)</h2>
+      <div class="demo" style="max-width:340px">
+        <div style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--ink)">Titre de carte</div>
+        <p style="font-size:.85rem;color:var(--text);margin:.4rem 0">Corps de carte sur <code>--card</code>, rayon <code>--radius-sm</code>, ombre <code>--shadow-sm</code>, padding 16.</p>
+        <button class="btn-pri" style="padding:.5rem 1rem;font-size:.82rem">Action</button>
+      </div>
+    </section>
+  </div>
+<script>
+  var COLORS=[["--bg","Fond"],["--card","Surface"],["--accent","Brand / accent"],["--accent-2","Accent 2"],["--accent-3","Accent 3"],["--accent-ink","Accent (texte)"],["--gold","Or / pièces"],["--ok","Succès"],["--ok-ink","Succès (texte)"],["--danger","Erreur"],["--ink","Titre"],["--text","Corps"],["--muted","Atténué"]];
+  var sw=document.getElementById('swatches');
+  COLORS.forEach(function(c){var d=document.createElement('div');d.className='sw';
+    d.innerHTML='<div class="chip" style="background:var('+c[0]+')"></div><div class="lab">'+c[1]+'</div><div class="val">'+c[0]+'</div>';sw.appendChild(d);});
+  var RAD=[["--radius-sm","14"],["--radius","22"],["--radius-lg","28"],["999px","pill"],["50%","cercle"]];
+  var rd=document.getElementById('radii');
+  RAD.forEach(function(r){var box=document.createElement('div');box.className='rad-box';
+    box.style.borderRadius=/^--/.test(r[0])?'var('+r[0]+')':r[0];
+    var w=document.createElement('div');w.style.textAlign='center';w.appendChild(box);
+    var l=document.createElement('div');l.className='val';l.style.marginTop='6px';l.textContent=r[1];w.appendChild(l);rd.appendChild(w);});
+  var SHA=[["--shadow-sm","sm (repos)"],["--shadow","md"],["--shadow-pop","lg (pop)"]];
+  var sh=document.getElementById('shadows');
+  SHA.forEach(function(s){var box=document.createElement('div');box.className='sha-box';box.style.boxShadow='var('+s[0]+')';
+    var w=document.createElement('div');w.style.textAlign='center';w.appendChild(box);
+    var l=document.createElement('div');l.className='val';l.style.marginTop='8px';l.textContent=s[1];w.appendChild(l);sh.appendChild(w);});
+  var TYPE=[["2xl / h1","1.5rem","700"],["xl / h2","1.25rem","700"],["lg","1.125rem","600"],["base / corps","1rem","400"],["sm / label","0.875rem","600"],["xs / légende","0.75rem","400"]];
+  var tp=document.getElementById('type');
+  TYPE.forEach(function(t){var r=document.createElement('div');r.className='type-row';
+    r.innerHTML='<span>'+t[0]+'</span><span style="font-size:'+t[1]+';font-weight:'+t[2]+'">SunMates — voyager en sécurité</span>';tp.appendChild(r);});
+</script>
+</body>
+</html>
